@@ -1,0 +1,35 @@
+{
+  "id": "s-tunnel",
+  "name": "S Tunnel",
+  "package": "com.stunnel.dev",
+  "versionName": "11.1.0",
+  "versionCode": 147,
+  "engine": "python",
+  "entrypoint": "S_Tunnel.py",
+  "extensions": [],
+  "textPrefixes": [],
+  "dependencies": [],
+  "catalog": {
+    "entrypoint": "S_Tunnel.py",
+    "method": "GET",
+    "url": "http://servers.jk5.fun/servers.json",
+    "status": "live_verified",
+    "version": 49,
+    "servers": 2,
+    "networks": null,
+    "payloads": 8,
+    "configs": 19,
+    "configsWithPayload": 8,
+    "notes": "GET HTTP plano por Socket TCP (sin TLS) + AES-128-GCM (clave SHA-256 del salt, IV 12 B) o JSON en claro. La app es en realidad MSY VPN LITE. Asset incluido servers.bin: v37, 2 servidores, 11 configs (3 con payload) — el script tambien abre esa version anterior."
+  },
+  "files": {
+    "supported": false,
+    "entrypoint": null,
+    "notes": "Sin formato propio de archivo importable (sin ACTION_VIEW ni ACTION_GET_CONTENT, sin extension propia, sin .sks); no hay script _archivos.py. Sin esquema URI propio."
+  },
+  "embeddedAsset": "servers.bin",
+  "embeddedVersion": 37,
+  "embeddedServers": 2,
+  "realSampleVerified": true,
+  "deployment": "pending"
+}

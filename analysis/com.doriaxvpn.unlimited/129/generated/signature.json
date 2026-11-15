@@ -1,0 +1,12 @@
+{
+  "signed_v1": false,
+  "signed_v2": true,
+  "signed_v3": true,
+  "certificate_sha256": [
+    "299ece11a47d909dbcd1f2e21b45db1901583788b1f0cf106aa709b16a3fc01c"
+  ],
+  "certificate_sha1": [
+    "38e634da612e9cae1d15584ee20a05486f47e04b"
+  ],
+  "scope": "Signature block presence and certificate fingerprint, not full signature verification or official Play signing equivalence."
+}

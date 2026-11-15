@@ -1,0 +1,13 @@
+{
+  "status": "VERIFIED_REAL",
+  "wireBytes": 60588,
+  "wireSha256": "7ef4bd5b5c17a39a1d39049f71248007283d88a1559aa08a8dca71e3e75b6761",
+  "completeDocumentSha256": "c11206727d438404adfa0ed4befcd83b34a4f96b941ab077daafdab282442929",
+  "serverCount": 17,
+  "networkCount": 19,
+  "javaFieldsCompared": 264,
+  "workerEqualsReference": true,
+  "cliFileEqualsReference": true,
+  "cliStdinEqualsReference": true,
+  "isPartial": false
+}

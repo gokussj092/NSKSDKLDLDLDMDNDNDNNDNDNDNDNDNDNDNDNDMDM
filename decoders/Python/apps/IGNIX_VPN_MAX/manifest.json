@@ -1,0 +1,25 @@
+{
+  "id": "ignix-vpn-max",
+  "name": "IGNIX VPN MAX",
+  "package": "http.ignixmax.vpn",
+  "versionName": "44",
+  "versionCode": 44,
+  "engine": "python",
+  "entrypoint": "IGNIX_VPN_MAX.py",
+  "extensions": [],
+  "textPrefixes": [],
+  "catalog": {
+    "entrypoint": "IGNIX_VPN_MAX.py",
+    "method": "SCKIT VMP transport; X-IGNIX-SIG = SHA-1 of signer cert, X-IGNIX-AUTH = server_token; catalog cipher unidentified (lives in VMP bytecode)",
+    "url": "https://accesos.ignix-vpn.site/updateapk/ignix_update.php",
+    "vipUrl": "https://accesos.ignix-vpn.site/vip/vip_catalog.php",
+    "liveVersion": null,
+    "servers": null,
+    "networks": null,
+    "payloads": null,
+    "status": "blocked_device_auth_401",
+    "notes": "Challenge 200 with nonce; catalog without token -> 401 no autorizado; without signature -> 403 firma invalida. Registration could not be completed (20+ variants -> 400). decode() returns CIPHER_PENDING for non-JSON bodies."
+  },
+  "filesEntrypoint": "IGNIX_VPN_MAX_archivos.py",
+  "filesNote": "No importable proprietary format; _archivos.py reads the decrypted Config.json / ConfigPremium.json the app saves in filesDir."
+}

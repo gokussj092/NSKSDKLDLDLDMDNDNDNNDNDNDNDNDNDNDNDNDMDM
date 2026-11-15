@@ -1,0 +1,37 @@
+{
+  "package": "net.catnet.vpn",
+  "versionName": "1.2.7",
+  "versionCode": 29,
+  "apksBytes": 43778444,
+  "apksSha256": "66b95fba41d70bcdf96d741e05ad305bb1d619afb8ebed8ce33ab0395a5212b8",
+  "apkBytes": 14223639,
+  "apkSha256": "870a4e41f11a1cc3987c2f6b098ffa6adb1f69877820065ab7d938b394b39676",
+  "splits": [
+    {
+      "name": "base.apk",
+      "bytes": 14223639,
+      "sha256": "870a4e41f11a1cc3987c2f6b098ffa6adb1f69877820065ab7d938b394b39676"
+    },
+    {
+      "name": "split_config.arm64_v8a.apk",
+      "bytes": 33264744,
+      "sha256": "f740a0b5fe0715aee449eff3de65b66236ac70d374ccfa40555ad20580ebc0c2"
+    },
+    {
+      "name": "split_config.es.apk",
+      "bytes": 45266,
+      "sha256": "637e0e1cb8a2dd71ff2ba231dd14710ced6861db4346b48b5d19d6483e968760"
+    },
+    {
+      "name": "split_config.xhdpi.apk",
+      "bytes": 126222,
+      "sha256": "835d0416c6960e8c99414424d70f3f0046f8ca4945aabc2ac964aebb36227388"
+    }
+  ],
+  "certificateSha256": [
+    "dcc1eb6396b9c1b8ec554c99bb8a9ca7feda3a00fee05a977ec186571661c90c"
+  ],
+  "sourceCategory": "owner-provided Play export; filename is not authoritative identity",
+  "cryptographicApkSignatureVerified": false,
+  "apkCodeExecuted": false
+}

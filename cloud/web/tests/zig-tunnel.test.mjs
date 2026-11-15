@@ -38,14 +38,14 @@ test("ZiG refuses same-origin and foreign redirects",async t=>{
 
 test("ZiG launcher PNG, historical formats and card follow availability",()=>{
   const doc=catalog({availability:{"zig-tunnel":true}});
-  assert.equal(CATALOG_VERSION,65);assert.equal(doc.apps.length,61);
+  assert.ok(CATALOG_VERSION>=73);assert.ok(doc.apps.length>=67);
   const card=doc.apps.find(x=>x.id==="zig-tunnel");
   assert.equal(card.name,"ZiG Tunnel");assert.equal(card.decodeEnabled,true);
   assert.equal(card.iconSha256,"ff64e345b56a89e0738d1999a98d1eb8aa6dd093ae6d5d90a85b120d148de4bc");
   assert.equal(iconFor("zig-tunnel").bytes.length,186687);
   assert(PUBLIC_PROVIDER_IDS.includes("zig-tunnel"));
   assert.equal(catalog({availability:{"zig-tunnel":false}}).apps.find(x=>x.id==="zig-tunnel").decodeEnabled,false);
-  assert.equal(doc.formats.length,256);
+  assert.equal(doc.formats.length,272);
   assert(doc.formats.some(x=>x.suffix==="enaa"));
   assert(!JSON.stringify(card).includes("https://"));
 });

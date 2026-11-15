@@ -1,0 +1,235 @@
+{
+  "schema_version": 1,
+  "package_name": "com.wyrhub.tun",
+  "app_name": "HTTP Tweak",
+  "version_name": "1.8.17",
+  "version_code": 632,
+  "observed_at": "2026-11-14/15",
+  "source_category": "APKPure XAPK (owner-supplied sample); live catalog download 2026-11-14",
+  "authorization_note": "Owner-supplied APK sample and live catalog download requested by the owner (Pedro) for SP-DECODE integration research. No service credentials, no attestation fabrication, no account access.",
+  "status": "VERIFIED",
+  "targets": [
+    {
+      "kind": "catalog",
+      "status": "VERIFIED",
+      "note": "VERIFIED_REAL: live download 2026-11-14, 5 servers, all online; raw sample saved in samples/public_servers.json."
+    },
+    {
+      "kind": "files",
+      "status": "VERIFIED",
+      "note": "VERIFIED_REAL (asset): the real asset config.ht from the APK decrypts and re-encrypts byte-identically; the remote config.ht from GitHub also decrypts. A user-exported .ht is still pending, so the export path is VERIFIED_SYNTHETIC (muestra.ht generated with the encryptor, round-trip OK)."
+    },
+    {
+      "kind": "text",
+      "status": "PENDING",
+      "note": "PENDING: the httptweak:// prefix is confirmed but the payload format is unconfirmed (no intent-filter, no real link)."
+    },
+    {
+      "kind": "export",
+      "status": "PENDING",
+      "note": "PENDING: real user-exported .ht, real .hts (share) and .htb (auto-backup) files, a real httptweak:// link, a real mode-6 (v6) file, and a live code-share verification (needs account/device)."
+    }
+  ],
+  "inputs": [
+    {
+      "type": "operational_script_catalog",
+      "path": "catalogs/httptweak/HTTP_Tweak.py",
+      "sha256": "b69684a79d080330dc5b7cda3938c7278373170509dc65aa3e8edc70911a8a8f",
+      "note": "Operational catalog script (outside this repo until integration). Contains the format keys; never copied into this dossier."
+    },
+    {
+      "type": "operational_script_files",
+      "path": "catalogs/httptweak/HTTP_Tweak_archivos.py",
+      "sha256": "ce2a722228c9bc8d395eea20e0667581db9a1c6fad646ed935e481ab3e302387",
+      "note": "Operational file/text script (outside this repo until integration). Contains the format keys; never copied into this dossier."
+    },
+    {
+      "type": "apk_base",
+      "path": "catalogs/httptweak/apk or xapk (base APK)",
+      "sha256": "da556b6f01c8ac4b3a39e1e017552cb868dd47631df31fc5c24f0ce4cbe5f239 (base APK on disk)",
+      "note": "Base APK hash as computed on disk in the research workspace."
+    },
+    {
+      "type": "xapk",
+      "path": "catalogs/httptweak (XAPK)",
+      "sha256": "HTTP-Tweak_1.8.17_arm64-v8a.xapk (59,078,628 B, SHA-256 9cc133a5c6d2ab6ad39deaa2cfabd6f0c8387bed5236a5f6d4037d885b688779)",
+      "note": "XAPK identity as recorded in the source TESTING.md."
+    },
+    {
+      "type": "sample",
+      "path": "catalogs/httptweak/samples/config.ht",
+      "sha256": "90ad2351582ad7a3f119687d1a3386869a62835a6265faea2f716fff3892624b",
+      "note": "Sample kept in the research workspace (not copied into this dossier)."
+    },
+    {
+      "type": "sample",
+      "path": "catalogs/httptweak/samples/public_servers.json",
+      "sha256": "281cca6a90a85ecbc64063b6d4707a3a23460aaaeb66d44d91247825c057693f",
+      "note": "Sample kept in the research workspace (not copied into this dossier)."
+    }
+  ],
+  "tooling": [
+    {
+      "name": "Python",
+      "version": "3.12.3",
+      "purpose": "Runtime of all operational and dossier scripts (stdlib only)."
+    },
+    {
+      "name": "jadx",
+      "version": "1.5.3",
+      "purpose": "DEX decompilation (documented in the source TESTING.md files)."
+    },
+    {
+      "name": "androguard",
+      "version": "4.1.4",
+      "purpose": "DEX/APK inspection helpers in work/ research scripts."
+    },
+    {
+      "name": "OpenSSL",
+      "version": "3.0.13",
+      "purpose": "Independent oracle for AES-CBC vectors in dossier tests."
+    },
+    {
+      "name": "PyCryptodome",
+      "version": "4.4.0",
+      "purpose": "Verification oracle only, in the research venv; NOT used by the operational scripts or the dossier tests."
+    },
+    {
+      "name": "argon2-cffi",
+      "version": "25.1.0",
+      "purpose": "Verification oracle only, in the research venv; NOT used by the operational scripts or the dossier tests."
+    },
+    {
+      "name": "Unicorn",
+      "version": "2.1.4",
+      "purpose": "Native emulation oracle during research (Ac Tunnel KDF, HTTP Tweak WyrLib); NOT used by the operational scripts."
+    },
+    {
+      "name": "paranoid-deobfuscator",
+      "version": "3.0.2",
+      "purpose": "Reference LSParanoid string deobfuscator (Ac Tunnel: 1983/1983 strings)."
+    }
+  ],
+  "code_paths": [
+    "decoders/Python/apps/HTTP_Tweak/HTTP_Tweak.py",
+    "decoders/Python/apps/HTTP_Tweak/HTTP_Tweak_archivos.py"
+  ],
+  "evidence_refs": [
+    "Source research notes: ~/workspace/catalogs/NOTES.md (per-app section)",
+    "Source README: ~/workspace/catalogs/httptweak/README.md",
+    "Source TESTING.md: ~/workspace/catalogs/httptweak/TESTING.md",
+    "Dossier tests: tests/test_method.py (unittest, offline, synthetic vectors)",
+    "Dossier verifier: tools/verify.py (synthetic round-trip, no network, no secrets)"
+  ],
+  "limitations": [
+    "Real .ht file exported by a user (to confirm mode 2 is the same format the app exports, not only the config.ht asset).",
+    "Real .hts (share) and .htb (auto-backup) files.",
+    "Real httptweak:// link to confirm the payload format.",
+    "Real mode-6 (v6) file, if one exists.",
+    "Live code-share verification (requires a registered account/device)."
+  ],
+  "network_requirements": "Live catalog verification needs network access to the vendor's catalog host (exact request lives in the operational script; no download endpoint is reproduced in this dossier). All dossier tests run offline.",
+  "manual_steps": [
+    "Real .ht file exported by a user (to confirm mode 2 is the same format the app exports, not only the config.ht asset).",
+    "Real .hts (share) and .htb (auto-backup) files.",
+    "Real httptweak:// link to confirm the payload format.",
+    "Real mode-6 (v6) file, if one exists.",
+    "Live code-share verification (requires a registered account/device)."
+  ],
+  "unresolved_questions": [
+    "Real .ht file exported by a user (to confirm mode 2 is the same format the app exports, not only the config.ht asset).",
+    "Real .hts (share) and .htb (auto-backup) files.",
+    "Real httptweak:// link to confirm the payload format.",
+    "Real mode-6 (v6) file, if one exists.",
+    "Live code-share verification (requires a registered account/device)."
+  ],
+  "connection_authentication": {
+    "files_integrity_hmac": "NOT_OBSERVED",
+    "catalog_integrity_hmac": "NOT_OBSERVED",
+    "key_derivation_hmac": "NOT_OBSERVED",
+    "vpn_transport_hmac": "UNCONFIRMED",
+    "connection_authentication_hmac": "UNCONFIRMED",
+    "note": "Mode 2 has no MAC; mode 6 (v6) has a 4-byte tag verified by a pure function (not an HMAC) and no sample exists. The mere presence of a hash helper in libcore.so proves nothing about connection authentication. VPN transport and connection authentication were not researched for this build.",
+    "rule": "The mere presence of an HMAC library or a Mac.init call confirms nothing. No key values and no hook inputs/outputs are stored in this dossier."
+  },
+  "dependencies": [
+    {
+      "name": "Python (stdlib)",
+      "version": "3.12.3",
+      "source": "system",
+      "hash": "UNKNOWN (system runtime, no distribution hash recorded)",
+      "license": "PSF-2.0"
+    },
+    {
+      "name": "jadx",
+      "version": "1.5.3",
+      "source": "github.com/skylot/jadx",
+      "hash": "UNKNOWN (distribution hash not recorded in the source notes)",
+      "license": "Apache-2.0"
+    },
+    {
+      "name": "androguard",
+      "version": "4.1.4",
+      "source": "PyPI (research venv pip list)",
+      "hash": "UNKNOWN (wheel hash not recorded)",
+      "license": "Apache-2.0"
+    },
+    {
+      "name": "OpenSSL",
+      "version": "3.0.13",
+      "source": "system",
+      "hash": "UNKNOWN (system package, no distribution hash recorded)",
+      "license": "Apache-2.0"
+    },
+    {
+      "name": "PyCryptodome",
+      "version": "4.4.0",
+      "source": "PyPI (research venv pip list; oracle only)",
+      "hash": "UNKNOWN (wheel hash not recorded)",
+      "license": "BSD-2-Clause"
+    },
+    {
+      "name": "argon2-cffi",
+      "version": "25.1.0",
+      "source": "PyPI (research venv pip list; oracle only)",
+      "hash": "UNKNOWN (wheel hash not recorded)",
+      "license": "MIT"
+    },
+    {
+      "name": "Unicorn",
+      "version": "2.1.4",
+      "source": "PyPI (research venv pip list; emulation oracle only)",
+      "hash": "UNKNOWN (wheel hash not recorded)",
+      "license": "GPL-2.0"
+    },
+    {
+      "name": "paranoid-deobfuscator",
+      "version": "3.0.2",
+      "source": "reference tool (Ac Tunnel research)",
+      "hash": "UNKNOWN (distribution hash not recorded)",
+      "license": "UNKNOWN (not recorded — NEEDS_REVIEW)"
+    },
+    {
+      "name": "loguru",
+      "version": "0.8.0",
+      "source": "PyPI (research venv pip list; used by some work/ scripts)",
+      "hash": "UNKNOWN (wheel hash not recorded)",
+      "license": "MIT"
+    },
+    {
+      "name": "lxml",
+      "version": "6.1.3",
+      "source": "PyPI (research venv pip list; used by the ZIVPN strings script)",
+      "hash": "UNKNOWN (wheel hash not recorded)",
+      "license": "BSD-3-Clause"
+    }
+  ],
+  "dependencies_reference": {
+    "lockfile": "dependencies.lock.json",
+    "note": "See DEPENDENCIES.md. Versions marked UNKNOWN were not recorded in the source research notes; they are not invented here."
+  },
+  "code_paths_reference": [
+    "decoders/Python/apps/HTTP_Tweak/HTTP_Tweak.py (PENDING integration; operational script in ~/workspace/catalogs/httptweak/)",
+    "decoders/Python/apps/HTTP_Tweak/HTTP_Tweak_archivos.py (PENDING integration; operational script in ~/workspace/catalogs/httptweak/)"
+  ]
+}

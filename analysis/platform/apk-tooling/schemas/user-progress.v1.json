@@ -1,0 +1,93 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://spdecode.xyz/schemas/apk-analysis/user-progress.v1.json",
+  "title": "SP-DECODE APK Analysis User Progress v1",
+  "description": "Sanitized host-generated progress only. No result refs, hashes, paths, or secret-bearing content.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "completed",
+    "steps"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "completed": {
+      "type": "boolean"
+    },
+    "steps": {
+      "type": "array",
+      "maxItems": 10000,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "stage",
+          "status",
+          "evidence",
+          "error_code",
+          "output_available"
+        ],
+        "properties": {
+          "stage": {
+            "type": "string",
+            "enum": [
+              "UPLOAD_VALIDATED",
+              "STATIC_INVENTORY",
+              "RESOURCES",
+              "DEX",
+              "ELF",
+              "METHOD_REVIEW",
+              "REPORT"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "OK",
+              "PARTIAL",
+              "FAILED",
+              "NEEDS_HUMAN"
+            ]
+          },
+          "evidence": {
+            "type": "string",
+            "enum": [
+              "UNKNOWN",
+              "OBSERVED",
+              "INFERRED",
+              "VERIFIED_SYNTHETIC",
+              "VERIFIED_REAL"
+            ]
+          },
+          "error_code": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "string",
+                "enum": [
+                  "TOOL_TIMEOUT",
+                  "INPUT_INVALID",
+                  "TOOL_CRASH",
+                  "NETWORK_UNAVAILABLE",
+                  "DEPENDENCY_MISSING",
+                  "EVIDENCE_INCOMPLETE",
+                  "NO_MATCH",
+                  "SANDBOX_DENIED",
+                  "INTERNAL_ERROR"
+                ]
+              }
+            ]
+          },
+          "output_available": {
+            "type": "boolean"
+          }
+        }
+      }
+    }
+  }
+}

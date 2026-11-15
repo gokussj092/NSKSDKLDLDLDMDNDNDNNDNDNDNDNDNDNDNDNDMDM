@@ -1,0 +1,68 @@
+{
+  "servers": {
+    "Version": "fiction-217",
+    "ReleaseNotes": "Solo pruebas 🎯",
+    "Servers": [
+      {
+        "2kDKELRmSE143VdcX3FPzw==": "wEIQXutYOoURpcNK6Sz9JgfDsqU6TDfCNybqhMwXZqlisTWVrvZiP9CcBXWUbTmE",
+        "66P9ZUEM1ju4WGhv856BSg==": "vRdM40fW2gfZcBUJnToS9gY4iUphvpRp_11EmUVTtlNOcf4QfX7QmIbhbPidFNWF",
+        "ACqWMY4zuZWzSEs8cZMXIw==": "LTiv1s_RObcdAyIgaqssZc_b62HdJ-iwbPAKDZA6fjRH9rerg87IVUV1I5Iw8Ca_",
+        "B5jcTSGuJUFbTtH5O1IaBg==": "BPZAj550E1U5vUZsV41ITq6tgAWpyH8KVyhp8rQJqmeKy46TCG166GF0-iD2qDff",
+        "BWTPMwR0iRu1N9twHCpbAg==": "C9RW3psnIVBVIPBmkxoFE_1OhiicyTw22aVTOJhMuWZtZxF0aUdhT-vPE98GX18U",
+        "EtNSBhechjWxm2t50NyB9Q==": "Qk48kShoDfG15Yf-jXOIJ_AUUNXCUWfK2E6aefej3MQx1YkLa0DjCYTp-IXGULLy",
+        "Fo3TT4oONvv69IQIMg1aLg==": "njVnts7PtjuJjuTWHvPcszfxGGqCTLUxVysDKFJxoEseRPcoyC3-qh1Fo5kACOSw",
+        "ITkWvEHp29BmMaLMEGUFcw==": "_lLErmpG9OHHenz_yx_5w1mVbVNsJ1BdiU5BRZKc4HtuQO3qJgCZAEnhTwXExZ5g",
+        "MkRXl4D9vpREVCJ0w4qrgg==": "WXVZbmifwJr__6Ct0dLCEZQd1E97m_SPwBKQngaAWD775SLUfIBtvsWVenFL9VNl",
+        "PFFSWRJKZmOcNLTZxFwgjQ==": "77zYn1vGmHVtJumb-IoUis8fIZ5fxrQuSk8C6HuthKSpmZqG-3kPOKsLhft6G9MJ",
+        "QSln2zKCBJvqH9qV4M0ifg==": "HH-3Ty9UtKN8NXYeximeCBgS10ovsZg90Lrzn631UAdOCf7gYu3hv7NVvIo7kTO0",
+        "SbDP19AbQur0YtkkyRlVMA==": "fc3SgKXijVs4IeUXgE2K-HoBozYyPdAsNpYZCM1oQPUiQlsST9DIYshv-XzMUOTh",
+        "U7V8DoP4cYkXJjCnpqW6nQ==": "GMRB9hf4pBB3HHKJEIcjYxL2ATfWH-QoSmWS1Pk0Y1tgWyhcjV0ZQqZ9vqq0EQJF",
+        "UxdyIntdYykCdV76crKnwg==": "D2Z57M9hDpeEULTHb_vxO57r4vxKKM7S_9J6ieyXKuNNYoCOkSneXPVzoYMDcoV-",
+        "W4CbS1nMWo6Y2noeUFHmXQ==": "wUufoFcHkEbpr9tZ3dATRT1DSI8tP23VSbMcRCFtcznjTNATKuik0yp0oV2wZF-6",
+        "aH2nzD4eDLxPSxIAlVivdg==": "iC4b237IL1S1z6TdSY-yLD55R2N65o5MNK6OffA8MnPOfdbC1N4adL4YuorqZ4L8",
+        "asmRO4zXsRjhDYX42dbNuw==": "EXxBgOOGeRpKkmOJJXB_0_qppNLZ4WvpfbcGiBX-9WaRhF6O_wX1dKfmop0kISCD",
+        "b3MPypEFR83rzFKUa4UbCw==": "IbMrNWuInSzA7YOW6SNxChz1L43FWEKdEihx8nXatHCG6iEAiMphdkB5mke9YlML",
+        "b6stZNVaFUjLCw88dn03Ng==": "H9EeWN5EDkrV_52YBa-tJruhI0RY9k5D39u9TxdZZY74vvjw3cBj97FMHVEsZqOT",
+        "iW1aO5DgThVAeo23xTsXSw==": "Jl8O5frx70ea9cwcXXO3ltfH8sPM95GXttm33gb4iK7OCxlA9OhKv2kZp3mJCpyt",
+        "l7MIgkbuXMmGaaQGd54F2w==": "Ob7PsXgYNmNIIwy02HSebcgyvnR1fbeoWUpOP3V3hfcpGk4AZqlr2sGzVSUB4S9H",
+        "mtw364P3ZslP2CZYuHTCHQ==": "KPWAMjjnXPyh61SA8MrV_Smy1yBjWY91IYip9LF4zU0UJBEBB-y8cGbXh9hqarNM",
+        "oAqgFKE3WywLRvSvKffLOA==": "g55mD4iNw2skwIVrJEWbgypE98kfcXc8AeyihJB40tSRM4TC3bQORhy85szgYtwi",
+        "p0PgL3l0d89mnssz7ImPJA==": "d9rpf_jBSD6GB7AvoW2btbXbGwnJCf4_G2ezA29EtLvxYTYTNqleaZqkbV1z-Jqj",
+        "p9ZPlMv9V7gDszRoUaNaJw==": "0aoBfsLx1cEMLYjQc3PDpvwz4W4iDRxG3iwRGsSkPHwtRxSf450-u8ADtr9Rzj3l",
+        "tmSbWiCK1hvytJ9f3gflkQ==": "AG_v2-lbR77FoKHucHBK4ryIV3qh4njBhqpOHud86PlR7AMH2_O_iJXk5Uan7gVe",
+        "vXfVafVdyaCRTDj6uBT6lg==": "m5JZoHJZVSDZzSDv0nptWCXS4FWRmSs2P_dFrXaqlYYTiYNfJgF4t4Gxs7abD2Af",
+        "MIgkNbuX29MmGatZNVaFUj==": true,
+        "serverType": 0,
+        "tunnelType": 1,
+        "ssh_userpass_enabled": false,
+        "metadata": {
+          "note": "México 🎯\r\n",
+          "preserve": [
+            "AA==",
+            true,
+            7,
+            null
+          ]
+        }
+      }
+    ]
+  },
+  "users": {
+    "Version": "fiction-2",
+    "Usuarios": [
+      {
+        "Auth": "EVWUYHidg0uFH14vYMR_0nH5kT6lRgISeO9tjrAPAQ0K6QnB7wEUp0dima9TZSf9",
+        "ID": "1bDKfqd7nPOPCjkQT6VdzuNBtxYDAMI8-C1myXjrI9FHotZfe7EKXmZ3eBmqWuZh",
+        "Obfs": "VD6LYQJPmxsuITHZYi0ejF2vcc2Q83B9d-N4aiQoQGDuDi0VxMIabBS-V5MUkn2a",
+        "Password": "4t3zDvqFBReErTlt9yAnamitSlrpqnMfuPPAitYwA_2hMQuSuNUYsu-7c1k_XyNq",
+        "Path": "zzPn126E7kkcPWJhWUpnaPqgsN_kHK-vEM2WedpFh7zqiiHe8rgSjAYi7UpqHffK",
+        "Username": "GLX_xWyJW1-c_8t5gxxtM2aFgyTC1AGPzEpyellfgO_xUgGpcrRayeA7HFbEcHuE",
+        "Name": "Fictional user preset",
+        "metadata": {
+          "tokenLike": "QUJDREVGRw==",
+          "bool": true
+        }
+      }
+    ]
+  }
+}

@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <uses-permission android:name="android.permission.USE_BIOMETRIC" />
     <!-- In C4 Cloud-enabled builds, file/text/EHI/NUR decode requests use
          the native HTTPS libv7q3.so client. Encrypted history remains
          local. C4 never enables cleartext, analytics, or background requests.
+         QA APK/APKS alone may use a single WorkManager network job
+         after explicit file consent; other decoders retain their policies.
          Legacy builds are retained for migration regression checks until C5. -->
     <uses-permission android:name="android.permission.INTERNET" />
     <application
@@ -30,7 +33,7 @@
         <activity
             android:name=".MainActivity"
             android:exported="true"
-            android:documentLaunchMode="intoExisting"
+            android:documentLaunchMode="never"
             android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

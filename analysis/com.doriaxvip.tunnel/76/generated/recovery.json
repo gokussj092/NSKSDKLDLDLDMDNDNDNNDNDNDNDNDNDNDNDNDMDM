@@ -1,0 +1,42 @@
+{
+  "included": {
+    "inputBytes": 1216,
+    "inputSha256": "6b7e44decbe4c55d43f359ec1b41748000361bbf09e09b195bbda2a8af45e23f",
+    "version": "1",
+    "keys": [
+      "Version",
+      "ReleaseNotes",
+      "Servers"
+    ],
+    "sections": {
+      "Servers": 1
+    }
+  },
+  "included-users": {
+    "inputBytes": 576,
+    "inputSha256": "b69abc35fd2beacf7e72c72d14e134a7d69dccc4c02acf15b535e6de311ab6c2",
+    "version": "1",
+    "keys": [
+      "Version",
+      "Usuarios"
+    ],
+    "sections": {
+      "Usuarios": 1
+    }
+  },
+  "remote": {
+    "httpStatus": 200,
+    "contentType": "text/plain; charset=utf-8",
+    "inputBytes": 107480,
+    "inputSha256": "0eb4a091e0f522cadb76c1172063bad1e1c136535b7945854fc0fdb88c01aa55",
+    "version": "1114",
+    "keys": [
+      "Version",
+      "ReleaseNotes",
+      "Servers"
+    ],
+    "sections": {
+      "Servers": 84
+    }
+  }
+}

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="account_sign_in">Đăng nhập</string>
+    <string name="account_web_description">Quản lý tài khoản và giao dịch trên trang web chính thức. Các tính năng miễn phí vẫn dùng được mà không cần tài khoản.</string>
+    <string name="account_continue_web">Tiếp tục trên web</string>
+    <string name="account_my_account">Tài khoản của tôi</string>
+    <string name="account_store">Cửa hàng</string>
+    <string name="account_open_menu">Mở trình đơn</string>
+</resources>

@@ -29,3 +29,24 @@
 -keep class com.ghostdeveloper.spdecode.cloud.CloudKeystorePlatform {
     public static *;
 }
+
+# Native catalog HTTP receive loop resolves this Kotlin @JvmStatic callback by
+# literal JNI name/signature. Prevent R8 from removing or renaming it in release.
+-keepclassmembers class com.ghostdeveloper.spdecode.cloud.CloudNativeTransport {
+    public static void onCatalogTransferProgress(long, long);
+}
+
+# Offline JNI bridge uses exported name-based symbols, even in R8 release.
+-keepclasseswithmembers,includedescriptorclasses class com.ghostdeveloper.spdecode.offline.NativeOffline {
+    native <methods>;
+}
+
+# JNI profile validator uses name-based symbols in all online release ABIs.
+-keepclasseswithmembers,includedescriptorclasses class com.ghostdeveloper.spdecode.NativeProfileRules {
+    native <methods>;
+}
+
+# Native ad-free projection validation; never keep broad commercial packages.
+-keepclasseswithmembers,includedescriptorclasses class com.ghostdeveloper.spdecode.NativeAdsGate {
+    native <methods>;
+}

@@ -1,0 +1,6 @@
+{
+  "schema_version": 1,
+  "scope": "F7_APK_QA_FIRST_PASS",
+  "new_external_dependencies": [],
+  "note": "No new external dependency; Python 3.12 standard library and existing pinned Cloud/Android infrastructure only. Not approval for unrelated tools."
+}

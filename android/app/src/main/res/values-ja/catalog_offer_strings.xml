@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="catalog_offer_title">新しいカタログがあります</string>
+    <string name="catalog_offer_body">カタログのバージョン %1$d が利用できます。更新すると新しい対応アプリ、方式、改善内容が使えるようになります。</string>
+    <string name="catalog_offer_update">更新する</string>
+    <string name="catalog_offer_later">キャンセル</string>
+    <string name="catalog_postpone_title">更新せずに続行しますか？</string>
+    <string name="catalog_postpone_body">キャンセルすると、カタログを更新するまで新しいアプリ、方式、改善内容は利用できません。後から VPN サーバーで更新できます。</string>
+    <string name="catalog_postpone_confirm">更新せずに続行</string>
+    <string name="catalog_postpone_back">戻る</string>
+</resources>

@@ -30,7 +30,8 @@ class CloudHistoryActionsTest(unittest.TestCase):
         self.assertIn('contentResolver.openOutputStream(uri,"w")',ACTIVITY)
         self.assertIn('if (entry.extension == "nurservers" || entry.extension == "vpnservers") entry.rawText',ACTION)
         self.assertIn('ResultPresentation.formatted(entry.document, ResultExport.JSON)',ACTION)
-        self.assertIn('CloudHistoryJsonExport.content(entry)',GRADLE)
+        self.assertIn('sessionVm.stagedResultExport=opened to ResultExport.JSON',GRADLE)
+        self.assertIn('ResultOutputWriter.write(',ACTIVITY)
         self.assertIn('onExportHistory(entry)',GRADLE)
         self.assertIn('onDelete={deletingAll=false;deletion=setOf(entry.id)}',GRADLE)
 

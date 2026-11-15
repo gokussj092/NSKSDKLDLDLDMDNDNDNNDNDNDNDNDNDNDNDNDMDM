@@ -1,0 +1,99 @@
+{
+  "status": "VERIFIED_REAL",
+  "observed_at": "2026-11-04T20:49:59.255623+00:00",
+  "base_commit": "a1b6721e39657d9e6e5360de88dede30d772f764",
+  "previous_full_field_claim": "WITHDRAWN: previous oracle covered only XXTEA envelope",
+  "verification": [
+    {
+      "source": "remote.enc",
+      "bytes": 72881,
+      "sha256": "578ad82fed747a2670a8fe4fb0abaeda16df60684581bec0a7e10e2d47aeee06",
+      "version": "22.3",
+      "counts": {
+        "Servers": 14,
+        "Networks": 13
+      },
+      "whole_java_equal": true,
+      "whole_cli_equal": true,
+      "whole_worker_equal": true,
+      "field_layer": "Base64/UTF-8 once; explicit app schema",
+      "changed_nonempty_fields": 87,
+      "decoded_sha256": "339be291594ac0b6fb587abe594693c092dc4c3c335d15eb0599375da2b1963c"
+    },
+    {
+      "source": "downloaded.enc",
+      "bytes": 72881,
+      "sha256": "578ad82fed747a2670a8fe4fb0abaeda16df60684581bec0a7e10e2d47aeee06",
+      "version": "22.3",
+      "counts": {
+        "Servers": 14,
+        "Networks": 13
+      },
+      "whole_java_equal": true,
+      "whole_cli_equal": true,
+      "whole_worker_equal": true,
+      "field_layer": "Base64/UTF-8 once; explicit app schema",
+      "changed_nonempty_fields": 87,
+      "decoded_sha256": "339be291594ac0b6fb587abe594693c092dc4c3c335d15eb0599375da2b1963c"
+    }
+  ],
+  "tools": [
+    {
+      "path": "analysis/com.appxrayservice.namovpn/35/tools/fields/FieldOracle.java",
+      "sha256": "e431701390cc023b9debe456150cb1ffb72746650731c0cf4f5f763f2b12b20e",
+      "approval": "MANUAL_RESEARCH_NOT_APPROVED_FOR_AUTOMATIC_PHASE7"
+    },
+    {
+      "path": "analysis/com.appxrayservice.namovpn/35/tools/fields/capture_outer.py",
+      "sha256": "a551f1364c43dd8f9946b129e186ed4be762705f932bf53df7c086d1f7c4509d",
+      "approval": "MANUAL_RESEARCH_NOT_APPROVED_FOR_AUTOMATIC_PHASE7"
+    },
+    {
+      "path": "analysis/com.appxrayservice.namovpn/35/tools/fields/finalize.py",
+      "sha256": "3c4efd3f4bf7c1ee106e615690f646508f081073dabbd5fe80de726d46b71d37",
+      "approval": "MANUAL_RESEARCH_NOT_APPROVED_FOR_AUTOMATIC_PHASE7"
+    },
+    {
+      "path": "analysis/com.appxrayservice.namovpn/35/tools/fields/history/inspect_v1_shadowed_stdlib.py",
+      "sha256": "7c12d90c69a7008453ef56df934be73bf40584a062892f2031eeb0313d0391b2",
+      "approval": "MANUAL_RESEARCH_NOT_APPROVED_FOR_AUTOMATIC_PHASE7"
+    },
+    {
+      "path": "analysis/com.appxrayservice.namovpn/35/tools/fields/inspect_fields.py",
+      "sha256": "5696e56bfa09982092565002616d074f6de5a577de46ef9e3c57d97ef602541e",
+      "approval": "MANUAL_RESEARCH_NOT_APPROVED_FOR_AUTOMATIC_PHASE7"
+    },
+    {
+      "path": "analysis/com.appxrayservice.namovpn/35/tools/fields/reference.py",
+      "sha256": "bd226ff67f9bf69efc712bfaddb9a412be378788a9ab1b38de7680d29cce95f0",
+      "approval": "MANUAL_RESEARCH_NOT_APPROVED_FOR_AUTOMATIC_PHASE7"
+    }
+  ],
+  "python_tests": 15,
+  "node_tests": 172,
+  "initial_attempt": {
+    "python": "14/14 PASS",
+    "node": "104/150; 46 failed",
+    "cause": "Partial workspace lacked Genis icon, fixtures and HTTP Firebase modules; restored exact Git base files. No production workaround.",
+    "after_restore": "172/172 PASS; final complete run below"
+  },
+  "node_real": {
+    "status": "NETWORK_UNAVAILABLE",
+    "code": "REMOTE_NETWORK_DENIED"
+  },
+  "node_replay": {
+    "status": "PASS",
+    "transport": "SIMULATED_HTTP_REAL_BYTES",
+    "whole_worker_equal": true
+  },
+  "runtime_versions": {
+    "python": "3.12.14",
+    "java": "17.0.20+8-1-24.04-Ubuntu",
+    "node": "24.22.1",
+    "jadx": "1.5.6"
+  },
+  "catalog_floor": 71,
+  "cards": 65,
+  "formats": 256,
+  "dependency_changes": "none; Java/Python standard library only"
+}

@@ -40,6 +40,29 @@ class ServerVpnDirectoryInstrumentedTest {
             apps,"Alpha",ServerVpnListFilter.FAVORITES,setOf("b-vpn")).isEmpty())
     }
 
+    @Test fun sshAccountsAreOnlyVisibleInTheirOwnTab() {
+        val apps=listOf(
+            app("opentunnel-ssh","OpenTunnel SSH",true),
+            app("speigo-vpn-ssh","SpeiGo SSH",true),
+            app("speigo-vpn-configs","SpeiGo Configs",true),
+            app("other-vpn","Other VPN",true),
+        )
+        for(filter in listOf(ServerVpnListFilter.ALL,ServerVpnListFilter.ENABLED,
+                ServerVpnListFilter.FAVORITES)) {
+            val ids=ServerVpnDirectory.visible(apps,"",filter,
+                apps.map { it.id }.toSet()).map { it.id }
+            assertEquals(listOf("other-vpn","speigo-vpn-configs"),ids)
+        }
+        assertEquals(listOf("opentunnel-ssh","speigo-vpn-ssh"),
+            ServerVpnDirectory.visible(apps,"",ServerVpnListFilter.SSH_ACCOUNTS,
+                emptySet()).map { it.id })
+        assertEquals(listOf("speigo-vpn-ssh"),
+            ServerVpnDirectory.visible(apps,"speigo",ServerVpnListFilter.SSH_ACCOUNTS,
+                emptySet()).map { it.id })
+        assertTrue(ServerVpnDirectory.visible(apps,"configs",
+            ServerVpnListFilter.SSH_ACCOUNTS,emptySet()).isEmpty())
+    }
+
     @Test fun favoritesSurviveRecreatingStoreWithoutNetwork() {
         val context=InstrumentationRegistry.getInstrumentation().targetContext
         val id="test-server-vpn-favorite-2026"

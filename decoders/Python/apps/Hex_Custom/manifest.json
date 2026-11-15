@@ -1,22 +1,27 @@
 {
-  "id": "hex-custom",
-  "name": "Hex Custom",
-  "package": "com.hex.custom.jotchuast",
-  "versionName": "10.6.1",
-  "versionCode": 101,
-  "status": "pending_protected_file_method",
-  "engine": null,
-  "entrypoint": null,
-  "extensions": [],
-  "extensionConfirmed": false,
-  "fileMethodRecovered": false,
-  "customPassword": {"cryptographicallyRequired": null, "status": "unconfirmed"},
-  "catalog": {"status": "out_of_scope_user_requested_files_only"},
-  "analysisTool": "scripts/apk_analysis/hex_custom_recover.py",
-  "nativePoolBytesVerified": 546488,
-  "nativeMethodsMapped": 10,
-  "protectedPackagesRecovered": 3,
-  "realFileSampleVerified": false,
-  "runtimeRegistered": false,
-  "deployment": "not_applicable"
+    "catalog": {
+        "cloud": "Firebase Firestore",
+        "entrypoint": null,
+        "method": null,
+        "networks": null,
+        "payloads": null,
+        "servers": null,
+        "status": "no_http_catalog",
+        "url": null,
+        "version": null
+    },
+    "deployment": "pending",
+    "engine": "python",
+    "entrypoint": "Hex_Custom.py",
+    "extensions": [
+        "hexcm"
+    ],
+    "fileDecoder": "Hex_Custom_archivos.py",
+    "id": "hex-custom",
+    "name": "Hex Custom",
+    "package": "com.hex.custom.jotchuast",
+    "realSampleVerified": true,
+    "textPrefixes": [],
+    "versionCode": 104,
+    "versionName": "10.6.4"
 }

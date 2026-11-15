@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="catalog_offer_title">کاتالوگ جدید موجود است</string>
+    <string name="catalog_offer_body">نسخه %1$d کاتالوگ آماده است. برای دسترسی به برنامه‌ها، روش‌ها و بهبودهای جدید آن را به‌روزرسانی کنید.</string>
+    <string name="catalog_offer_update">به‌روزرسانی</string>
+    <string name="catalog_offer_later">لغو</string>
+    <string name="catalog_postpone_title">بدون به‌روزرسانی ادامه می‌دهید؟</string>
+    <string name="catalog_postpone_body">اگر لغو کنید، برنامه‌ها، روش‌ها و بهبودهای جدید تا زمان به‌روزرسانی کاتالوگ در دسترس نخواهند بود. بعداً از بخش سرورهای VPN به‌روزرسانی کنید.</string>
+    <string name="catalog_postpone_confirm">ادامه بدون به‌روزرسانی</string>
+    <string name="catalog_postpone_back">بازگشت</string>
+</resources>

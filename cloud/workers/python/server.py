@@ -23,7 +23,9 @@ MAX_SERVER_VPN_JSON_BYTES = max(MAX_JSON_BYTES, ((MAX_MKK_BUNDLE_BYTES + 2) // 3
 
 # Independent of session rotation, Redis leases, or multiple web replicas.
 ACTIVE_JOBS = threading.BoundedSemaphore(4)
-HEAVY_JOBS = threading.BoundedSemaphore(1)
+# A slow Argon2id provider must not block all other catalog imports.
+# Keep the total bounded for low-memory, dual-vCPU deployments.
+HEAVY_JOBS = threading.BoundedSemaphore(2)
 
 class WorkerHandler(BaseHTTPRequestHandler):
     server_version = "SPDecodeWorker/0.2"
@@ -87,7 +89,9 @@ class WorkerHandler(BaseHTTPRequestHandler):
         if not ACTIVE_JOBS.acquire(blocking=False):
             return self._json(503, {"error": {"code": "ENGINE_UNAVAILABLE"}})
         heavy = self.path in ("/internal/v1/decode/import/catalog", "/internal/v1/decode/import/server-vpn")
-        if heavy and not HEAVY_JOBS.acquire(blocking=False):
+        # Short bounded queue absorbs brief overlap; 6s + 120s stays below
+        # the web gateway's 135s internal worker timeout.
+        if heavy and not HEAVY_JOBS.acquire(timeout=6):
             ACTIVE_JOBS.release()
             return self._json(503, {"error": {"code": "ENGINE_UNAVAILABLE"}})
         try:

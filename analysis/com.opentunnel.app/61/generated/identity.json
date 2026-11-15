@@ -1,0 +1,15 @@
+{
+  "package": "com.opentunnel.app",
+  "versionName": "1.1.1",
+  "versionCode": 61,
+  "apkBytes": 7903443,
+  "apkSha256": "b4351ea4b967da946066a27b45a369a657842b36bedaa32562be37ff3cb74d36",
+  "xapkBytes": 20173824,
+  "xapkSha256": "d134b2c1563a55c64acdb28569cfdbb2fd48f78ffa9621528325915543c0d9e2",
+  "certificateSha256": [
+    "85c0c210daa2b87e667a74763d692fa612b3b18dc96841cb7db9ba8da267ec95"
+  ],
+  "cryptographicApkSignatureVerified": false,
+  "apkCodeExecuted": false,
+  "sourceCategory": "public distribution for owner-requested interoperability"
+}

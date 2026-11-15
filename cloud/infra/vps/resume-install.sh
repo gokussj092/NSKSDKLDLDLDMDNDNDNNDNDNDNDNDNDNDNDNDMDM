@@ -144,10 +144,14 @@ next=$(git -C "$ROOT/repo" rev-parse 'FETCH_HEAD^{commit}')
 git -C "$ROOT/repo" reset --hard "$next" >/dev/null
 log "Starting private Docker Compose services with existing secrets, no regeneration"
 cd "$ROOT/repo"
-docker compose --project-name spdecode --env-file "$ENVFILE" \
-  -f cloud/compose.yaml config --quiet
-docker compose --project-name spdecode --env-file "$ENVFILE" \
-  -f cloud/compose.yaml up -d --build
+compose=(docker compose --project-name spdecode --env-file "$ENVFILE" -f cloud/compose.yaml)
+resources=/etc/spdecode/compose.resources.yaml
+if [[ -e "$resources" || -L "$resources" ]]; then
+  [[ -f "$resources" && -r "$resources" ]] || die "Resource override is not a readable file"
+  compose+=(-f "$resources")
+fi
+"${compose[@]}" config --quiet
+"${compose[@]}" up -d --build
 install -m 0755 "$ROOT/repo/cloud/infra/vps/spdecodectl" /usr/local/bin/spdecode
 log "Recovery completed. Services remain fail-closed (no Play Integrity production activation)."
 spdecode status

@@ -1,0 +1,14 @@
+{
+  "Version": "76-fixture",
+  "Usuarios": [
+    {
+      "Name": "Fictional User",
+      "Username": "fixture-user",
+      "Password": "fictional-only",
+      "Obfs": "",
+      "Auth": "test-auth",
+      "ID": "fixture-id",
+      "Path": "/fixture"
+    }
+  ]
+}

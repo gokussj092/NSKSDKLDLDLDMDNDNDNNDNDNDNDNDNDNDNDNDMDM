@@ -1,0 +1,26 @@
+{
+    "catalog": {
+        "entrypoint": "DTunnel.py",
+        "method": "GET",
+        "networks": null,
+        "payloads": 49,
+        "profiles": 49,
+        "servers": null,
+        "url": "https://dtmod.cloud/api/dtunnelmod",
+        "version": null
+    },
+    "deployment": "pending",
+    "engine": "python",
+    "entrypoint": "DTunnel.py",
+    "extensions": [],
+    "fileDecoder": "DTunnel_archivos.py",
+    "id": "dtunnel-mod",
+    "name": "DTunnel Mod",
+    "package": "com.dtunnel.v2ray.pro",
+    "realSampleVerified": true,
+    "textPrefixes": [
+        "vpn://"
+    ],
+    "versionCode": 9,
+    "versionName": "4.2.5"
+}

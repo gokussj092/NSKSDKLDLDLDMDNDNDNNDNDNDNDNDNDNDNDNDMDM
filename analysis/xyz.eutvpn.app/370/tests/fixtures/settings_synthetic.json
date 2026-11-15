@@ -1,0 +1,6 @@
+{
+  "note": "TEST SYNTHETIC FIXTURE",
+  "qr_expiration": "1111-11-11 11:11:11",
+  "type": "custom_payload",
+  "main_server_ws_host": "198.51.100.60"
+}

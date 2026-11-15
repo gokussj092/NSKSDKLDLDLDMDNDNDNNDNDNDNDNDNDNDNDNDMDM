@@ -1,0 +1,28 @@
+{
+  "id": "xui-tunnel",
+  "name": "XUI Tunnel VPN",
+  "package": "com.xui_tunnel",
+  "versionName": "6.0",
+  "versionCode": 6,
+  "engine": "python",
+  "entrypoint": "XUI_Tunnel.py",
+  "fileDecoder": "XUI_Tunnel_archivos.py",
+  "extensions": [
+    "xui"
+  ],
+  "textPrefixes": [],
+  "dependencies": [],
+  "credentials": [],
+  "catalog": {
+    "status": "live_verified",
+    "method": "GET",
+    "url": "https://deeptun.xyz/api/app?json=fb05d52c82789ba38e2a",
+    "version": "1.2.82",
+    "servers": 47,
+    "networks": 680,
+    "payloads": 370,
+    "note": "networks = tweaks (680); payloads = tweaks con Payload (370). Seed del APK v1.0.1: 1 servidor, 1 tweak. Sin esquema URI propio."
+  },
+  "realSampleVerified": false,
+  "deployment": "pending"
+}

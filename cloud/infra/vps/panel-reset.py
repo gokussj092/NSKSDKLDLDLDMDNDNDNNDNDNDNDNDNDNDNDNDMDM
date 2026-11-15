@@ -13,6 +13,9 @@ import sys
 import tempfile
 import time
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from spdecode_compose import compose_command
+
 ROOT = Path(os.environ.get("SPDECODE_HOME", "/opt/spdecode"))
 CFG = Path(os.environ.get("SPDECODE_CONFIG_DIR", "/etc/spdecode"))
 ENV = CFG / "cloud.env"
@@ -65,8 +68,7 @@ def fresh_account() -> tuple[str, str, str, str]:
     return username, password, password_hash, signing_key
 
 def compose(*args: str) -> str:
-    return invoke(["docker", "compose", "--project-name", "spdecode",
-                   "--env-file", str(ENV), "-f", str(REPO / "cloud/compose.yaml"), *args])
+    return invoke(compose_command(REPO / "cloud/compose.yaml", ENV, *args))
 
 def https_status(panel: str, path: str, *, body: dict | None = None,
                  cookies: Path | None = None, save_cookies: bool = False) -> str:

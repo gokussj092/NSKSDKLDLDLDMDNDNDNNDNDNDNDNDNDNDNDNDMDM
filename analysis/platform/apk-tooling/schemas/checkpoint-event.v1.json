@@ -1,0 +1,285 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "event_type",
+    "job_id",
+    "sequence",
+    "recorded_at_unix",
+    "previous_sha256",
+    "record",
+    "event_sha256"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "event_type": {
+      "const": "CHECKPOINT"
+    },
+    "job_id": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{32}$"
+    },
+    "sequence": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "recorded_at_unix": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "previous_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "event_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "record": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "stage",
+        "status",
+        "evidence",
+        "privacy",
+        "tool_id",
+        "tool_sha256",
+        "input_sha256",
+        "artifact_ref",
+        "artifact_sha256",
+        "artifact_bytes",
+        "error_code",
+        "verification_ref",
+        "authorization_ref"
+      ],
+      "properties": {
+        "stage": {
+          "type": "string",
+          "enum": [
+            "UPLOAD_VALIDATED",
+            "STATIC_INVENTORY",
+            "RESOURCES",
+            "DEX",
+            "ELF",
+            "METHOD_REVIEW",
+            "REPORT"
+          ]
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "OK",
+            "PARTIAL",
+            "FAILED",
+            "NEEDS_HUMAN"
+          ]
+        },
+        "evidence": {
+          "type": "string",
+          "enum": [
+            "UNKNOWN",
+            "OBSERVED",
+            "INFERRED",
+            "VERIFIED_SYNTHETIC",
+            "VERIFIED_REAL"
+          ]
+        },
+        "privacy": {
+          "type": "string",
+          "enum": [
+            "USER_PRIVATE",
+            "ADMIN_RESTRICTED"
+          ]
+        },
+        "tool_id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_-]{1,63}$"
+        },
+        "tool_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "input_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "artifact_ref": {
+          "oneOf": [
+            {
+              "type": "string",
+              "pattern": "^obj:[a-f0-9]{32}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "artifact_sha256": {
+          "oneOf": [
+            {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "artifact_bytes": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 536870912
+        },
+        "error_code": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string",
+              "enum": [
+                "TOOL_TIMEOUT",
+                "INPUT_INVALID",
+                "TOOL_CRASH",
+                "NETWORK_UNAVAILABLE",
+                "DEPENDENCY_MISSING",
+                "EVIDENCE_INCOMPLETE",
+                "NO_MATCH",
+                "SANDBOX_DENIED",
+                "INTERNAL_ERROR"
+              ]
+            }
+          ]
+        },
+        "verification_ref": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string",
+              "pattern": "^proof:[a-f0-9]{32}$"
+            }
+          ]
+        },
+        "authorization_ref": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string",
+              "pattern": "^auth:[a-f0-9]{32}$"
+            }
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "OK"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "artifact_ref": {
+                "type": "string",
+                "pattern": "^obj:[a-f0-9]{32}$"
+              },
+              "artifact_sha256": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              },
+              "artifact_bytes": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "error_code": {
+                "type": "null"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "enum": [
+                  "FAILED",
+                  "NEEDS_HUMAN"
+                ]
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "error_code": {
+                "type": "string",
+                "enum": [
+                  "TOOL_TIMEOUT",
+                  "INPUT_INVALID",
+                  "TOOL_CRASH",
+                  "NETWORK_UNAVAILABLE",
+                  "DEPENDENCY_MISSING",
+                  "EVIDENCE_INCOMPLETE",
+                  "NO_MATCH",
+                  "SANDBOX_DENIED",
+                  "INTERNAL_ERROR"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "evidence": {
+                "const": "VERIFIED_REAL"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "verification_ref": {
+                "type": "string",
+                "pattern": "^proof:[a-f0-9]{32}$"
+              },
+              "authorization_ref": {
+                "type": "string",
+                "pattern": "^auth:[a-f0-9]{32}$"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "evidence": {
+                "const": "VERIFIED_SYNTHETIC"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "verification_ref": {
+                "type": "string",
+                "pattern": "^proof:[a-f0-9]{32}$"
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  "$id": "https://spdecode.xyz/schemas/apk-analysis/checkpoint-event.v1.json",
+  "title": "SP-DECODE APK Analysis Checkpoint Event v1",
+  "description": "Host-only checkpoint metadata. No APK bytes or secret-bearing text. Chain verified by CheckpointJournal."
+}

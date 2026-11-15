@@ -2,14 +2,23 @@
   "id": "wolf-custom-vpn",
   "name": "Wolf Custom VPN",
   "package": "core.vpn3jx.xtreme",
-  "compatibleVersions": ["v2.8.1.2"],
-  "versionCode": 13,
-  "engine": "python-native-fixed-key-aes256-gcm-and-historical-ultra",
-  "engineVersion": 1,
+  "compatibleVersions": [
+    "v2.8.1.2",
+    "v1.11.06.1"
+  ],
+  "versionCode": 16,
+  "engine": "python-build16-argon2id-aes256-gcm-and-compatible-build13",
+  "engineVersion": 2,
   "files": {
     "entrypoint": "file_decoder.py",
-    "extensions": ["wolf"],
-    "formats": ["Base64 nonce12/ciphertext/tag16 AES-256-GCM no AAD", "historical Ultra Argon2id/GCM fallback"],
+    "extensions": [
+      "wolf"
+    ],
+    "formats": [
+      "Base64 nonce12/ciphertext/tag16 AES-256-GCM no AAD",
+      "historical Ultra Argon2id/GCM fallback",
+      "build16 native Argon2id/AESGCM salt AAD and offset3 transport"
+    ],
     "legacyCompatibility": ".wolf historical fallback preserved; .wolftunnel unchanged",
     "exporterCertified": false,
     "validation": "NetworkAdapter.v Gson NetworkList export path, independent synthetic JCA vectors and real isolated file worker; no independent phone export",
@@ -18,16 +27,45 @@
   "catalog": {
     "entrypoint": "server_catalog_decoder.py",
     "providerId": "wolf-custom-vpn",
-    "sourceAppVersion": "v2.8.1.2",
-    "publicCatalogVersion": 59,
-    "format": "Base64 nonce12/ciphertext/tag16 AES-256-GCM no AAD; direct 32-byte raw key; separate authenticated HTTP injector key",
-    "cloudSource": "https://strongteam.co/api/wolfcustom/newv1.txt",
+    "sourceAppVersion": "v1.11.06.1",
+    "publicCatalogVersion": 74,
+    "format": "Argon2id v19 t3 m8192 p1; salt16 nonce12 ciphertext tag16 AES256GCM; salt AAD; inserted Base64 letter at offset3 for remote transport; build13 compatibility retained",
+    "cloudSource": "https://strongteam.co/api/wolfcustomv2/",
     "deploymentEnabledByDefault": false,
-    "validatedOn": "2026-10-31",
-    "localObserved": {"version": "1.01", "servers": 1, "networks": 3, "decodedFields": 31},
-    "remoteObserved": {"version": "6.45", "servers": 164, "networks": 2015, "decodedFields": 13267},
-    "validation": "Complete independent JCA/Python/isolated-worker JSON parity for asset and real remote 6.44/6.45; isPartial=false",
-    "nodeTransportValidation": "Mocked DNS/HTTPS, fixed source, private-address and redirect rejection, complete gateway contract; live provider transport not verified"
+    "validatedOn": "2026-11-08",
+    "localObserved": {
+      "version": "1.01",
+      "servers": 24,
+      "networks": 1851,
+      "decodedFields": 252
+    },
+    "remoteObserved": {
+      "version": "1.09",
+      "servers": 41,
+      "networks": 1851,
+      "decodedFields": 902
+    },
+    "validation": "Complete independent oracle/Python/isolated-worker JSON parity; no partial output",
+    "nodeTransportValidation": "Updated fixed recipe and private-DNS/redirect/gateway regressions; live Node check required in CI",
+    "validatedTimezone": "America/Tijuana",
+    "sourceBuild": 16,
+    "currentProof": {
+      "inputBytes": 2534153,
+      "inputSha256": "972cec5b138171303807c57241c5014a74d2019025f5fc263c4edd17c811f612",
+      "version": "1.09",
+      "servers": 41,
+      "networks": 1851,
+      "encryptedFieldsCompared": 902,
+      "wholeIndependentGoParity": true,
+      "decoderSeconds": 20.936,
+      "clearJsonSha256": "be577695615541f0bbc485a532973d14673e3c014c8384c02e3b7a2aab8d4a01",
+      "rawOutputBytes": 2212399,
+      "apkCodeExecuted": false,
+      "wholeWorkerParity": true,
+      "workerSeconds": 18.531
+    },
+    "requestMethod": "POST",
+    "evidenceDirectory": "analysis/core.vpn3jx.xtreme/16"
   },
   "icon": {
     "file": "Wolf_Custom_VPN.png",
@@ -43,14 +81,29 @@
   "dependencies": {
     "python": ">=3.10",
     "pycryptodome": "3.23.0",
-    "argon2-cffi": "25.1.0 (historical files only)",
-    "supportFiles": ["codec.py", "../HTTP_FenixVPN/codec.py", "../HTTP_FenixVPN/field_names.json", "../../ultra.py (historical fallback)"]
+    "argon2-cffi": "25.1.0 (build16 catalog/profile and historical files)",
+    "supportFiles": [
+      "codec.py",
+      "codec_v16.py",
+      "../HTTP_FenixVPN/codec.py",
+      "../HTTP_FenixVPN/field_names.json",
+      "../../ultra.py (historical fallback)"
+    ]
   },
-  "sourceApkSha256": "7511b35542ba6ab0f75bfc01808038d53d007a90cd5567c5133e748ae7c83660",
-  "sourceXapkSha256": "d82f07a06fb9b0e1e42e1b0010601c65697bd595057b6a323db5eec5ad59a58d",
+  "sourceApkSha256": "bc2327ebe88f52a777701ac9332103078a7a3d7411cd65c3249ee167d9cbd726",
+  "sourceXapkSha256": "074247463d1555dae35cd10ed7b15701a4076e659eaeebee70827e47fe09d860",
   "sourceSignerSha256": "bd6515d3f58f73aa59ae99ae1d2aff74c4e2665c3bd677fbefea77222e88fc6b",
-  "sourceDownload": "https://d.apkpure.com/b/XAPK/core.vpn3jx.xtreme?version=latest",
-  "persistentSourceLibraryId": "libfile_2db70a357b208191b86e7a7f93ed05de",
-  "branch": "fix/http-jireh-current-method",
-  "limitations": ["Independent real .wolf phone export pending", "Android runtime and VPN connection not tested", "No VPS deployment or full test suite executed"]
+  "sourceDownload": "https://d.apkpure.net/b/XAPK/core.vpn3jx.xtreme?versionCode=16",
+  "branch": "feat/nuevas-integraciones",
+  "limitations": [
+    "Independent real .wolf phone export pending",
+    "Android runtime and VPN connection not tested",
+    "No VPS deployment or full test suite executed"
+  ],
+  "previousSource": {
+    "versionCode": 13,
+    "sourceApkSha256": "7511b35542ba6ab0f75bfc01808038d53d007a90cd5567c5133e748ae7c83660",
+    "sourceXapkSha256": "d82f07a06fb9b0e1e42e1b0010601c65697bd595057b6a323db5eec5ad59a58d",
+    "persistentSourceLibraryId": "libfile_2db70a357b208191b86e7a7f93ed05de"
+  }
 }

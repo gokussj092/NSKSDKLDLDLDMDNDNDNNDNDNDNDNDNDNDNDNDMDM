@@ -1,0 +1,28 @@
+{
+  "id": "shield-tunnel",
+  "name": "Shield Tunnel / One Shield Tunnel",
+  "package": "one.shield.tunnel",
+  "versionName": "v1.11.06.1",
+  "versionCode": 79,
+  "engine": "python",
+  "entrypoint": "Shield_Tunnel.py",
+  "fileDecoder": "Shield_Tunnel_archivos.py",
+  "extensions": [
+    "ost"
+  ],
+  "textPrefixes": [],
+  "dependencies": [],
+  "credentials": [],
+  "catalog": {
+    "status": "live_verified",
+    "method": "POST",
+    "url": "https://strongteam.co/api/oneshieldtunnel/",
+    "version": "7.15",
+    "servers": 32,
+    "networks": 440,
+    "payloads": 433,
+    "note": "Abre con K1 (Argon2id m=16384 KiB). Asset abre con K2: v1.01, 34 servidores, 555 redes. Campos: 0 fallos."
+  },
+  "realSampleVerified": false,
+  "deployment": "pending"
+}

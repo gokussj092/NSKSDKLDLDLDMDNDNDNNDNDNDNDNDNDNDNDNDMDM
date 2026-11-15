@@ -23,19 +23,17 @@
     "entrypoint": "server_catalog_decoder.py",
     "providerId": "royal-tunnel",
     "validation": "complete built-in JSON parity with original Java XXTEA and independent Java JCE fields",
-    "validatedOn": "2026-10-19",
-    "localServersObserved": 27,
-    "localTweaksObserved": 100,
-    "localProtectedFields": 1485,
-    "remoteValidation": "HTTP 200 HTML Site Unavailable, not an encrypted catalog",
+    "validatedOn": "2026-11-14",
+    "localServersObserved": 29,
+    "localTweaksObserved": 105,
+    "localProtectedFields": 1569,
+    "remoteValidation": "live catalog v5.43, 29 servers, 105 tweaks, byte-identical to verified sample 2026-11-14",
     "publicRegistrationEnabled": true,
     "deploymentEnabledByDefault": false,
-    "publicDecodeEnabled": false,
-    "remoteBrokerEnabled": false,
+    "publicDecodeEnabled": true,
+    "remoteBrokerEnabled": true,
     "publicCatalogVersion": 6,
-    "publicDecodePending": [
-      "live catalog JSON parity"
-    ]
+    "publicDecodePending": []
   },
   "icon": {
     "file": "Royal_Tunnel_VPN.png",

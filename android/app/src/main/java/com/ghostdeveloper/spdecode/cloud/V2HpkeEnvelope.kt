@@ -37,7 +37,7 @@ internal object V2HpkeEnvelope {
         // Copy metadata so the caller's JSON is never mutated. This report is
         // advisory and bound by the SAME HPKE ciphertext/PoP/action hash.
         val bound = JSONObject(metadata.toString())
-        if (operation in setOf(4, 5, 6, 7, 8, 9, 10, 12, 13, 18)) {
+        if (operation in setOf(4, 5, 6, 7, 8, 9, 10, 12, 13, 18, 19, 20, 21, 22, 23, 24)) {
             bound.put("_rasp", JSONObject(CloudNativeTransport.runtimeReport()))
         }
         val json = bound.toString().toByteArray(Charsets.UTF_8)

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Download the fixed Wolf build 13 source or decode saved catalog bytes."""
+"""Download the fixed Wolf build 16 source or decode saved catalog bytes."""
 import argparse
 from pathlib import Path
 import sys
@@ -9,8 +9,9 @@ if __package__:
 else:
     from codec import DecodeError, MAX_BYTES, decode_catalog, render
 
-SOURCE = 'https://strongteam.co/api/wolfcustom/newv1.txt'
-USER_AGENT = 'Wolf Custom VPN'
+SOURCE = 'https://strongteam.co/api/wolfcustomv2/'
+BODY = b'hash=xsandokUpdatex'
+USER_AGENT = 'Go-http-client/1.1'
 
 class _NoRedirect(HTTPRedirectHandler):
     def redirect_request(self, *args, **kwargs):
@@ -18,7 +19,7 @@ class _NoRedirect(HTTPRedirectHandler):
 
 def download() -> bytes:
     try:
-        req = Request(SOURCE, headers={'User-Agent': USER_AGENT, 'Accept-Encoding': 'identity'})
+        req = Request(SOURCE, data=BODY, method='POST', headers={'User-Agent': USER_AGENT, 'Accept-Encoding': 'identity', 'Content-Type': 'application/x-www-form-urlencoded'})
         with build_opener(_NoRedirect()).open(req, timeout=25) as response:
             if response.status != 200 or response.headers.get('Content-Encoding', 'identity') != 'identity':
                 raise DecodeError('Respuesta Wolf incompatible.')
@@ -55,3 +56,4 @@ def main() -> int:
 
 if __name__ == '__main__':
     raise SystemExit(main())
+

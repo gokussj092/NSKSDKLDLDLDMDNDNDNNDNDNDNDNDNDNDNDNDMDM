@@ -1,0 +1,19 @@
+{
+ "envelope": "enc:AAECAwQFBgcICQoLPCCFfreTp2n-Y62r6pJaJeyl8xbKW30ZQAaI9XEMLt1zd4zQj-Nc-RnBXdeopXx9vQ1N3h-E9Z9tuhs7Zb7ZztJosR-yulVDJnTxM8OvLL5d-LoLGQ1xUt3fr-JI3oC-5ow8ldBjtVei4-07VAORWz6MlutXkuw",
+ "hmac": {
+  "expected_hex": "a109a92857b41ff957a80a3b0a465f671ba7bf2f4f5026d1951df2c45a600fc9",
+  "nonce": "c2081a132d2848cd8a648151a4e89b82",
+  "path": "/api/app",
+  "ts": "1794680950"
+ },
+ "plaintext": {
+  "Servers": [
+   {
+    "Host": "example.org",
+    "Name": "TEST-SERVER-1"
+   }
+  ],
+  "Tweaks": [],
+  "Version": "1.0.93-test"
+ }
+}

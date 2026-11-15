@@ -1,0 +1,33 @@
+{
+  "package": "core.vpn3jx.xtreme",
+  "build": 16,
+  "jadxVersion": "1.5.6",
+  "jadxJarSha256": "fe3e12c45acf75f92369685fd02d1d7a7323385dc725680a9b98a0dac0ea554b",
+  "jadxExitCode": 3,
+  "apkCodeExecuted": false,
+  "paranoidStrings": {
+    "resolvedStrings": 7866,
+    "sourceFiles": 498,
+    "inventoryStrings": 9790
+  },
+  "nativeRecipe": {
+    "source": "https://strongteam.co/api/wolfcustomv2/",
+    "method": "POST",
+    "formField": "hash",
+    "formValue": "xsandokUpdatex",
+    "contentType": "application/x-www-form-urlencoded",
+    "nativeSha256": "4df067b7c0c6d38730476ff94a950424c561be05cd4d31abf64b6f6a7f73425a",
+    "passwordSha256": "cece1f587972325f100074fa7664094839dca64548c8481ef1208655d1f46d6a",
+    "passwordLength": 32,
+    "fieldSeedSha256": "9a25851d44c232770ed4ad5715e40b01ae9be4acb6ffec7a90287804cbb021c3",
+    "argon2": {
+      "variant": "id",
+      "time": 3,
+      "memoryKiB": 8192,
+      "parallelism": 1,
+      "outputBytes": 32
+    },
+    "format": "salt16 nonce12 AES-GCM ciphertext tag16; salt also AAD; random letter inserted at Base64 offset3"
+  },
+  "updaterJavaSha256": "81195c82325fab7d24e902b4b0b4d8418ac797b99b261ff9f454cf6a941944c3"
+}

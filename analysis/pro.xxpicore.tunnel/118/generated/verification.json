@@ -1,0 +1,18 @@
+{
+  "status": "VERIFIED_REAL",
+  "http": 200,
+  "version": "2.427",
+  "servers": 64,
+  "networks": 1240,
+  "encryptedFields": 7837,
+  "uniqueEncryptedFields": 3094,
+  "perMode": {
+    "0": 6047,
+    "1": 1718,
+    "2": 72
+  },
+  "wholeObjectEqualJCA": true,
+  "appCodecCompared": true,
+  "outputBytes": 873193,
+  "outputSha256": "bc9748c31ccad775385f0d7c7aa00220acf2b02e157f9f2b447d0dfde111b2f7"
+}

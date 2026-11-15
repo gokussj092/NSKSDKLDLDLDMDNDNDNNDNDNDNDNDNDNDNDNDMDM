@@ -30,8 +30,35 @@ def valid_envelope(raw: bytes) -> dict:
         document = json.loads(data)
     if not isinstance(document, dict) or document.get("magic") != "v2box_export":
         raise ValueError("Unsupported V2Box envelope")
-    if not isinstance(document.get("isPasswordProtected"), bool):
-        raise ValueError("Invalid V2Box protection flag")
+    version = document.get("version")
+    if type(version) is int and version == 2:
+        encoded_header = document.get("header")
+        if not isinstance(encoded_header, str) or not 0 < len(encoded_header) <= 4096:
+            raise ValueError("Invalid V2Box header")
+        try:
+            header_raw = base64.b64decode(encoded_header, validate=True)
+            header = json.loads(header_raw.decode("utf-8"))
+            if not isinstance(header, dict) or header.get("v") != 2 or (
+                header.get("kdf") != "pbkdf2-sha256"
+            ):
+                raise ValueError("Unsupported V2Box KDF")
+            iterations = header.get("iterations")
+            if type(iterations) is not int or not 100_000 <= iterations <= 1_200_000:
+                raise ValueError("Invalid V2Box iterations")
+            salt_string = header.get("salt")
+            if not isinstance(salt_string, str) or not 16 <= len(
+                base64.b64decode(salt_string, validate=True)
+            ) <= 32:
+                raise ValueError("Invalid V2Box salt")
+        except (UnicodeError, ValueError, TypeError):
+            raise ValueError("Invalid V2Box header") from None
+        protected = True
+    elif version is None or (type(version) is int and version == 1):
+        if not isinstance(document.get("isPasswordProtected"), bool):
+            raise ValueError("Invalid V2Box protection flag")
+        protected = document["isPasswordProtected"]
+    else:
+        raise ValueError("Unsupported V2Box version")
     for key, length in (("nonce", 12), ("tag", 16), ("ciphertext", None)):
         value = document.get(key)
         if not isinstance(value, str) or len(value) > 2 * 1024 * 1024 * 2:
@@ -39,6 +66,7 @@ def valid_envelope(raw: bytes) -> dict:
         decoded = base64.b64decode(value, validate=True)
         if (length is not None and len(decoded) != length) or not decoded:
             raise ValueError("Invalid V2Box field length")
+    document["_password_protected"] = protected
     return document
 
 
@@ -53,7 +81,7 @@ def process(raw: bytes, credentials: dict) -> tuple[str, dict | None]:
         envelope = valid_envelope(raw)
     except (UnicodeError, ValueError, TypeError, KeyError):
         return "DECODE_FAILED", None
-    protected = envelope["isPasswordProtected"]
+    protected = envelope["_password_protected"]
     if protected and password is None:
         return "PASSWORD_REQUIRED", None
     if not protected and password is not None:

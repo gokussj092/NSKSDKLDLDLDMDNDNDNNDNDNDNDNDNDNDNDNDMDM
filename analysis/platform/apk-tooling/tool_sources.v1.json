@@ -1,0 +1,389 @@
+{
+  "schema_version": 1,
+  "source_branch": "feat/nuevas-integraciones",
+  "source_commit": "96ab053f44dcff60d2cbf9ea79e4cfeaec7a7b69",
+  "source_tree": "83d3bc61b1b3af211892bf42caed57e745caafb2",
+  "description": "F7-A0 baseline of existing APK research scripts. Git blob SHA-1 authenticates bytes in Git; runtime auditor calculates SHA-256. Approval is not implied.",
+  "requirements": "scripts/apk_analysis/requirements.txt",
+  "execution_policy": "NO_UNATTENDED_EXECUTION_APPROVED",
+  "sources": [
+    {
+      "path": "scripts/apk_analysis/abowaged_native_oracle.py",
+      "size": 3968,
+      "git_blob_sha1": "acc70ea3471e8ed091443292cdc6c3385e6785f4",
+      "approval": "UNREVIEWED"
+    },
+    {
+      "path": "scripts/apk_analysis/abowaged_verify.py",
+      "size": 4312,
+      "git_blob_sha1": "6a909ec757f53ee3ec8676378d6b9a9afd3a4350",
+      "approval": "UNREVIEWED"
+    },
+    {
+      "path": "scripts/apk_analysis/alfaisal_verify.py",
+      "size": 3119,
+      "git_blob_sha1": "0b994a738da58b5f8ff401fd6cbd904a7eb45f8c",
+      "approval": "UNREVIEWED"
+    },
+    {
+      "path": "scripts/apk_analysis/am_liapp_metadata.py",
+      "size": 5028,
+      "git_blob_sha1": "6b1aeb057ce97e6cebb1fca98c7d964a0ff98768",
+      "approval": "UNREVIEWED"
+    },
+    {
+      "path": "scripts/apk_analysis/am_liapp_native_probe.py",
+      "size": 12944,
+      "git_blob_sha1": "9e3af73612b057d1fab5917bf48e8486dc62cd4d",
+      "approval": "UNREVIEWED"
+    },
+    {
+      "path": "scripts/apk_analysis/any_vpn_verify.py",
+      "size": 2632,
+      "git_blob_sha1": "57d312390092979d8519024209f5f5a149365fc2",
+      "approval": "UNREVIEWED"
+    },
+    {
+      "path": "scripts/apk_analysis/apna_native_oracle.py",
+      "size": 2740,
+      "git_blob_sha1": "b757948e43626ac2fe8621dfbe36b73d05d8597f",
+      "approval": "UNREVIEWED"
+    },
+    {
+      "path": "scripts/apk_analysis/apna_verify.py",
+      "size": 1915,
+      "git_blob_sha1": "c081d8b36a1628bfe028b36169d0c2bd7d693846",
+      "approval": "UNREVIEWED"
+    },
+    {
+      "path": "scripts/apk_analysis/arm64_function.py",
+      "size": 3894,
+      "git_blob_sha1": "593775a6ee78c9787017ba978ff88ca61d7f6826",
+      "approval": "UNREVIEWED"
+    },
+    {
+      "path": "scripts/apk_analysis/aura_net_verify.py",
+      "size": 2683,
+      "git_blob_sha1": "da3de2c1e6ad8b9b69209302aa10b3c4fbb08b52",
+      "approval": "UNREVIEWED"
+    },
+    {
+      "path": "scripts/apk_analysis/bd_net_native_oracle.py",
+      "size": 2744,
+      "git_blob_sha1": "39ac96a83439ff7dc58e08b5f6c91ad26c08fc0b",
+      "approval": "UNREVIEWED"
+    },
+    {
+      "path": "scripts/apk_analysis/bd_net_verify.py",
+      "size": 4927,
+      "git_blob_sha1": "5f30fecb2f60c171af007424ae3d3466c66b6c13",
+      "approval": "UNREVIEWED"
+    },
+    {
+      "path": "scripts/apk_analysis/creeb_verify.py",
+      "size": 2015,
+      "git_blob_sha1": "c4215245a09be78ec18261158e6e57154f4a406f",
+      "approval": "UNREVIEWED"
+    },
+    {
+      "path": "scripts/apk_analysis/creeb_vpn_remote_probe.py",
+      "size": 8552,
+      "git_blob_sha1": "0eb026e24cf2901513186970f0763d05e86d39e8",
+      "approval": "UNREVIEWED"
+    },
+    {
+      "path": "scripts/apk_analysis/creeb_vpn_verify.py",
+      "size": 3126,
+      "git_blob_sha1": "3271e6507c8c78dd2c1352a5f7c715442e41232d",
+      "approval": "UNREVIEWED"
+    },
+    {
+      "path": "scripts/apk_analysis/decompile.py",
+      "size": 3154,
+      "git_blob_sha1": "41aab771061f4f5db5fae61a0f85a4ff5ad9d23f",
+      "approval": "UNREVIEWED"
+    },
+    {
+      "path": "scripts/apk_analysis/dex_method.py",
+      "size": 1678,
+      "git_blob_sha1": "36779ffe2ed85150e8cf777e919e997a64ec4f92",
+      "approval": "UNREVIEWED"
+    },
+    {
+      "path": "scripts/apk_analysis/elf_inspect.py",
+      "size": 5037,
+      "git_blob_sha1": "ea015f11edb90b736c50a59479cdd5abce5079fb",
+      "approval": "UNREVIEWED"
+    },
+    {
+      "path": "scripts/apk_analysis/enaa_verify.py",
+      "size": 2093,
+      "git_blob_sha1": "6078e32c355f7909467b8799d17ef87838060a32",
+      "approval": "UNREVIEWED"
+    },
+    {
+      "path": "scripts/apk_analysis/flexnet_b46_capture.js",
+      "size": 5859,
+      "git_blob_sha1": "8a09499227d53d2481f1b5d49bc6e1863db83620",
+      "approval": "UNREVIEWED"
+    },
+    {
+      "path": "scripts/apk_analysis/flexnet_b46_grant_oracle.py",
+      "size": 4712,
+      "git_blob_sha1": "307c510432297fb8ee7494e8018d682424f7b902",
+      "approval": "UNREVIEWED"
+    },
+    {
+      "path": "scripts/apk_analysis/flexnet_collect_grant.py",
+      "size": 5087,
+      "git_blob_sha1": "84fae8c588910508c5ae001c6a4659363e86afcb",
+      "approval": "UNREVIEWED"
+    },
+    {
+      "path": "scripts/apk_analysis/flexnet_emulator_probe.py",
+      "size": 8105,
+      "git_blob_sha1": "de7d6b26d5bd7b6fe5f45c7de451af7919518f57",
+      "approval": "UNREVIEWED"
+    },
+    {
+      "path": "scripts/apk_analysis/go_inspect.py",
+      "size": 3842,
+      "git_blob_sha1": "4597f2de86e236dff0ff92ca309e8a268e939ac3",
+      "approval": "UNREVIEWED"
+    },
+    {
+      "path": "scripts/apk_analysis/ha_mod_strings.py",
+      "size": 5416,
+      "git_blob_sha1": "37997dd353fcd646bc09eb3f4853d90373c5e0b6",
+      "approval": "UNREVIEWED"
+    },
+    {
+      "path": "scripts/apk_analysis/ha_runtime_capture.py",
+      "size": 6138,
+      "git_blob_sha1": "5b10aeee97ddc792e5c53db4e6be7a9735a772ce",
+      "approval": "UNREVIEWED"
+    },
+    {
+      "path": "scripts/apk_analysis/hex_custom_recover.py",
+      "size": 5817,
+      "git_blob_sha1": "74fdef8450b77074b58b5cd5687c29c00222b52c",
+      "approval": "UNREVIEWED"
+    },
+    {
+      "path": "scripts/apk_analysis/hex_tunnel_recover.py",
+      "size": 4527,
+      "git_blob_sha1": "b00f81a392d4767a9a8e9eb3cf298e33eef78292",
+      "approval": "UNREVIEWED"
+    },
+    {
+      "path": "scripts/apk_analysis/http_custom_probe.py",
+      "size": 2312,
+      "git_blob_sha1": "7089e5c290f7ae6abd7ff62db1b9550c9ef9eede",
+      "approval": "UNREVIEWED"
+    },
+    {
+      "path": "scripts/apk_analysis/http_door_bundle.py",
+      "size": 1811,
+      "git_blob_sha1": "0384bb19deaef620e5d620d4f200516dbe46b22b",
+      "approval": "UNREVIEWED"
+    },
+    {
+      "path": "scripts/apk_analysis/http_door_verify.py",
+      "size": 2166,
+      "git_blob_sha1": "385be5721998bb942de19d4a1f813c91714d9f83",
+      "approval": "UNREVIEWED"
+    },
+    {
+      "path": "scripts/apk_analysis/inspect_apk.py",
+      "size": 4623,
+      "git_blob_sha1": "1f9c171375241523a77e704960a8e2c1e620684f",
+      "approval": "UNREVIEWED"
+    },
+    {
+      "path": "scripts/apk_analysis/izph_verify.py",
+      "size": 5719,
+      "git_blob_sha1": "6f501e8050f9bfd41046e06b758662b2c19bd17c",
+      "approval": "UNREVIEWED"
+    },
+    {
+      "path": "scripts/apk_analysis/jyfast_vmp_strings.py",
+      "size": 9790,
+      "git_blob_sha1": "3a0f50f7dd65de2a85b773942487d528e415f3e2",
+      "approval": "UNREVIEWED"
+    },
+    {
+      "path": "scripts/apk_analysis/liapp_wrapper.py",
+      "size": 1599,
+      "git_blob_sha1": "996af3da3abf31e5eb5d792fadafefc3a35bd718",
+      "approval": "UNREVIEWED"
+    },
+    {
+      "path": "scripts/apk_analysis/mm_tunnel_source_check.py",
+      "size": 4471,
+      "git_blob_sha1": "57fcfd7b930339454d7c0ca2a41188e3255851ac",
+      "approval": "UNREVIEWED"
+    },
+    {
+      "path": "scripts/apk_analysis/mm_tunnel_verify.py",
+      "size": 4526,
+      "git_blob_sha1": "06e056f57b74989897f2672ff9e1ff49659bf890",
+      "approval": "UNREVIEWED"
+    },
+    {
+      "path": "scripts/apk_analysis/mnr_constants.py",
+      "size": 1147,
+      "git_blob_sha1": "6cf8dddfa9184cf4f40d704ddfb563cf7206d5c8",
+      "approval": "UNREVIEWED"
+    },
+    {
+      "path": "scripts/apk_analysis/mnr_verify.py",
+      "size": 3534,
+      "git_blob_sha1": "6ca3c78be1826e76a895663ba9a0587ebf176689",
+      "approval": "UNREVIEWED"
+    },
+    {
+      "path": "scripts/apk_analysis/mtm_bundle.py",
+      "size": 1849,
+      "git_blob_sha1": "8ae683f0291c26ad1b0ceb53dd9688d7284cac3c",
+      "approval": "UNREVIEWED"
+    },
+    {
+      "path": "scripts/apk_analysis/mtm_verify.py",
+      "size": 1935,
+      "git_blob_sha1": "24f91468ed97ff0cf4f269a7b844e3737c5f9a25",
+      "approval": "UNREVIEWED"
+    },
+    {
+      "path": "scripts/apk_analysis/netcol_source.py",
+      "size": 4181,
+      "git_blob_sha1": "5336cc938dca0ac598dc12f6c0a83d9a24e0de58",
+      "approval": "UNREVIEWED"
+    },
+    {
+      "path": "scripts/apk_analysis/netcol_verify.py",
+      "size": 3135,
+      "git_blob_sha1": "1aa621d0de232d1343f50184750a56bc16dbc47e",
+      "approval": "UNREVIEWED"
+    },
+    {
+      "path": "scripts/apk_analysis/npv_recipient_capture.js",
+      "size": 4383,
+      "git_blob_sha1": "06c41ec0099c8e969f1ed68483c20788c22653bd",
+      "approval": "UNREVIEWED"
+    },
+    {
+      "path": "scripts/apk_analysis/npv_termux_bundle.py",
+      "size": 1030,
+      "git_blob_sha1": "8a380730912357dd58ba63a0a366858cd38ae0e1",
+      "approval": "UNREVIEWED"
+    },
+    {
+      "path": "scripts/apk_analysis/npv_termux.py",
+      "size": 6145,
+      "git_blob_sha1": "edff44ba89b99f6ade81c902dc71453dd89367df",
+      "approval": "UNREVIEWED"
+    },
+    {
+      "path": "scripts/apk_analysis/npvs_verify.py",
+      "size": 6230,
+      "git_blob_sha1": "1050c174362c6c10876f42b6a3725eb6132a9001",
+      "approval": "UNREVIEWED"
+    },
+    {
+      "path": "scripts/apk_analysis/oneftunnel_native_oracle.py",
+      "size": 3025,
+      "git_blob_sha1": "58d6b0344895a1f5d82d1c4b1fe5caf0ee64fd82",
+      "approval": "UNREVIEWED"
+    },
+    {
+      "path": "scripts/apk_analysis/oneftunnel_verify.py",
+      "size": 3556,
+      "git_blob_sha1": "d30d75d05375e78454746216ed3bda685d437599",
+      "approval": "UNREVIEWED"
+    },
+    {
+      "path": "scripts/apk_analysis/paranoid_strings.py",
+      "size": 7083,
+      "git_blob_sha1": "150fcd4e18b936ace1c90a51a46584fa262e917e",
+      "approval": "UNREVIEWED"
+    },
+    {
+      "path": "scripts/apk_analysis/random_strings.py",
+      "size": 1961,
+      "git_blob_sha1": "ef69548cbbc8e0bd720eb0c5f391c393c16dc226",
+      "approval": "UNREVIEWED"
+    },
+    {
+      "path": "scripts/apk_analysis/sevennet_verify.py",
+      "size": 5818,
+      "git_blob_sha1": "035e3b091d47b937372ee3230a658c7209e8c83f",
+      "approval": "UNREVIEWED"
+    },
+    {
+      "path": "scripts/apk_analysis/speicers_verify.py",
+      "size": 2784,
+      "git_blob_sha1": "a3b9c6d57ce595e5e018d23f90aa4866e2cbe03b",
+      "approval": "UNREVIEWED"
+    },
+    {
+      "path": "scripts/apk_analysis/stringfog_strings.py",
+      "size": 1810,
+      "git_blob_sha1": "87d3fd86fd924944c1c80683bb10128107f18822",
+      "approval": "UNREVIEWED"
+    },
+    {
+      "path": "scripts/apk_analysis/tunneldoom_verify.py",
+      "size": 2758,
+      "git_blob_sha1": "dbc7fe9e0a5bb7ad389ea2f3494d57b500e3aa81",
+      "approval": "UNREVIEWED"
+    },
+    {
+      "path": "scripts/apk_analysis/tx_tunnel_verify.py",
+      "size": 2744,
+      "git_blob_sha1": "98e2e64093820a666730c5fa867725b30f9ab8d3",
+      "approval": "UNREVIEWED"
+    },
+    {
+      "path": "scripts/apk_analysis/ultra_tunnel_source_check.py",
+      "size": 2379,
+      "git_blob_sha1": "5a7da32e5fd197dd6e3353ccb619997a9563c1ce",
+      "approval": "UNREVIEWED"
+    },
+    {
+      "path": "scripts/apk_analysis/ultra_tunnel_verify.py",
+      "size": 1192,
+      "git_blob_sha1": "5044c1565c73c308bace4c5a4dee69a3044acee0",
+      "approval": "UNREVIEWED"
+    },
+    {
+      "path": "scripts/apk_analysis/vector_icon.py",
+      "size": 3155,
+      "git_blob_sha1": "6910e88f3b6f3a54b9d5a919f9566dda939c2263",
+      "approval": "UNREVIEWED"
+    },
+    {
+      "path": "scripts/apk_analysis/vip_snipher_verify.py",
+      "size": 5746,
+      "git_blob_sha1": "dc06630853a4acf9d36bd1f2ddeeaaaffeeb9d7c",
+      "approval": "UNREVIEWED"
+    },
+    {
+      "path": "scripts/apk_analysis/wolf_native_constants.py",
+      "size": 1727,
+      "git_blob_sha1": "deadfece2a5b2f2b630f16fe0c9eea6620cd0d31",
+      "approval": "UNREVIEWED"
+    },
+    {
+      "path": "scripts/apk_analysis/wolf_verify.py",
+      "size": 3862,
+      "git_blob_sha1": "103e8580df858f0300f08a64ae9f7cd3bf9418ce",
+      "approval": "UNREVIEWED"
+    },
+    {
+      "path": "scripts/apk_analysis/zig_verify.py",
+      "size": 2577,
+      "git_blob_sha1": "430df9e4dd66f81cb5a85796717156295aab2b63",
+      "approval": "UNREVIEWED"
+    }
+  ]
+}

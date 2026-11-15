@@ -5,6 +5,7 @@
 #include <cstdint>
 #include <stdexcept>
 #include <vector>
+#include <mutex>
 
 #include "spdecode_hpke.h"
 #include "spdecode_security.h"
@@ -40,6 +41,30 @@ constexpr size_t kMaxReplyBytes = 6 * 1024 * 1024;
 constexpr size_t kMaxMkkReplyBytes = 96 * 1024 * 1024;
 constexpr jint kConnectTimeoutMs = 10000;
 constexpr jint kReadTimeoutMs = 25000;
+// For catalog transfers this is an inactivity timeout per read, not a total download deadline.
+constexpr jint kCatalogIdleTimeoutMs = 60000;
+std::atomic<uint64_t> catalogCancelGeneration{0};
+std::mutex catalogConnectionMutex;
+std::vector<jobject> catalogConnections;
+class CatalogConnection {
+    JNIEnv* env_;jobject reference_=nullptr;
+public:
+    CatalogConnection(JNIEnv* env,jobject connection,bool active):env_(env){
+        if(active){reference_=env->NewGlobalRef(connection);if(reference_){std::lock_guard<std::mutex> lock(catalogConnectionMutex);catalogConnections.push_back(reference_);}}
+    }
+    ~CatalogConnection(){if(reference_){std::lock_guard<std::mutex> lock(catalogConnectionMutex);catalogConnections.erase(std::remove(catalogConnections.begin(),catalogConnections.end(),reference_),catalogConnections.end());env_->DeleteGlobalRef(reference_);}}
+};
+void nativeCancelCatalogDownload(JNIEnv* env,jclass){
+    catalogCancelGeneration.fetch_add(1,std::memory_order_relaxed);
+    std::vector<jobject> local;
+    {std::lock_guard<std::mutex> lock(catalogConnectionMutex);for(auto reference:catalogConnections){auto ref=env->NewLocalRef(reference);if(ref)local.push_back(ref);}}
+    for(auto connection:local){
+        auto cls=env->GetObjectClass(connection);
+        if(cls){auto close=env->GetMethodID(cls,"disconnect","()V");if(close)env->CallVoidMethod(connection,close);env->DeleteLocalRef(cls);}
+        if(env->ExceptionCheck())env->ExceptionClear();
+        env->DeleteLocalRef(connection);
+    }
+}
 constexpr jint kNurCatalogReadTimeoutMs = 165000; // heavy server-side Argon2id
 
 std::string utf(JNIEnv* env, jstring value) {
@@ -58,7 +83,7 @@ void fail(JNIEnv* env, const char* message) {
 // Authenticated session policy controls supplemental RASP enforcement only.
 // A hooked client cannot change the independent server admission policy.
 std::atomic<bool> enforceRuntime{false};
-bool sensitiveOperation(int op){return (op>=4&&op<=10)||op==12||op==13||op==18;}
+bool sensitiveOperation(int op){return (op>=4&&op<=10)||op==12||op==13||op==18||op==19||op==20||(op>=21&&op<=24);}
 spdecode::RuntimeEvidence runtimeSnapshot(JNIEnv* env){
     auto result=spdecode::runtimeEvidence();
     jclass debug=env->FindClass("android/os/Debug");
@@ -121,7 +146,7 @@ bool safeBase(const std::string& value) {
     })) return false;
     return true;
 }
-bool safeOperation(jint operation) { return operation>=1 && operation<=18 && operation!=3; }
+bool safeOperation(jint operation) { return operation>=1 && operation<=24 && operation!=3; }
 bool safeProof(const std::string& value,size_t min,size_t max) {
     return value.size()>=min && value.size()<=max &&
         std::all_of(value.begin(),value.end(),[](unsigned char c){
@@ -158,6 +183,7 @@ bool setHeader(JNIEnv* env,jobject conn,jclass cls,jmethodID method,
 jbyteArray post(JNIEnv* env,jclass,jint operation,jbyteArray bodyArg,jstring bearerArg,jstring versionArg,
              jstring timestampArg,jstring nonceArg,jstring proofArg,jstring actionChallengeArg,jstring actionIntegrityArg) {
     if(sensitiveOperation(operation) && !allowSensitiveRuntime(env))return nullptr;
+    const auto transferGeneration=catalogCancelGeneration.load(std::memory_order_relaxed);
     const std::string base=cloudOrigin();
     const std::string path=cloudTransportPath();
     const std::string timestamp=utf(env,timestampArg);
@@ -234,6 +260,7 @@ jbyteArray post(JNIEnv* env,jclass,jint operation,jbyteArray bodyArg,jstring bea
         env->DeleteLocalRef(conn);
         fail(env,"CLOUD_NATIVE_TLS_REQUIRED");return nullptr;
     }
+    CatalogConnection activeCatalog(env,conn,conn!=nullptr&&(operation==10||operation==19||operation==20));
     jstring method=jstr(env,"POST");
     env->CallVoidMethod(conn,setMethod,method);
     bool ok=!env->ExceptionCheck();
@@ -242,8 +269,9 @@ jbyteArray post(JNIEnv* env,jclass,jint operation,jbyteArray bodyArg,jstring bea
     if(ok){env->CallVoidMethod(conn,setConnect,kConnectTimeoutMs);ok=!env->ExceptionCheck();}
     // Do not relax ordinary decoder/session timeouts. NUR server catalog
     // can require up to 120s on the remote worker for nested Argon2id fields.
-    const jint readTimeout = (operation == 9 || operation == 12) ?
-        kNurCatalogReadTimeoutMs : (operation == 5 ? 55000 : kReadTimeoutMs);
+    const jint readTimeout = (operation == 10 || operation == 19 || operation == 20) ? kCatalogIdleTimeoutMs :
+        (operation == 9 || operation == 12) ? kNurCatalogReadTimeoutMs :
+        (operation == 5 ? 55000 : kReadTimeoutMs);
     if(ok){env->CallVoidMethod(conn,setRead,readTimeout);ok=!env->ExceptionCheck();}
     if(ok){env->CallVoidMethod(conn,setOutput,JNI_TRUE);ok=!env->ExceptionCheck();}
     if(ok){env->CallVoidMethod(conn,setLength,8192);ok=!env->ExceptionCheck();}
@@ -266,9 +294,9 @@ jbyteArray post(JNIEnv* env,jclass,jint operation,jbyteArray bodyArg,jstring bea
         ok=setHeader(env,conn,connectionClass,setProperty,"X-SPDecode-Credential-Prompts","1");
     if(ok && operation == 10)
         ok=setHeader(env,conn,connectionClass,setProperty,"X-SPDecode-NPV-Identities","1");
-    if(ok && (operation == 5 || operation == 10 || operation == 13))
+    if(ok && (operation == 5 || operation == 10 || operation == 13 || operation == 19))
         ok=setHeader(env,conn,connectionClass,setProperty,"X-SPDecode-Compatible-Export","2");
-    if(ok && (operation == 5 || operation == 10 || operation == 13))
+    if(ok && (operation == 5 || operation == 10 || operation == 13 || operation == 19))
         ok=setHeader(env,conn,connectionClass,setProperty,"X-SPDecode-Compatible-Export-Hat","1");
     if(ok && !bearer.empty())ok=setHeader(env,conn,connectionClass,setProperty,"Authorization","Bearer "+bearer);
     if(!ok) {
@@ -298,12 +326,37 @@ jbyteArray post(JNIEnv* env,jclass,jint operation,jbyteArray bodyArg,jstring bea
         env->CallVoidMethod(conn,disconnect);env->DeleteLocalRef(conn);
         fail(env,"CLOUD_NATIVE_EMPTY_RESPONSE");return nullptr;
     }
+    // Report actual encrypted HTTP body bytes, not icon-processing percentages.
+    // A missing Content-Length is represented by -1; never invent a total.
+    jlong catalogTotal=-1;
+    jclass transportClass=nullptr;
+    jmethodID transferCallback=nullptr;
+    if(operation==10) {
+        auto getLength=env->GetMethodID(connectionClass,"getContentLengthLong","()J");
+        if(getLength) {
+            catalogTotal=env->CallLongMethod(conn,getLength);
+            if(env->ExceptionCheck()){env->ExceptionClear();catalogTotal=-1;}
+        }else if(env->ExceptionCheck())env->ExceptionClear();
+        transportClass=env->FindClass("com/ghostdeveloper/spdecode/cloud/CloudNativeTransport");
+        if(transportClass)
+            transferCallback=env->GetStaticMethodID(transportClass,
+                "onCatalogTransferProgress","(JJ)V");
+        if(env->ExceptionCheck()){env->ExceptionClear();transferCallback=nullptr;}
+        if(transferCallback) {
+            env->CallStaticVoidMethod(transportClass,transferCallback,jlong(0),catalogTotal);
+            if(env->ExceptionCheck())env->ExceptionClear();
+        }
+    }
     jbyteArray buffer=env->NewByteArray(8192);
     std::string result;
     const size_t replyCap=operation==10 ? 48U*1024U*1024U : operation==12 ? kMaxMkkReplyBytes :
         (operation==8 ? 12U*1024U*1024U : kMaxReplyBytes);
-    bool oversize=false,readFailed=false;
+    bool oversize=false,readFailed=false,cancelled=false;
     for(;;) {
+        if((operation==10 || operation==19 || operation==20) && transferGeneration!=
+            catalogCancelGeneration.load(std::memory_order_relaxed)) {
+            cancelled=true;break;
+        }
         const jint n=env->CallIntMethod(input,read,buffer,0,8192);
         if(clearException(env)){readFailed=true;break;}
         if(n<0)break;
@@ -313,7 +366,13 @@ jbyteArray post(JNIEnv* env,jclass,jint operation,jbyteArray bodyArg,jstring bea
         result.resize(offset+static_cast<size_t>(n));
         env->GetByteArrayRegion(buffer,0,n,reinterpret_cast<jbyte*>(&result[offset]));
         if(clearException(env)){readFailed=true;break;}
+        if(operation==10 && transferCallback) {
+            env->CallStaticVoidMethod(transportClass,transferCallback,
+                static_cast<jlong>(result.size()),catalogTotal);
+            if(env->ExceptionCheck())env->ExceptionClear();
+        }
     }
+    if(transportClass)env->DeleteLocalRef(transportClass);
     env->CallVoidMethod(input,closeInput);
     clearException(env);
     env->CallVoidMethod(conn,disconnect);
@@ -321,8 +380,9 @@ jbyteArray post(JNIEnv* env,jclass,jint operation,jbyteArray bodyArg,jstring bea
     env->DeleteLocalRef(buffer);
     env->DeleteLocalRef(input);
     env->DeleteLocalRef(conn);
-    if(readFailed || oversize || result.empty()) {
-        fail(env,oversize?"CLOUD_NATIVE_RESPONSE_TOO_LARGE":"CLOUD_NATIVE_READ_FAILED");
+    if(cancelled || readFailed || oversize || result.empty()) {
+        fail(env,cancelled?"CLOUD_NATIVE_CANCELLED":
+            (oversize?"CLOUD_NATIVE_RESPONSE_TOO_LARGE":"CLOUD_NATIVE_READ_FAILED"));
         return nullptr;
     }
     // The response body is a complete JSON document; Kotlin validates it.
@@ -821,6 +881,8 @@ extern "C" JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm,void*) {
     jclass bridge=env->FindClass("com/ghostdeveloper/spdecode/cloud/CloudNativeTransport");
     if(!bridge)return JNI_ERR;
     JNINativeMethod methods[]={
+        {const_cast<char*>("nativeCancelCatalogDownload"),const_cast<char*>("()V"),
+        reinterpret_cast<void*>(nativeCancelCatalogDownload)},
         {const_cast<char*>("nativeRuntimeReport"),const_cast<char*>("()Ljava/lang/String;"),
         reinterpret_cast<void*>(nativeRuntimeReport)},
         {const_cast<char*>("nativeConfigureRasp"),const_cast<char*>("(Z)V"),

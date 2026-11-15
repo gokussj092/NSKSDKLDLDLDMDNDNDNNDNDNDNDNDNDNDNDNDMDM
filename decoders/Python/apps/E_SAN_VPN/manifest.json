@@ -1,0 +1,24 @@
+{
+  "id": "e-san-vpn",
+  "name": "E-SAN VPN",
+  "package": "com.misaki.esanvpn",
+  "versionName": "1.6.4",
+  "versionCode": 74,
+  "engine": "python",
+  "entrypoint": "E_SAN_VPN.py",
+  "extensions": [],
+  "textPrefixes": [],
+  "catalog": {
+    "entrypoint": "E_SAN_VPN.py",
+    "method": "Tink StreamingAead variant: PBKDF2-HmacSHA256 100000 iters + HKDF-SHA256 + AES-256-GCM segments; ED: fields are Base32 of cleartext",
+    "url": "https://e-san-vpn.in.net/ServerUpdate/e-san-vpn.json",
+    "liveVersion": "36.6",
+    "servers": 15,
+    "networks": 5,
+    "payloads": 0,
+    "status": "live_verified",
+    "notes": "15 servers all Thailand (5 UDP Hysteria2 + 10 OpenVPN). 5 networks are OVPN profiles with empty Payload: 0 HTTP payloads."
+  },
+  "filesEntrypoint": "E_SAN_VPN_archivos.py",
+  "filesNote": "profile.json legacy (Base64 -> XXTEA) supported. profile.enc is Tink + device Keystore key: NOT openable offline, reported as PROFILE_ENC_DEVICE_KEY."
+}

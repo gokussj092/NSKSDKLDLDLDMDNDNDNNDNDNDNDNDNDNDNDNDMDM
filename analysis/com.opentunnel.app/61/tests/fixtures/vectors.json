@@ -1,0 +1,32 @@
+{
+  "expected": {
+    "CONFIG_MODE": "3",
+    "sshServer": "vpn.example.invalid",
+    "sshPort": "22",
+    "sshUser": "",
+    "sshPass": "",
+    "sshCredsRedacted": "1",
+    "file.protection": "1",
+    "checkRoot": "1",
+    "HWID": "synthetic-device",
+    "file.validate": "0",
+    "proxyPayload": "GET /日本 HTTP/1.1\r\nHost: example.invalid\r\n\r\n",
+    "v2rayjson": "{\"synthetic\":true}",
+    "unknown": "ñ"
+  },
+  "xml": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<!DOCTYPE properties SYSTEM \"http://java.sun.com/dtd/properties.dtd\">\n<properties><comment>synthetic</comment><entry key=\"CONFIG_MODE\">3</entry><entry key=\"sshServer\">vpn.example.invalid</entry><entry key=\"sshPort\">22</entry><entry key=\"sshUser\"></entry><entry key=\"sshPass\"></entry><entry key=\"sshCredsRedacted\">1</entry><entry key=\"file.protection\">1</entry><entry key=\"checkRoot\">1</entry><entry key=\"HWID\">synthetic-device</entry><entry key=\"file.validate\">0</entry><entry key=\"proxyPayload\">GET /日本 HTTP/1.1&#13;\nHost: example.invalid&#13;\n&#13;\n</entry><entry key=\"v2rayjson\">{\"synthetic\":true}</entry><entry key=\"unknown\">ñ</entry></properties>",
+  "documents": [
+    {
+      "mode": "dotted-gcm",
+      "base64": "QUFFQ0F3UUZCZ2NJQ1FvTERBME9EeEFSRWhNVUZSWVhHQmthR3h3ZEhoOD0uUFQ0L1FFRkNRMFJGUmtkSS5JZWsrbjVPR0pnOVZEUG1VVWZlTWNlU3g1b1d2MUF4Z2VhcS9UdWNFU21SUnN1UlVkZjljeCtRSUtYM2M4bkJiSitsZHNPdjl1QVhPUlpZUWtQTHJsUGp3K2o2aG9VRkxJNzY4a2EycHRhSm5GS0I3NXVBa1lrOXhmd3FUWGhnRjlyYlhyWldxbUhwa3RqQUhVMG9wb1kwR3NZc0lwc3hGWWtsejdzTFQ3U3ZHcy9IMEpsSDFPdHFWVGlWVFZjTzQvVTBQVzkwNk9ZUUxOTFByTUdaNUJJZ1E3ZFovT1k5ZXN6SytoVGFyOGlDcXdQZXRvcXVId05URExWMGQ5dmtYRTRZRktLVEdKVkdRMGlKb1NKZ2F1aEY4cVdtRExlYm9ubUNTNkkra0tEUS9mOGxmNFZuYStVMTR2cEhnT2lYT0lwZUhkQjJhOTlrdFVkZlpKMmNBSXdTdUNBVDV2Y0QyRXNFcGo5Ujc0ZSswTWFmY0MxVjJQL28rbjhtSXZiWDZSOWRQRFNOT2JvT08vMlJXdCtqU3NkdGhkcnZwRHlwU2JSZ0xOWVFESkZpQTFucHBySzZzOGYvV0VldzZGSmlpSDgvQXR2YzcyV1VqcjNsRUdMVVMzd0daOHprNmNVRmJlcDJZNW5KbUZINmovdGNQRDRiRlYzZDhhSE1hWnRkOUEyZGVjYWxFTmRQRTBmbW1BTUdwKzhsZ2hQdGoxc20wbWkvR3ZJaUxIWmJNZmxWL3A3UlFaV2lpNTYybkQwVDNsWXp0Z2owYzlmYUE0VVBGZDBQbVZCdjZpdGFHYXJaN252MzRaTy8zRzY3U1J5VG0xMmczd2tRU0VEd1dSc1MwU1o5RzlnVitOR3ZnSEdCSnNJbXJiY0FDbjR3bWtCTTdjZlMrN1ltSEtuRnNUaG1vaTNiNGZhanVqSWk1QWxzb2lwK0VPNWU5eWg1UDdZUVc2T3gvK3hFT1YvL3JoYlZFOTJ4U0tLN0V1Uis1cnRXeVkyVzJpQVNjK1hReEdnQmxyblNBTDJkUkM1bmdvSzg5YVNJTzZwdEo4Nk85RzRGSXpaK0lGeDE5TjF5eC9TNXFhakxxWGg3T1huUFNYYUNGL1NiRmFZbkJFS0pTMUhCb3lCNG9OM3FrZWhud0NJdHJmQmdXaStsVHFnVHJyYmpTbW85MGs2dGNhTmtwNmFVU2s2aUppQTdmeENudG1IZzZyM2g5OTFGMmY2RXIvNEdtdW00TjJ1Nlc4Sk5iU3luU3BvYlI="
+    },
+    {
+      "mode": "opl2-gcm",
+      "base64": "T1BMAiPGs6foyLV8gsdIXnkKp6CJ6WZccySRopfXLUJsFaeknvZYUGY3t6ak5EZcXyWhoqPGHQg+BYr63Od4a0sc9oS97F5BSWuHu+jtI2g3evzBspgBBR1g68j2mz4oO1WT2cyoZAQYQsvf0sk5CDtYxev5vBYAAkD66IqVBUYZRM3OiJ1NCwJnxLUvYv7SzsQDJxNB18/ppBU+H2Tx3cKaTRxtdvrQ5qknSVUextyqrSInIUDj/tLiazsyXeTGsbUgIQpq7c3ng3csYR6/h6/MW257JbG/sf1rHnwmspTY6lVvaBeltpjjd1VPHNqOlMkhVV0pltqYpVRie0eymbnbUn9tKqOGj7EhS/PWWiQIS7m/msJLWWAHs6mJo19ETzzRkoGxWlwZAJ2EqI1FaXkv7q+o31JldSGxv4b+SmNcCYqAy9oMU2sdi+ragAYWLHr88MyfdTw6Wu3k9LcoJS4V1+H2mhkgAkrA0+C1WzRzdt3C+sEDTTxzqtjdl1Y4eTnw5vOZOgwYSsfuJk7p34qcT18getDx1q80XDBX1Pr7mCU3Dyvj5uTXKw0mVseEyupiI0Ae6NT2th1/JQTtgufmKG4Wd8PH2PMcZ2cWiY628lRJRAHq56LiSgV5Ba6pnMVCRG0ukbyQ9kxsRCqjpInZXEBCL9SboOVsRQUFxYvn2kNzTEizr6nsRibsx3lrW0rEsZ7kdyZcMLmihsUuem833oywqHZQZgeLjtH/GFNSMJCO3cQKQXMFmvqR8GsebHWnnrbfb1FkfI/s56MuPBR4+MLbi3UzHVj/49SmdnUESs7m77RkNg0Vw9eMoRs0MVHe3MmjAxkGOu654acnOiFks6CJkDFVFDbixzly6veInk8AKk+xwOCzGl4De8vP3tsPAjpZ9Pf60gAIUBL38rfuEXBcfffMxLhvfBQFysbZngMSDGnn1tP1HQQ6AfS6rpZ4YX0pjZKy/01nfiS/rqnuSAJsM76HrZJNWHBN2qS11V1obR2xnb36dz1RQpuMovhsX1JLtImz6mdu6MNCKF1Ej47+3jJMYSLIoau5NnVtIrDZ9Ox9Z3Yg18yb9WZ2LxijlMCbV0FHLIf8pIRUbFsu7Y6qxnJCQim8sNCHAW8cb/WT5akqHkgM3/3amWs9HGeegNTnEnEmbNTkiK8rBWkk2LfSlkomZWT/5P+HJQV/Qt74660tBANDoc0hQOzE1r8zLQFdtN3ymgcsZ3nTvtmGAx41adbM1JcIPARxxJb0iSchP1zX1/qGMyFKBtab/K4nGBBOg8TVliVoagyknM/bTmVlOqidl4NMHXtv5Pyun0AAXiz68afIW1MXKN+I7souTGUMtoy+xm5hUSQ="
+    },
+    {
+      "mode": "legacy-unauthenticated",
+      "base64": "RWpSV2VBQUFBcmZDN1pFTGlnOUI2eUozOFVFL1MzUU5Wb1ZjaE1jcGtrNVp2WFZROWZyRDZQR2RjMUV3MzRJQjJLNmdRTTVJeDQ0R1p6NGVqMUU2dGhIOS9Rcm1RWlBJeWI2VHNXcHRrWU1nMVlNcEIxRXV0Znh2L2pRMzRTS01tWlZsVXQ4NFVvbW9KMUhMSW5WakE3SnZDMnQ4STRaM1BDZkd0dS94UWs1cjk3MncxeURpV1FCbFNTc2FMVEZya2ljaFc3VTVubS9Ncjc2bW5Uc2l4bG5sVGVySFFDSWpVbTVJc252a2FKbzdkbmp3L2ZOY3hmNVBYa1lmTWRoMDhTVkZHRGNLMHNHb3ZRTzdNZzBvcStLZlVXbWRreGJIbERVbUJxZHhTaFlSeDQzWWJ5REt3U0RWQ3l2NnpRRnJZQzJ4YVEvUlRtV2NENlpNM2FGeUZwanR0ZWd0T3RnN3dtMTVFMHFkT1RGUXg4bVozMmxrM3d6UHBKUjN3Y3FmNGQyVmV1MEtFR0d3VnlHTE9NLzVrM0lmRVZzM3FZNU5GbjgySm81eE1vNUxKNGR5Vi9pcStTZ2xjNHRhYmFITDhQZlJzZVh6dmw4azNoNXVEd0hiM3BrOVhZaDNpRGo3Q2xXTHEzcE5nZXZnclRIcGoxSE81UnlQSnN4ZGlTSzJzV2NsV01mbzRqRUEzNm1UZUgvN29VaEhTUmxmNlJUbGpQZHVscWZiVXA0eG41ZnczMER5a2RFUFNXTllYOXVCS0NjcGVYL0pOTVdzRjQ1MlIvdHl2aEcvOThsR1Fhdjdrcy9aVXdvTm1TTTZOeFBacDlIdVg4eWxkTzdmdVZxK3kxZnQySCs0WW90WUg3bnBtRjNadzdxOUtSSFBDYVp2WkE5OFZFM2JrSDVwTmJXQXpTcGkyWUNIbVdHeUpUa3BvRzhwUVk5cDU0L3NaemFPejB0NEQxQlVCeElyVjBSOUo1R3pBbXVNVUpsWS9WTnJkUXZjZlZlbTF2NnZxNmcrbWQwTmlCK2dlQ0dRWjVuRFl1MERHWGcxSXlvOSs2eGR2cFJzUEFmcDZtWnh4NmNBTHdpNndZTHYyVXZnLzZHeGdrZlJ5YmU1ZHZXMmYveStoOG5LbHJHMTdkQ3RtbXE1Q0w4NUFSQ2xBZU9pcDh0YjUxRkdsMnlGbGk2bk14Z2VpUzMxa0NjWStEdGQrZE81WXQzeDg1cjl1Nk52a2I2bnJQZU9ycWRoMkE9PQ=="
+    }
+  ]
+}

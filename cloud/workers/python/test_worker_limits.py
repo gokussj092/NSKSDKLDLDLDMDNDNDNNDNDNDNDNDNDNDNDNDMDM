@@ -14,13 +14,12 @@ class WorkerCapacityTests(unittest.TestCase):
         handler = object.__new__(WorkerHandler)
         handler.path = "/internal/v1/decode/import/server-vpn"
         handler._json = Mock()
-        self.assertTrue(HEAVY_JOBS.acquire(blocking=False))
-        try:
-            with patch.object(WorkerHandler, "_authorized", return_value=True):
-                handler.do_POST()
-            self.assertEqual(handler._json.call_args.args[0], 503)
-        finally:
-            HEAVY_JOBS.release()
+        # Exercise denial independently of the configured number of heavy slots.
+        # Holding one slot no longer fills the current two-slot worker.
+        with patch.object(WorkerHandler, "_authorized", return_value=True), \
+             patch.object(HEAVY_JOBS, "acquire", return_value=False):
+            handler.do_POST()
+        self.assertEqual(handler._json.call_args.args[0], 503)
         acquired = []
         try:
             for _ in range(4):

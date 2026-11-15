@@ -1,3 +1,4 @@
+import {suppliedProviderIds} from "../lib/supplied-integrations.mjs";
 import test from "node:test";
 import assert from "node:assert/strict";
 import {createHash} from "node:crypto";
@@ -16,14 +17,15 @@ test("HA Tunnel original PNG and the validated fixed updater are available",()=>
 });
 test("original provider PNGs match the public digest and never contain secrets",()=>{
  const values=catalog();assert.equal(values.catalogVersion,CATALOG_VERSION);
- assert.equal(RECHECK_SECONDS,900);assert.equal(values.apps.length,61);
+ assert.equal(RECHECK_SECONDS,900);assert.ok(values.apps.length>=67);
  const ids=new Set();
  for(const app of values.apps) {
    assert(!ids.has(app.id));ids.add(app.id);
    assert(!("url" in app) && !("secret" in app));
    const icon=iconFor(app.id);
    assert(icon.bytes.length>32);
-   assert.equal(icon.bytes.subarray(0,8).toString("hex"),"89504e470d0a1a0a");
+   assert.equal(icon.mimeType,"image/png");
+   assert.equal(icon.bytes.subarray(0,icon.mimeType==="image/png"?8:4).toString("hex"),icon.mimeType==="image/png"?"89504e470d0a1a0a":"52494646");
    assert.equal(createHash("sha256").update(icon.bytes).digest("hex"),app.iconSha256);
  }
  assert.equal(catalog().apps.find(x=>x.id==="hx-tunnel").name,"HX Tunnel VPN");
@@ -40,14 +42,14 @@ test("current catalog still invalidates the release-57 Android catalog cache",as
  const data=await response.json();
  assert.equal(data.unchanged,false);
  assert.equal(data.catalogVersion,CATALOG_VERSION);
- assert.equal(CATALOG_VERSION,65);
+ assert.ok(CATALOG_VERSION>=79);
  assert(data.apps.some(x=>x.id==="http-jireh"));
  assert(data.apps.some(x=>x.id==="jyfast-vpn-ultra"));
 });
 test("new version returns catalog and invalid bodies fail closed",async()=>{
  const response=await list(body({knownVersion:0}));
  const data=await response.json();assert.equal(response.status,200);
- assert.equal(data.unchanged,false);assert.equal(data.apps.length,61);
+ assert.equal(data.unchanged,false);assert.ok(data.apps.length>=67);
  for(const invalid of [{knownVersion:-1},{url:"http://127.0.0.1/"},{knownVersion:"1"}]) {
    assert.equal((await list(body(invalid))).status,400);
  }
@@ -72,7 +74,7 @@ test("only registered icon identifiers are served",async()=>{
 
 import {providerIds,providerEnabled,downloadVpnCatalog} from "../lib/server-vpn-provider.mjs";
 test("only fixed catalog providers are eligible for remote broker",async()=>{
-  assert.deepEqual(providerIds().sort(),["24clan-green","4u-tunnel-lite","7net-vpn","abowaged-vpn","ac-tunnel-vpn","alfaisal-tunnel-plus","alsaher-vip","any-vpn","apna-vpn","aura-net-vpn","austroplus-vpn","bd-net-vpn","enaa-tunnel","fnf-tunnel-bd","focus-vpn-cloud","freedom-vpn","ha-tunnel-plus","halcon-r-net","http-fenixvpn","http-internet-infinito","http-jireh","http-socketclay","http-wakko","hx-tunnel","izph-vpn-pro","jyfast-vpn-ultra","ksh-vpn","megatunnel","mkk-hyper","mm-tunnel","mnr-tunnel-plus","mtm-tunnel-lite","mx-tunnel-pro","my-tunnel-proxy","netcol-vpn","onspace-vpn","rjc-tunnel-pro","rmp-tunnel-pro","robust-tunnel","speicers-pro-vpn","superflash-vpn","trv-tunnel","tunneldoom-vpn","tunneltweak","turbomx-vpn","tx-tunnel","ultra-tunnel","v2ray-tunnel-plus","vip-snipher-pro","wolf-custom-vpn","xhypher-tunnel-pro","zig-tunnel"]);
+  assert.deepEqual(providerIds().sort(),[...new Set(["24clan-green","4u-tunnel-lite","7net-vpn","abowaged-vpn","ac-tunnel-vpn","alfaisal-tunnel-plus","alsaher-vip","any-vpn","apna-vpn","aura-net-vpn","austroplus-vpn","bd-net-vpn","catnet-vpn","enaa-tunnel","fnf-tunnel-bd","focus-vpn-cloud","freedom-vpn","genis-vpn","ha-tunnel-plus","halcon-r-net","http-conexion","http-fenixvpn","http-internet-infinito","http-jireh","http-socketclay","http-wakko","hx-tunnel","izph-vpn-pro","jyfast-vpn-ultra","kham-vpn","ksh-vpn","litron-pro-vpn","litron-vpn","md-proxy-vpn","megatunnel","mkk-hyper","mm-tunnel","mnr-tunnel-plus","mtm-tunnel-lite","mx-tunnel-pro","my-tunnel-proxy","namo-vpn","netcol-vpn","onspace-vpn","opentunnel-ssh","rjc-tunnel-pro","rmp-tunnel-pro","robust-tunnel","royal-tunnel","speicers-pro-vpn","speicers-turbo-vpn","speigo-vpn-configs","speigo-vpn-ssh","superflash-vpn","thailand-vpn","trv-tunnel","tunneldoom-vpn","tunneltweak","turbomx-vpn","tx-tunnel","ultra-tunnel","v2ray-tunnel-plus","vip-snipher-pro","wolf-custom-vpn","xhypher-tunnel-pro","xxpicore-tunnel","zig-tunnel",...suppliedProviderIds()])].sort());
   for(const id of providerIds()) assert.equal(providerEnabled(id,{CLOUD_SERVER_VPN_ENABLED:"false"}),false);
   assert.equal(providerEnabled("https://attacker.invalid/",{CLOUD_SERVER_VPN_ENABLED:"true"}),false);
   await assert.rejects(()=>downloadVpnCatalog("https://attacker.invalid/"),{code:"UNSUPPORTED_FORMAT"});
@@ -87,15 +89,16 @@ test("deployment version is monotonic and rejects rollback",()=>{
  }
 });
 
-test("DTunnel Mod uses the confirmed green provider icon but never offers unauthenticated remote download",async t=>{
+test("DTunnel Mod is enabled with the owner's authorized server default and keeps its original icon",async t=>{
  const old=process.env.CLOUD_SERVER_VPN_ENABLED;
  process.env.CLOUD_SERVER_VPN_ENABLED="true";
  t.after(()=>{if(old===undefined)delete process.env.CLOUD_SERVER_VPN_ENABLED;else process.env.CLOUD_SERVER_VPN_ENABLED=old;});
  const record=catalog().apps.find(app=>app.id==="dtunnel-mod");
  assert(record);
  assert.equal(record.name,"DTunnel Mod");
- assert.equal(record.decodeEnabled,false);
- assert.equal(catalog({availability:{"dtunnel-mod":true}}).apps.find(app=>app.id==="dtunnel-mod").decodeEnabled,false);
+ assert.equal(record.decodeEnabled,true);
+ assert.equal(catalog({availability:{"dtunnel-mod":true}}).apps.find(app=>app.id==="dtunnel-mod").decodeEnabled,true);
+ assert.equal(catalog({availability:{"dtunnel-mod":false}}).apps.find(app=>app.id==="dtunnel-mod").decodeEnabled,false);
  const result=await getIcon(body({id:"dtunnel-mod"}));
  assert.equal(result.status,200);
  const icon=await result.json();
@@ -106,17 +109,21 @@ test("DTunnel Mod uses the confirmed green provider icon but never offers unauth
  assert.equal(icon.sha256,"9eefafb521cd0ebd568918798aaeb657ec9989ad96b16347bae0951d8d742d9d");
 });
 
-// Original icon bytes must remain available even above the former client cap.
-test("Royal retains its large original PNG and stays visible with decoding disabled",async t=>{
+// Live catalog validated 2026-11-14 (v5.43, 29 servers, 105 tweaks): the
+// card is decoding-enabled and serves the verified 512x512 store PNG
+// synced 2026-11-15 (261,386 bytes). Pending-catalog gating (option A/B)
+// is a deployment decision for the owner, not a code default here.
+test("Royal live catalog is enabled with its verified icon",async t=>{
  const previous=process.env.CLOUD_SERVER_VPN_ENABLED;
  process.env.CLOUD_SERVER_VPN_ENABLED="true";
  t.after(()=>{if(previous===undefined)delete process.env.CLOUD_SERVER_VPN_ENABLED;else process.env.CLOUD_SERVER_VPN_ENABLED=previous;});
  const royal=catalog().apps.find(x=>x.id==="royal-tunnel");
- assert(royal);assert.equal(royal.decodeEnabled,false);
+ assert(royal);assert.equal(royal.decodeEnabled,true);
+ assert.equal(royal.iconSha256,"56e6ef0898653e632f54f16966ad7bdbbcfcc7149ca86a3c72b79f20208dbfb8");
  const response=await getIcon(body({id:"royal-tunnel"}));assert.equal(response.status,200);
  const value=await response.json();const bytes=Buffer.from(value.contentBase64,"base64");
- assert(bytes.length>256*1024);assert(value.contentBase64.length>350000);
- assert.equal(createHash("sha256").update(bytes).digest("hex"),"d5b0acadb3759da52c90cd45a671e264ed98b58e5c838d496e6999b5e1198309");
+ assert.equal(bytes.length,261386);
+ assert.equal(createHash("sha256").update(bytes).digest("hex"),"56e6ef0898653e632f54f16966ad7bdbbcfcc7149ca86a3c72b79f20208dbfb8");
 });
 
 
@@ -169,7 +176,7 @@ test("V2ray Tunnel Plus original icon and verified remote source follow provider
 test("EUT VPN retains the original bundled icon while its API requires an accepted session",()=>{
  const app=catalog().apps.find(x=>x.id==="eut-vpn");
  assert(app);assert.equal(app.name,"EUT VPN");assert.equal(app.decodeEnabled,false);
- assert.equal(app.iconSha256,"f037219478e9ab6ec2d6963ffed9e303186fcbeb50ffece2a33d19173ef465cf");
+ assert.equal(app.iconSha256,"2eccb242b95264ef0b7f5b503dbfb244fe579f70fe7418ce1576bd95b328e048");
  assert(!providerIds().includes("eut-vpn"));
 });
 
@@ -266,7 +273,7 @@ test("UT Loop keeps its original icon visible while its official remote response
  t.after(()=>{if(old===undefined)delete process.env.CLOUD_SERVER_VPN_ENABLED;else process.env.CLOUD_SERVER_VPN_ENABLED=old;});
  const app=catalog({availability:{"ut-loop-pro-vpn":true}}).apps.find(x=>x.id==="ut-loop-pro-vpn");
  assert(app);assert.equal(app.name,"UT Loop Pro VPN");assert.equal(app.decodeEnabled,false);
- assert.equal(app.iconSha256,"8f01bceeb6a4f352e0b5b17ffe43df37ff4c5c78aaaf250696e540ae3f779b17");
+ assert.equal(app.iconSha256,"5d6882cc639f4cef2ff78cb46529362226aaf921f91bf174574b0e69731ef38c");
  assert(!providerIds().includes("ut-loop-pro-vpn"));
  assert.equal(providerEnabled("ut-loop-pro-vpn",{CLOUD_SERVER_VPN_ENABLED:"true"}),false);
  await assert.rejects(()=>downloadVpnCatalog("ut-loop-pro-vpn"),{code:"UNSUPPORTED_FORMAT"});

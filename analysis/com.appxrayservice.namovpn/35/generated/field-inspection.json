@@ -1,0 +1,412 @@
+{
+  "remote_sha256": "578ad82fed747a2670a8fe4fb0abaeda16df60684581bec0a7e10e2d47aeee06",
+  "version": "22.3",
+  "counts": {
+    "Servers": 14,
+    "Networks": 13
+  },
+  "field_shapes": {
+    "Servers": {
+      "AutoLogIn": {
+        "types": [
+          "str"
+        ],
+        "lengths": [
+          4
+        ],
+        "nonempty": 14
+      },
+      "Cloudfront": {
+        "types": [
+          "str"
+        ],
+        "lengths": [
+          0,
+          41
+        ],
+        "nonempty": 5
+      },
+      "CloudfrontPort": {
+        "types": [
+          "str"
+        ],
+        "lengths": [
+          0,
+          2
+        ],
+        "nonempty": 5
+      },
+      "MultiCert": {
+        "types": [
+          "str"
+        ],
+        "lengths": [
+          4
+        ],
+        "nonempty": 14
+      },
+      "NameServer": {
+        "types": [
+          "str"
+        ],
+        "lengths": [
+          0,
+          25
+        ],
+        "nonempty": 2
+      },
+      "OpenVPNSSLPort": {
+        "types": [
+          "str"
+        ],
+        "lengths": [
+          0,
+          3
+        ],
+        "nonempty": 8
+      },
+      "Password": {
+        "types": [
+          "str"
+        ],
+        "lengths": [
+          0,
+          9
+        ],
+        "nonempty": 13
+      },
+      "ProxyIP": {
+        "types": [
+          "str"
+        ],
+        "lengths": [
+          0
+        ],
+        "nonempty": 0
+      },
+      "ProxyPort": {
+        "types": [
+          "str"
+        ],
+        "lengths": [
+          0
+        ],
+        "nonempty": 0
+      },
+      "PublicKey": {
+        "types": [
+          "str"
+        ],
+        "lengths": [
+          0,
+          90
+        ],
+        "nonempty": 2
+      },
+      "SSHPort": {
+        "types": [
+          "str"
+        ],
+        "lengths": [
+          0,
+          2,
+          3
+        ],
+        "nonempty": 8
+      },
+      "SSHSSLPort": {
+        "types": [
+          "str"
+        ],
+        "lengths": [
+          0,
+          3
+        ],
+        "nonempty": 8
+      },
+      "SelectType": {
+        "types": [
+          "str"
+        ],
+        "lengths": [
+          3,
+          7
+        ],
+        "nonempty": 14
+      },
+      "ServerDNS": {
+        "types": [
+          "str"
+        ],
+        "lengths": [
+          0,
+          25
+        ],
+        "nonempty": 2
+      },
+      "ServerFlag": {
+        "types": [
+          "str"
+        ],
+        "lengths": [
+          2
+        ],
+        "nonempty": 14
+      },
+      "ServerIP": {
+        "types": [
+          "str"
+        ],
+        "lengths": [
+          21,
+          25
+        ],
+        "nonempty": 14
+      },
+      "ServerName": {
+        "types": [
+          "str"
+        ],
+        "lengths": [
+          5,
+          7,
+          9,
+          11
+        ],
+        "nonempty": 14
+      },
+      "TCPPort": {
+        "types": [
+          "str"
+        ],
+        "lengths": [
+          0,
+          4
+        ],
+        "nonempty": 8
+      },
+      "UDPConfig": {
+        "types": [
+          "str"
+        ],
+        "lengths": [
+          0,
+          422
+        ],
+        "nonempty": 1
+      },
+      "Username": {
+        "types": [
+          "str"
+        ],
+        "lengths": [
+          0,
+          9
+        ],
+        "nonempty": 13
+      },
+      "V2Ray": {
+        "types": [
+          "str"
+        ],
+        "lengths": [
+          0
+        ],
+        "nonempty": 0
+      },
+      "setOpenVPN": {
+        "types": [
+          "str"
+        ],
+        "lengths": [
+          0,
+          2667
+        ],
+        "nonempty": 13
+      }
+    },
+    "Networks": {
+      "Payload": {
+        "types": [
+          "str"
+        ],
+        "lengths": [
+          0,
+          82,
+          142,
+          163,
+          171,
+          187,
+          211,
+          244,
+          260,
+          292,
+          296
+        ],
+        "nonempty": 11
+      },
+      "PayloadFlag": {
+        "types": [
+          "str"
+        ],
+        "lengths": [
+          0
+        ],
+        "nonempty": 0
+      },
+      "PayloadInfo": {
+        "types": [
+          "str"
+        ],
+        "lengths": [
+          28
+        ],
+        "nonempty": 13
+      },
+      "PayloadName": {
+        "types": [
+          "str"
+        ],
+        "lengths": [
+          7,
+          11,
+          13,
+          14,
+          15,
+          16,
+          17,
+          19,
+          20,
+          24
+        ],
+        "nonempty": 13
+      },
+      "Protocal": {
+        "types": [
+          "str"
+        ],
+        "lengths": [
+          4
+        ],
+        "nonempty": 13
+      },
+      "SelectedProtocal": {
+        "types": [
+          "str"
+        ],
+        "lengths": [
+          7,
+          10,
+          12,
+          22
+        ],
+        "nonempty": 13
+      },
+      "ServerDNS": {
+        "types": [
+          "str"
+        ],
+        "lengths": [
+          0
+        ],
+        "nonempty": 0
+      },
+      "Sni": {
+        "types": [
+          "str"
+        ],
+        "lengths": [
+          0
+        ],
+        "nonempty": 0
+      },
+      "SquidPort": {
+        "types": [
+          "str"
+        ],
+        "lengths": [
+          0,
+          2
+        ],
+        "nonempty": 11
+      },
+      "SquidProxy": {
+        "types": [
+          "str"
+        ],
+        "lengths": [
+          0,
+          13,
+          17,
+          21,
+          25,
+          29,
+          41
+        ],
+        "nonempty": 11
+      },
+      "UseDefProxy": {
+        "types": [
+          "str"
+        ],
+        "lengths": [
+          5
+        ],
+        "nonempty": 13
+      }
+    }
+  },
+  "sources": {
+    "defpackage/sd0.java": {
+      "sha256": "61134df6a98a8781cfef83a92cf8193c857718ac4293793296a5f4f00ca1dfe0",
+      "checks": [
+        "\"ServerIP\"",
+        "\"SquidProxy\"",
+        "\"OPENVPN_CINFIG\"",
+        "\"UDP_HYSTERIA\""
+      ]
+    },
+    "defpackage/x93.java": {
+      "sha256": "3f320e3d6049ddccc38c9a37d624e3f099d09726119ce80dcb424ba83528086e",
+      "checks": [
+        "f60.m",
+        "\"SERVER_HOST\"",
+        "\"DNSTT_DNS\"",
+        "\"PASSWORD_SERVER\""
+      ]
+    },
+    "defpackage/bo.java": {
+      "sha256": "abb0eb140aba32293a5c3855ce3d9baaab5ddfcd910c21b37dd4afef34e763f6",
+      "checks": [
+        "f60.m",
+        "\"DNSTT_SERVERNAME\""
+      ]
+    },
+    "defpackage/d81.java": {
+      "sha256": "46a2d9d9be7331bf346708dd6e05e2892f9ce2e0da2d7b20077a52c4487329cb",
+      "checks": [
+        "f60.m",
+        "\"UDP_HYSTERIA\""
+      ]
+    },
+    "com/appxrayservice/namovpn/service/vpn/SSHCoreService.java": {
+      "sha256": "d14c3dbe1f1c4acdd8f48162d99aafb71e0769e081ba5e31030a16fa4df8b30c",
+      "checks": [
+        "f60.m",
+        "\"PAYLOAD\"",
+        "\"SNI\""
+      ]
+    },
+    "com/appxrayservice/namovpn/ui/activity/MainActivity.java": {
+      "sha256": "45b6578d7428f96595f9e5b593eaf2a36d29ba9f22df48d15b8c1ddeb2c7a940",
+      "checks": [
+        "f60.m",
+        "\"V2RAY_CONTENT\""
+      ]
+    },
+    "defpackage/f60.java": {
+      "sha256": "121bdf898bbe9bdc29b19233119172d0ca3b7e0c36d6e243567e6dbaeea84289",
+      "method": "m: Base64.DEFAULT then UTF-8"
+    }
+  }
+}

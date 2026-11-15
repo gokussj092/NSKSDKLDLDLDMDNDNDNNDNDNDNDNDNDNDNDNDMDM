@@ -1,0 +1,230 @@
+{
+  "schema_version": 1,
+  "package_name": "xyz.eutvpn.app",
+  "app_name": "EUT VPN",
+  "version_name": "2.4.1",
+  "version_code": 370,
+  "observed_at": "2026-11-14/15",
+  "source_category": "APKPure XAPK (owner-supplied sample); live API probes 2026-11-14 (blocking responses recorded)",
+  "authorization_note": "Owner-supplied APK sample and live catalog download requested by the owner (Pedro) for SP-DECODE integration research. No service credentials, no attestation fabrication, no account access.",
+  "status": "PENDING",
+  "targets": [
+    {
+      "kind": "catalog",
+      "status": "PENDING",
+      "note": "PENDING (NOT_AUTHORIZED): live download is blocked by Play Integrity — 400 missing_integrity_token without a token, 403 google_integrity_decode_failed with an invented token, 401 on get-all-resources without a valid Bearer. No live catalog data exists; nothing was invented. Requires an access_token from a session started on a real device with the Play-installed app; with that token the operational script downloads and decrypts the full catalog unchanged."
+    },
+    {
+      "kind": "files",
+      "status": "VERIFIED",
+      "note": "VERIFIED_SYNTHETIC: sza blob and eut-payload:// v1 sealing/opening verified with vectors and round-trips and against PyCryptodome as oracle; samples are synthetic (muestras/sample_settings.eut, muestras/sample_payload.txt). No real exported blob yet."
+    },
+    {
+      "kind": "text",
+      "status": "VERIFIED",
+      "note": "VERIFIED_SYNTHETIC: eut://, eut-settings:// and eut-payload:// v1 verified by construction and round-trip; no real link exported by the app yet."
+    },
+    {
+      "kind": "export",
+      "status": "PENDING",
+      "note": "PENDING: real catalog (needs a real device token), a real exported blob/link, a real cloud code, and opening the local SQLCipher database (needs sqlcipher, not stdlib)."
+    }
+  ],
+  "inputs": [
+    {
+      "type": "operational_script_catalog",
+      "path": "catalogs/eut/EUT_VPN.py",
+      "sha256": "fe33dd46e6803fcbe5b54a7280edf088e918a58372e78330aba293c8bfabe568",
+      "note": "Operational catalog script (outside this repo until integration). Contains the format keys; never copied into this dossier."
+    },
+    {
+      "type": "operational_script_files",
+      "path": "catalogs/eut/EUT_VPN_archivos.py",
+      "sha256": "3208aa3a52d2e694660e66f5c4a35b825010cb8daad8810f38d3375796d47bcd",
+      "note": "Operational file/text script (outside this repo until integration). Contains the format keys; never copied into this dossier."
+    },
+    {
+      "type": "apk_base",
+      "path": "catalogs/eut/apk or xapk (base APK)",
+      "sha256": "6f7fea92c5ced6cab2267e8eef9119ea0631803ee49ccbc8bef17066f17b0270 is the arm64 split on disk; base APK hash not separately recorded — see unresolved questions. (The split hash is given only to identify the file on disk; it is not a catalog input.)",
+      "note": "Base APK hash as computed on disk in the research workspace."
+    },
+    {
+      "type": "xapk",
+      "path": "catalogs/eut (XAPK)",
+      "sha256": "EUT-VPN_2.4.1_arm64-v8a.xapk, SHA-256 c09c15573368c83f2bb2db1041d96477e1e8806175268046c348f3628eeabc5f (matches APKPure)",
+      "note": "XAPK identity as recorded in the source TESTING.md."
+    },
+    {
+      "type": "sample",
+      "path": "catalogs/eut/muestras/live_probes.json",
+      "sha256": "3f3df131c6f465b03bd26623c95784b5498d5d0a8516e32bb47ef22c8a27b4ec",
+      "note": "Sample kept in the research workspace (not copied into this dossier)."
+    },
+    {
+      "type": "sample",
+      "path": "catalogs/eut/muestras/sample_payload.txt",
+      "sha256": "9d530d0c49ef834878911137bfdf7104e7848de08ec528df4e79184ac37ad98a",
+      "note": "Sample kept in the research workspace (not copied into this dossier)."
+    }
+  ],
+  "tooling": [
+    {
+      "name": "Python",
+      "version": "3.12.3",
+      "purpose": "Runtime of all operational and dossier scripts (stdlib only)."
+    },
+    {
+      "name": "jadx",
+      "version": "1.5.3",
+      "purpose": "DEX decompilation (documented in the source TESTING.md files)."
+    },
+    {
+      "name": "androguard",
+      "version": "4.1.4",
+      "purpose": "DEX/APK inspection helpers in work/ research scripts."
+    },
+    {
+      "name": "OpenSSL",
+      "version": "3.0.13",
+      "purpose": "Independent oracle for AES-CBC vectors in dossier tests."
+    },
+    {
+      "name": "PyCryptodome",
+      "version": "4.4.0",
+      "purpose": "Verification oracle only, in the research venv; NOT used by the operational scripts or the dossier tests."
+    },
+    {
+      "name": "argon2-cffi",
+      "version": "25.1.0",
+      "purpose": "Verification oracle only, in the research venv; NOT used by the operational scripts or the dossier tests."
+    },
+    {
+      "name": "Unicorn",
+      "version": "2.1.4",
+      "purpose": "Native emulation oracle during research (Ac Tunnel KDF, HTTP Tweak WyrLib); NOT used by the operational scripts."
+    },
+    {
+      "name": "paranoid-deobfuscator",
+      "version": "3.0.2",
+      "purpose": "Reference LSParanoid string deobfuscator (Ac Tunnel: 1983/1983 strings)."
+    }
+  ],
+  "code_paths": [
+    "decoders/Python/apps/EUT_VPN/server_catalog_decoder.py"
+  ],
+  "evidence_refs": [
+    "Source research notes: ~/workspace/catalogs/NOTES.md (per-app section)",
+    "Source README: ~/workspace/catalogs/eut/README.md",
+    "Source TESTING.md: ~/workspace/catalogs/eut/TESTING.md",
+    "Dossier tests: tests/test_method.py (unittest, offline, synthetic vectors)",
+    "Dossier verifier: tools/verify.py (synthetic round-trip, no network, no secrets)"
+  ],
+  "limitations": [
+    "Real live catalog: needs an access_token from a session started on a real device with the Play-installed app (Play Integrity). With that token, the operational script downloads and decrypts the full catalog without further changes.",
+    "Real file exported by the app (an eut:// / eut-settings:// / eut-payload:// generated by the app, or a text file imported by it) to confirm the format end to end.",
+    "Real cloud code (payload-share/get) to verify the code download with a real token.",
+    "Local SQLCipher database: open it with sqlcipher (not stdlib) and confirm the stored data matches the server data.",
+    "Re-verify when the app version rises (import rejects app_version_code > 370 and the server may change the catalog)."
+  ],
+  "network_requirements": "Live catalog verification needs network access to the vendor's catalog host (exact request lives in the operational script; no download endpoint is reproduced in this dossier). All dossier tests run offline.",
+  "manual_steps": [
+    "Real live catalog: needs an access_token from a session started on a real device with the Play-installed app (Play Integrity). With that token, the operational script downloads and decrypts the full catalog without further changes.",
+    "Real file exported by the app (an eut:// / eut-settings:// / eut-payload:// generated by the app, or a text file imported by it) to confirm the format end to end.",
+    "Real cloud code (payload-share/get) to verify the code download with a real token.",
+    "Local SQLCipher database: open it with sqlcipher (not stdlib) and confirm the stored data matches the server data.",
+    "Re-verify when the app version rises (import rejects app_version_code > 370 and the server may change the catalog)."
+  ],
+  "unresolved_questions": [
+    "Real live catalog: needs an access_token from a session started on a real device with the Play-installed app (Play Integrity). With that token, the operational script downloads and decrypts the full catalog without further changes.",
+    "Real file exported by the app (an eut:// / eut-settings:// / eut-payload:// generated by the app, or a text file imported by it) to confirm the format end to end.",
+    "Real cloud code (payload-share/get) to verify the code download with a real token.",
+    "Local SQLCipher database: open it with sqlcipher (not stdlib) and confirm the stored data matches the server data.",
+    "Re-verify when the app version rises (import rejects app_version_code > 370 and the server may change the catalog)."
+  ],
+  "connection_authentication": {
+    "files_integrity_hmac": "NOT_OBSERVED",
+    "catalog_integrity_hmac": "NOT_OBSERVED",
+    "key_derivation_hmac": "NOT_OBSERVED",
+    "vpn_transport_hmac": "UNCONFIRMED",
+    "connection_authentication_hmac": "UNCONFIRMED",
+    "note": "No HMAC was observed in the sza envelope (AES-CBC, no MAC) or in the eut-payload:// v1 envelope (AES-GCM tag, AEAD — not an HMAC). Connection authentication here is Play Integrity attestation + a Bearer session token verified server-side by Google/the vendor; the token exchange was observed only as blocking responses (400/401/403), never as a successful attestation, so connection authentication stays UNCONFIRMED. VPN transport authentication was not researched.",
+    "rule": "The mere presence of an HMAC library or a Mac.init call confirms nothing. No key values and no hook inputs/outputs are stored in this dossier."
+  },
+  "dependencies": [
+    {
+      "name": "Python (stdlib)",
+      "version": "3.12.3",
+      "source": "system",
+      "hash": "UNKNOWN (system runtime, no distribution hash recorded)",
+      "license": "PSF-2.0"
+    },
+    {
+      "name": "jadx",
+      "version": "1.5.3",
+      "source": "github.com/skylot/jadx",
+      "hash": "UNKNOWN (distribution hash not recorded in the source notes)",
+      "license": "Apache-2.0"
+    },
+    {
+      "name": "androguard",
+      "version": "4.1.4",
+      "source": "PyPI (research venv pip list)",
+      "hash": "UNKNOWN (wheel hash not recorded)",
+      "license": "Apache-2.0"
+    },
+    {
+      "name": "OpenSSL",
+      "version": "3.0.13",
+      "source": "system",
+      "hash": "UNKNOWN (system package, no distribution hash recorded)",
+      "license": "Apache-2.0"
+    },
+    {
+      "name": "PyCryptodome",
+      "version": "4.4.0",
+      "source": "PyPI (research venv pip list; oracle only)",
+      "hash": "UNKNOWN (wheel hash not recorded)",
+      "license": "BSD-2-Clause"
+    },
+    {
+      "name": "argon2-cffi",
+      "version": "25.1.0",
+      "source": "PyPI (research venv pip list; oracle only)",
+      "hash": "UNKNOWN (wheel hash not recorded)",
+      "license": "MIT"
+    },
+    {
+      "name": "Unicorn",
+      "version": "2.1.4",
+      "source": "PyPI (research venv pip list; emulation oracle only)",
+      "hash": "UNKNOWN (wheel hash not recorded)",
+      "license": "GPL-2.0"
+    },
+    {
+      "name": "paranoid-deobfuscator",
+      "version": "3.0.2",
+      "source": "reference tool (Ac Tunnel research)",
+      "hash": "UNKNOWN (distribution hash not recorded)",
+      "license": "UNKNOWN (not recorded — NEEDS_REVIEW)"
+    },
+    {
+      "name": "loguru",
+      "version": "0.8.0",
+      "source": "PyPI (research venv pip list; used by some work/ scripts)",
+      "hash": "UNKNOWN (wheel hash not recorded)",
+      "license": "MIT"
+    },
+    {
+      "name": "lxml",
+      "version": "6.1.3",
+      "source": "PyPI (research venv pip list; used by the ZIVPN strings script)",
+      "hash": "UNKNOWN (wheel hash not recorded)",
+      "license": "BSD-3-Clause"
+    }
+  ],
+  "dependencies_reference": {
+    "lockfile": "dependencies.lock.json",
+    "note": "See DEPENDENCIES.md. Versions marked UNKNOWN were not recorded in the source research notes; they are not invented here."
+  }
+}

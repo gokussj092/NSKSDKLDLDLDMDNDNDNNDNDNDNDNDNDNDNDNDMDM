@@ -30,11 +30,11 @@
       "rj"
     ],
     "validation": "complete local and live JSON parity with original ARM64 XXTEA and Threefish; OpenSSL key derivation cross-check",
-    "validatedOn": "2026-10-19",
-    "localServersObserved": 1,
-    "localNetworksObserved": 1,
-    "remoteServersObserved": 24,
-    "remoteNetworksObserved": 1248,
+    "validatedOn": "2026-11-14",
+    "localServersObserved": 22,
+    "localNetworksObserved": 1227,
+    "remoteServersObserved": 22,
+    "remoteNetworksObserved": 1227,
     "publicCatalogVersion": 7,
     "deploymentEnabledByDefault": false
   },

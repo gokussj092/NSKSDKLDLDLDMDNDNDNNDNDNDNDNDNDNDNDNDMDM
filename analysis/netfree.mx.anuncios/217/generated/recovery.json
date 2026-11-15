@@ -1,0 +1,74 @@
+{
+  "passwordSha256": "247419e2e7ce98342a223eab5bd4800517c7d4a66e7673255e79146839b3f7ef",
+  "includedPasswordSha256": "247419e2e7ce98342a223eab5bd4800517c7d4a66e7673255e79146839b3f7ef",
+  "samePassword": true,
+  "userAgent": "ANALYTICAL_ANDROID_PROFILE_NO_APP_OVERRIDE",
+  "catalogs": [
+    {
+      "name": "included-servers",
+      "bytes": 407832,
+      "sha256": "f45e960fbacf325ce52a5295376fc5b19901e328d3f4c05aa393ade2c5cdd2e3",
+      "keys": [
+        "Version",
+        "ReleaseNotes",
+        "Servers"
+      ],
+      "version": "17",
+      "counts": {
+        "Servers": 266
+      }
+    },
+    {
+      "name": "included-users",
+      "bytes": 1984,
+      "sha256": "a6d48ad172a77bdc747d9e872ab32803759eb578639b4478c825974bc94566c6",
+      "keys": [
+        "Version",
+        "Usuarios"
+      ],
+      "version": "1",
+      "counts": {
+        "Usuarios": 2
+      }
+    },
+    {
+      "name": "remote-servers",
+      "bytes": 407832,
+      "sha256": "f45e960fbacf325ce52a5295376fc5b19901e328d3f4c05aa393ade2c5cdd2e3",
+      "keys": [
+        "Version",
+        "ReleaseNotes",
+        "Servers"
+      ],
+      "version": "17",
+      "counts": {
+        "Servers": 266
+      }
+    },
+    {
+      "name": "remote-users",
+      "bytes": 1984,
+      "sha256": "3a4da7b8d8137c32efa8cc45c9f06381be0aa19a609b1739b5c5d2da2d26a3ff",
+      "keys": [
+        "Version",
+        "Usuarios"
+      ],
+      "version": "2",
+      "counts": {
+        "Usuarios": 2
+      }
+    }
+  ],
+  "serversHttp": {
+    "status": 200,
+    "contentType": "text/plain; charset=utf-8",
+    "bytes": 407832,
+    "sha256": "f45e960fbacf325ce52a5295376fc5b19901e328d3f4c05aa393ade2c5cdd2e3"
+  },
+  "usersHttp": {
+    "status": 200,
+    "contentType": "text/plain; charset=utf-8",
+    "bytes": 1984,
+    "sha256": "3a4da7b8d8137c32efa8cc45c9f06381be0aa19a609b1739b5c5d2da2d26a3ff"
+  }
+}

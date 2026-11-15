@@ -1,0 +1,62 @@
+[
+  {
+    "name": "oOoOoOo",
+    "signature": "()Ljava/lang/String;",
+    "address": "0x6da0c"
+  },
+  {
+    "name": "oOoOoOoOoo",
+    "signature": "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;",
+    "address": "0x6dd58"
+  },
+  {
+    "name": "ooOoOOOOo",
+    "signature": "(Ljava/lang/String;Ljava/lang/Class;Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V",
+    "address": "0x6dffc"
+  },
+  {
+    "name": "oOoOoOOOOo",
+    "signature": "(Landroid/app/Activity;)J",
+    "address": "0x6e7b4"
+  },
+  {
+    "name": "oOoOOOOo",
+    "signature": "()V",
+    "address": "0x6e98c"
+  },
+  {
+    "name": "oOoOOOo",
+    "signature": "()V",
+    "address": "0x6e9c4"
+  },
+  {
+    "name": "oOooOoo",
+    "signature": "(JLjava/lang/String;)Z",
+    "address": "0x6e9c8"
+  },
+  {
+    "name": "oOoOOOoo",
+    "signature": "()J",
+    "address": "0x6eafc"
+  },
+  {
+    "name": "oOoOOo0",
+    "signature": "()Ljava/lang/String;",
+    "address": "0x6eb00"
+  },
+  {
+    "name": "oOoOOo",
+    "signature": "(Ljava/lang/String;)Z",
+    "address": "0x6ed64"
+  },
+  {
+    "name": "oOoOOoO",
+    "signature": "()V",
+    "address": "0x6ee6c"
+  },
+  {
+    "name": "oOoOOooOO",
+    "signature": "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;",
+    "address": "0x6ee70"
+  }
+]

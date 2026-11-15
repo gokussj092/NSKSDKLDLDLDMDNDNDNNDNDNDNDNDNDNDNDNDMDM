@@ -31,11 +31,15 @@ def encode_field(clear: str, salt: str) -> str:
     return standard.translate(str.maketrans(C.STD_ALPHABET, C.CUSTOM_ALPHABET))[::-1]
 
 
-def make() -> tuple[bytes, bytes]:
+def make(message: str = "Synthetic EHI standard variant") -> tuple[bytes, bytes]:
     salt = "EVZJNI"
-    message = "Synthetic EHI standard variant"
     key = "EHIMSG"
-    msg = base64.b64encode(bytes(ord(v) ^ ord(key[i % len(key)]) for i, v in enumerate(message))).decode()
+    utf16 = message.encode("utf-16-be")
+    units = [int.from_bytes(utf16[i:i+2], "big") for i in range(0, len(utf16), 2)]
+    xored = b"".join((value ^ ord(key[i % len(key)])).to_bytes(2, "big")
+                     for i, value in enumerate(units))
+    msg = base64.b64encode(xored.decode("utf-16-be", "surrogatepass")
+                            .encode("utf-8", "surrogatepass")).decode()
     inner = {
         "serverHost": encode_field("example.org", salt),
         "serverPort": 443,

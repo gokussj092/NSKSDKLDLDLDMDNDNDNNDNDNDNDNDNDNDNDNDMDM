@@ -1,0 +1,9 @@
+{
+  "actualNodeTransport": {
+    "status": "failed",
+    "code": "REMOTE_PROVIDER_UNAVAILABLE"
+  },
+  "replayHttpSimulated": true,
+  "replayUsesRealBytesAndChildWorkerResult": true,
+  "replayPassed": true
+}

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="account_sign_in">تسجيل الدخول</string>
+    <string name="account_web_description">أدر حسابك ومشترياتك على الموقع الرسمي. تبقى الميزات المجانية متاحة دون حساب.</string>
+    <string name="account_continue_web">المتابعة على الويب</string>
+    <string name="account_my_account">حسابي</string>
+    <string name="account_store">المتجر</string>
+    <string name="account_open_menu">فتح القائمة</string>
+</resources>

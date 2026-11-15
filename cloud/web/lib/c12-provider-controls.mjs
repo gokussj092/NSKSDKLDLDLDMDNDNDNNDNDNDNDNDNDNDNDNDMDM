@@ -1,5 +1,5 @@
 /** Persistent, operator-controlled provider availability.
- * Store ONLY fixed provider IDs, Boolean disabled switches and a monotonic
+ * Store ONLY fixed provider IDs, explicit operator switches and a monotonic
  * catalog version in the dedicated isolated Docker volume. Never store URLs,
  * passwords, decoded payloads, device identifiers or admin sessions here.
  */
@@ -9,11 +9,30 @@ import {randomUUID,createHash} from "node:crypto";
 import {providerIds,providerEnabled} from "./server-vpn-provider.mjs";
 import {ehiConfigured,nurConfigured} from "./c35-provider.mjs";
 import {activeCatalogVersion,catalog,SERVER_VPN_METHODS} from "./server-vpn-catalog.mjs";
+import {SUPPLIED_CATALOG_ITEMS} from "./supplied-integrations.mjs";
+import {PENDING_CATALOGS,catalogDefaultEnabled} from "./catalog-provider-policy.mjs";
 
 const ROOT="/app/provider-control";
-const IDS=Object.freeze(["ehi-cloud","hc-cloud","nur-tunnel",...providerIds()]);
+const BROKER_IDS=new Set(["ehi-cloud","hc-cloud","nur-tunnel",...providerIds()]);
+const IDS=Object.freeze([...new Set([...BROKER_IDS,...SERVER_VPN_METHODS.map(x=>x.id)])]);
 export const PUBLIC_PROVIDER_IDS=IDS;
 const LABELS=Object.freeze({
+  ...Object.fromEntries(SERVER_VPN_METHODS.map(({id,name})=>[id,name])),
+  ...Object.fromEntries(SUPPLIED_CATALOG_ITEMS.map(({id,name})=>[id,name])),
+  "xxpicore-tunnel":"XXPICore Tunnel",
+  "catnet-vpn":"CATNET VPN",
+  "litron-vpn":"LITRON VPN",
+  "thailand-vpn":"Thailand VPN",
+  "kham-vpn":"KHAM VPN",
+  "opentunnel-ssh":"OpenTunnel · Servidores SSH",
+  "md-proxy-vpn":"MD PROXY VPN",
+  "litron-pro-vpn":"Litron Pro VPN",
+  "speigo-vpn-configs":"SpeiGo VPN · Configuraciones",
+  "speigo-vpn-ssh":"SpeiGo VPN · Usuarios SSH",
+  "genis-vpn":"Genis VPN",
+  "speicers-turbo-vpn":"Speicers`Turbo VPN",
+  "http-conexion":"HTTP Conexión",
+  "namo-vpn":"NAMO VPN",
   "fnf-tunnel-bd":"FNF TUNNEL BD",
   "alsaher-vip":"ALSAHER VIP",
   "halcon-r-net":"HALCON RAMOS Conectividad",
@@ -72,7 +91,7 @@ const LABELS=Object.freeze({
 });
 const METHOD_IDS=new Set(SERVER_VPN_METHODS.map(item=>item.id));
 const MAX_METHOD_REVISION=1_000_000;
-const empty=()=>({version:0,disabled:[],methodRevisions:{},maintenance:[]});
+const empty=()=>({version:0,disabled:[],enabled:[],methodRevisions:{},maintenance:[]});
 const methodRevision=(state,id)=>state.methodRevisions?.[id]??0;
 const methodMaintenance=(state,id)=>state.maintenance?.includes(id)??false;
 const methodStatuses=state=>SERVER_VPN_METHODS.map(({id,name})=>({
@@ -93,15 +112,21 @@ function catalogFingerprint(){
     formatsSchemaVersion:snapshot.formatsSchemaVersion,
     formatDetection:snapshot.formatDetection,
     formats:snapshot.formats,
+    textFormats:snapshot.textFormats,
     onlineReferenceFormats:snapshot.onlineReferenceFormats,
   })).digest("hex");
   return rosterFingerprint;
 }
 const valid=s=>s && typeof s==="object" && !Array.isArray(s) &&
+  (s.displayVersion===undefined || (Number.isSafeInteger(s.displayVersion) && s.displayVersion>0 && s.displayVersion<1_000_000_000)) &&
   Number.isSafeInteger(s.version) && s.version>=0 && s.version<1_000_000_000 &&
   Array.isArray(s.disabled) && s.disabled.length<=IDS.length &&
   s.disabled.every(x=>typeof x==="string" && IDS.includes(x)) &&
   new Set(s.disabled).size===s.disabled.length &&
+  (s.enabled===undefined ||
+    (Array.isArray(s.enabled) && s.enabled.length<=IDS.length &&
+     s.enabled.every(id=>typeof id==="string" && IDS.includes(id) && !s.disabled.includes(id)) &&
+     new Set(s.enabled).size===s.enabled.length)) &&
   (s.catalogFingerprint===undefined ||
     (typeof s.catalogFingerprint==="string" && /^[a-f0-9]{64}$/.test(s.catalogFingerprint))) &&
   (s.maintenance===undefined ||
@@ -169,8 +194,20 @@ export function providerPrerequisite(id,env=process.env){
 }
 export function providerEffective(id,state,env=process.env){
   if(!valid(state))throw Error("PROVIDER_STATE_INVALID");
-  return providerPrerequisite(id,env) && !state.disabled.includes(id) &&
+  return providerPrerequisite(id,env) && providerAdministrativeEnabled(id,state) &&
     !methodMaintenance(state,id);
+}
+export function providerAdministrativeEnabled(id,state){
+  if(!IDS.includes(id))throw Error("INVALID_PROVIDER");
+  if(state.disabled.includes(id))return false;
+  if(state.enabled?.includes(id))return true;
+  return BROKER_IDS.has(id) && catalogDefaultEnabled(id);
+}
+function providerStatus(id,state,env){
+  return {id,name:LABELS[id],configured:providerPrerequisite(id,env),
+    enabled:providerEffective(id,state,env),
+    administrativelyEnabled:providerAdministrativeEnabled(id,state),
+    ...(PENDING_CATALOGS[id]?{pendingReason:PENDING_CATALOGS[id]}:{})};
 }
 export async function providerAllowed(id,env=process.env,{root=ROOT}={}){
   return providerEffective(id,await loadProviderState(root),env);
@@ -179,10 +216,9 @@ export async function providerOverview(env=process.env,{root=ROOT,syncCatalog=fa
   const state=syncCatalog?await synchronizeCatalogVersion(env,{root}):await loadProviderState(root);
   return {
     catalogVersion:Math.max(activeCatalogVersion(env),state.version),
-    providers:IDS.map(id=>({
-      id,name:LABELS[id],configured:providerPrerequisite(id,env),
-      enabled:providerEffective(id,state,env),
-    })),
+    displayVersion:state.displayVersion===undefined?null:String(state.displayVersion),
+    providers:IDS.map(id=>providerStatus(id,state,env)),
+    disabledProviderIds:[...state.disabled],
     methodStatuses:methodStatuses(state),
   };
 }
@@ -202,22 +238,43 @@ async function locked(callback,root=ROOT){
   try{return await callback();}
   finally{await file.close();await unlink(LOCK).catch(()=>{});}
 }
+
+/** Editorial edition is explicit, audited and never substituted for sync revision. */
+export async function updateDisplayVersion(edition,env=process.env,{root=ROOT,prepare=null}={}){
+  if(!Number.isSafeInteger(edition)||edition<1||edition>=1_000_000_000)throw Error("INVALID_DISPLAY_VERSION");
+  if(env.CLOUD_FORCE_MAINTENANCE==="true")throw Error("MAINTENANCE_LOCKED");
+  return locked(async()=>{
+    const state=await loadProviderState(root);
+    if(edition<(state.displayVersion||0))throw Error("DISPLAY_VERSION_ROLLBACK");
+    if(edition===state.displayVersion)return providerOverview(env,{root});
+    const version=Math.max(state.version,activeCatalogVersion(env),Math.floor(Date.now()/1000)-1_577_836_800)+1;
+    if(version>=1_000_000_000)throw Error("CATALOG_VERSION_EXHAUSTED");
+    const next={...state,version,displayVersion:edition,displayVersionAudit:[...(state.displayVersionAudit||[]).slice(-9),{from:state.displayVersion??null,to:edition,at:Date.now()}]};
+    if(prepare)await prepare(next);
+    const temp=join(root,".switches-"+randomUUID());const file=await open(temp,"wx",0o600);
+    try{await file.writeFile(JSON.stringify(next)+"\n");await file.sync();}finally{await file.close();}
+    try{await rename(temp,join(root,"switches.json"));}catch(e){await unlink(temp).catch(()=>{});throw e;}
+    return providerOverview(env,{root});
+  },root);
+}
 export async function updateProvider(id,enable,env=process.env,{root=ROOT}={}){
   if(!IDS.includes(id) || typeof enable!=="boolean")throw Error("INVALID_PROVIDER");
   if(env.CLOUD_FORCE_MAINTENANCE==="true")throw Error("MAINTENANCE_LOCKED");
-  if(enable && !providerPrerequisite(id,env))throw Error("PROVIDER_NOT_CONFIGURED");
   return locked(async()=>{
     const state=await loadProviderState(root);
     const disabled=new Set(state.disabled);
-    if(enable)disabled.delete(id);else disabled.add(id);
-    if(disabled.size===state.disabled.length && [...disabled].every(v=>state.disabled.includes(v)))
+    const enabled=new Set(state.enabled||[]);
+    if(enable){disabled.delete(id);if(!providerAdministrativeEnabled(id,state))enabled.add(id);}
+    else{disabled.add(id);enabled.delete(id);}
+    if(disabled.size===state.disabled.length && [...disabled].every(v=>state.disabled.includes(v)) &&
+       enabled.size===(state.enabled||[]).length && [...enabled].every(v=>state.enabled?.includes(v)))
       return providerOverview(env,{root});
     // A version above the current epoch-offset seconds prevents stale Android
     // catalogs even across a fresh deployment or a previous QA version bump.
     const floor=Math.floor(Date.now()/1000)-1_577_836_800;
     const version=Math.max(state.version,activeCatalogVersion(env),floor)+1;
     if(version>=1_000_000_000)throw Error("CATALOG_VERSION_EXHAUSTED");
-    const updated={...state,version,disabled:[...disabled].sort()};
+    const updated={...state,version,disabled:[...disabled].sort(),enabled:[...enabled].sort()};
     const STATE=join(root,"switches.json");
     const tmp=join(root,".switches-"+randomUUID());
     const file=await open(tmp,"wx",0o600);
@@ -227,10 +284,9 @@ export async function updateProvider(id,enable,env=process.env,{root=ROOT}={}){
     catch(e){await unlink(tmp).catch(()=>{});throw e;}
     return {
       catalogVersion:version,
-      providers:IDS.map(k=>({
-        id:k,name:LABELS[k],configured:providerPrerequisite(k,env),
-        enabled:providerEffective(k,updated,env),
-      })),
+      displayVersion:state.displayVersion===undefined?null:String(state.displayVersion),
+      providers:IDS.map(k=>providerStatus(k,updated,env)),
+      disabledProviderIds:[...updated.disabled],
       methodStatuses:methodStatuses(updated),
     };
   },root);
@@ -269,10 +325,9 @@ export async function updateMethodState(id,operation,maintenance,env=process.env
     catch(error){await unlink(tmp).catch(()=>{});throw error;}
     return {
       catalogVersion:version,
-      providers:IDS.map(k=>({
-        id:k,name:LABELS[k],configured:providerPrerequisite(k,env),
-        enabled:providerEffective(k,next,env),
-      })),
+      displayVersion:state.displayVersion===undefined?null:String(state.displayVersion),
+      providers:IDS.map(k=>providerStatus(k,next,env)),
+      disabledProviderIds:[...next.disabled],
       methodStatuses:methodStatuses(next),
     };
   },root);

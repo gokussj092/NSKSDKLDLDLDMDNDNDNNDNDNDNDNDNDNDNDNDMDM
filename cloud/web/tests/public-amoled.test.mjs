@@ -7,12 +7,15 @@ test("public landing never exposes internal implementation or admin entry",()=>{
  const page=read("app/public/home.jsx");
  const chrome=read("app/public/site-chrome.jsx");
  assert.match(page,/SP-DECODE/);
- assert.doesNotMatch(page,/endpoint|Play Integrity|private worker|admin\/login|\bAPI\b/i);
- assert.match(chrome,/publicRoutes=new Set\(\["\/","\/privacy","\/terms","\/support"\]\)/);
+ assert.doesNotMatch(page,/endpoint|Play Integrity|private worker|admin\/login/i);
+ assert.match(page,/Acceso API/);
+ assert.match(chrome,/publicRoutes=new Set/);
+ for(const route of ['"/login"','"/account"','"/orders"','"/receipts"','"/products"'])assert.ok(chrome.includes(route),route);
  assert.match(chrome,/function LegacyChrome/);
  assert.match(chrome,/https:\/\/panel.spdecode.xyz\/admin\/login/);
- const isolated=chrome.slice(chrome.indexOf("export function PublicChrome"),chrome.indexOf("function LegacyChrome"));
- assert.doesNotMatch(isolated,/panel.spdecode.xyz|\/admin|\/api/);
+ const isolated=chrome.slice(chrome.indexOf("function PublicChrome"),chrome.indexOf("function LegacyChrome"));
+ assert.doesNotMatch(isolated,/panel.spdecode.xyz|\/admin|\/api\/v[12]|\/api\/internal/);
+ assert.match(isolated,/fetch\('\/api\/account'/);
 });
 test("official icon geometry remains identical to original Android launcher",()=>{
  const icon=read("app/icon.svg"),original=read("../../android/app/src/main/res/mipmap-anydpi/ic_launcher.xml");
@@ -45,7 +48,7 @@ test("ES and EN complete and legal pages remain available",()=>{
  assert.match(home,/Tus configuraciones, más claras/);
  assert.match(legal,/Política de privacidad de SP-DECODE/);
  assert.match(legal,/SP-DECODE Privacy Policy/);
- assert.match(legal,/October 25, 2026/);
+ assert.match(legal,/November 10, 2026/);
  for(const page of ["app/privacy/page.jsx","app/terms/page.jsx","app/support/page.jsx"])
   assert.match(read(page),/PublicLegal/);
 });
@@ -79,7 +82,9 @@ test("Google Play-style gallery scrolls horizontally without manual navigation b
 test("Google Play button is disabled and cannot redirect to GitHub",()=>{
  const home=read("app/public/home.jsx");
  const css=read("app/public/public.css");
- assert.doesNotMatch(home,/github\.com|\/releases|href=.*download/i);
+ assert.doesNotMatch(home,/github\.com|\/releases/i);
+ assert.match(home,/href="#downloads"/);
+ assert.match(home,/sp-button-apk-download/);
  assert.match(home,/play:"Google Play"/);
  assert.match(home,/download:"Próximamente"/);
  assert.match(home,/download:"Coming soon"/);

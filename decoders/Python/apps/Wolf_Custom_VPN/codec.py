@@ -1,4 +1,4 @@
-"""Wolf Custom VPN v2.8.1.2 (13): native fixed-key AES-256-GCM documents."""
+"""Wolf builds 13/16: authenticated native catalogs and compatible profiles."""
 from __future__ import annotations
 import base64
 import json
@@ -9,9 +9,11 @@ from Crypto.Cipher import AES
 
 if __package__ and '.' in __package__:
     from ..HTTP_FenixVPN import codec as shared
+    from . import codec_v16
 else:
     sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
     from HTTP_FenixVPN import codec as shared
+    import codec_v16
 
 DecodeError = shared.DecodeError
 MAX_BYTES = shared.MAX_BYTES
@@ -36,26 +38,35 @@ class EnvelopeError(DecodeError):
 
 
 def decrypt(value: str, *, injector=False) -> str:
+    if not isinstance(value,str) or len(value.encode("utf-8"))>MAX_BYTES:
+        raise EnvelopeError("Sobre Wolf inválido o no compatible.")
+    text=value.replace("\r","").replace("\n","")
+    # Build16 transport has one explicit inserted character. Raw field/asset
+    # envelopes retain ordinary Base64. Every accepted route authenticates.
+    if len(text)%4==1:
+        try:return codec_v16.decrypt(text,transport=True)
+        except codec_v16.AuthenticatedTextError:
+            raise DecodeError("Texto Wolf incompatible.") from None
+        except (ValueError,UnicodeError):
+            raise EnvelopeError("Sobre Wolf inválido o no compatible.") from None
     try:
-        if not isinstance(value, str) or len(value.encode('utf-8')) > MAX_BYTES:
-            raise ValueError()
-        raw = base64.b64decode(value.replace('\r', '').replace('\n', ''), validate=True)
-        if len(raw) < 28:
-            raise ValueError()
-        for key in ((KEY, INJECTOR_KEY) if injector else (KEY,)):
-            try:
-                clear = AES.new(key, AES.MODE_GCM, nonce=raw[:12]).decrypt_and_verify(raw[12:-16], raw[-16:])
-                break
-            except ValueError:
-                continue
-        else:
-            raise ValueError()
-    except (ValueError, UnicodeError) as exc:
-        raise EnvelopeError('Sobre Wolf inválido o no compatible.') from exc
-    try:
-        return clear.decode('utf-8')
-    except UnicodeError as exc:
-        raise DecodeError('Texto Wolf incompatible.') from exc
+        raw=base64.b64decode(text,validate=True)
+        if len(raw)<28:raise ValueError()
+    except ValueError:
+        raise EnvelopeError("Sobre Wolf inválido o no compatible.") from None
+    for key in ((KEY,INJECTOR_KEY) if injector else (KEY,)):
+        try:
+            clear=AES.new(key,AES.MODE_GCM,nonce=raw[:12]).decrypt_and_verify(raw[12:-16],raw[-16:])
+        except ValueError:
+            continue
+        try:return clear.decode("utf-8")
+        except UnicodeError:
+            raise DecodeError("Texto Wolf incompatible.") from None
+    try:return codec_v16.decrypt(text)
+    except codec_v16.AuthenticatedTextError:
+        raise DecodeError("Texto Wolf incompatible.") from None
+    except (ValueError,UnicodeError):
+        raise EnvelopeError("Sobre Wolf inválido o no compatible.") from None
 
 
 def parse_document(text: str) -> dict:
@@ -122,3 +133,4 @@ def decode_profile_document(obj: dict) -> dict:
     result = _record(obj, NETWORK_FIELDS)
     render(result)
     return result
+

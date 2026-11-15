@@ -1,0 +1,25 @@
+{
+  "Version": "76-fixture",
+  "ReleaseNotes": "Fictional test only",
+  "Meta": {
+    "nested": [
+      "kept",
+      false,
+      null,
+      7
+    ],
+    "unicode": "Español 🙂"
+  },
+  "Servers": [
+    {
+      "serverType": 1,
+      "tunnelType": 2,
+      "p0PgL3l0d89mnssz7ImPJA==": "Fictional Genis 🇲🇽",
+      "ACqWMY4zuZWzSEs8cZMXIw==": "test.example.org",
+      "Qz8kR1uPmNvT4sXbHc2AwQ==": "opaque value",
+      "futureEncryptedField": "Keep the entire document",
+      "SbDP19AbQur0YtkkyRlVMA==": "",
+      "MIgkNbuX29MmGatZNVaFUj==": false
+    }
+  ]
+}

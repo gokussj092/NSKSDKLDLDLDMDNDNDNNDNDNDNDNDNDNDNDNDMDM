@@ -1,0 +1,13 @@
+{
+ "roy_file_b64": "AAECAwQFBgcICQoLDA0OD26unUhVIvvDsO5zAHrGkhikmABmNd6IYteVnJZbp9anzm+9fwQ+2A8Flpys1Y0Q5KyjhvRMyJkNHwEU6K9Ljf3uuFNGjGeMfnaVTkj1n3wz3XsZnK0b/cjuzVuAnptPMUQbXkt5mY/zTsjZUrG7E0Z5GHdH6qIFI+kT2AXcLAgAA+TheafbyOM8CBxZagHChtkrtgq+sXD7rSSCpzmx7lw=",
+ "roy_profile": {
+  "Name": "TEST-PROFILE",
+  "Payload": "test-payload-content",
+  "Server": "example.org"
+ },
+ "xxtea_b64": "QKjvYw3jZbKFBPE76teK+abS6K72fA+5WlahN/j9/mAS14bt9RGG+BjBnSM=",
+ "xxtea_plaintext": {
+  "Servers": [],
+  "Version": "5.43-test"
+ }
+}

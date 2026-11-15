@@ -1,0 +1,7 @@
+# Revisión de consumidores — Litron Pro11
+
+Se añade únicamente el proveedor litron-pro-vpn, separado del base litron-vpn. El directorio público alcanza69 apps y el mínimo monotónico77; versiones superiores configuradas por el operador se preservan. Fuente/icono Pro independientes. Se conservan los contratos downloadVpnCatalog(bytes), run(bytes), gateway/worker, permisos, mantenimiento y estados del operador; no cambia el método propio de este consumidor.
+
+Se revisaron c12-provider-controls, server-vpn-catalog y server-vpn-provider y sus dependencias transitivas identificadas por P06. La adición a los allowlists del worker es explícita. Ambos Litron ahora deniegan cualquier redirección, incluida una ruta distinta del mismo dominio, para mantener sus fuentes separadas. No cambian fuentes, claves o solicitudes de otros proveedores. Las pruebas del inventario siguen comprobando sus IDs y disponibilidad; el mínimo de versión avanza sin fijar el conteo futuro.
+
+Validación local conjunta:101 pruebas Python,196 Node y20 del arnés de descargas, más build web. Las pruebas de transporte son simuladas; no afirman conectividad externa de este método. Solo Pro tiene nueva verificación real: remoto51 servidores/206 campos internos y asset26/104; JSON entero contra JCA y worker. Evidencia y herramientas en analysis/com.litron.udp/11/. No se aprueban automáticamente los consumidores sin resolución estática reportados por P06 ni se certifican nuevas versiones de este proveedor. Sin merge main ni despliegue VPS.

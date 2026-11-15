@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="catalog_offer_title">يتوفر كتالوج جديد</string>
+    <string name="catalog_offer_body">الإصدار %1$d من الكتالوج جاهز. حدّث للحصول على تطبيقات وطرق وتحسينات جديدة مدعومة.</string>
+    <string name="catalog_offer_update">تحديث</string>
+    <string name="catalog_offer_later">إلغاء</string>
+    <string name="catalog_postpone_title">هل تتابع دون تحديث؟</string>
+    <string name="catalog_postpone_body">إذا ألغيت، فلن تتوفر التطبيقات والطرق والتحسينات الجديدة حتى تحدّث الكتالوج. يمكنك التحديث لاحقًا من قسم خوادم VPN.</string>
+    <string name="catalog_postpone_confirm">المتابعة دون تحديث</string>
+    <string name="catalog_postpone_back">الرجوع</string>
+</resources>

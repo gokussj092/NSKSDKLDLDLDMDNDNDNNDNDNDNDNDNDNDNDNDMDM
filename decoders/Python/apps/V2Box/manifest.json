@@ -1,0 +1,35 @@
+{
+  "id": "v2box",
+  "name": "V2Box",
+  "package": "dev.hexasoftware.v2box",
+  "versionName": "6.2.3",
+  "versionCode": 88,
+  "engine": "python",
+  "entrypoint": "V2Box.py",
+  "fileDecoder": "V2Box_archivos.py",
+  "extensions": [
+    "v2box"
+  ],
+  "textPrefixes": [
+    "v2box://locked=",
+    "v2box://install-config",
+    "v2box://install-sub"
+  ],
+  "dependencies": [],
+  "credentials": [
+    "password",
+    "deviceKey"
+  ],
+  "catalog": {
+    "status": "no_vendor_catalog",
+    "method": "GET",
+    "url": "https://services.hexasoftware.dev/app-settings",
+    "version": null,
+    "servers": 0,
+    "networks": 0,
+    "payloads": 0,
+    "note": "app-settings solo devuelve promociones (verificado en vivo 2026-11-14: HTTP 200, 932 B, 3 promociones, 0 servidores). Cliente V2Ray generico: el usuario aporta sus URLs de suscripcion."
+  },
+  "realSampleVerified": false,
+  "deployment": "pending"
+}

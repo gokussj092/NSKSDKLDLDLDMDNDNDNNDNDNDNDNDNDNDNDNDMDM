@@ -1,0 +1,31 @@
+{
+  "id": "pukang-vpn",
+  "name": "PUKANG VPN",
+  "package": "com.pukangvpn.th",
+  "versionName": "8.7",
+  "versionCode": 87,
+  "engine": "python",
+  "entrypoint": "PUKANG_VPN.py",
+  "extensions": [],
+  "textPrefixes": [],
+  "dependencies": [],
+  "catalog": {
+    "entrypoint": "PUKANG_VPN.py",
+    "method": "GET",
+    "url": "https://pukangvpn.xyz/pukangvpn/Config.json",
+    "status": "live_verified",
+    "version": 144,
+    "servers": 17,
+    "networks": 19,
+    "payloads": 16,
+    "notes": "Base64 + XXTEA modificado (delta 0x2E0BA747, clave pukangvpn270@). Mismo metodo que la app hermana KHAM VPN (carpeta KHAM_VPN en el repo) con otra clave/URL, verificado de cero en ESTE APK. El catalogo no trae marcador gratis/premium/VIP en ningun servidor."
+  },
+  "files": {
+    "supported": true,
+    "entrypoint": "PUKANG_VPN_archivos.py",
+    "extensions": [],
+    "notes": "Sin tipo propio exportable; el script abre el profile.json que la app guarda en filesDir (Base64(XXTEA(JSON)) con la misma clave) y lo re-cifra con --encode. Importa el descifrador de PUKANG_VPN.py: mantener juntos. Sin .sks, sin esquema URI propio."
+  },
+  "realSampleVerified": true,
+  "deployment": "pending"
+}

@@ -1,0 +1,983 @@
+{
+  "schema_version": 1,
+  "package_name": "noob.arpro.vpn",
+  "app_name": "AR PRO VPN",
+  "version_name": "2.0",
+  "version_code": 2,
+  "observed_at": "2026-11-04T21:35:38.047837+00:00",
+  "source_category": "user_store_link_public_mirror",
+  "authorization_note": "User requested Cloud catalog investigation/integration, strictly no Android compilation or waiting for artifacts. No deployment/merge requested.",
+  "status": "PARTIAL",
+  "enabled": false,
+  "public_catalog_changed": true,
+  "targets": [
+    {
+      "kind": "catalog",
+      "status": "PENDING",
+      "network": "Both observed catalog sources return HTTP200 HTML195bytes here",
+      "whole_remote_json_verified": false,
+      "enabled": false
+    },
+    {
+      "kind": "included_catalog",
+      "status": "PARTIAL",
+      "outer_json_opened": true,
+      "servers": 1,
+      "tweaks": 1,
+      "root_gcm_metadata_verified": true,
+      "all_fields_decoded": false,
+      "independent_xts_oracle": "PENDING",
+      "enabled": false
+    },
+    {
+      "kind": "files",
+      "status": "NOT_INVESTIGATED"
+    },
+    {
+      "kind": "text",
+      "status": "NOT_INVESTIGATED"
+    },
+    {
+      "kind": "export",
+      "status": "NOT_CERTIFIED"
+    }
+  ],
+  "inputs": [
+    {
+      "type": "xapk",
+      "bytes": 59213969,
+      "sha256": "867c1f0ba622d7a8e9e3d43a044556b2049273b421dea4b5e317539f886d00cf",
+      "source": "https://d.apkpure.com/b/XAPK/noob.arpro.vpn?version=latest; pinned by hash"
+    },
+    {
+      "type": "apk",
+      "bytes": 24908033,
+      "sha256": "b159049c522923ac83e788bdc3b94df9dec034a7da44c90f14ff86b8db9ad1ad",
+      "source": "XAPK base"
+    },
+    {
+      "type": "native_inspected_only",
+      "bytes": 8522240,
+      "sha256": "e4388396c5b5e7c4da6b22db50cb43605509b0c6cae75526fe20f45be6aebd32",
+      "source": "ARM64 split/libovpn3.so"
+    },
+    {
+      "type": "included_resource",
+      "bytes": 2748,
+      "sha256": "6e3e10f6c3efef1fbb6bac2595e6df1b27ffee7fe9495a17fccb09c03d40cc01",
+      "source": "base/res/raw/noobdev.js"
+    },
+    {
+      "type": "remote_html",
+      "bytes": 195,
+      "sha256": "5b131ca14aa96311d3432b0062c7443d3b0e6346ec279bd376a75f0a76bcd5d7",
+      "source": "https://jezvpn.xyz/api/app?json=20ec37d9ba9316e8a793"
+    },
+    {
+      "type": "configured-catalog",
+      "bytes": 195,
+      "sha256": "5b131ca14aa96311d3432b0062c7443d3b0e6346ec279bd376a75f0a76bcd5d7",
+      "source": "https://jezvpn.xyz/api/app?json=743ebcbbf84f7f9cac2f",
+      "http": 200
+    },
+    {
+      "type": "app-update-metadata",
+      "bytes": 3436,
+      "sha256": "a8546b555188a740bb2d61f31ade86b634f13245bab8409adb66f30898dc1afc",
+      "source": "https://pastebin.com/raw/XrVPE3mj",
+      "http": 200
+    }
+  ],
+  "tooling": [
+    {
+      "path": "analysis/noob.arpro.vpn/2/tools/StringOracle.java",
+      "sha256": "2fd6dd5410c4ce9c7baa5f8edfcc810d0c32dad6bc6994d519cdafd232face26",
+      "approval": "UNREVIEWED_MANUAL_RESEARCH_ONLY"
+    },
+    {
+      "path": "analysis/noob.arpro.vpn/2/tools/extract_resources.py",
+      "sha256": "23bf4abc0028d6be0c83aac582c96e8e43219e0abfe2235746ebe1abcfcfbf7e",
+      "approval": "UNREVIEWED_MANUAL_RESEARCH_ONLY"
+    },
+    {
+      "path": "analysis/noob.arpro.vpn/2/tools/finalize.py",
+      "sha256": "0366d85975c132444d5e622f3069f8ee0f7817360fcd3787cdbfc8db8f7efdee",
+      "approval": "UNREVIEWED_MANUAL_RESEARCH_ONLY"
+    },
+    {
+      "path": "analysis/noob.arpro.vpn/2/tools/history/extract_resources_v1_missing_extension.py",
+      "sha256": "37698b18c6a76b2ace16f8f14edf91e1418724d3d749de14b6c6e7f30d4dbefb",
+      "approval": "UNREVIEWED_MANUAL_RESEARCH_ONLY"
+    },
+    {
+      "path": "analysis/noob.arpro.vpn/2/tools/prepare.py",
+      "sha256": "4bfdbfb2b3f860cd33a758767cddda786ed480ee1c3b9ad8ea6a65cb97ea7117",
+      "approval": "UNREVIEWED_MANUAL_RESEARCH_ONLY"
+    },
+    {
+      "path": "analysis/noob.arpro.vpn/2/tools/probe.py",
+      "sha256": "8babdb73ade48fffee46968f7f5c1c61cba647d05285b2eb7a90017a2565087b",
+      "approval": "UNREVIEWED_MANUAL_RESEARCH_ONLY"
+    },
+    {
+      "path": "analysis/noob.arpro.vpn/2/tools/probe_configured_sources.py",
+      "sha256": "b1c4e8e7b46841d0b7adf8c806153590cc10faf66c87c2c1e1c13e1dcc349489",
+      "approval": "UNREVIEWED_MANUAL_RESEARCH_ONLY"
+    },
+    {
+      "path": "analysis/noob.arpro.vpn/2/tools/recover.py",
+      "sha256": "52651eb7092f096e19a13c41f00860936f0998fbae18dd6663866092ef2c6ea1",
+      "approval": "UNREVIEWED_MANUAL_RESEARCH_ONLY"
+    },
+    {
+      "path": "analysis/noob.arpro.vpn/2/tools/resolve_strings.py",
+      "sha256": "42612b2942d553d3aa54207ec38a1f53fec407eeda97fc2f722f8bde56c2fe0e",
+      "approval": "UNREVIEWED_MANUAL_RESEARCH_ONLY"
+    },
+    {
+      "path": "analysis/noob.arpro.vpn/2/tools/verify_pending.py",
+      "sha256": "94e7d9c44b154b24122ba1e027d12e6067603cebf0545750d8dc469be8dcde69",
+      "approval": "UNREVIEWED_MANUAL_RESEARCH_ONLY"
+    },
+    {
+      "name": "Shared owned intake/static/probe/oracle tools",
+      "path": "analysis/_intake/thailand-kham-arpro-2026-11-09/tools"
+    },
+    {
+      "name": "Build recipe",
+      "path": "analysis/noob.arpro.vpn/2/tools/reproduce.py"
+    },
+    {
+      "name": "Independent Java XXTEA oracle",
+      "path": "analysis/com.appxrayservice.namovpn/35/tools/CatalogOracle.java"
+    }
+  ],
+  "shared_tooling": [
+    {
+      "path": "scripts/apk_analysis/inspect_apk.py",
+      "sha256": "3207559b8bf015e374c695614cb3cb65b22eb6c960373ec863e81c91ad8606cb",
+      "source_commit": "8ce1af86f0e3e2a9732b11eb8d68cb52ed40c76d"
+    },
+    {
+      "path": "scripts/apk_analysis/decompile.py",
+      "sha256": "dd04a05c2cb46bae494af412733d9e27b71167fc86f787371e76dfbddd50a3dd",
+      "source_commit": "8ce1af86f0e3e2a9732b11eb8d68cb52ed40c76d"
+    },
+    {
+      "path": "scripts/apk_analysis/elf_inspect.py",
+      "sha256": "b20adfae49329677c313fddb4674a6964a26867b9a27868e6da906fd5aeddee1",
+      "source_commit": "8ce1af86f0e3e2a9732b11eb8d68cb52ed40c76d"
+    },
+    {
+      "path": "analysis/net.catnet.vpn/27/tools/dex_trace.py",
+      "sha256": "e90b9f7a6cacbe147a3e53b4c821e7fb733e18067aa3f8b4f17fde86472b88ee",
+      "source_commit": "8ce1af86f0e3e2a9732b11eb8d68cb52ed40c76d"
+    },
+    {
+      "path": "analysis/com.halcon.connect/1391/tools/dependency_inventory.py",
+      "sha256": "ec181cd81869c3c7f1d8015b9055642f1b701b6c8f7a600aa72b5d486ef86fc4",
+      "source_commit": "8ce1af86f0e3e2a9732b11eb8d68cb52ed40c76d"
+    }
+  ],
+  "dependencies": [
+    {
+      "id": "pypi:alembic",
+      "name": "alembic",
+      "type": "PyPI",
+      "version": "1.20.1",
+      "source": [
+        "Homepage, https://alembic.sqlalchemy.org",
+        "Documentation, https://alembic.sqlalchemy.org/en/latest/",
+        "Changelog, https://alembic.sqlalchemy.org/en/latest/changelog.html",
+        "Source, https://github.com/sqlalchemy/alembic/",
+        "Issue Tracker, https://github.com/sqlalchemy/alembic/issues/"
+      ],
+      "license": "MIT",
+      "review": "NEEDS_REVIEW",
+      "distribution_sha256": null,
+      "lockfile": "dependencies.lock.json"
+    },
+    {
+      "id": "pypi:androguard",
+      "name": "androguard",
+      "type": "PyPI",
+      "version": "4.1.4",
+      "source": [
+        "Homepage, https://github.com/androguard/androguard"
+      ],
+      "license": "Apache Licence, Version 2.0",
+      "review": "NEEDS_REVIEW",
+      "distribution_sha256": null,
+      "lockfile": "dependencies.lock.json"
+    },
+    {
+      "id": "pypi:apkInspector",
+      "name": "apkInspector",
+      "type": "PyPI",
+      "version": "1.3.7",
+      "source": [
+        "Repository, https://github.com/erev0s/apkInspector"
+      ],
+      "license": "Apache-2.0",
+      "review": "NEEDS_REVIEW",
+      "distribution_sha256": null,
+      "lockfile": "dependencies.lock.json"
+    },
+    {
+      "id": "pypi:asn1crypto",
+      "name": "asn1crypto",
+      "type": "PyPI",
+      "version": "1.5.1",
+      "source": [
+        "https://github.com/wbond/asn1crypto"
+      ],
+      "license": "MIT",
+      "review": "NEEDS_REVIEW",
+      "distribution_sha256": null,
+      "lockfile": "dependencies.lock.json"
+    },
+    {
+      "id": "pypi:asttokens",
+      "name": "asttokens",
+      "type": "PyPI",
+      "version": "3.0.2",
+      "source": [
+        "Documentation, https://asttokens.readthedocs.io/en/latest/index.html",
+        "Issue Tracker, https://github.com/gristlabs/asttokens/issues"
+      ],
+      "license": "Apache 2.0",
+      "review": "NEEDS_REVIEW",
+      "distribution_sha256": null,
+      "lockfile": "dependencies.lock.json"
+    },
+    {
+      "id": "pypi:capstone",
+      "name": "capstone",
+      "type": "PyPI",
+      "version": "5.0.9",
+      "source": [
+        "https://www.capstone-engine.org"
+      ],
+      "license": "UNKNOWN",
+      "review": "NEEDS_REVIEW",
+      "distribution_sha256": null,
+      "lockfile": "dependencies.lock.json"
+    },
+    {
+      "id": "pypi:cffi",
+      "name": "cffi",
+      "type": "PyPI",
+      "version": "2.1.1",
+      "source": [
+        "Documentation, https://cffi.readthedocs.io/",
+        "Changelog, https://cffi.readthedocs.io/en/latest/whatsnew.html",
+        "Download, https://github.com/python-cffi/cffi/releases",
+        "Contact, https://groups.google.com/forum/#!forum/python-cffi",
+        "Source Code, https://github.com/python-cffi/cffi",
+        "Issue Tracker, https://github.com/python-cffi/cffi/issues"
+      ],
+      "license": "MIT-0",
+      "review": "NEEDS_REVIEW",
+      "distribution_sha256": null,
+      "lockfile": "dependencies.lock.json"
+    },
+    {
+      "id": "pypi:click",
+      "name": "click",
+      "type": "PyPI",
+      "version": "8.5.0",
+      "source": [
+        "Changes, https://click.palletsprojects.com/page/changes/",
+        "Chat, https://discord.gg/pallets",
+        "Documentation, https://click.palletsprojects.com/",
+        "Donate, https://palletsprojects.com/donate",
+        "Source, https://github.com/pallets/click/"
+      ],
+      "license": "BSD-3-Clause",
+      "review": "NEEDS_REVIEW",
+      "distribution_sha256": null,
+      "lockfile": "dependencies.lock.json"
+    },
+    {
+      "id": "pypi:colorama",
+      "name": "colorama",
+      "type": "PyPI",
+      "version": "0.4.6",
+      "source": [
+        "Homepage, https://github.com/tartley/colorama"
+      ],
+      "license": "UNKNOWN",
+      "review": "NEEDS_REVIEW",
+      "distribution_sha256": null,
+      "lockfile": "dependencies.lock.json"
+    },
+    {
+      "id": "pypi:cryptography",
+      "name": "cryptography",
+      "type": "PyPI",
+      "version": "50.0.2",
+      "source": [
+        "changelog, https://cryptography.io/en/latest/changelog/",
+        "documentation, https://cryptography.io/",
+        "homepage, https://github.com/pyca/cryptography",
+        "issues, https://github.com/pyca/cryptography/issues",
+        "source, https://github.com/pyca/cryptography/"
+      ],
+      "license": "Apache-2.0 OR BSD-3-Clause",
+      "review": "NEEDS_REVIEW",
+      "distribution_sha256": null,
+      "lockfile": "dependencies.lock.json"
+    },
+    {
+      "id": "pypi:dataset",
+      "name": "dataset",
+      "type": "PyPI",
+      "version": "2.0.0",
+      "source": [
+        "Homepage, https://github.com/pudo/dataset",
+        "Repository, https://github.com/pudo/dataset",
+        "Documentation, https://dataset.readthedocs.io/"
+      ],
+      "license": "Copyright (c) 2013, Open Knowledge Foundation, Friedrich Lindenberg,",
+      "review": "NEEDS_REVIEW",
+      "distribution_sha256": null,
+      "lockfile": "dependencies.lock.json"
+    },
+    {
+      "id": "pypi:executing",
+      "name": "executing",
+      "type": "PyPI",
+      "version": "2.3.0",
+      "source": [
+        "Homepage, https://github.com/alexmojaki/executing",
+        "Repository, https://github.com/alexmojaki/executing"
+      ],
+      "license": "MIT",
+      "review": "NEEDS_REVIEW",
+      "distribution_sha256": null,
+      "lockfile": "dependencies.lock.json"
+    },
+    {
+      "id": "pypi:ipython",
+      "name": "ipython",
+      "type": "PyPI",
+      "version": "9.18.1",
+      "source": [
+        "Homepage, https://ipython.org",
+        "Documentation, https://ipython.readthedocs.io/",
+        "Funding, https://jupyter.org/about#donate",
+        "Source, https://github.com/ipython/ipython",
+        "Tracker, https://github.com/ipython/ipython/issues"
+      ],
+      "license": "BSD-3-Clause",
+      "review": "NEEDS_REVIEW",
+      "distribution_sha256": null,
+      "lockfile": "dependencies.lock.json"
+    },
+    {
+      "id": "pypi:ipython_pygments_lexers",
+      "name": "ipython_pygments_lexers",
+      "type": "PyPI",
+      "version": "1.1.1",
+      "source": [
+        "Source, https://github.com/ipython/ipython-pygments-lexers"
+      ],
+      "license": "UNKNOWN",
+      "review": "NEEDS_REVIEW",
+      "distribution_sha256": null,
+      "lockfile": "dependencies.lock.json"
+    },
+    {
+      "id": "pypi:jedi",
+      "name": "jedi",
+      "type": "PyPI",
+      "version": "0.20.1",
+      "source": [
+        "Documentation, https://jedi.readthedocs.io/en/latest/"
+      ],
+      "license": "MIT",
+      "review": "NEEDS_REVIEW",
+      "distribution_sha256": null,
+      "lockfile": "dependencies.lock.json"
+    },
+    {
+      "id": "pypi:loguru",
+      "name": "loguru",
+      "type": "PyPI",
+      "version": "0.7.3",
+      "source": [
+        "Changelog, https://github.com/Delgan/loguru/blob/master/CHANGELOG.rst",
+        "Documentation, https://loguru.readthedocs.io/en/stable/index.html",
+        "Homepage, https://github.com/Delgan/loguru"
+      ],
+      "license": "UNKNOWN",
+      "review": "NEEDS_REVIEW",
+      "distribution_sha256": null,
+      "lockfile": "dependencies.lock.json"
+    },
+    {
+      "id": "pypi:lxml",
+      "name": "lxml",
+      "type": "PyPI",
+      "version": "6.1.3",
+      "source": [
+        "Source, https://github.com/lxml/lxml",
+        "Bug Tracker, https://bugs.launchpad.net/lxml"
+      ],
+      "license": "BSD-3-Clause",
+      "review": "NEEDS_REVIEW",
+      "distribution_sha256": null,
+      "lockfile": "dependencies.lock.json"
+    },
+    {
+      "id": "pypi:Mako",
+      "name": "Mako",
+      "type": "PyPI",
+      "version": "1.4.3",
+      "source": [
+        "Homepage, https://www.makotemplates.org/",
+        "Documentation, https://docs.makotemplates.org",
+        "Issue Tracker, https://github.com/sqlalchemy/mako"
+      ],
+      "license": "MIT",
+      "review": "NEEDS_REVIEW",
+      "distribution_sha256": null,
+      "lockfile": "dependencies.lock.json"
+    },
+    {
+      "id": "pypi:MarkupSafe",
+      "name": "MarkupSafe",
+      "type": "PyPI",
+      "version": "3.0.4",
+      "source": [
+        "Donate, https://palletsprojects.com/donate",
+        "Documentation, https://markupsafe.palletsprojects.com/",
+        "Changes, https://markupsafe.palletsprojects.com/page/changes/",
+        "Source, https://github.com/pallets/markupsafe/",
+        "Chat, https://discord.gg/pallets"
+      ],
+      "license": "BSD-3-Clause",
+      "review": "NEEDS_REVIEW",
+      "distribution_sha256": null,
+      "lockfile": "dependencies.lock.json"
+    },
+    {
+      "id": "pypi:matplotlib-inline",
+      "name": "matplotlib-inline",
+      "type": "PyPI",
+      "version": "0.2.2",
+      "source": [
+        "Homepage, https://github.com/ipython/matplotlib-inline"
+      ],
+      "license": "BSD-3-Clause",
+      "review": "NEEDS_REVIEW",
+      "distribution_sha256": null,
+      "lockfile": "dependencies.lock.json"
+    },
+    {
+      "id": "pypi:mutf8",
+      "name": "mutf8",
+      "type": "PyPI",
+      "version": "1.1.0",
+      "source": [
+        "Homepage, https://github.com/TkTech/mutf8",
+        "Source, https://github.com/TkTech/mutf8",
+        "Issues, https://github.com/TkTech/mutf8/issues"
+      ],
+      "license": "MIT",
+      "review": "NEEDS_REVIEW",
+      "distribution_sha256": null,
+      "lockfile": "dependencies.lock.json"
+    },
+    {
+      "id": "pypi:networkx",
+      "name": "networkx",
+      "type": "PyPI",
+      "version": "3.7",
+      "source": [
+        "Homepage, https://networkx.org/",
+        "Bug Tracker, https://github.com/networkx/networkx/issues",
+        "Documentation, https://networkx.org/documentation/stable/",
+        "Source Code, https://github.com/networkx/networkx"
+      ],
+      "license": "BSD-3-Clause",
+      "review": "NEEDS_REVIEW",
+      "distribution_sha256": null,
+      "lockfile": "dependencies.lock.json"
+    },
+    {
+      "id": "pypi:parso",
+      "name": "parso",
+      "type": "PyPI",
+      "version": "0.8.7",
+      "source": [
+        "https://github.com/davidhalter/parso"
+      ],
+      "license": "MIT",
+      "review": "NEEDS_REVIEW",
+      "distribution_sha256": null,
+      "lockfile": "dependencies.lock.json"
+    },
+    {
+      "id": "pypi:pexpect",
+      "name": "pexpect",
+      "type": "PyPI",
+      "version": "4.9.0",
+      "source": [
+        "Bug Tracker, https://github.com/pexpect/pexpect/issues",
+        "Documentation, https://pexpect.readthedocs.io/",
+        "Source Code, https://github.com/pexpect/pexpect",
+        "History, https://pexpect.readthedocs.io/en/stable/history.html"
+      ],
+      "license": "ISC license",
+      "review": "NEEDS_REVIEW",
+      "distribution_sha256": null,
+      "lockfile": "dependencies.lock.json"
+    },
+    {
+      "id": "pypi:pillow",
+      "name": "pillow",
+      "type": "PyPI",
+      "version": "13.0.0",
+      "source": [
+        "Release notes, https://pillow.readthedocs.io/en/stable/releasenotes/index.html",
+        "Changelog, https://github.com/python-pillow/Pillow/releases",
+        "Documentation, https://pillow.readthedocs.io",
+        "Funding, https://tidelift.com/lifter/search/pypi/pillow",
+        "Homepage, https://python-pillow.org",
+        "Mastodon, https://fosstodon.org/@pillow",
+        "Security, https://pillow.readthedocs.io/en/stable/handbook/security.html",
+        "Source, https://github.com/python-pillow/Pillow"
+      ],
+      "license": "MIT-CMU",
+      "review": "NEEDS_REVIEW",
+      "distribution_sha256": null,
+      "lockfile": "dependencies.lock.json"
+    },
+    {
+      "id": "pypi:pip",
+      "name": "pip",
+      "type": "PyPI",
+      "version": "25.0.1",
+      "source": [
+        "Homepage, https://pip.pypa.io/",
+        "Documentation, https://pip.pypa.io",
+        "Source, https://github.com/pypa/pip",
+        "Changelog, https://pip.pypa.io/en/stable/news/"
+      ],
+      "license": "MIT",
+      "review": "NEEDS_REVIEW",
+      "distribution_sha256": null,
+      "lockfile": "dependencies.lock.json"
+    },
+    {
+      "id": "pypi:prompt_toolkit",
+      "name": "prompt_toolkit",
+      "type": "PyPI",
+      "version": "3.0.53",
+      "source": [
+        "Homepage, https://github.com/prompt-toolkit/python-prompt-toolkit",
+        "Documentation, https://python-prompt-toolkit.readthedocs.io/en/stable/"
+      ],
+      "license": "UNKNOWN",
+      "review": "NEEDS_REVIEW",
+      "distribution_sha256": null,
+      "lockfile": "dependencies.lock.json"
+    },
+    {
+      "id": "pypi:psutil",
+      "name": "psutil",
+      "type": "PyPI",
+      "version": "7.2.2",
+      "source": [
+        "https://github.com/giampaolo/psutil"
+      ],
+      "license": "BSD-3-Clause",
+      "review": "NEEDS_REVIEW",
+      "distribution_sha256": null,
+      "lockfile": "dependencies.lock.json"
+    },
+    {
+      "id": "pypi:ptyprocess",
+      "name": "ptyprocess",
+      "type": "PyPI",
+      "version": "0.7.0",
+      "source": [
+        "https://github.com/pexpect/ptyprocess"
+      ],
+      "license": "UNKNOWN",
+      "review": "NEEDS_REVIEW",
+      "distribution_sha256": null,
+      "lockfile": "dependencies.lock.json"
+    },
+    {
+      "id": "pypi:pure_eval",
+      "name": "pure_eval",
+      "type": "PyPI",
+      "version": "0.2.4",
+      "source": [
+        "http://github.com/alexmojaki/pure_eval"
+      ],
+      "license": "MIT",
+      "review": "NEEDS_REVIEW",
+      "distribution_sha256": null,
+      "lockfile": "dependencies.lock.json"
+    },
+    {
+      "id": "pypi:pycparser",
+      "name": "pycparser",
+      "type": "PyPI",
+      "version": "3.12",
+      "source": [
+        "Homepage, https://github.com/eliben/pycparser"
+      ],
+      "license": "BSD-3-Clause",
+      "review": "NEEDS_REVIEW",
+      "distribution_sha256": null,
+      "lockfile": "dependencies.lock.json"
+    },
+    {
+      "id": "pypi:pycryptodome",
+      "name": "pycryptodome",
+      "type": "PyPI",
+      "version": "3.23.0",
+      "source": [
+        "Source, https://github.com/Legrandin/pycryptodome/",
+        "Changelog, https://www.pycryptodome.org/src/changelog"
+      ],
+      "license": "BSD, Public Domain",
+      "review": "NEEDS_REVIEW",
+      "distribution_sha256": null,
+      "lockfile": "dependencies.lock.json"
+    },
+    {
+      "id": "pypi:pydot",
+      "name": "pydot",
+      "type": "PyPI",
+      "version": "4.0.1",
+      "source": [
+        "Homepage, https://github.com/pydot/pydot",
+        "Changelog, https://github.com/pydot/pydot/blob/main/ChangeLog",
+        "Bug Tracker, https://github.com/pydot/pydot/issues"
+      ],
+      "license": "MIT",
+      "review": "NEEDS_REVIEW",
+      "distribution_sha256": null,
+      "lockfile": "dependencies.lock.json"
+    },
+    {
+      "id": "pypi:pyelftools",
+      "name": "pyelftools",
+      "type": "PyPI",
+      "version": "0.33",
+      "source": [
+        "Homepage, https://github.com/eliben/pyelftools",
+        "Repository, https://github.com/eliben/pyelftools.git",
+        "Issues, https://github.com/eliben/pyelftools/issues"
+      ],
+      "license": "Public domain",
+      "review": "NEEDS_REVIEW",
+      "distribution_sha256": null,
+      "lockfile": "dependencies.lock.json"
+    },
+    {
+      "id": "pypi:Pygments",
+      "name": "Pygments",
+      "type": "PyPI",
+      "version": "2.21.0",
+      "source": [
+        "Homepage, https://pygments.org",
+        "Documentation, https://pygments.org/docs",
+        "Source, https://github.com/pygments/pygments",
+        "Bug Tracker, https://github.com/pygments/pygments/issues",
+        "Changelog, https://github.com/pygments/pygments/blob/master/CHANGES"
+      ],
+      "license": "BSD-2-Clause",
+      "review": "NEEDS_REVIEW",
+      "distribution_sha256": null,
+      "lockfile": "dependencies.lock.json"
+    },
+    {
+      "id": "pypi:pyparsing",
+      "name": "pyparsing",
+      "type": "PyPI",
+      "version": "3.3.3",
+      "source": [
+        "Documentation, https://pyparsing-docs.readthedocs.io/en/latest/",
+        "Homepage, https://github.com/pyparsing/pyparsing/",
+        "Source, https://github.com/pyparsing/pyparsing.git"
+      ],
+      "license": "MIT",
+      "review": "NEEDS_REVIEW",
+      "distribution_sha256": null,
+      "lockfile": "dependencies.lock.json"
+    },
+    {
+      "id": "pypi:PyYAML",
+      "name": "PyYAML",
+      "type": "PyPI",
+      "version": "6.0.3",
+      "source": [
+        "Bug Tracker, https://github.com/yaml/pyyaml/issues",
+        "CI, https://github.com/yaml/pyyaml/actions",
+        "Documentation, https://pyyaml.org/wiki/PyYAMLDocumentation",
+        "Mailing lists, http://lists.sourceforge.net/lists/listinfo/yaml-core",
+        "Source Code, https://github.com/yaml/pyyaml"
+      ],
+      "license": "MIT",
+      "review": "NEEDS_REVIEW",
+      "distribution_sha256": null,
+      "lockfile": "dependencies.lock.json"
+    },
+    {
+      "id": "pypi:SQLAlchemy",
+      "name": "SQLAlchemy",
+      "type": "PyPI",
+      "version": "2.1.8",
+      "source": [
+        "Homepage, https://www.sqlalchemy.org",
+        "Documentation, https://docs.sqlalchemy.org",
+        "Changelog, https://docs.sqlalchemy.org/latest/changelog/index.html",
+        "Source Code, https://github.com/sqlalchemy/sqlalchemy",
+        "Issue Tracker, https://github.com/sqlalchemy/sqlalchemy/issues",
+        "Discussions, https://github.com/sqlalchemy/sqlalchemy/discussions"
+      ],
+      "license": "MIT",
+      "review": "NEEDS_REVIEW",
+      "distribution_sha256": null,
+      "lockfile": "dependencies.lock.json"
+    },
+    {
+      "id": "pypi:stack-data",
+      "name": "stack-data",
+      "type": "PyPI",
+      "version": "0.6.3",
+      "source": [
+        "http://github.com/alexmojaki/stack_data"
+      ],
+      "license": "MIT",
+      "review": "NEEDS_REVIEW",
+      "distribution_sha256": null,
+      "lockfile": "dependencies.lock.json"
+    },
+    {
+      "id": "pypi:traitlets",
+      "name": "traitlets",
+      "type": "PyPI",
+      "version": "5.16.1",
+      "source": [
+        "Homepage, https://github.com/ipython/traitlets",
+        "Documentation, https://traitlets.readthedocs.io",
+        "Source, https://github.com/ipython/traitlets",
+        "Tracker, https://github.com/ipython/traitlets/issues"
+      ],
+      "license": "BSD 3-Clause License",
+      "review": "NEEDS_REVIEW",
+      "distribution_sha256": null,
+      "lockfile": "dependencies.lock.json"
+    },
+    {
+      "id": "pypi:typing_extensions",
+      "name": "typing_extensions",
+      "type": "PyPI",
+      "version": "4.16.0",
+      "source": [
+        "Bug Tracker, https://github.com/python/typing_extensions/issues",
+        "Changes, https://github.com/python/typing_extensions/blob/main/CHANGELOG.md",
+        "Documentation, https://typing-extensions.readthedocs.io/",
+        "Home, https://github.com/python/typing_extensions",
+        "Q & A, https://github.com/python/typing/discussions",
+        "Repository, https://github.com/python/typing_extensions"
+      ],
+      "license": "PSF-2.0",
+      "review": "NEEDS_REVIEW",
+      "distribution_sha256": null,
+      "lockfile": "dependencies.lock.json"
+    },
+    {
+      "id": "pypi:wcwidth",
+      "name": "wcwidth",
+      "type": "PyPI",
+      "version": "0.9.4",
+      "source": [
+        "Homepage, https://github.com/jquast/wcwidth"
+      ],
+      "license": "UNKNOWN",
+      "review": "NEEDS_REVIEW",
+      "distribution_sha256": null,
+      "lockfile": "dependencies.lock.json"
+    },
+    {
+      "id": "tool:CPython",
+      "name": "CPython",
+      "version": "3.12.14",
+      "source": "https://python.org",
+      "license": "PSF",
+      "review": "MANUAL_USE_NOT_AUTOMATIC_PHASE7_APPROVAL",
+      "lockfile": "dependencies.lock.json"
+    },
+    {
+      "id": "tool:OpenJDK",
+      "name": "OpenJDK",
+      "version": "17.0.20+8",
+      "source": "https://openjdk.org",
+      "license": "GPLv2 with Classpath Exception",
+      "review": "MANUAL_USE_NOT_AUTOMATIC_PHASE7_APPROVAL",
+      "lockfile": "dependencies.lock.json"
+    },
+    {
+      "id": "tool:JADX",
+      "name": "JADX",
+      "version": "1.5.6",
+      "source": "https://github.com/skylot/jadx/releases/tag/v1.5.6",
+      "license": "Apache-2.0",
+      "review": "MANUAL_USE_NOT_AUTOMATIC_PHASE7_APPROVAL",
+      "lockfile": "dependencies.lock.json"
+    },
+    {
+      "id": "tool:curl",
+      "name": "curl",
+      "version": "8.5.0",
+      "source": "https://curl.se",
+      "license": "curl license",
+      "review": "MANUAL_USE_NOT_AUTOMATIC_PHASE7_APPROVAL",
+      "lockfile": "dependencies.lock.json"
+    },
+    {
+      "id": "tool:ripgrep",
+      "name": "ripgrep",
+      "version": "15.2.0",
+      "source": "https://github.com/BurntSushi/ripgrep",
+      "license": "MIT/Unlicense",
+      "review": "MANUAL_USE_NOT_AUTOMATIC_PHASE7_APPROVAL",
+      "lockfile": "dependencies.lock.json"
+    },
+    {
+      "id": "tool:readelf",
+      "name": "readelf",
+      "version": "2.42",
+      "source": "https://www.gnu.org/software/binutils/",
+      "license": "GPLv3+",
+      "review": "MANUAL_USE_NOT_AUTOMATIC_PHASE7_APPROVAL",
+      "lockfile": "dependencies.lock.json"
+    },
+    {
+      "id": "tool:Bash",
+      "name": "Bash",
+      "version": "5.2.21",
+      "source": "https://www.gnu.org/software/bash/",
+      "license": "GPLv3+",
+      "review": "MANUAL_USE_NOT_AUTOMATIC_PHASE7_APPROVAL",
+      "lockfile": "dependencies.lock.json"
+    }
+  ],
+  "code_paths": {
+    "production_provider": null,
+    "research": "analysis/noob.arpro.vpn/2/tools/recover.py",
+    "tests": "analysis/noob.arpro.vpn/2/tests/test_research.py",
+    "recheck_2026_11_09": [
+      "cloud/web/lib/server-vpn-catalog.mjs",
+      "cloud/web/public/server-vpn-icons/ar-pro-vpn.png",
+      "cloud/web/lib/catalog-icons.mjs",
+      "cloud/web/lib/catalog-icon-converter.mjs",
+      "cloud/web/scripts/convert-catalog-icon.mjs",
+      "cloud/web/scripts/prepare-catalog-icons.mjs",
+      "cloud/web/Dockerfile",
+      "cloud/web/package.json",
+      "cloud/web/package-lock.json",
+      "cloud/web/tests/catalog-icons.test.mjs"
+    ]
+  },
+  "evidence_refs": [
+    "ANALYSIS.md",
+    "RESULTS.md",
+    "REPRODUCE.md",
+    "DEPENDENCIES.md",
+    "generated/verification.json",
+    "generated/bootstrap.json",
+    "generated/configured-sources.json",
+    "generated/recovery.json",
+    "generated/checks.json"
+  ],
+  "fixture_hashes": [
+    {
+      "path": "tests/fixtures/site-unavailable.html",
+      "sha256": "5b131ca14aa96311d3432b0062c7443d3b0e6346ec279bd376a75f0a76bcd5d7",
+      "scope": "Observed public HTML error only; no profile/user data"
+    }
+  ],
+  "limitations": [
+    "No complete remote catalog; provider remains inactive.",
+    "Included outer JSON is not remote evidence; all fields and independent XTS oracle remain pending.",
+    "JADX exit3/38 errors; primary DEX analyzed, secondary only inventoried; dynamic string arrays unresolved.",
+    "Mirror sample; no latest official build/signature equivalence certified.",
+    "Response observed in this environment does not prove global provider outage.",
+    "No APK/JNI/SO execution, authentication/attestation bypass, Android builds, artifacts, deployment or merge.",
+    "Distribution hashes unknown in reused environment; license/automatic Phase7 approval remains pending; evidence CI validator not implemented."
+  ],
+  "network_requirements": [
+    "Original fixed catalog HTTPS URLs and original app-update metadata; inherited proxy/TLS maintained."
+  ],
+  "manual_steps": [
+    "Retry original catalog endpoints when reachable; require entire real JSON and all field layers independently verified before enabling a provider."
+  ],
+  "unresolved_questions": [
+    "Actual complete remote catalog bytes.",
+    "Independent AES-XTS reference and complete per-field mapping.",
+    "Any device/network-specific reason for the HTML responses."
+  ],
+  "source_commit": "8ce1af86f0e3e2a9732b11eb8d68cb52ed40c76d",
+  "branch": "feat/nuevas-integraciones",
+  "apk_metadata": {
+    "package": "noob.arpro.vpn",
+    "name": "AR PRO VPN",
+    "version": "2.0",
+    "versionCode": "2",
+    "baseSha256": "b159049c522923ac83e788bdc3b94df9dec034a7da44c90f14ff86b8db9ad1ad",
+    "entries": [
+      {
+        "path": "classes.dex",
+        "bytes": 10684476,
+        "sha256": "fb7fccb33c1907be032baa22e5058fb75d75cfed35f6f7ab7ed9adc24dee1a36"
+      },
+      {
+        "path": "classes2.dex",
+        "bytes": 181728,
+        "sha256": "bc370833c0560bb08bf040f02f9f23ffe779e50112b6a5b8641c8baa8ba7235b"
+      },
+      {
+        "path": "res/drawable/icon.png",
+        "bytes": 628914,
+        "sha256": "0d4c33337fcae63b53067d5694029ffc871cea06c0d3810f617311476d668141",
+        "width": 1024,
+        "height": 1024
+      }
+    ]
+  },
+  "catalog_unchanged": {
+    "floor": 72,
+    "apps": 66,
+    "formats": 256
+  },
+  "latest_recheck_2026_11_09": {
+    "observed_at": "2026-11-09",
+    "targets": [
+      {
+        "kind": "catalog",
+        "status": "PENDING",
+        "scope": "PENDING remote catalog: the original DefUpdateURL GET returns HTTP200,195-byte HTML containing Site Unavailable. The separate app-update endpoint also returned that page. This is not JSON/catalog success. No remote worker method or broker route is activated; only the original PNG card is added disabled. Embedded sample evidence does not certify remote compatibility."
+      }
+    ],
+    "evidence_refs": [
+      "analysis/noob.arpro.vpn/2/generated",
+      "analysis/noob.arpro.vpn/2/tests/test_method.py"
+    ],
+    "limitations": [
+      "No Android build, phone import or live VPN connection was tested.",
+      "Actual Node/VPS network transport remains to verify; real Python requests and explicitly simulated Node replay are separate.",
+      "No main merge, VPS deployment or automatic publication.",
+      "No new file/text format or Unlocked export inferred.",
+      "Research dependencies remain subject to human review before automatic execution."
+    ]
+  }
+}

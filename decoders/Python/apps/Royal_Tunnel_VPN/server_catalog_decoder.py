@@ -11,7 +11,7 @@ if __package__:
 else:
     from codec import DecodeError, MAX_BYTES, decode_catalog, render
 
-CATALOG_URL = "https://exoticfastvip.xyz/api/app?json=7a302bdd548800b6a644"
+CATALOG_URL = "https://exoticfastvip.xyz/api/app?json=7e68cd3b41df962babe0"
 
 
 def run(data: bytes) -> str:

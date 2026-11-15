@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="catalog_offer_title">Katalog baru tersedia</string>
+    <string name="catalog_offer_body">Katalog versi %1$d siap. Perbarui untuk mendapatkan aplikasi, metode, dan peningkatan terbaru yang didukung.</string>
+    <string name="catalog_offer_update">Perbarui</string>
+    <string name="catalog_offer_later">Batal</string>
+    <string name="catalog_postpone_title">Lanjutkan tanpa memperbarui?</string>
+    <string name="catalog_postpone_body">Jika dibatalkan, aplikasi, metode, dan peningkatan baru tidak tersedia sampai katalog diperbarui. Anda bisa memperbaruinya nanti di Server VPN.</string>
+    <string name="catalog_postpone_confirm">Lanjut tanpa memperbarui</string>
+    <string name="catalog_postpone_back">Kembali</string>
+</resources>

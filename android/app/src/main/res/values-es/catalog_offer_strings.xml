@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="catalog_offer_title">Nuevo catálogo disponible</string>
+    <string name="catalog_offer_body">La versión %1$d del catálogo está lista. Actualiza para acceder a nuevas aplicaciones compatibles, métodos y mejoras.</string>
+    <string name="catalog_offer_update">Actualizar</string>
+    <string name="catalog_offer_later">Cancelar</string>
+    <string name="catalog_postpone_title">¿Continuar sin actualizar?</string>
+    <string name="catalog_postpone_body">Si cancelas, no tendrás las nuevas aplicaciones, métodos ni mejoras del catálogo hasta que lo actualices. Podrás actualizar más tarde desde Servidores VPN.</string>
+    <string name="catalog_postpone_confirm">Continuar sin actualizar</string>
+    <string name="catalog_postpone_back">Volver</string>
+</resources>

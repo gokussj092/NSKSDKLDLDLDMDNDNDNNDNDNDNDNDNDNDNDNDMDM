@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "scanCompleted": true,
+  "package": "com.evozi.injector",
+  "versionCode": 244,
+  "baseApkSha256": "5dc3976ad0d90c14b79f5848109296998f930c9d36be88fba9115c078f60dfe3",
+  "dexFiles": 1,
+  "methodsVisited": 82,
+  "algorithmStringCounts": {
+    "HmacSHA1": 0,
+    "HmacSHA224": 0,
+    "HmacSHA256": 0,
+    "HmacSHA384": 0,
+    "HmacSHA512": 0,
+    "HmacMD5": 0,
+    "HMAC-SHA1": 0,
+    "HMAC-SHA256": 0,
+    "HMAC-SHA512": 0,
+    "PBKDF2WithHmacSHA1": 0,
+    "PBKDF2WithHmacSHA256": 0
+  },
+  "javaApiInvocationCounts": {
+    "macGetInstance": 0,
+    "macInit": 0,
+    "macDoFinal": 0,
+    "keystoreGetInstance": 0
+  },
+  "nativeFiles": 15,
+  "nativeAlgorithmMarkerCounts": {
+    "HmacSHA1": 1,
+    "HmacSHA224": 0,
+    "HmacSHA256": 1,
+    "HmacSHA384": 0,
+    "HmacSHA512": 1,
+    "HmacMD5": 1,
+    "HMAC-SHA1": 1,
+    "HMAC-SHA256": 0,
+    "HMAC-SHA512": 0,
+    "PBKDF2WithHmacSHA1": 0,
+    "PBKDF2WithHmacSHA256": 0
+  },
+  "vpnConnectionAuthenticationHmac": "UNCONFIRMED",
+  "credentialMaterialExtracted": false,
+  "apkCodeExecuted": false,
+  "limitations": [
+    "Static counts do not establish execution, key provenance or purpose.",
+    "No function inputs/outputs, key values, tokens or profiles are collected.",
+    "No VPN/service connection, authentication bypass or dynamic hook was attempted."
+  ]
+}

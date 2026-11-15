@@ -1,0 +1,32 @@
+{
+  "input_sha256": "e109884b00889e85eb850b655b5f5f40b1a8be33f3cde860f000b6e5c0abdddd",
+  "input_size": 36840,
+  "declared_app_build": 565,
+  "format_revision": 57,
+  "field_count": 32,
+  "retained_fields": 32,
+  "v2ray_json_bytes": 1026,
+  "v2ray_json_keys": [
+    "inbounds",
+    "outbounds",
+    "policy"
+  ],
+  "v2ray_layers_bytes": [
+    1824,
+    1368,
+    1026
+  ],
+  "unresolved_fields": [
+    {
+      "index": 17,
+      "field": "psiphon",
+      "status": "encrypted_unresolved"
+    }
+  ],
+  "complete_server_native_equality": true,
+  "worker_partial": true,
+  "worker_warning_codes": [
+    "HC_UNRESOLVED_FIELDS"
+  ],
+  "broker_response_gate_status": 200
+}

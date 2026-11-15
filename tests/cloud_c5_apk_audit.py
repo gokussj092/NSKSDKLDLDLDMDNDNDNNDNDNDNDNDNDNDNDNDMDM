@@ -5,7 +5,9 @@ import sys
 import zipfile
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
-if len(sys.argv)!=2:raise SystemExit("Usage: python tests/cloud_c5_apk_audit.py cloud.apk")
+if len(sys.argv) not in (2,3) or (len(sys.argv)==3 and sys.argv[2]!="--unity-ads"):
+    raise SystemExit("Usage: python tests/cloud_c5_apk_audit.py cloud.apk [--unity-ads]")
+unity_ads_qa = len(sys.argv)==3
 with zipfile.ZipFile(sys.argv[1]) as z:
     names=z.namelist()
     native=[p for p in names if re.fullmatch(r"lib/[^/]+/libv7q3\.so",p)]
@@ -19,6 +21,22 @@ with zipfile.ZipFile(sys.argv[1]) as z:
         "assets/dexopt/baseline.prof",
         "assets/dexopt/baseline.profm",
     }
+    # Unity LevelPlay and Google Ads ship OMID / ad-viewer assets with the SDK.
+    # Only allow these known public SDK resources in the explicit Unity QA build.
+    if unity_ads_qa:
+        ads_assets={
+            "assets/ad-viewer/omid-session-client-v1.js",
+            "assets/ad-viewer/omsdk-v1.js",
+            "assets/iads/controllerVersion",
+            "assets/iads/index.css",
+            "assets/iads/index.html",
+            "assets/iads/index.js",
+            "assets/iads/mobileController.html",
+            "assets/iads/mobileController.min.css",
+            "assets/iads/sdk_controller.min.gz.js",
+        }
+        assert ads_assets <= set(assets), "Missing required Unity ad SDK resources"
+        permitted |= ads_assets
     assert "assets/decoder_catalog.json" in assets,"Missing public decoder catalog"
     assert set(assets) <= permitted,"Unexpected bundled assets: "+str(sorted(set(assets)-permitted))
     assert not any(p.endswith(".spv") for p in names),"Vaulted decoder material bundled"

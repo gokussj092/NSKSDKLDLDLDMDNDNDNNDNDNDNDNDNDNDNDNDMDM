@@ -1,0 +1,7 @@
+# Dependency / runtime review
+
+QA static parser uses Python 3.12 standard library (zipfile, hashlib, struct) only. Isolated Docker QA service does NOT install Ghidra/JADX or any prior research dependency, and is detached from the existing VPN worker and HPKE keyring. Cloud web uses existing Node 22, Next and @hpke/core, Android uses existing Kotlin, C++/JNI and Play Integrity; no new dependency is approved for arbitrary APK execution. Missing independent license/hashes for future decompilation tools remain F7-A0-P01/P03 pending. Disk encryption at rest of uploaded QA bytes is **not yet delivered**, so use authorized non-confidential test APKs only.
+
+## Optional account/store feature, 2026-11-10
+
+Pinned by cloud/web/package-lock.json: Better Auth 1.7.20 (MIT), node-postgres pg 8.23.1 (MIT), Stripe Node SDK 23.1.0 (MIT). Development-only PGlite 0.5.16 uses the PostgreSQL engine for SQL contracts. Runtime remains Node.js 22+ and PostgreSQL 16 in a private service. Sources: https://better-auth.com/, https://node-postgres.com/, https://github.com/stripe/stripe-node, https://pglite.dev/. Optional Online Android integration pins Unity LevelPlay 9.7.0 and Unity Ads adapter 5.16.0 from Maven Central, subject to Unity SDK terms; the default and Offline APKs exclude these dependencies. No third-party SDK binaries are committed. See docs/STORE_GOOGLE_PAYMENTS_2026_11_10.md for test and production limitations.

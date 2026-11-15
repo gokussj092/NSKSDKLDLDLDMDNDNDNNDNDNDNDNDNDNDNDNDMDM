@@ -27,7 +27,7 @@ test("Wolf refuses same-origin and foreign redirects",async t=>{
  enabled(t);let location="https://strongteam.co/api/wolf/";
  t.mock.method(dns,"lookup",async()=>[{address:"93.184.216.34",family:4}]);
  t.mock.method(https,"request",(url,options,callback)=>{
-  assert.equal(url.href,"https://strongteam.co/api/wolfcustom/newv1.txt");
+  assert.equal(url.href,"https://strongteam.co/api/wolfcustomv2/");
   const req=new EventEmitter();req.destroy=()=>{};
   req.end=()=>queueMicrotask(()=>{const response=new EventEmitter();response.resume=()=>{};
    response.statusCode=302;response.headers={location};callback(response);});return req;
@@ -94,14 +94,14 @@ test("authenticated Wolf Custom broker forwards all bytes and returns the comple
     assert.equal(host,"strongteam.co");return [{address:"93.184.216.34",family:4}];
   });
   t.mock.method(https,"request",(url,options,callback)=>{
-    assert.equal(url.href,"https://strongteam.co/api/wolfcustom/newv1.txt");
-    assert.equal(options.headers["User-Agent"],"Wolf Custom VPN");
+    assert.equal(url.href,"https://strongteam.co/api/wolfcustomv2/");
+    assert.equal(options.headers["User-Agent"],"Go-http-client/1.1");
     const req=new EventEmitter();req.destroy=()=>{};
-    req.end=()=>queueMicrotask(()=>{
+    req.end=body=>{assert.equal(options.method,"POST");assert.equal(body.toString(),"hash=xsandokUpdatex");queueMicrotask(()=>{
       const response=new EventEmitter();response.resume=()=>{};
       response.statusCode=200;response.headers={};callback(response);
       response.emit("data",bytes);response.emit("end");
-    });return req;
+    });};return req;
   });
   const request=new Request("https://api.example.test/api/v1/server-vpn/decode",{
     method:"POST",headers:{"content-type":"application/json",authorization:"Bearer "+token},

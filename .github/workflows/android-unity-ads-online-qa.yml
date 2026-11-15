@@ -1,0 +1,351 @@
+name: SP-DECODE Online release candidate APK (signed)
+on:
+  push:
+    branches: [ci/unity-ads-online-qa]
+    paths:
+      - .github/workflows/android-unity-ads-online-qa.yml
+      - android/app/src/main/java/com/ghostdeveloper/spdecode/SpDecodeApp.kt
+      - android/app/src/main/java/com/ghostdeveloper/spdecode/AccountDrawer.kt
+      - android/app/src/main/java/com/ghostdeveloper/spdecode/cloud/V2BoxPasswordProbe.kt
+      - cloud/workers/python/v2box_bridge.py
+      - cloud/workers/python/Dockerfile
+      - cloud/web/lib/commerce/gifts.mjs
+      - cloud/web/lib/commerce/auth.mjs
+      - cloud/web/lib/commerce/api.mjs
+      - cloud/web/app/api/admin/gifts/route.js
+      - cloud/web/app/api/account/password/route.js
+      - cloud/web/app/api/store/redeem/route.js
+      - cloud/web/sql/003_ads_free.sql
+      - cloud/web/sql/004_gifts.sql
+      - cloud/web/sql/005_account_support_apk.sql
+      - cloud/web/sql/006_support_agent_identity.sql
+      - cloud/web/sql/007_staff_permissions.sql
+      - cloud/web/sql/008_account_notifications.sql
+      - cloud/web/sql/009_staff_custom_roles.sql
+      - cloud/web/lib/commerce/staff-roles.mjs
+      - cloud/web/lib/commerce/staff-role-route.mjs
+      - cloud/web/app/api/admin/staff-roles/route.js
+      - cloud/web/app/admin/admin-staff.jsx
+      - cloud/web/app/admin/admin-support.jsx
+      - cloud/web/lib/commerce/account-notices.mjs
+      - cloud/web/lib/commerce/orders.mjs
+      - cloud/web/lib/commerce/support.mjs
+      - android/app/src/cloud/AndroidManifest.xml
+      - cloud/web/lib/commerce/account-activity.mjs
+      - cloud/web/lib/notice-push.mjs
+      - cloud/web/app/api/account/notifications/route.js
+      - cloud/web/app/api/account/activity/route.js
+      - cloud/web/tests/account-notices.test.mjs
+      - cloud/web/tests/app-notifications.test.mjs
+      - android/app/src/cloud/java/com/ghostdeveloper/spdecode/cloud/CloudPushService.kt
+      - android/app/src/main/java/com/ghostdeveloper/spdecode/cloud/CloudNotifications.kt
+      - android/app/src/main/java/com/ghostdeveloper/spdecode/CommerceNotificationCenter.kt
+      - android/app/src/main/java/com/ghostdeveloper/spdecode/NativeCommerceAuth.kt
+      - android/app/src/main/java/com/ghostdeveloper/spdecode/NativeCommerceScreens.kt
+      - android/app/src/main/java/com/ghostdeveloper/spdecode/CommerceAccountPages.kt
+      - cloud/web/lib/commerce/staff.mjs
+      - cloud/web/lib/commerce/staff-route.mjs
+      - cloud/web/lib/commerce/users-admin.mjs
+      - cloud/web/lib/commerce/users-route.mjs
+      - cloud/web/lib/c6-admin-api.mjs
+      - cloud/web/tests/staff-console.test.mjs
+      - cloud/web/app/admin/admin-staff.jsx
+      - cloud/web/app/admin/admin-users.jsx
+      - cloud/web/app/admin/admin-staff-audit.jsx
+      - cloud/web/app/admin/admin-support.jsx
+      - cloud/web/app/admin/staff/**
+      - cloud/web/app/admin/staff-password/**
+      - cloud/web/app/admin/staff-audit/**
+      - cloud/web/app/admin/users/**
+      - cloud/web/app/api/admin/staff/**
+      - cloud/web/app/api/admin/staff-password/**
+      - cloud/web/app/api/admin/staff-audit/**
+      - cloud/web/app/api/admin/access/**
+      - cloud/web/app/api/admin/users/**
+      - cloud/infra/vps/commerce-setup.py
+      - cloud/infra/vps/spdecodectl
+      - cloud/infra/vps/tests/test_support_secret_setup.py
+      - cloud/compose.yaml
+      - android/app/src/main/java/com/ghostdeveloper/spdecode/CommerceAuthLanding.kt
+      - android/app/src/main/java/com/ghostdeveloper/spdecode/AdFreeSymbol.kt
+      - cloud/web/lib/commerce/support.mjs
+      - cloud/web/lib/commerce/support-route.mjs
+      - cloud/web/lib/commerce/account-device.mjs
+      - cloud/web/lib/commerce/account-device-route.mjs
+      - cloud/web/lib/f7-apk-qa-gateway.mjs
+      - cloud/web/tests/account-support-security.test.mjs
+      - cloud/web/tests/f7-apk-qa.test.mjs
+      - cloud/web/app/api/support/route.js
+      - cloud/web/app/api/admin/support/route.js
+      - cloud/web/app/api/account/delete/route.js
+      - android/app/src/main/java/com/ghostdeveloper/spdecode/CommerceSupportPage.kt
+      - cloud/web/public/app-ads.txt
+      - tests/test_android_support_chat_design.py
+      - android/app/src/main/java/com/ghostdeveloper/spdecode/CommerceDeleteAccountPage.kt
+      - android/app/src/main/java/com/ghostdeveloper/spdecode/cloud/CloudApkQaClient.kt
+      - android/app/src/main/java/com/ghostdeveloper/spdecode/cloud/ApkQaWorker.kt
+      - cloud/web/scripts/commerce-migrate.mjs
+      - cloud/web/app/admin/admin-gifts.jsx
+      - cloud/web/app/admin/gifts/page.jsx
+      - cloud/web/app/admin/admin-store.jsx
+      - cloud/web/app/admin/admin-nav.jsx
+      - cloud/web/app/admin/admin-theme.css
+      - cloud/web/tests/gifts.test.mjs
+      - android/app/src/main/java/com/ghostdeveloper/spdecode/CommerceSecurityTools.kt
+      - android/app/src/main/java/com/ghostdeveloper/spdecode/NativeDeviceAccountGuard.kt
+      - android/app/src/main/java/com/ghostdeveloper/spdecode/CommerceGiftRedeemPage.kt
+      - decoders/Python/v2box_export.py
+      - tests/test_v2box_password.py
+      - android/app/src/main/java/com/ghostdeveloper/spdecode/NativeCommerceProfile.kt
+      - android/app/src/main/java/com/ghostdeveloper/spdecode/CommerceAccountPages.kt
+      - android/app/src/main/java/com/ghostdeveloper/spdecode/CommerceAdFreePurchase.kt
+      - cloud/web/lib/commerce/catalog.mjs
+      - cloud/web/lib/commerce/orders.mjs
+      - cloud/web/lib/commerce/api.mjs
+      - cloud/web/lib/commerce/providers.mjs
+      - cloud/web/sql/002_shop.sql
+      - cloud/web/sql/003_ads_free.sql
+      - android/app/src/main/java/com/ghostdeveloper/spdecode/NativeProfileRules.kt
+      - android/app/src/main/cpp/spdecode_profile.cpp
+      - android/app/src/main/cpp/CMakeLists.txt
+      - android/app/src/main/java/com/ghostdeveloper/spdecode/NativeCommerceScreens.kt
+      - android/app/src/main/java/com/ghostdeveloper/spdecode/NativeCommerceAuth.kt
+      - android/app/src/main/java/com/ghostdeveloper/spdecode/NativeStoreCatalog.kt
+      - android/app/src/main/java/com/ghostdeveloper/spdecode/CommerceI18n.kt
+      - android/app/src/main/java/com/ghostdeveloper/spdecode/CommerceLegalConsent.kt
+      - android/app/src/main/java/com/ghostdeveloper/spdecode/CommerceLanguageData.kt
+      - android/app/src/main/java/com/ghostdeveloper/spdecode/ContinuousJsonView.kt
+      - android/app/src/main/java/com/ghostdeveloper/spdecode/LargeResultViewer.kt
+      - android/app/src/main/java/com/ghostdeveloper/spdecode/MainActivity.kt
+      - android/app/src/main/java/com/ghostdeveloper/spdecode/ServerVpnDirectory.kt
+      - android/app/src/main/res/**/ssh_accounts_strings.xml
+      - android/app/src/androidTest/java/com/ghostdeveloper/spdecode/ServerVpnDirectoryInstrumentedTest.kt
+      - tests/test_android_ssh_accounts_ui.py
+      - android/app/src/main/java/com/ghostdeveloper/spdecode/cloud/CloudCatalogUpdates.kt
+      - android/app/src/main/res/**/catalog_offer_strings.xml
+      - tests/test_catalog_entry_prompt.py
+      - android/app/src/main/java/com/ghostdeveloper/spdecode/SpDecodeApp.kt
+      - android/app/src/main/java/com/ghostdeveloper/spdecode/FunctionalSettingsPanel.kt
+      - android/app/src/main/java/com/ghostdeveloper/spdecode/TelegramResultCopy.kt
+      - android/app/src/main/java/com/ghostdeveloper/spdecode/V2rayShareLinks.kt
+      - android/app/src/main/res/**/strings.xml
+      - android/app/src/sharedAndroidTest/java/com/ghostdeveloper/spdecode/V2rayShareLinksInstrumentedTest.kt
+      - android/app/src/sharedAndroidTest/java/com/ghostdeveloper/spdecode/LargeResultEngineInstrumentedTest.kt
+      - android/app/src/main/AndroidManifest.xml
+      - android/app/src/cloud/AndroidManifest.xml
+      - android/app/build.gradle.kts
+      - android/app/src/unityAds/java/com/ghostdeveloper/spdecode/ads/UnityInterstitialHost.kt
+      - tests/test_android_unity_release_contract.py
+permissions:
+  contents: read
+concurrency:
+  group: spdecode-unity-ads-qa-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  release:
+    if: github.repository_owner == 'gokussj092' && github.ref == 'refs/heads/ci/unity-ads-online-qa'
+    runs-on: ubuntu-latest
+    timeout-minutes: 75
+    env:
+      SPDECODE_CLOUD_API_BASE_URL: https://api.spdecode.xyz
+      SPDECODE_CLOUD_RELEASE: "true"
+      SPDECODE_CLOUD_QA_BUILD: "false"
+      # Public mobile ads identifiers, not credentials. Used only by this QA build.
+      SPDECODE_UNITY_APP_KEY: "29755d275"
+      SPDECODE_UNITY_INTERSTITIAL_ID: "ouy4i00ulql2cxj3"
+      SPDECODE_UNITY_UMP_APP_ID: "ca-app-pub-6771239583897519~8354694124"
+      ORG_GRADLE_PROJECT_noticeFirebaseAPP_ID: ${{ vars.SPDECODE_NOTICE_FIREBASE_APP_ID || secrets.SPDECODE_NOTICE_FIREBASE_APP_ID }}
+      ORG_GRADLE_PROJECT_noticeFirebaseAPI_KEY: ${{ vars.SPDECODE_NOTICE_FIREBASE_API_KEY || secrets.SPDECODE_NOTICE_FIREBASE_API_KEY }}
+      ORG_GRADLE_PROJECT_noticeFirebasePROJECT_ID: ${{ vars.SPDECODE_NOTICE_FIREBASE_PROJECT_ID || secrets.SPDECODE_NOTICE_FIREBASE_PROJECT_ID }}
+      ORG_GRADLE_PROJECT_noticeFirebaseSENDER_ID: ${{ vars.SPDECODE_NOTICE_FIREBASE_SENDER_ID || secrets.SPDECODE_NOTICE_FIREBASE_SENDER_ID }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.11.1"
+      - name: Assert Firebase Android push configuration
+        shell: bash
+        run: |
+          set -euo pipefail
+          missing=0
+          for key in \
+            ORG_GRADLE_PROJECT_noticeFirebaseAPP_ID \
+            ORG_GRADLE_PROJECT_noticeFirebaseAPI_KEY \
+            ORG_GRADLE_PROJECT_noticeFirebasePROJECT_ID \
+            ORG_GRADLE_PROJECT_noticeFirebaseSENDER_ID; do
+            if [[ -z "${!key:-}" ]]; then
+              echo "::error title=Android FCM not configured::Missing GitHub Actions variable ${key#ORG_GRADLE_PROJECT_noticeFirebase}"
+              missing=1
+            fi
+          done
+          if ((missing)); then
+            echo "::error::Set all four SPDECODE_NOTICE_FIREBASE_* repository variables before producing a push-enabled APK."
+            exit 1
+          fi
+          echo "Firebase Android public identifiers present. Device delivery requires runtime verification."
+      - name: Validate V2Box v1/v2 protected exports
+        run: |
+          set -euo pipefail
+          python3 -m pip install --disable-pip-version-check --no-input pycryptodome==3.23.0
+          python3 -m unittest tests.test_v2box_password -v
+      - name: Version and source preflight
+        run: |
+          set -euo pipefail
+          python3 scripts/ci/current_android_contracts.py --github-env "$GITHUB_ENV"
+          python3 scripts/android_s3_security_audit.py
+          python3 scripts/android_s4_provisioning_audit.py
+          # Normal production pacing; dashboard must remain in test mode for QA.
+          python3 -m unittest tests.test_android_unity_release_contract -v
+          python3 -m unittest tests.test_catalog_entry_prompt -v
+          python3 -m unittest tests.test_android_ssh_accounts_ui -v
+          python3 -m unittest tests.test_android_support_chat_design -v
+          python3 -m unittest discover -s cloud/infra/vps/tests -p 'test_support_secret_setup.py' -v
+          bash -n cloud/infra/vps/spdecodectl
+      - name: Commercial API syntax and public IP contract
+        run: |
+          set -euo pipefail
+          node --check cloud/web/lib/commerce/auth.mjs
+          node --check cloud/web/lib/commerce/gifts.mjs
+          node --check cloud/web/lib/commerce/support.mjs
+          node --check cloud/web/lib/commerce/account-notices.mjs
+          node --check cloud/web/lib/commerce/account-activity.mjs
+          node --check cloud/web/lib/notice-push.mjs
+          node --check cloud/web/lib/commerce/staff.mjs
+          node --check cloud/web/lib/commerce/staff-roles.mjs
+          node --check cloud/web/lib/commerce/staff-role-route.mjs
+          node --check cloud/web/lib/commerce/staff-route.mjs
+          node --check cloud/web/lib/commerce/users-admin.mjs
+          node --check cloud/web/lib/commerce/users-route.mjs
+          node --check cloud/web/lib/c6-admin-api.mjs
+          node --check cloud/web/lib/commerce/support-route.mjs
+          node --check cloud/web/lib/commerce/account-device.mjs
+          node --check cloud/web/lib/commerce/account-device-route.mjs
+          node --check cloud/web/lib/f7-apk-qa-gateway.mjs
+          node --check cloud/web/scripts/commerce-migrate.mjs
+          node --check cloud/web/app/api/admin/gifts/route.js
+          node --check cloud/web/app/api/account/password/route.js
+          node --check cloud/web/app/api/store/redeem/route.js
+          node --check cloud/web/lib/commerce/catalog.mjs
+          node --check cloud/web/lib/commerce/orders.mjs
+          node --check cloud/web/lib/commerce/api.mjs
+          node --check cloud/web/lib/commerce/profile.mjs
+          node --check cloud/web/lib/commerce/providers.mjs
+          node --check 'cloud/web/app/api/auth/[...all]/route.js'
+          node --check cloud/web/app/api/account/api-ip/route.js
+          node --input-type=module <<'JS'
+          import assert from 'node:assert/strict';
+          import { publicIp } from './cloud/web/lib/commerce/config.mjs';
+          import { validatePurchase,validateProduct,plansFor } from './cloud/web/lib/commerce/catalog.mjs';
+          assert.equal(publicIp('195.233.233.12'),'195.233.233.12');
+          assert.equal(publicIp('8.8.8.8.8'),null);
+          assert.equal(publicIp('192.168.1.25'),null);
+          const input={product:'api-ip',provider:'stripe',currency:'USD',
+            version:1,idempotencyKey:'00000000-0000-4000-8000-000000000001',
+            acceptedTerms:'2026-11-10',term:'1m'};
+          assert.equal(validatePurchase(input).allowedIp,null);
+          assert.equal(validatePurchase({...input,allowedIp:'195.233.233.12'}).allowedIp,
+            '195.233.233.12');
+          assert.throws(()=>validatePurchase({...input,allowedIp:'8.8.8.8.8'}));
+          const adFree=validateProduct({id:'ads-free',enabled:false,
+            prices:{USD:100},days:30,termPrices:{}});
+          assert.equal(plansFor(adFree).length,1);
+          assert.equal(plansFor(adFree)[0].id,'base');
+          assert.throws(()=>validateProduct({...adFree,days:90}));
+          assert.equal(validatePurchase({...input,product:'ads-free',term:'base'}).product,'ads-free');
+          assert.throws(()=>validatePurchase({...input,product:'ads-free',term:'3m'}));
+          assert.throws(()=>validatePurchase({...input,product:'offline-3',term:'base'}));
+          console.log('PASS: commercial API IP and 30-day ad-free purchase contracts');
+          JS
+      - name: Gift redemption, password configuration and PostgreSQL compatibility
+        run: |
+          set -euo pipefail
+          npm ci --prefix cloud/web --no-audit --no-fund
+          node --test cloud/web/tests/gifts.test.mjs
+          node --test cloud/web/tests/account-support-security.test.mjs
+          node --test cloud/web/tests/account-notices.test.mjs
+          node --test cloud/web/tests/app-notifications.test.mjs
+          node --test cloud/web/tests/staff-console.test.mjs
+          npm run build --prefix cloud/web
+          node --test cloud/web/tests/f7-apk-qa.test.mjs
+      - name: Android SDK / NDK
+        run: |
+          set -euo pipefail
+          MANAGER="$(find "$ANDROID_HOME/cmdline-tools" -type f -name sdkmanager | sort -V | tail -1)"
+          "$MANAGER" --install "platforms;android-36" "build-tools;35.0.0" "platform-tools" "cmake;3.22.1" "ndk;27.2.12479018"
+      - name: Restore permanent signing key (secrets only)
+        env:
+          STORE_BASE64: ${{ secrets.SPDECODE_SIGNING_KEYSTORE_BASE64 }}
+          STORE_PASSWORD: ${{ secrets.SPDECODE_SIGNING_STORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.SPDECODE_SIGNING_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.SPDECODE_SIGNING_KEY_PASSWORD }}
+          PLAY_CERT: ${{ secrets.SPDECODE_PLAY_APP_SIGNER_SHA256 || vars.SPDECODE_PLAY_APP_SIGNER_SHA256 }}
+        run: |
+          set -euo pipefail
+          test -n "$STORE_BASE64" && test -n "$STORE_PASSWORD" && test -n "$KEY_ALIAS" && test -n "$KEY_PASSWORD"
+          umask 077
+          printf '%s' "$STORE_BASE64" | base64 --decode > "$RUNNER_TEMP/spdecode-release.p12"
+          keytool -list -keystore "$RUNNER_TEMP/spdecode-release.p12" -storetype PKCS12 -storepass:env STORE_PASSWORD -alias "$KEY_ALIAS" >/dev/null
+          CERT="$(keytool -exportcert -keystore "$RUNNER_TEMP/spdecode-release.p12" -storetype PKCS12 -storepass:env STORE_PASSWORD -alias "$KEY_ALIAS" | sha256sum | cut -d' ' -f1)"
+          [[ "$CERT" =~ ^[0-9a-f]{64}$ ]]
+          PLAY_CERT="$(printf '%s' "$PLAY_CERT" | tr -d '[:space:]:' | tr '[:upper:]' '[:lower:]')"
+          [[ "$PLAY_CERT" =~ ^[0-9a-f]{64}$ ]]
+          echo "SPDECODE_TRUSTED_SIGNER_SHA256=$CERT" >> "$GITHUB_ENV"
+          echo "SPDECODE_PLAY_APP_SIGNER_SHA256=$PLAY_CERT" >> "$GITHUB_ENV"
+          echo "SPDECODE_RELEASE_STORE_FILE=$RUNNER_TEMP/spdecode-release.p12" >> "$GITHUB_ENV"
+      - name: Compile production signed APK
+        working-directory: android
+        env:
+          SPDECODE_RELEASE_STORE_PASSWORD: ${{ secrets.SPDECODE_SIGNING_STORE_PASSWORD }}
+          SPDECODE_RELEASE_KEY_ALIAS: ${{ secrets.SPDECODE_SIGNING_KEY_ALIAS }}
+          SPDECODE_RELEASE_KEY_PASSWORD: ${{ secrets.SPDECODE_SIGNING_KEY_PASSWORD }}
+        run: gradle --no-daemon --max-workers=2 -PspdecodeUnityAds=true -PspdecodeAdsEveryFileQa=false :app:assembleRelease
+      - name: Validate signed external APK only (no AAB)
+        run: |
+          set -euo pipefail
+          APK=android/app/build/outputs/apk/release/app-release.apk
+          test -s "$APK"
+          # Validate release candidate version.
+          test "$SPDECODE_VERSION_NAME" = "1.1.28"
+          test "$SPDECODE_VERSION_CODE" = "43"
+          python3 scripts/ci/verify_release_signer_pins.py
+          python3 scripts/android_16kb_elf_audit.py "$APK"
+          python3 tests/cloud_c5_apk_audit.py "$APK" --unity-ads
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose --print-certs "$APK"
+          "$ANDROID_HOME/build-tools/35.0.0/zipalign" -c -P 16 -v 4 "$APK"
+          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$APK" | grep -F "versionName='$SPDECODE_VERSION_NAME'"
+          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$APK" | grep -F "versionCode='$SPDECODE_VERSION_CODE'"
+          # Telegram/distribution APK must not accidentally contain the Play updater.
+          python3 - "$APK" <<'PY'
+          import sys
+          from zipfile import ZipFile
+          with ZipFile(sys.argv[1]) as apk:
+              files=set(apk.namelist())
+              assert "assets/spdecode-play-updates-enabled.marker" not in files
+              assert any(x.startswith("classes") and x.endswith(".dex") for x in files)
+          print("PASS: signed external APK contains dex and no Play updater marker")
+          PY
+          mkdir -p dist
+          cp "$APK" dist/SP-DECODE-v${SPDECODE_VERSION_NAME}-b${SPDECODE_VERSION_CODE}-release-signed.apk
+          (cd dist && sha256sum *.apk > SHA256SUMS.txt)
+          printf 'Version: %s\nBuild: %s\nSource SHA: %s\nUnity Ads: enabled\nDistribution: release candidate, not published\n' "$SPDECODE_VERSION_NAME" "$SPDECODE_VERSION_CODE" "$GITHUB_SHA" > dist/BUILD_INFO.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: SP-DECODE-ONLINE-1.1.28-b43-release-candidate
+          path: dist/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Erase signing material
+        if: always()
+        run: rm -f "$RUNNER_TEMP/spdecode-release.p12"

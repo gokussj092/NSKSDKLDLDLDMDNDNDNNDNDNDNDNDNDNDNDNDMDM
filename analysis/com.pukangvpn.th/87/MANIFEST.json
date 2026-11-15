@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "package_name": "com.pukangvpn.th",
+  "version_code": 87,
+  "app_name": "PUKANG VPN",
+  "version_name": "8.7",
+  "status": "PARTIAL",
+  "source_category": "owner-supplied repository code",
+  "authorization_note": "Owner explicitly requested connection of all supplied methods on ci/unity-ads-online-qa; no service credentials or attestation fabrication authorized.",
+  "targets": [
+    {
+      "kind": "catalog",
+      "status": "CONNECTED"
+    },
+    {
+      "kind": "files",
+      "extensions": []
+    },
+    {
+      "kind": "text",
+      "prefixes": []
+    }
+  ],
+  "inputs": [
+    {
+      "path": "decoders/Python/apps/PUKANG_VPN/PUKANG_VPN.py",
+      "sha256": "193643da97c46a18a3bb916e207e18e9232f4e001060e11b6d416f53f0d5ee55"
+    }
+  ],
+  "tooling": [
+    {
+      "path": "analysis/platform/supplied-integrations/2026-11-14/tools/verify_provider.py",
+      "command": "python analysis/platform/supplied-integrations/2026-11-14/tools/verify_provider.py pukang-vpn"
+    }
+  ],
+  "dependencies": [
+    {
+      "lockfile": "requirements.txt",
+      "purpose": "Existing pinned server codec dependencies"
+    },
+    {
+      "lockfile": "cloud/web/package-lock.json",
+      "purpose": "Existing pinned Node broker/build dependencies"
+    }
+  ],
+  "code_paths": [
+    "cloud/web/lib/server-vpn-catalog.mjs",
+    "cloud/web/lib/server-vpn-gateway.mjs",
+    "cloud/web/lib/server-vpn-provider.mjs",
+    "cloud/web/lib/supplied-integrations.mjs",
+    "cloud/workers/python/catalog_vpn_bridge.py",
+    "cloud/workers/python/supplied_bridge.py",
+    "decoders/Python/apps/PUKANG_VPN/PUKANG_VPN.py"
+  ],
+  "limitations": [
+    "See supplied README and central per-app integration matrix. No new live service validation asserted."
+  ],
+  "connection_authentication": {
+    "status": "UNCONFIRMED",
+    "scope": "No new VPN connection-authentication research; existing methods only."
+  },
+  "integration_review": {
+    "scope": "Connection only; existing algorithm evidence/status preserved.",
+    "record": "analysis/platform/supplied-integrations/2026-11-14/MANIFEST.json",
+    "status": "PARTIAL"
+  }
+}

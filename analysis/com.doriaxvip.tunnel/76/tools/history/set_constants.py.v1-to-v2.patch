@@ -1,0 +1,16 @@
+--- v1/set_constants.py
++++ v2/set_constants.py
+@@ -25,6 +25,13 @@
+     for name, value in [('CATALOG_PASSWORD', constants['outerPassword'].encode()),
+                         ('FIELD_KEY', constants['innerPassword'].encode().ljust(32,b'\0')[:32])]:
+         source = re.sub(r'^'+name+r' = .*$', lambda _: name+' = '+repr(value), source, flags=re.M)
++    fields=set()
++    for name in ('included','included-users','remote'):
++        document=json.loads((a.private/(name+'.outer.json')).read_text())
++        for section in ('Servers','Usuarios'):
++            for row in document.get(section,[]):
++                fields.update(k for k,v in row.items() if isinstance(v,str))
++    source=re.sub(r'^STRING_FIELDS = .*$',lambda _: 'STRING_FIELDS = frozenset('+repr(tuple(sorted(fields)))+')',source,flags=re.M)
+     path.write_text(source)
+     print('Installed build76 format constants without external secret files.')
+ 

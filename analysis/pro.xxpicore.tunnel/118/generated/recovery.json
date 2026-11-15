@@ -1,0 +1,21 @@
+{
+  "nativeSha256": "7ead852bccaa5b17f62d145ea97915f7ea04c579891576f8466a22bb48dd2765",
+  "outerBytes": 1053163,
+  "outerSha256": "16068ce244c5b904d213ef9c14a4ff1ad924ac41359ab62521e47ae0de1ddee4",
+  "version": "2.427",
+  "servers": 64,
+  "networks": 1240,
+  "rootKeys": [
+    "Version",
+    "Servers",
+    "Networks",
+    "Username",
+    "Password",
+    "Notes"
+  ],
+  "materialMatchesXhypher": {
+    "KEY_SEED": true,
+    "IV": true,
+    "FIXED_SALT": true
+  }
+}

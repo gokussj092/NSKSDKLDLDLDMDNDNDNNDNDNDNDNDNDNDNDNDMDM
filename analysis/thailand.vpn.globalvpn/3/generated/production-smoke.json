@@ -1,0 +1,10 @@
+{
+  "status": "PASSED",
+  "productionNextStart": true,
+  "catalogHttp": 200,
+  "iconHttp": 200,
+  "version": 81,
+  "appCount": 76,
+  "bundledIcons": 76,
+  "allActualPng": true
+}

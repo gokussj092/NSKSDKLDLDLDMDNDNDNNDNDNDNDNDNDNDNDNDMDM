@@ -7,11 +7,13 @@ Input and output stay in a private temporary directory and are never logged.
 from __future__ import annotations
 
 import base64
+import binascii
 import csv
 from functools import partial
 import json
 import os
 from pathlib import Path
+import re
 import resource
 import shutil
 import signal
@@ -20,6 +22,8 @@ import sys
 import tempfile
 
 ROOT = Path(__file__).resolve().parents[3]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
 MATRIX = ROOT / "docs/cloud/C0_FORMAT_MATRIX.csv"
 DECODERS = (ROOT / "decoders").resolve()
 MAX_INPUT_BYTES = 16 * 1024 * 1024
@@ -75,6 +79,7 @@ def load_file_engines() -> dict[str, dict[str, str]]:
 # C8 additions are separate from the frozen 240-route C0 inventory.
 # Keep each format pinned to its own source codec; never route HX .hxt into xor_family.
 _C8_FILE_ENGINES = {
+    "tnl": ("decoders/Python/apps/OpenTunnel/file_decoder.py", "OpenTunnel 1.1.1 / Tunnel"),
     "hexcm": ("decoders/Python/apps/Hex_Tunnel/file_decoder.py", "Hex Tunnel / HexVPN 1.7.3-Rev"),
     "enaa": ("decoders/Python/apps/Enaa_Tunnel/file_decoder.py", "Enaa Tunnel Enna-1.07"),
     "wolf": ("decoders/Python/apps/Wolf_Custom_VPN/file_decoder.py", "Wolf Custom VPN v2.8.1.2"),
@@ -105,6 +110,36 @@ _C8_FILE_ENGINES = {
     "tut": ("decoders/Python/apps/Tunneltweak/file_decoder.py", "Tunneltweak 6.2.1"),
     "actun": ("decoders/Python/apps/AC_TUNNEL_VPN/file_decoder.py", "AC TUNNEL VPN 1.4"),
     "4ulite": ("decoders/Python/apps/4U_TUNNEL_LITE/file_decoder.py", "4U TUNNEL LITE"),
+    # C8 Tier A (2026-11-14 integration): eleven new app file decoders.
+    "rev": ("decoders/Python/apps/Hunter_VPN/Hunter_VPN_archivos.py", "Rev Hunter 48"),
+    "custom": ("decoders/Python/apps/Hunter_VPN/Hunter_VPN_archivos.py", "Rev Hunter 48"),
+    "atnet": ("decoders/Python/apps/AT_NET_VPN/AT_NET_VPN_archivos.py", "AT NET VPN v1.9.28.1"),
+    "hamaratnl": ("decoders/Python/apps/HAMARA_TUNNEL_LITE/HAMARA_TUNNEL_LITE_archivos.py", "HAMARA TUNNEL LITE 2.9"),
+    "bvv": ("decoders/Python/apps/Binke_Volt/Binke_Volt_archivos.py", "Binke Volt 1.1"),
+    "zvn": ("decoders/Python/apps/Zam_VIP_NET/Zam_VIP_NET_archivos.py", "Zam VIP NET 42.0"),
+    "reg": ("decoders/Python/apps/REG_Tunnel_VPN/REG_Tunnel_VPN_archivos.py", "REG Tunnel VPN v1.9.28.1"),
+    "bccnet": ("decoders/Python/apps/JetRoi/JetRoi_archivos.py", "JetRoi v1.9.28.1"),
+    "fat": ("decoders/Python/apps/Fat_Tunnel_Lite/Fat_Tunnel_Lite_archivos.py", "Fat Tunnel Lite V1.12"),
+    "rnv": ("decoders/Python/apps/RNV_Tunnel_VPN/RNV_Tunnel_VPN_archivos.py", "RNV Tunnel VPN v1.9.28.1"),
+    "rjc": ("decoders/Python/apps/RJC_Tunnel_VPN/RJC_Tunnel_VPN_archivos.py", "RJC Tunnel VPN RJC-19"),
+    # C8 family overrides (2026-11-14 integration): the verified app-specific
+    # decoder takes priority; the frozen C0 family engine stays as fallback.
+    "osp": ("decoders/Python/apps/OSP_Tunnel/OSP_Tunnel_archivos.py", "OSP Tunnel 3.7"),
+    "hsome": ("decoders/Python/apps/Handsome_Fast/Handsome_Fast_archivos.py", "Handsome Fast 2.2"),
+    "v2box": ("decoders/Python/apps/V2Box/V2Box_archivos.py", "V2Box 6.2.3"),
+    "ar": ("decoders/Python/apps/AR_PRO_VPN/AR_PRO_VPN_archivos.py", "AR PRO VPN 1.0"),
+    "t20": ("decoders/Python/apps/Marvs_SSH/Marvs_SSH_archivos.py", "Marvs SSH / T20-VPN 1.10.5.3"),
+    "ost": ("decoders/Python/apps/Shield_Tunnel/Shield_Tunnel_archivos.py", "Shield Tunnel 1.11.06.1"),
+    "lnk": ("decoders/Python/apps/LinkLayer/LinkLayer_archivos.py", "LinkLayer VPN 3.11.2"),
+    "xj": ("decoders/Python/apps/XJ_VPN/XJ_VPN_archivos.py", "XJ VPN 1.9.7"),
+    "xui": ("decoders/Python/apps/XUI_Tunnel/XUI_Tunnel_archivos.py", "XUI Tunnel VPN 6.0"),
+    "sn": ("decoders/Python/apps/SN_VPN/SN_VPN_archivos.py", "SN VPN 5.0.7"),
+    "vcv": ("decoders/Python/apps/VC_VPN/VC_VPN_archivos.py", "VC VPN 8.0"),
+    # C8 (2026-11-15 integration): new suffixes of the 20-app batch. The
+    # supplied FILE_ROUTES override these in load_runtime_file_engines();
+    # .hs is dispatched by content in supplied_bridge (JK vs RH, RH default).
+    "hs": ("decoders/Python/apps/RH_Tunnel_Lite/RH_Tunnel_Lite_archivos.py", "RH Tunnel Lite 39.0.1"),
+    "bbtun": ("decoders/Python/apps/Marvs_V2Ray/Marvs_V2Ray_archivos.py", "Marvs V2Ray RHV1"),
 }
 
 def load_runtime_file_engines() -> dict[str, dict[str, str]]:
@@ -119,7 +154,19 @@ def load_runtime_file_engines() -> dict[str, dict[str, str]]:
             "name": name,
             "phase": "C8",
         }
+    from cloud.workers.python.supplied_bridge import FILE_ROUTES, BY_ID
+    for suffix, provider in FILE_ROUTES.items():
+        item = BY_ID[provider]
+        result[suffix] = {"source": str(ROOT / "decoders/Python/apps" / item["appDir"] / item["fileModule"]),
+                          "runtime": "python", "name": item["name"]+" "+str(item["versionName"] or item["versionCode"] or ""), "phase": "C8"}
     return result
+
+
+# C8 overrides whose frozen C0 family engine stays as a fallback: if the
+# specific decoder fails with a plain decode error (never a credential,
+# version or protection error), decode_file retries once with the C0 engine.
+_C8_GENERIC_FALLBACK = frozenset({"osp", "hsome", "v2box", "ar", "t20", "ost", "bee", "wyr", "tcx", "eut"})
+
 
 def _child_limits(cpu_budget: int = TIMEOUT_SECONDS, output_bytes: int = MAX_OUTPUT_BYTES) -> None:
     """POSIX resource caps on untrusted decoder subprocesses."""
@@ -216,6 +263,177 @@ def _xhypher_export_in_renamed_file(suffix: str, contents: bytes) -> bool:
     return len(binary) >= 32 and len(binary) % 16 == 0
 
 
+def _is_hex_custom_v3(contents: bytes) -> bool:
+    """Hex Custom HXS3 v3 container: literal magic plus version byte 3.
+
+    Old Hex Tunnel files are Base64 text; 0x03 is not a Base64 byte, so a
+    valid old file can never satisfy both checks. A future container
+    version would need its version byte added here.
+    """
+    return len(contents) >= 74 and contents[:4] == b"HXS3" and contents[4] == 3
+
+
+def _is_vc_tgv(contents: bytes) -> bool:
+    """VC VPN .tgv files are text starting with STGCM2.VC. / STGCM3.VC.
+
+    TunelGuard .tgv files are Base64 text, and '.' is not a Base64 byte,
+    so they can never carry this prefix.
+    """
+    try:
+        text = contents.decode("utf-8-sig").strip()
+    except UnicodeError:
+        return False
+    return text.startswith("STGCM2.VC.") or text.startswith("STGCM3.VC.")
+
+
+def _is_shield_ost(contents: bytes) -> bool:
+    """Shield Tunnel .ost files are UTF-8 text: a Base64 envelope of at
+    least 44 bytes (salt 16 + nonce 12 + ciphertext + GCM tag 16), or a
+    plain JSON document. OUSS .ost files are raw DES-ECB ciphertext bytes,
+    which are not valid UTF-8 Base64 text.
+    """
+    try:
+        text = contents.decode("utf-8-sig").strip()
+    except UnicodeError:
+        return False
+    if text.startswith("{"):
+        try:
+            return isinstance(json.loads(text), dict)
+        except ValueError:
+            return False
+    compact = re.sub(r"[ \t\r\n]", "", text)
+    if not compact or len(compact) % 4 == 1:
+        return False
+    if not re.fullmatch(r"[A-Za-z0-9+/]+={0,2}", compact):
+        return False
+    try:
+        blob = base64.b64decode(compact + "=" * (-len(compact) % 4), validate=True)
+    except (ValueError, binascii.Error):
+        return False
+    return len(blob) >= 44
+
+
+def _compact_text(contents: bytes) -> str | None:
+    """UTF-8 text with all whitespace removed, or None if not UTF-8 text."""
+    try:
+        text = contents.decode("utf-8-sig")
+    except UnicodeError:
+        return None
+    return "".join(text.split())
+
+
+def _b64decode_strict(text: str) -> bytes | None:
+    """Strict standard-Base64 decode of one token, or None."""
+    if not text or len(text) % 4 == 1:
+        return None
+    if not re.fullmatch(r"[A-Za-z0-9+/]+={0,2}", text):
+        return None
+    try:
+        return base64.b64decode(text + "=" * (-len(text) % 4), validate=True)
+    except (ValueError, binascii.Error):
+        return None
+
+
+def _is_beevpn_bee(contents: bytes) -> bool:
+    """New BeeVPN export shape: Base64 text whose compact length is 1
+    (mod 4), whose char at index 3 is an ASCII letter, and which becomes
+    a valid >=44-byte envelope when that one letter is removed. The
+    exporter inserts one random ASCII letter at Base64 index 3; anything
+    else keeps the historic BEE TUNNEL (ultra.py) route. Known gap: a
+    marker-less new envelope is indistinguishable by bytes alone.
+    """
+    compact = _compact_text(contents)
+    if compact is None or len(compact) < 5 or len(compact) % 4 != 1:
+        return False
+    if compact[3] not in "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ":
+        return False
+    blob = _b64decode_strict(compact[:3] + compact[4:])
+    return blob is not None and len(blob) >= 44
+
+
+# Public format constant, transmitted in clear in the second field of every
+# new-format .eut blob. NOT a key: the key is a separate literal; this IV
+# alone decrypts nothing.
+EUT_SZA_IV = bytes(
+    [
+        0x59, 0x48, 0x4C, 0x56, 0x38, 0x56, 0x58, 0x2F,
+        0x2B, 0x54, 0x6D, 0x33, 0x40, 0x4E, 0x3C, 0x79,
+    ]
+)
+
+
+def _is_eut_payload(contents: bytes) -> bool:
+    """True for a new EUT eut-payload:// v1 link (any case)."""
+    try:
+        text = contents.decode("utf-8-sig").strip()
+    except UnicodeError:
+        return False
+    return text.lower().startswith("eut-payload://")
+
+
+def _is_eut_new_sza(contents: bytes) -> bool:
+    """True for a new EUT sza blob: optional eut:// or eut-settings://
+    prefix, then exactly one ':', both fields strict Base64, the
+    ciphertext a non-empty multiple of 16 bytes, and the second field
+    decoding to the fixed 16-byte format IV. Historic blobs carry a
+    per-file IV in the same field, so they do not match (a random
+    collision is 2**-128)."""
+    compact = _compact_text(contents)
+    if compact is None:
+        return False
+    lowered = compact.lower()
+    for prefix in ("eut-settings://", "eut://"):
+        if lowered.startswith(prefix):
+            compact = compact[len(prefix):]
+            break
+    if compact.count(":") != 1:
+        return False
+    ct_b64, iv_b64 = compact.split(":")
+    ct = _b64decode_strict(ct_b64)
+    iv = _b64decode_strict(iv_b64)
+    if ct is None or iv is None:
+        return False
+    return len(ct) >= 16 and len(ct) % 16 == 0 and iv == EUT_SZA_IV
+
+
+def _run_decoder_once(source: str, runtime: str, input_file: Path, output_file: Path, *, folder: str, credentials: dict | None, timeout: int) -> tuple[int, bytes]:
+    """Run one decoder subprocess; returns (returncode, raw stdout).
+
+    Raises ENGINE_TIMEOUT / ENGINE_UNAVAILABLE / OUTPUT_TOO_LARGE directly:
+    those are resource errors, never a reason to try another engine.
+    """
+    with output_file.open("wb") as output:
+        try:
+            proc = subprocess.Popen(
+                [runtime, source, str(input_file)],
+                cwd=ROOT,
+                env=_child_env(folder),
+                stdin=subprocess.PIPE if credentials is not None else subprocess.DEVNULL,
+                stdout=output,
+                stderr=subprocess.DEVNULL,
+                close_fds=True,
+                start_new_session=True,
+                preexec_fn=_child_limits,
+            )
+        except OSError as error:
+            raise DecodeFailure("ENGINE_UNAVAILABLE") from error
+        try:
+            if credentials is not None:
+                proc.communicate(input=json.dumps(credentials).encode("utf-8"), timeout=timeout)
+                returncode = proc.returncode
+            else:
+                returncode = proc.wait(timeout=timeout)
+        except subprocess.TimeoutExpired as error:
+            os.killpg(proc.pid, signal.SIGKILL)
+            proc.wait()
+            raise DecodeFailure("ENGINE_TIMEOUT") from error
+    with output_file.open("rb") as stream:
+        raw = stream.read(MAX_OUTPUT_BYTES + 1)
+    if len(raw) > MAX_OUTPUT_BYTES:
+        raise DecodeFailure("OUTPUT_TOO_LARGE")
+    return returncode, raw
+
+
 def decode_file(suffix: str, contents: bytes, *, timeout: int = TIMEOUT_SECONDS, credentials: dict | None = None, full_hat: bool = False, compatible_export: dict | None = None) -> dict:
     """Execute one canonical file engine. The caller must authenticate first."""
     if compatible_export is not None:
@@ -273,8 +491,46 @@ def decode_file(suffix: str, contents: bytes, *, timeout: int = TIMEOUT_SECONDS,
             engine = load_file_engines()["actun"]
     if suffix == "roy" and _is_legacy_roy(contents):
         engine = load_file_engines()["roy"]
+    # Content dispatch for suffixes shared by two different formats.
+    # Predicates inspect bytes only; they never decrypt or guess keys.
+    # - .hexcm starting with the HXS3 v3 container is Hex Custom 10.6.4
+    #   (password arrives on stdin, see hex_custom_bridge.py); anything
+    #   else keeps the existing Hex Tunnel 1.7.3 route.
+    # - .tgv starting with STGCM2.VC./STGCM3.VC. is VC VPN 8.0 (bridge:
+    #   that script takes --file, not a positional path); anything else
+    #   keeps the TunelGuard 12.8 route.
+    # - .ost that is not a Shield envelope keeps the frozen OUSS route;
+    #   the C8 entry already points at Shield Tunnel.
+    # - .bee with the export marker letter (len 1 mod 4, letter at index 3)
+    #   is BeeVPN 1.10.11.2; anything else keeps BEE TUNNEL (ultra.py).
+    # - .eut with the eut-payload:// prefix or the fixed format IV in the
+    #   second field is EUT VPN 2.4.1; anything else keeps EUT Tunnel.
+    is_hex_custom = suffix == "hexcm" and _is_hex_custom_v3(contents)
+    is_vc_tgv = suffix == "tgv" and _is_vc_tgv(contents)
+    is_beevpn_bee = suffix == "bee" and _is_beevpn_bee(contents)
+    is_eut_new = suffix == "eut" and (_is_eut_payload(contents) or _is_eut_new_sza(contents))
+    if is_hex_custom:
+        engine = {
+            "source": str(Path(__file__).with_name("hex_custom_bridge.py")),
+            "runtime": "python",
+            "name": "Hex Custom 10.6.4",
+            "phase": "C8",
+        }
+    elif is_vc_tgv:
+        engine = {
+            "source": str(Path(__file__).with_name("vc_tgv_bridge.py")),
+            "runtime": "python",
+            "name": "VC VPN 8.0",
+            "phase": "C8",
+        }
+    elif suffix == "ost" and not _is_shield_ost(contents):
+        engine = load_file_engines()["ost"]
+    elif suffix == "bee" and not is_beevpn_bee:
+        engine = load_file_engines()["bee"]
+    elif suffix == "eut" and not is_eut_new:
+        engine = load_file_engines()["eut"]
     if credentials is not None:
-        allowed = {"password", "hwid"} if suffix == "hc" else {"password", "publicKey", "recipientKey"} if suffix == "npvs" else {"password"} if suffix in ("tut", "ua", "1ftnl", "v2box") else None
+        allowed = {"password", "hwid"} if suffix in ("hc", "sn") else {"password", "publicKey", "recipientKey"} if suffix == "npvs" else {"password"} if suffix in ("tut", "ua", "1ftnl", "v2box") or is_hex_custom else None
         if allowed is None or not isinstance(credentials, dict) or set(credentials) - allowed:
             raise DecodeFailure("CREDENTIALS_NOT_ALLOWED")
         for name, maximum in (("password", 4096), ("hwid", 128), ("publicKey", 128), ("recipientKey", 16384)):
@@ -294,79 +550,94 @@ def decode_file(suffix: str, contents: bytes, *, timeout: int = TIMEOUT_SECONDS,
     protected_onef = suffix == "1ftnl"
     protected_npvs = suffix == "npvs"
     protected_v2box = suffix == "v2box"
-    credential_input = protected_hc or protected_tut or protected_ua or protected_onef or protected_npvs or protected_v2box
+    from cloud.workers.python.supplied_bridge import FILE_ROUTES
+    supplied_file = suffix in FILE_ROUTES
+    if suffix == "v2box":
+        try:
+            v2box_document = json.loads(contents)
+            supplied_file = isinstance(v2box_document, dict) and "version" in v2box_document
+        except (ValueError, UnicodeError):
+            supplied_file = False
+    if suffix == "bee":
+        # Marker-shaped files go to the supplied BeeVPN reader; everything
+        # else stays on the frozen ultra.py route selected above.
+        supplied_file = is_beevpn_bee
+    if suffix == "eut":
+        # New-format blobs go to the supplied EUT reader; everything else
+        # stays on the frozen eut.py route selected above.
+        supplied_file = is_eut_new
+    credential_input = supplied_file or protected_hc or protected_tut or protected_ua or protected_onef or protected_npvs or protected_v2box or is_hex_custom
     source = engine["source"]
     if suffix == "dark":
         source = str(Path(__file__).with_name("dark_bridge.py"))
     elif protected_hc:
         source = str(Path(__file__).with_name("hc_bridge.py"))
-    elif protected_tut or protected_onef:
+    elif protected_tut or (protected_onef and not supplied_file):
         source = str(Path(source).with_name("worker_bridge.py"))
     elif protected_ua:
         source = str(Path(__file__).with_name("ultra_custom_bridge.py"))
     elif protected_npvs:
         source = str(Path(__file__).with_name("npvs_bridge.py"))
-    elif protected_v2box:
+    elif protected_v2box and not supplied_file:
         source = str(Path(__file__).with_name("v2box_bridge.py"))
+    if supplied_file:
+        source = str(Path(__file__).with_name("supplied_bridge.py"))
     runtime = sys.executable if credential_input or engine["runtime"] == "python" else shutil.which(engine["runtime"])
     if not runtime:
         raise DecodeFailure("ENGINE_UNAVAILABLE")
+    # Primary attempt plus, for C8 family overrides, one retry with the
+    # frozen C0 family engine (see _C8_GENERIC_FALLBACK).
+    attempts = [(engine, source, runtime, credential_input, credentials if credential_input else None)]
+    if suffix in _C8_GENERIC_FALLBACK:
+        canonical = load_file_engines().get(suffix)
+        if canonical is not None and canonical["source"] != source:
+            fallback_runtime = sys.executable if canonical["runtime"] == "python" else shutil.which(canonical["runtime"])
+            if fallback_runtime:
+                attempts.append((canonical, canonical["source"], fallback_runtime, False, None))
 
     with tempfile.TemporaryDirectory(prefix="spdecode-c2-") as folder:
         input_file = Path(folder) / ("input." + input_suffix)
         output_file = Path(folder) / "stdout"
         input_file.write_bytes(contents)
         input_file.chmod(0o600)
-        with output_file.open("wb") as output:
-            try:
-                proc = subprocess.Popen(
-                    [runtime, source, str(input_file)],
-                    cwd=ROOT,
-                    env=_child_env(folder),
-                    stdin=subprocess.PIPE if credential_input else subprocess.DEVNULL,
-                    stdout=output,
-                    stderr=subprocess.DEVNULL,
-                    close_fds=True,
-                    start_new_session=True,
-                    preexec_fn=_child_limits,
-                )
-            except OSError as error:
-                raise DecodeFailure("ENGINE_UNAVAILABLE") from error
-            try:
-                if credential_input:
-                    proc.communicate(input=json.dumps(credentials or {}).encode("utf-8"), timeout=timeout)
-                    returncode = proc.returncode
-                else:
-                    returncode = proc.wait(timeout=timeout)
-            except subprocess.TimeoutExpired as error:
-                os.killpg(proc.pid, signal.SIGKILL)
-                proc.wait()
-                raise DecodeFailure("ENGINE_TIMEOUT") from error
-        with output_file.open("rb") as stream:
-            raw = stream.read(MAX_OUTPUT_BYTES + 1)
-        if len(raw) > MAX_OUTPUT_BYTES:
-            raise DecodeFailure("OUTPUT_TOO_LARGE")
-        if returncode != 0:
-            if credential_input and returncode == 3:
-                try:
-                    code = json.loads(raw.decode("utf-8")).get("workerError")
-                except (UnicodeError, ValueError, AttributeError):
-                    code = None
-                if code in ("PASSWORD_REQUIRED", "HWID_REQUIRED", "HWID_PASSWORD_REQUIRED", "AUTH_FAILED",
-                            "PRIVATE_KEY_REQUIRED", "RECIPIENT_MISMATCH", "INVALID_CREDENTIALS",
-                            "INVALID_INPUT", "UNSUPPORTED_VERSION", "UNSUPPORTED_METHOD",
-                            "UNSUPPORTED_VARIANT", "NPVS_PROTECTION_UNSUPPORTED",
-                            "NPVS_APPKEY_AUTH_FAILED"):
-                    # The NPVS decoder authenticates its signed envelope before
-                    # opening app-key. A failed recognized app-key is ambiguous:
-                    # unsupported exporter/key variant OR altered signed input,
-                    # never proof that an ECDH recipient private key is needed.
-                    # Android 1.1.19 already has a localized variant notice.
-                    if suffix == "npvs" and code == "NPVS_APPKEY_AUTH_FAILED":
-                        raise DecodeFailure("UNSUPPORTED_VARIANT")
-                    raise DecodeFailure(code)
-            raise DecodeFailure("DECODE_FAILED")
-        if not raw.strip():
+        raw = b""
+        for index, (attempt_engine, attempt_source, attempt_runtime, attempt_cred_in, attempt_creds) in enumerate(attempts):
+            engine = attempt_engine
+            returncode, raw = _run_decoder_once(
+                attempt_source, attempt_runtime, input_file, output_file,
+                folder=folder,
+                credentials=(attempt_creds if attempt_creds is not None else {}) if attempt_cred_in else None,
+                timeout=timeout,
+            )
+            last = index == len(attempts) - 1
+            if returncode != 0:
+                if attempt_cred_in and returncode == 3:
+                    try:
+                        code = json.loads(raw.decode("utf-8")).get("workerError")
+                    except (UnicodeError, ValueError, AttributeError):
+                        code = None
+                    if code in ("PASSWORD_REQUIRED", "HWID_REQUIRED", "HWID_PASSWORD_REQUIRED", "AUTH_FAILED",
+                                "PRIVATE_KEY_REQUIRED", "RECIPIENT_MISMATCH", "INVALID_CREDENTIALS",
+                                "INVALID_INPUT", "UNSUPPORTED_VERSION", "UNSUPPORTED_METHOD",
+                                "UNSUPPORTED_VARIANT", "NPVS_PROTECTION_UNSUPPORTED",
+                                "NPVS_APPKEY_AUTH_FAILED"):
+                        # The NPVS decoder authenticates its signed envelope before
+                        # opening app-key. A failed recognized app-key is ambiguous:
+                        # unsupported exporter/key variant OR altered signed input,
+                        # never proof that an ECDH recipient private key is needed.
+                        # Android 1.1.19 already has a localized variant notice.
+                        if suffix == "npvs" and code == "NPVS_APPKEY_AUTH_FAILED":
+                            raise DecodeFailure("UNSUPPORTED_VARIANT")
+                        raise DecodeFailure(code)
+                if last:
+                    raise DecodeFailure("DECODE_FAILED")
+                continue
+            if not raw.strip():
+                if last:
+                    raise DecodeFailure("DECODE_FAILED")
+                continue
+            break
+        else:
             raise DecodeFailure("DECODE_FAILED")
         try:
             raw_text = raw.decode("utf-8")
@@ -377,6 +648,7 @@ def decode_file(suffix: str, contents: bytes, *, timeout: int = TIMEOUT_SECONDS,
             structured = json.loads(raw_text)
         except ValueError:
             pass
+        hc_unresolved = suffix == "hc" and isinstance(structured, dict) and bool(structured.get("UnresolvedFields"))
         result = {
             "apiVersion": "v1",
             "status": "success",
@@ -390,8 +662,8 @@ def decode_file(suffix: str, contents: bytes, *, timeout: int = TIMEOUT_SECONDS,
             # Keep output including trailing newline; no truncation or masking.
             "rawText": raw_text,
             "structuredJson": structured,
-            "isPartial": False,
-            "warnings": [],
+            "isPartial": hc_unresolved,
+            "warnings": ["HC_UNRESOLVED_FIELDS"] if hc_unresolved else [],
         }
         if compatible_export is not None:
             from exports.job import prepare
@@ -401,8 +673,10 @@ def decode_file(suffix: str, contents: bytes, *, timeout: int = TIMEOUT_SECONDS,
 
 def decode_provider_catalog(provider_id: str, contents: bytes) -> dict:
     """One fixed provider codec, child-isolated; broker performs all network I/O."""
-    if provider_id not in ("fnf-tunnel-bd", "alsaher-vip", "halcon-r-net", "ha-tunnel-plus", "ultra-tunnel", "zig-tunnel", "enaa-tunnel", "alfaisal-tunnel-plus", "izph-vpn-pro", "vip-snipher-pro", "netcol-vpn", "wolf-custom-vpn", "jyfast-vpn-ultra", "tunneldoom-vpn", "mtm-tunnel-lite", "mnr-tunnel-plus", "bd-net-vpn", "aura-net-vpn", "apna-vpn", "any-vpn", "speicers-pro-vpn", "tx-tunnel", "mm-tunnel", "creeb-vpn", "abowaged-vpn", "7net-vpn", "xhypher-tunnel-pro", "ut-loop-pro-vpn", "turbomx-vpn", "superflash-vpn", "rmp-tunnel-pro", "rjc-tunnel-pro", "proneet-vpn", "onspace-vpn", "mx-tunnel-pro", "megatunnel", "http-internet-infinito", "24clan-green", "hx-tunnel", "mkk-hyper", "my-tunnel-proxy", "robust-tunnel", "royal-tunnel", "trv-tunnel", "4u-tunnel-lite", "ac-tunnel-vpn", "austroplus-vpn", "http-fenixvpn", "http-jireh", "http-socketclay", "http-wakko", "v2ray-tunnel-plus", "eut-vpn", "focus-vpn-cloud", "freedom-vpn", "tunelguard-vpn", "tunneltweak", "ksh-vpn", "dtunnel-mod"):
-        raise DecodeFailure("UNSUPPORTED_FORMAT")
+    from cloud.workers.python.supplied_bridge import BY_ID as supplied_providers
+    if provider_id not in ("thailand-vpn", "kham-vpn", "opentunnel-ssh", "md-proxy-vpn", "xxpicore-tunnel", "catnet-vpn", "litron-vpn", "litron-pro-vpn", "speigo-vpn-configs", "speigo-vpn-ssh", "genis-vpn", "speicers-turbo-vpn", "http-conexion", "namo-vpn", "fnf-tunnel-bd", "alsaher-vip", "halcon-r-net", "ha-tunnel-plus", "ultra-tunnel", "zig-tunnel", "enaa-tunnel", "alfaisal-tunnel-plus", "izph-vpn-pro", "vip-snipher-pro", "netcol-vpn", "wolf-custom-vpn", "jyfast-vpn-ultra", "tunneldoom-vpn", "mtm-tunnel-lite", "mnr-tunnel-plus", "bd-net-vpn", "aura-net-vpn", "apna-vpn", "any-vpn", "speicers-pro-vpn", "tx-tunnel", "mm-tunnel", "creeb-vpn", "abowaged-vpn", "7net-vpn", "xhypher-tunnel-pro", "ut-loop-pro-vpn", "turbomx-vpn", "superflash-vpn", "rmp-tunnel-pro", "rjc-tunnel-pro", "proneet-vpn", "onspace-vpn", "mx-tunnel-pro", "megatunnel", "http-internet-infinito", "24clan-green", "hx-tunnel", "mkk-hyper", "my-tunnel-proxy", "robust-tunnel", "royal-tunnel", "trv-tunnel", "4u-tunnel-lite", "ac-tunnel-vpn", "austroplus-vpn", "http-fenixvpn", "http-jireh", "http-socketclay", "http-wakko", "v2ray-tunnel-plus", "eut-vpn", "focus-vpn-cloud", "freedom-vpn", "tunelguard-vpn", "tunneltweak", "ksh-vpn", "dtunnel-mod"):
+        if provider_id not in supplied_providers:
+            raise DecodeFailure("UNSUPPORTED_FORMAT")
     if not isinstance(contents, bytes) or not contents:
         raise DecodeFailure("INVALID_INPUT")
     # MKK source bundle carries four separately encrypted fixed-origin replies
@@ -462,12 +736,14 @@ def decode_provider_catalog(provider_id: str, contents: bytes) -> dict:
                 raise ValueError("invalid")
         except (ValueError,UnicodeError) as error:
             raise DecodeFailure("OUTPUT_INVALID") from error
+        supplied_partial = provider_id == "docnet-vpn" or (provider_id == "mm-tunnel" and
+            isinstance(structured,dict) and structured.get("decryptionStatus",{}).get("complete") is False)
         return {
             "apiVersion":"v1","status":"success","kind":"vpn_catalog",
             "providerId":provider_id,"rawText":raw_text,
             "structuredJson":structured,
-            "isPartial":provider_id=="mkk-hyper" and isinstance(structured,dict) and structured.get("complete") is False,
-            "warnings":["PARTIAL_SOURCE_FAILURE"] if provider_id=="mkk-hyper" and isinstance(structured,dict) and structured.get("complete") is False else [],
+            "isPartial":supplied_partial or (provider_id=="mkk-hyper" and isinstance(structured,dict) and structured.get("complete") is False),
+            "warnings":["ENCRYPTED_FIELDS_PENDING"] if supplied_partial else (["PARTIAL_SOURCE_FAILURE"] if provider_id=="mkk-hyper" and isinstance(structured,dict) and structured.get("complete") is False else (["El listado público de OpenTunnel contiene hosts SSH; el usuario y la contraseña se generan por cuenta en la aplicación oficial."] if provider_id=="opentunnel-ssh" else [])),
             "exporterCertified":False,
         }
 
@@ -490,8 +766,8 @@ def decode_text(text: str, *, timeout: int = TIMEOUT_SECONDS, credentials: dict 
         raise DecodeFailure("INVALID_REQUEST")
     if credentials is not None:
         if (not isinstance(credentials, dict) or set(credentials) != {"password"} or
-                not (text.strip().lower().startswith("ua://") or text.strip().startswith(
-                    ("1FTnl.", "1FT1.", "1ftunnel://1FTnl/", "1ftunnel://1FT1/")) or
+                not (text.strip().lower().startswith(("ua://", "v2box://", "1ftunnel://")) or text.strip().startswith(
+                    ("1FTnl.", "1FT1.", "1FTlb.", "1ftunnel://1FTnl/", "1ftunnel://1FT1/")) or
                     any(text.strip().lower().startswith(prefix) and
                         len(text.strip()) > len(prefix) for prefix in
                         ("npvt://", "npvt-ssh://", "npvt-vless://", "npvt-vmess://", "npv://"))) or

@@ -19,6 +19,9 @@ import time
 from urllib.parse import urlsplit
 from urllib.request import urlopen
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from spdecode_compose import compose_command
+
 ROOT = Path(os.environ.get("SPDECODE_HOME", "/opt/spdecode"))
 CFG = Path(os.environ.get("SPDECODE_CONFIG_DIR", "/etc/spdecode"))
 ENV = CFG / "cloud.env"
@@ -164,8 +167,7 @@ def atomic(lines: list[str]) -> None:
 
 def compose(*args: str) -> None:
     subprocess.run(
-        ["docker", "compose", "--project-name", "spdecode",
-         "--env-file", str(ENV), "-f", str(COMPOSE), *args],
+        compose_command(COMPOSE, ENV, *args),
         check=True, stdout=subprocess.DEVNULL,
     )
 

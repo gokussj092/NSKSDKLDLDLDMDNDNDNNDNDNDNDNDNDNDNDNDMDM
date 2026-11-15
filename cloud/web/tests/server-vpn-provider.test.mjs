@@ -4,6 +4,10 @@ import dns from "node:dns/promises";
 import https from "node:https";
 import {EventEmitter} from "node:events";
 import {downloadVpnCatalog,mkkSourceIds} from "../lib/server-vpn-provider.mjs";
+import {readFileSync} from "node:fs";
+import {mkdtemp,rm} from "node:fs/promises";
+import {tmpdir} from "node:os";
+import {join} from "node:path";
 import {packMkkSources} from "../lib/mkk-source-bundle.mjs";
 
 for(const provider of [
@@ -16,10 +20,10 @@ for(const provider of [
   {id:"tx-tunnel",host:"strongteam.co",path:"/api/txtunnel/v1/",query:"?appcode=27.0",agent:"Tx Tunnel"},
   {id:"abowaged-vpn",host:"raw.githubusercontent.com",path:"/th3fre/Testing/refs/heads/main/Elk.txt",query:"",agent:"AboWaged VPN/1.0"},
   {id:"http-socketclay",host:"dl.dropboxusercontent.com",path:"/scl/fi/vh319xyu0ck84ks0wdqw8/ServersSC",query:"?rlkey=b9g57byy0igz2jitqix31t4i4&st=evmzpf11&dl=1",agent:"HTTP SocketClay/3.4.0"},
-  {id:"tunneltweak",host:"tunneltweak.com",path:"/api/servers",query:"",agent:"TunnelTweak/1.0 (Android)",headers:{"ngrok-skip-browser-warning":"true","x-app-version":"51","x-cfg-keyed":"1"}},
+  {id:"tunneltweak",host:"tunneltweak.com",path:"/api/servers",query:"",agent:"TunnelTweak/1.0 (Android)",headers:{"ngrok-skip-browser-warning":"true","x-app-version":"53","x-cfg-keyed":"1"}},
   {id:"http-jireh",host:"dl.dropboxusercontent.com",path:"/scl/fi/9p6vvoa8jfch3ribneckq/HTTPJIREH1117",query:"?rlkey=05z97u9cg8tv4k5xem9m1uxu2&st=huezcplw&dl=1",agent:"HTTP Jireh/2.2"},
   {id:"http-fenixvpn",host:"raw.githubusercontent.com",path:"/Fenix1998x/GEN-SERVIDORES-NUEVO-24-08-2027/refs/heads/main/Fenix",query:"",agent:"HTTP FenixVPN/19.4"},
-  {id:"austroplus-vpn",host:"raw.githubusercontent.com",path:"/SpkHexX/HexX/refs/heads/main/AustroPlusVPN.json",query:"",agent:"AustroPlus VPN/13.0.1"},
+  {id:"austroplus-vpn",host:"raw.githubusercontent.com",path:"/SpkHexX/HexX/refs/heads/main/AustroTunVPN.json",query:"",agent:"AustroPlus VPN/15.0.1"},
   {id:"ac-tunnel-vpn",host:"rttunnelv2ray.xyz",path:"/api/files/app",query:"?json=7ef7a9a142eb1f77a56f",agent:"AC TUNNEL VPN/1.4"},
   {id:"ksh-vpn",host:"raw.githubusercontent.com",path:"/yannaing86tt/ksh_server/main/servers.json",query:"",agent:"KSH VPN/1.3.2"},
   {id:"my-tunnel-proxy",host:"mfmpro.xyz",path:"/api/app",query:"?json=3c9a2a29f3a4180271da",agent:"My Tunnel Proxy/2.3"},
@@ -33,6 +37,11 @@ for(const provider of [
     if(prior===undefined)delete process.env.CLOUD_SERVER_VPN_ENABLED;
     else process.env.CLOUD_SERVER_VPN_ENABLED=prior;
   });
+  const history=await mkdtemp(join(tmpdir(),"tweak-build-test-"));
+  const stateBefore=process.env.CLOUD_TUNNELTWEAK_BUILD_STATE_PATH;
+  process.env.CLOUD_TUNNELTWEAK_BUILD_STATE_PATH=join(history,"builds.json");
+  t.after(async()=>{if(stateBefore===undefined)delete process.env.CLOUD_TUNNELTWEAK_BUILD_STATE_PATH;else process.env.CLOUD_TUNNELTWEAK_BUILD_STATE_PATH=stateBefore;await rm(history,{recursive:true,force:true});});
+  const bytes=provider.id==="tunneltweak"?JSON.stringify(JSON.parse(readFileSync(new URL("../../../tests/golden/tunneltweak_vectors.json",import.meta.url),"utf8")).wrapper):"fixed catalog bytes";
   let dnsAddress="93.184.216.34",mode="success",calls=0;
   t.mock.method(dns,"lookup",async host=>{
     assert.equal(host,provider.host);
@@ -59,12 +68,12 @@ for(const provider of [
       response.headers=mode==="success"?{}:{location:mode};
       callback(response);
       if(mode==="success"){
-        response.emit("data",Buffer.from("fixed catalog bytes"));response.emit("end");
+        response.emit("data",Buffer.from(bytes));response.emit("end");
       }
     });
     return request;
   });
-  assert.equal((await downloadVpnCatalog(provider.id)).toString(),"fixed catalog bytes");
+  assert.equal((await downloadVpnCatalog(provider.id)).toString(),bytes);
   for(const redirect of [
     `https://${provider.host}${provider.path}?json=changed`,
     ...(provider.query ? [`https://${provider.host}${provider.path}`] : []),

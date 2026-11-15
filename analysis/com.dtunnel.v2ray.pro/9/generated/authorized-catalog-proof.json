@@ -1,0 +1,12 @@
+{
+  "observed_at": "2026-11-14T11:59:23.102459+00:00",
+  "credential_source": "owner-supplied authorized script default",
+  "credential_value_recorded": false,
+  "status": "VERIFIED_REAL",
+  "http_status": 200,
+  "response_bytes": 80600,
+  "ciphertext_sha256": "184829b561546c560390ff2e2c318d7e3d381812413a1d9a63985fda2f90b03c",
+  "profiles": 49,
+  "complete_worker_match": true,
+  "fields_truncated": false
+}

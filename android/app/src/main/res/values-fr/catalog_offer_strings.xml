@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="catalog_offer_title">Nouveau catalogue disponible</string>
+    <string name="catalog_offer_body">La version %1$d du catalogue est disponible. Mettez à jour pour accéder aux nouvelles applications, méthodes et améliorations.</string>
+    <string name="catalog_offer_update">Mettre à jour</string>
+    <string name="catalog_offer_later">Annuler</string>
+    <string name="catalog_postpone_title">Continuer sans mise à jour ?</string>
+    <string name="catalog_postpone_body">Si vous annulez, les nouvelles applications, méthodes et améliorations ne seront disponibles qu’après la mise à jour du catalogue. Vous pourrez le faire plus tard dans Serveurs VPN.</string>
+    <string name="catalog_postpone_confirm">Continuer sans mise à jour</string>
+    <string name="catalog_postpone_back">Retour</string>
+</resources>

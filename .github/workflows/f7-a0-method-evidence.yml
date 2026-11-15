@@ -1,0 +1,85 @@
+name: F7-A0 Method Evidence
+
+on:
+  pull_request:
+    branches: [main, feat/nuevas-integraciones]
+  push:
+    branches: [feat/nuevas-integraciones]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  evidence-gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Unit tests for evidence gate
+        run: python -m unittest discover -s tests -p 'test_method_evidence_a0.py' -v
+      - name: Dependency audit unit tests (offline)
+        run: python -m unittest discover -s tests -p 'test_a0_dependency_inventory.py' -v
+      - name: Check dependency registry metadata (no downloads)
+        run: python scripts/ci/check_apk_tool_dependencies.py
+      - name: P02 tool usage fixtures (offline, no method execution)
+        run: python -m unittest discover -s tests -p 'test_a0_tool_usage.py' -v
+      - name: Generate read-only P02 tool usage map
+        run: python scripts/ci/map_apk_tool_usage.py --output "$RUNNER_TEMP/f7-a0-usage.json"
+      - name: P03 private workspace lifecycle tests
+        run: python -m unittest discover -s tests -p 'test_a0_runtime_workspace.py' -v
+      - name: P03 persistent resources and image preflight tests
+        run: python -m unittest discover -s tests -p 'test_a0_runtime_preflight.py' -v
+      - name: P03 deny-by-default execution policy tests
+        run: python -m unittest discover -s tests -p 'test_a0_execution_policy.py' -v
+      - name: P03 check sandbox policy against unchanged tools
+        run: python scripts/ci/check_apk_analysis_policy.py
+      - name: P03 validate isolated Compose syntax (no Docker build)
+        run: docker compose -f cloud/apk_analysis/compose.yaml --profile apk-analysis --profile maintenance config --quiet
+      - name: P04 append-only checkpoint and recovery tests (synthetic)
+        run: python -m unittest discover -s tests -p 'test_a0_checkpoint_contract.py' -v
+      - name: P04 versioned JSON schema drift tests (offline)
+        run: python -m unittest discover -s tests -p 'test_a0_checkpoint_schemas.py' -v
+      - name: P05 adversarial APK/APKS archive boundaries (synthetic offline)
+        run: python -m unittest discover -s tests -p 'test_a0_apk_input_limits.py' -v
+      - name: P05 interruption, disk failure and human-retention recovery regression
+        run: python -m unittest discover -s tests -p 'test_a0_p05_failure_recovery.py' -v
+      - name: P06 static route/worker/plugin impact coverage tests
+        run: python -m unittest discover -s tests -p 'test_a0_p06_coverage.py' -v
+      - name: P06 read-only legacy coverage and unresolved import audit
+        run: python scripts/ci/check_a0_p06_coverage.py --output "$RUNNER_TEMP/f7-a0-p06-coverage.json"
+      - name: P06 require updated dossier for changed method and transitive consumers
+        if: github.event_name == 'pull_request'
+        env:
+          PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          P06_LEGACY_CUTOVER_SHA: 4fddee8924e58a9d1e6476974e9b7a9adda3e495
+        run: python scripts/ci/check_a0_p06_coverage.py --enforce --base-ref "$PR_BASE_SHA" --pr-head-ref "$PR_HEAD_SHA" --legacy-cutover-ref "$P06_LEGACY_CUTOVER_SHA" --output "$RUNNER_TEMP/f7-a0-p06-gate.json"
+      - name: P07 required status wiring unit tests (offline)
+        run: python -m unittest discover -s tests -p 'test_a0_p07_required_checks.py' -v
+      - name: P07 verify required check workflow contract (no GitHub branch mutation)
+        run: python scripts/ci/check_a0_p07_required_check.py --output "$RUNNER_TEMP/f7-a0-p07-wiring.json"
+      - name: P08 regression matrix contract and safety tests (no method execution)
+        run: python -m unittest discover -s tests -p 'test_a0_p08_regression.py' -v
+      - name: P08 read-only regression inventory (no method execution)
+        run: python scripts/ci/run_a0_p08_regression.py --check-only --output "$RUNNER_TEMP/f7-a0-p08-inventory.json"
+      - name: Inventory and audit (no APK execution)
+        run: python scripts/ci/check_method_evidence.py --output "$RUNNER_TEMP/f7-a0-report.json"
+      - name: Check evidence in pull requests
+        if: github.event_name == 'pull_request'
+        env:
+          PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: python scripts/ci/check_method_evidence.py --enforce --base-ref "$PR_BASE_SHA" --output "$RUNNER_TEMP/f7-a0-gate.json"
+      - name: Publish sanitized reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: f7-a0-evidence
+          path: ${{ runner.temp }}/f7-a0-*.json
+          if-no-files-found: ignore
+          retention-days: 7

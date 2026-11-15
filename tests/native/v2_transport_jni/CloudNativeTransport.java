@@ -9,41 +9,8 @@ import javax.net.ssl.HttpsURLConnection;
 /** Real native bridge with mocked TLS, not a certificate verification test. */
 public final class CloudNativeTransport {
     static { System.load(System.getProperty("spdecode.native")); }
-    // The real JNI library registers all 27 native methods atomically from
-    // JNI_OnLoad. The host fixture must declare the exact Android bridge
-    // signatures even when this test calls only the HTTPS transport method.
-    private static native String nativeRuntimeReport();
-    private static native void nativeConfigureRasp(boolean enforce);
-    private static native byte[] postNativeEncrypted(int operation,byte[] ciphertext,String bearer,
-        String version,String timestamp,String nonce,String proof,String actionChallenge,String actionIntegrity) throws IOException;
-    private static native byte[] nativePrepareHpke(int operation,byte[] metadata,byte[] attachment);
-    private static native String[] nativeBeginCatalog();
-    private static native byte[] nativeOpenCatalogHandle(long handle,String recipient,String purpose,
-        String serverKey,String salt,String iv,int plainBytes,String data);
-    private static native void nativeDiscardCatalogHandle(long handle);
-    private static native byte[] nativeOpenCatalog(byte[] privatePkcs8,String recipient,String purpose,
-        String serverKey,String salt,String iv,int plainBytes,String data);
-    private static native byte[] nativeOpenHpke(long handle,int status,byte[] wire,byte[] response);
-    private static native void nativeDiscardHpke(long handle);
-    private static native String nativePlayNonce(String nonce,String challengeId,String publicKey);
-    private static native boolean nativeValidClassicChallenge(String nonce,String challengeId,String apiVersion);
-    private static native boolean nativeValidActionChallenge(String requestHash,String challengeId,long project);
-    private static native boolean nativeValidPlayNonce(String nonce);
-    private static native String nativeHashWire(byte[] wire);
-    private static native String nativeFormatProof(int operation,String version,byte[] wire,String bearer,
-        String timestamp,String nonce);
-    private static native boolean nativeVerifyReleaseSigner(android.content.Context context,String packageName,
-        String uploadCert,String playCert,boolean debugBuild);
-    private static native String nativeHardwarePublicKey();
-    private static native String[] nativeAttestHardwareKey(String challenge,String level);
-    private static native String[] nativeSignRequestProof(int operation,String version,byte[] wire,String bearer);
-    private static native void nativeCacheSession(String bearer,long seconds,boolean required);
-    private static native String nativeGetSession();
-    private static native void nativeConfigureAction(String bearer,long project,boolean inlineMode);
-    private static native String nativeInlineAction(int operation,byte[] wire,String bearer);
-    private static native boolean nativeRequiresActionIntegrityFor(String bearer);
-    private static native void nativeClearSession();
-    private static native void nativeInvalidateSession(String bearer);
+    // Generated from current Kotlin @JvmStatic external methods before javac.
+    // CI_HOST_JNI_DECLARATIONS
     private static FakeConnection last;
     private static boolean failUpload;
     private static final String RESPONSE="{\"message\":\"México 👻 漢字\"}";

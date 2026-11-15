@@ -7,6 +7,10 @@
     "node": ">=22.0.0"
   },
   "scripts": {
+    "icons:prepare": "node scripts/prepare-catalog-icons.mjs",
+    "predev": "npm run icons:prepare",
+    "prebuild": "npm run icons:prepare",
+    "prestart": "npm run icons:prepare",
     "dev": "next dev --hostname 0.0.0.0",
     "build": "next build",
     "start": "next start --hostname 0.0.0.0",
@@ -14,9 +18,16 @@
   },
   "dependencies": {
     "@hpke/core": "1.9.0",
+    "better-auth": "1.7.20",
     "next": "16.4.3",
+    "pg": "8.23.1",
     "react": "19.3.1",
     "react-dom": "19.3.1",
-    "redis": "^5.0.0"
+    "redis": "^5.0.0",
+    "sharp": "0.35.5",
+    "stripe": "23.1.0"
+  },
+  "devDependencies": {
+    "@electric-sql/pglite": "0.5.16"
   }
 }

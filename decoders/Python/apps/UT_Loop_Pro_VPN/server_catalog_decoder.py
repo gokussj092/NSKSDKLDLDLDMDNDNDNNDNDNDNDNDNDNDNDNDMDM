@@ -16,6 +16,7 @@ else:
     from codec import DecodeError, MAX_BYTES, decode_catalog, render
 
 CATALOG_URL = 'https://api.utloop.xyz/v1/ota/config?package=loop.uchetechs.vpn.pro'
+LOCKED_URL = 'https://api.utloop.xyz/v1/ota/locked?package=loop.uchetechs.vpn.pro'
 PREMIUM_URL = 'https://api.utloop.xyz/v1/premium/config'
 API_KEY = '4cfKeESbl4NWDsY920ckIfVSag7jn12u3tAH2PWI'
 
@@ -38,7 +39,7 @@ def _observation(status, headers, data):
             'bytes': len(data), 'sha256': hashlib.sha256(data).hexdigest()}
 
 
-def download(*, access=None, iid=None, entitlement=None, user_agent='Dalvik/2.1.0') -> bytes:
+def download(*, access=None, iid=None, entitlement=None, locked=False, user_agent='Dalvik/2.1.0') -> bytes:
     """core.h still sends GET if OtaAccess.d returns null; never fabricate access.
 
     The APK sets no custom User-Agent. The CLI uses the Dalvik prefix; callers
@@ -48,7 +49,7 @@ def download(*, access=None, iid=None, entitlement=None, user_agent='Dalvik/2.1.
             ord(c)<32 or ord(c)>126 for c in user_agent):
         raise DecodeError('User-Agent incompatible.')
     if entitlement is not None:
-        if access is not None or iid is not None:
+        if access is not None or iid is not None or locked:
             raise DecodeError('No mezclar acceso OTA y autorización premium.')
         if not isinstance(entitlement, str) or not entitlement or len(entitlement) > 32768:
             raise DecodeError('Se requiere una autorización premium oficial válida.')
@@ -63,7 +64,9 @@ def download(*, access=None, iid=None, entitlement=None, user_agent='Dalvik/2.1.
                    for v in (access,iid)):
                 raise DecodeError('Acceso OTA o identificador incompatible.')
             headers = {'X-Ota-Access': access, 'X-Ota-Iid': iid}
-        request = Request(CATALOG_URL, headers=headers)
+        # Tercer endpoint verificado (2026-11-14): mismo sobre y misma
+        # autenticación OTA; sin token el servidor responde 401.
+        request = Request(LOCKED_URL if locked else CATALOG_URL, headers=headers)
     request.add_header('X-Api-Key', API_KEY)
     request.add_header('User-Agent', user_agent)
     request.add_header('Accept-Encoding', 'identity')
@@ -104,6 +107,7 @@ def main() -> int:
     modes.add_argument('file', nargs='?', type=Path, help='Copia local cifrada o sobre firmado')
     modes.add_argument('--stdin', action='store_true')
     modes.add_argument('--download', action='store_true', help='GET original; acceso OTA opcional vía UT_LOOP_OTA_ACCESS / UT_LOOP_OTA_IID')
+    modes.add_argument('--locked', action='store_true', help='GET del endpoint locked; mismo acceso OTA que --download')
     modes.add_argument('--premium', action='store_true', help='Autorización oficial vía UT_LOOP_ENTITLEMENT')
     modes.add_argument('--probe', action='store_true', help='GET real; solo diagnóstico y recuentos, sin datos VPN')
     a = p.parse_args()
@@ -120,6 +124,7 @@ def main() -> int:
             data = download(entitlement=entitlement,user_agent=os.environ.get('UT_LOOP_USER_AGENT','Dalvik/2.1.0'))
         else:
             data = download(access=os.environ.get('UT_LOOP_OTA_ACCESS'), iid=os.environ.get('UT_LOOP_OTA_IID'),
+                            locked=a.locked,
                             user_agent=os.environ.get('UT_LOOP_USER_AGENT','Dalvik/2.1.0'))
         if a.probe:
             document=decode_catalog(data,require_signature=True)

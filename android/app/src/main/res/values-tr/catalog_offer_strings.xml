@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="catalog_offer_title">Yeni katalog mevcut</string>
+    <string name="catalog_offer_body">Kataloğun %1$d sürümü hazır. Yeni desteklenen uygulamalar, yöntemler ve iyileştirmeler için güncelleyin.</string>
+    <string name="catalog_offer_update">Güncelle</string>
+    <string name="catalog_offer_later">İptal</string>
+    <string name="catalog_postpone_title">Güncellemeden devam edilsin mi?</string>
+    <string name="catalog_postpone_body">İptal ederseniz yeni uygulamalar, yöntemler ve iyileştirmeler kataloğu güncelleyene kadar kullanılamaz. Daha sonra VPN Sunucuları bölümünden güncelleyebilirsiniz.</string>
+    <string name="catalog_postpone_confirm">Güncellemeden devam et</string>
+    <string name="catalog_postpone_back">Geri dön</string>
+</resources>

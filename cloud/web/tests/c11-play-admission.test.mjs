@@ -100,8 +100,14 @@ test("signed Play AAB and external beta APK are generated without changing appli
   const version=gradle.match(/versionName = "(\d+\.\d+\.\d+)"/)?.[1];
   const code=gradle.match(/versionCode = (\d+)/)?.[1];
   assert.ok(version && code && Number(code)>26,"Play update must advance beyond 1.1.5 (26)");
-  assert.ok(workflow.includes("SP-DECODE-v"+version+"-play-closed-test-signed.aab"));
-  assert.ok(workflow.includes("SP-DECODE-v"+version+"-beta-external-signed.apk"));
+  // Version comes from Gradle at runtime, not from an outdated workflow copy.
+  assert.match(workflow,/current_android_contracts\.py --github-env "\$GITHUB_ENV"/);
+  assert.ok(workflow.includes("SPDECODE_VERSION_NAME"));
+  assert.ok(workflow.includes("SPDECODE_VERSION_CODE"));
+  assert.ok(workflow.includes("SP-DECODE-v${SPDECODE_VERSION_NAME}-play-closed-test-signed.aab"));
+  assert.ok(workflow.includes("SP-DECODE-v${SPDECODE_VERSION_NAME}-beta-external-signed.apk"));
+  assert.ok(workflow.includes("versionName='$SPDECODE_VERSION_NAME'"));
+  assert.ok(workflow.includes("versionCode='$SPDECODE_VERSION_CODE'"));
  assert.match(integrity,/PLAY_APP_SIGNER_SHA256/);
  assert.match(client,/CloudRequestProof\.integrityNonce/);
  assert.match(client,/val playRequired = challenge\.optBoolean\("integrityRequired", true\)/);

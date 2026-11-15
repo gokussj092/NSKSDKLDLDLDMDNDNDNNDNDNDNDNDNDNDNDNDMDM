@@ -1,0 +1,74 @@
+{
+  "plain": {
+    "Version": "fictional-1",
+    "Message": "Unicode: México 🇲🇽",
+    "Servers": [
+      {
+        "ServerName": "YWJj",
+        "ServerIP": "ssh.example.invalid",
+        "Username": "fictional",
+        "Password": "fictitious",
+        "SSHPort": "22",
+        "ServerFlag": "th",
+        "UDPConfig": "",
+        "setOpenVPN": ""
+      }
+    ],
+    "Networks": [
+      {
+        "PayloadName": "Fictional network",
+        "Sni": "tls.example.invalid",
+        "Payload": "CONNECT [host_port] HTTP/1.1\r\n\r\n",
+        "SquidPort": "80",
+        "SelectedProtocal": "SSH"
+      }
+    ],
+    "setOpenVPN": "",
+    "unknown": {
+      "preserve": [
+        "full",
+        null,
+        true,
+        3
+      ]
+    }
+  },
+  "wire": "tYzMxPDc8QhHq2IdU9NbzNjlUYnwRq/yZBc4RZMklkNsMp7xDcL3JB1FyhmvB7cIPyUcqmXLs0e0fkEgCUbyaZNpX1eIwB3pTag5cre16skQL9zK46X2W7khajk0XvMvNVQvVKSfSQ7QggDDj8lDRnJJdCu4Db51tr3wr++QIXqdtD6z3zetwsxOO+sb/MWt1NtEh3d37QrAGFa++VvwxJqE/2PjYMYAudAw535ypzqSNIUvSCLFAtK0fD3FHLaL1KWWtNBybjaWMsVqqCHVD1BlLMLrvQKU1UoBnGiLL6tAZcowaaFacX2wEUPWtFJdgdFeRpa+0G8G8QLJRug2TOilagjKPM3j3DeuuOeMp+DjS9cAKZr/0O3QCJFztNBk63dLxGYonET6EzbhxEl9NZfI+l0r4JXfAepVlOkiq5Y95NWmhajcmEnDjvTuZFR0fWJbeblCb42+xOTcnyThrStxO1D3YNq5eRyr4MIZuvWpl0r4MlOBL9Y2dVLj9s9v5BrPJENWaFyPxpOuwWA485SCNIV7uknLLQUTkIQqyogHXYICKgyOx015XttG3NrNvASd3HuPcnNmaCig3x1Z6CbF2WSW/JPQxNShM9l+lTlUCqHbyxAtgKZ2NvJN4DoC5VLv7VtxJkRpfdBmZj8gXjX1h4miDq/uZE6GXQ==",
+  "outer": {
+    "Version": "fictional-1",
+    "Message": "Unicode: México 🇲🇽",
+    "Servers": [
+      {
+        "ServerName": "YWJj",
+        "ServerIP": "c3NoLmV4YW1wbGUuaW52YWxpZA==",
+        "Username": "ZmljdGlvbmFs",
+        "Password": "ZmljdGl0aW91cw==",
+        "SSHPort": "22",
+        "ServerFlag": "th",
+        "UDPConfig": "",
+        "setOpenVPN": ""
+      }
+    ],
+    "Networks": [
+      {
+        "PayloadName": "Fictional network",
+        "Sni": "dGxzLmV4YW1wbGUuaW52YWxpZA==",
+        "Payload": "Q09OTkVDVCBbaG9zdF9wb3J0XSBIVFRQLzEuMQ0KDQo=",
+        "SquidPort": "80",
+        "SelectedProtocal": "SSH"
+      }
+    ],
+    "setOpenVPN": "",
+    "unknown": {
+      "preserve": [
+        "full",
+        null,
+        true,
+        3
+      ]
+    }
+  },
+  "badField": "k03jCgbuJhWfOS1qTkTVEQ4osRjFuFnRMqXYR2QnKVDEaaiBWrarGk1HTlKvygzIB1uW4i8hzW89PKUdqLTRiwk5O2vQXUpQB399qmCXEZJjMtMExdWEpswnmlJH4/VLbIcdpeZYaqR3rOhNL1rlcfW3YfoDLkxErQ3Qc/3Yn/WyAl5L23DF3Kj2a1imSVu4kj3zWx0Cw1SS6jgWieLQvnHi5oYGXWeImBM0IsXYJOZX30/UA0oRRc+W6w96b8TXuRF869ToJQPBIgvGQow2dhoUXeBolu0C/q8PSmbx9NDNHAoThGjb/IQJ9ruFHZkHmcnW5YFxqTMWPib5MlWNM3MKqFzJnF5DcpSbQ7Cwm082c3boB8y4atzk8CvraUVSrUb2lCTczqVvIQ44KicAyHoXIwavvH1GUKCteMtz4IWh7V3jYmQASHEmCbTWdEYCl46/KOHqQwiPFxMSVqf5NX+ZJMEI0e7Cc3VEsc/bDsps1oFDgxU1/OkGPz8RLkgfzc5d/15BMqALKwPAob7SjzA1uwHu2XA2QIHGs6h5wTglYYvAA/IRg22zw+RDY3tBeM4HHDvkLIm/uhYymIFIecCH4u/UNvoORlFG0XmOIOuAA0JYAbcd7xeR/LpvOcPA0m6O3coLRt3E/+fx",
+  "emptyNetworks": "H1GWzO8fciuxF490hnPmODEUcrFSVdTR4Qr6BVZCIcd/PScUcbgXdlC22S6qt6iBAKLtKfeN6GbP1AXDq5YH4jJD4WohFHIH9t9bkTVyj/Oq44EZDwx+PXIGgBPUnlU/1G0aiIBEDDEi9o77Yqe2FNM9g+sdlg7DuoMIceCxX/FqxsuKhnDm/GsDRjo9SNj8r8F/DVgbkQFqxO5AKX/PSBxQbJ/f6hruGbEk2uXescq4TW32k/6YARhQ1NnyqAOlF6oqt/j3O9qQ2E11xSoYN/0HzfEidlH4s5N9XbWpt62FevSUs570aTntc9i9Ke+JPYoM8ADU4PuP1n33ykY36zwn9tm3ClpPqc675/b4Q2EhKDAXR3hp6wCQgkmnNx31XLwtAVcVHL7Pld2JNnT9hnB+B2pw7mJBehz0x7yZvn2y0AofBb6EHIWdpqW22iNE07SUiQ==",
+  "wrongKey": "Kwv8PBdPUfUjbRxza9K1QgkKqWBiQZpzNhV8wcXfL6mPcqzfeXQqXOmzh/RUIYXnZ1karqNTLRTHdFq0GOboNUKQM6W5OhcJOFRazviHNBdM7RQTexuz3dzTtLcaOn9ywl6neg5oLidKcEzqYa57/hI77Hw0PEiDT1vJjKuJVppW1ZYt3iVtieid+rUUdQGkyjc36dCql1hDDWwd/cIJ8s83Apkd6EHDhjbi9hAy63mx6NRhljZpEPzwAXDGxjtAtP8UWU1cB+HrpFnd5wWRcXCn8wAbFmOJuLMfIyfVCL4hloRqk6ZyK7OFKuH1ZcpEM3O79hoitdRQIv+Gwkvo69btpvd52HxERP4cfOFEta3mJ80yYpi6g8VnkolyPDLTzZxl+xChzxUNRyXQvmYMhE3t6HlE8qEIgQfmCJmcMg8i+mh0dyYxfH77WziOX94F7cUK7l1HLhJV0URLog9pX/De0zw3rXRDvsELKd4txZcbjTtfJki4LzB23vz+f5c9/KGRxdcqcpQ0XKtphxZzN+uaHwfuHvjuzPxZ0X6whdzlEmt2Cw4dWGbnQ1YqIFTnDlCENo6UPqR+1Z5OIMQaGs5REvSbv3i6xa1Xe62gv7ZY5OVhgG2wWM4Kq7xk+AmNc6iB3kDP6nvBKNByKCHBJpzkNCDBthfHOADdXA=="
+}

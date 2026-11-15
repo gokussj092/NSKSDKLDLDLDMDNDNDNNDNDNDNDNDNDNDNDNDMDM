@@ -58,3 +58,10 @@ real para implementar y comprobar su ruta. Detalles en
 Método original: `docs/NPVS_V5_INVESTIGATION_HANDOFF.md`. Extensión, hashes,
 límites y pendientes: `docs/NPVS_PROTECTED_FILES.md`. Herramientas y recuperación
 en `scripts/apk_analysis/`. Pendiente actualizar la VPS; sin APK/UI/catálogo nuevos.
+
+Revisión de Offline 2026-11-09: aliases, DNS/npvs1 y errores de campos anidados
+en `analysis/_intake/npv-offline-text-20261109/`. Solo C++ y entrada de textos
+Offline; el lector Python y el servicio no cambian. No se aportó un enlace
+real nuevo para certificar versiones adicionales.
+
+Expediente del consumidor Offline build 42: `analysis/com.ghostdeveloper.spdecode.offline/42/`.

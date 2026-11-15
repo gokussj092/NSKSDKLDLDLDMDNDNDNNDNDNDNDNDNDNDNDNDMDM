@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """TunnelDOOM full offline catalog reader and fixed-source CLI downloader.
 
-Build 430 source validated with a complete real catalog and the isolated worker.
+Build 432 source validated with a complete real catalog and the isolated worker.
 """
 from __future__ import annotations
 import argparse
@@ -15,7 +15,7 @@ if __package__:
 else:
     from codec import DecodeError, MAX_BYTES, run
 
-SOURCE = "https://panel.tunneldoom.space/config.json"
+SOURCE = "https://web.tunneldoom.space/config.json"
 
 
 class _NoRedirect(HTTPRedirectHandler):

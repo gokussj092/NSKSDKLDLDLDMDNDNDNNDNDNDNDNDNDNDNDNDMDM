@@ -1,0 +1,8 @@
+{
+  "note": "TEST SYNTHETIC FIXTURE",
+  "tunnelType": 4,
+  "sshServer": "198.51.100.40",
+  "udpserver": "198.51.100.40",
+  "sshPortaLocal": 1080,
+  "file.appVersionCode": 184
+}

@@ -1,0 +1,23 @@
+{
+  "id": "slow-dns",
+  "name": "SLOW DNS",
+  "package": "slowdns.minapronetvpn.com.eg",
+  "versionName": "6.0.0",
+  "versionCode": 6,
+  "engine": "python",
+  "entrypoint": "SLOW_DNS.py",
+  "extensions": [],
+  "textPrefixes": [],
+  "catalog": {
+    "entrypoint": "SLOW_DNS.py",
+    "method": "Two-stage k(): strip 6 junk chars -> Base64 -> native xde (Base64 -> reverse bytes -> ROT+20 on letters) -> PBKDF2-HmacSHA1 10000 iters + AES-256-CBC",
+    "url": "https://raw.githubusercontent.com/MinaDiNabil/update.link/refs/heads/main/slowdns_updater",
+    "catalogUrl": "https://raw.githubusercontent.com/MinaDiNabil/update.link/refs/heads/main/slowdns_config.json",
+    "liveVersion": "4",
+    "servers": 7,
+    "networks": 54,
+    "payloads": 0,
+    "status": "live_verified",
+    "notes": "All 7 servers free (no premium/free/VIP marking). The 54 networks are SlowDNS+SSH entries with public DNS names; payload field empty in all 54."
+  }
+}

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""MNR TUNNEL PLUS 3.1: catalogs, .stp/clipboard and Firebase references.
+"""MNR TUNNEL PLUS 3.6: catalogs, .stp/clipboard and Firebase references.
 
 Standalone Python + PyCryptodome. No APK, user password or device ID needed.
 """
@@ -28,9 +28,13 @@ REFERENCE_PREFIX = 'mnrtunneludp://'
 BUCKET = 'hamovpn.firebasestorage.app'
 STORAGE_BASE = 'https://firebasestorage.googleapis.com/v0/b/' + BUCKET + '/o/'
 SERVER_FIELDS = frozenset(('ServerIP', 'ServerUser', 'ServerPass', 'v2rayurl', 'UdpIP',
-                          'Obfs_Str', 'Auth_Str', 'chaveKey', 'serverNameKey'))
-NETWORK_FIELDS = frozenset(('Payload', 'SNI', 'dnsKey', 'ProxyIP', 'v2Address', 'v2Host',
-                           'v2SNI', 'udpIP', 'udpObfs', 'udpAuth', 'PREFIX', 'DNS_RESOLVER_MANUAL'))
+                          'Obfs_Str', 'Auth_Str', 'chaveKey', 'serverNameKey',
+                          'XudpProfile', 'XudpPublicKey'))
+# Campos cifrados conocidos en Networks (verificado en vivo 2026-11-14).
+# decode_catalog descifra además cualquier valor con portador U+2000,
+# como el script verificado, para que un campo nuevo no quede cifrado.
+NETWORK_FIELDS = frozenset(('Payload', 'SNI', 'dnsKey', 'ProxyIP',
+                           'PREFIX', 'DNS_RESOLVER_MANUAL'))
 
 
 class DecodeError(ValueError):
@@ -103,26 +107,31 @@ def _outer(data: bytes, secret: str) -> dict:
     return load_json(decrypt_layer(text, secret))
 
 
+def _is_field_carrier(value) -> bool:
+    return (isinstance(value, str) and len(value) >= 2 and
+            all(c in FIELD_ALPHABET for c in value))
+
+
 def decode_catalog(data: bytes) -> dict:
     try:
         obj = _outer(data, 'devpro')
         if not isinstance(obj.get('Version'), str) or not obj['Version']:
             raise DecodeError('Versión de catálogo inválida.')
-        for name, fields in (('Servers', SERVER_FIELDS), ('Networks', NETWORK_FIELDS)):
+        for name in ('Servers', 'Networks'):
             rows = obj.get(name)
             if not isinstance(rows, list) or any(not isinstance(row, dict) for row in rows):
                 raise DecodeError('Lista de catálogo inválida.')
             for row in rows:
                 if not isinstance(row.get('Name'), str):
                     raise DecodeError('Perfil sin nombre.')
-                for field in fields & row.keys():
-                    if not isinstance(row[field], str):
-                        raise DecodeError('Campo cifrado sin texto.')
-                    if row[field] != '':
-                        row[field] = decrypt_layer(row[field], FIELD_SECRET, FIELD_ALPHABET)
+                # Como el script verificado: se descifra cualquier valor
+                # con portador U+2000, no solo los campos conocidos.
+                for field, value in list(row.items()):
+                    if _is_field_carrier(value):
+                        row[field] = decrypt_layer(value, FIELD_SECRET, FIELD_ALPHABET)
         return _validate(obj)
     except (ValueError, UnicodeError, RecursionError, TypeError, OverflowError) as exc:
-        raise DecodeError('Catálogo inválido o incompatible con MNR TUNNEL PLUS 3.1.') from exc
+        raise DecodeError('Catálogo inválido o incompatible con MNR TUNNEL PLUS 3.6.') from exc
 
 
 def decode_profile(data: bytes) -> dict:
@@ -178,7 +187,9 @@ class _NoRedirect(HTTPRedirectHandler):
 
 
 def _download(url: str, limit=MAX_BYTES) -> bytes:
-    request = Request(url, headers={'User-Agent': 'MNR TUNNEL PLUS/3.1', 'Accept-Encoding': 'identity'})
+    # GET plano como lo hace la app (verificado en vivo 2026-11-14):
+    # sin cabeceras propias ni autenticación.
+    request = Request(url)
     with build_opener(_NoRedirect()).open(request, timeout=25) as response:
         if response.status != 200 or response.headers.get('Content-Encoding', 'identity') != 'identity':
             raise DecodeError('Respuesta remota incompatible.')

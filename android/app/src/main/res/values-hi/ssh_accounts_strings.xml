@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="server_vpn_filter_ssh_accounts">SSH खाते</string>
+    <string name="server_vpn_ssh_notice_text">इन SSH खातों का उपयोग केवल इस ऐप में किया जा सकता है:</string>
+    <string name="server_vpn_ssh_no_matches">आपकी खोज से मेल खाने वाले SSH खाते नहीं मिले।</string>
+</resources>

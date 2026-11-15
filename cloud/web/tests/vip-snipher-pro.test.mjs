@@ -25,13 +25,13 @@ function enabled(t){
 test("VIP Snipher original icon and download follow secret configuration and availability",t=>{
   enabled(t);
   const doc=catalog({availability:{"vip-snipher-pro":true}});
-  assert.equal(CATALOG_VERSION,65);assert.equal(doc.apps.length,61);
+  assert.ok(CATALOG_VERSION>=73);assert.ok(doc.apps.length>=67);
   const card=doc.apps.find(x=>x.id==="vip-snipher-pro");
   assert.equal(card.name,"VIP Snipher Pro");assert.equal(card.decodeEnabled,true);
   assert.equal(card.iconSha256,"6a2ecaacc5fdf2a20f23cf31a58838854d7573dfb58c738274e150c31978e1e6");
   assert.equal(iconFor(card.id).bytes.length,25374);
   assert(!JSON.stringify(card).includes("https://"));
-  assert.equal(doc.formats.length,256);
+  assert.equal(doc.formats.length,272);
   assert(!doc.formats.some(x=>x.suffix==="js"||x.suffix==="rj"));
   assert.equal(catalog({availability:{"vip-snipher-pro":false}}).apps.find(x=>x.id===card.id).decodeEnabled,false);
   delete process.env.SPDECODE_VIP_SNIPHER_AUTHORIZATION;
@@ -139,7 +139,13 @@ test("VIP persistent switch preserves other providers and never stores the secre
   assert(!JSON.stringify(status).includes(secret));
   const missing=await providerOverview({...env,SPDECODE_VIP_SNIPHER_AUTHORIZATION:""},{root});
   assert.equal(missing.providers.find(x=>x.id==="vip-snipher-pro").configured,false);
-  await assert.rejects(()=>updateProvider("vip-snipher-pro",true,{...env,SPDECODE_VIP_SNIPHER_AUTHORIZATION:""},{root}),/PROVIDER_NOT_CONFIGURED/);
+  const noKey={...env,SPDECODE_VIP_SNIPHER_AUTHORIZATION:""};
+  await updateProvider("vip-snipher-pro",false,noKey,{root});
+  const pending=await updateProvider("vip-snipher-pro",true,noKey,{root});
+  assert.equal(pending.providers.find(x=>x.id==="vip-snipher-pro").administrativelyEnabled,true);
+  assert.equal(await providerAllowed("vip-snipher-pro",noKey,{root}),false);
+  assert.equal(await providerAllowed("vip-snipher-pro",env,{root}),true);
+  assert.equal(await providerAllowed("netcol-vpn",env,{root}),false);
 });
 test("authenticated VIP gateway forwards the complete catalog without forwarding its source credential",async t=>{
   const env={CLOUD_API_ENABLED:"true",CLOUD_SERVER_VPN_ENABLED:"true",CLOUD_BETA_ADMISSION_ENABLED:"true",

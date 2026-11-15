@@ -1,0 +1,17 @@
+{
+  "package": "com.fleet.vpn",
+  "build": 25,
+  "notProPackage": true,
+  "sourceSha256": {
+    "defpackage/lh0.java": "9b458c4785906bad6e1852de9f520560bba2840fd68cb5e68c3397b0dd2220e1",
+    "defpackage/q.java": "a4076493391b31a06c5c7f3a2cabdc330e1fb4e4bf50937834f8e7f4ea62bbe7",
+    "com/slipkprojects/ultrasshservice/util/securepreferences/model/vagol.java": "4f0958b8092309e6f6f1646714b8b5a3f6ab22e8d96c1a9258038aa0cf2dafc9",
+    "com/slipkprojects/sockshttp/MainActivity.java": "67ef2f7f0107c7ffbc457a7e23f44767b95b4f3b779a566cc9c7f7f0b5ffd6d5"
+  },
+  "fieldSeedMatchesCatalogSeed": true,
+  "seedSha256": "dd32d0193e7eabda9c12da5037deff0ddea12bdffd9a8e9b3f5dc542c9f8c27b",
+  "embeddedBytes": 59520,
+  "embeddedSha256": "79b34dc814bc10c0b85efc4ccc8680fc6ae566b6d31e3b22f6731623e8cb2b7d",
+  "source": "https://godtechprime.github.io/latestv2ray.txt",
+  "apkCodeExecuted": false
+}

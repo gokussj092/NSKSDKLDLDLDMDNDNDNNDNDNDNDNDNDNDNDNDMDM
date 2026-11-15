@@ -58,6 +58,21 @@ class PhaseViPrivacySecurityTests(unittest.TestCase):
         self.assertIn('remote.optBoolean("unchanged",false)',repo)
         self.assertIn('vault.write("catalog",fresh.toString()',repo)
 
+    def test_catalog_snapshot_volume_is_writable_for_unprivileged_web(self):
+        """The chunk snapshot writer must be able to write to its named Docker volume.
+
+        On first deployment Docker initializes the empty named volume from image
+        ownership. Missing mkdir/chown caused immediate watch/manifest failure.
+        """
+        dockerfile=src(ROOT/"cloud/web/Dockerfile")
+        compose=src(ROOT/"cloud/compose.yaml")
+        self.assertIn("USER node",dockerfile)
+        self.assertIn("mkdir -p /app/provider-control /app/notices /app/catalog-snapshots",dockerfile)
+        self.assertIn("chown node:node /app/provider-control /app/notices /app/catalog-snapshots",dockerfile)
+        self.assertIn("chmod 0700 /app/provider-control /app/notices /app/catalog-snapshots",dockerfile)
+        self.assertIn("- catalog-snapshots:/app/catalog-snapshots:rw",compose)
+        self.assertIn("CLOUD_CATALOG_CHUNKS_ENABLED: ${CLOUD_CATALOG_CHUNKS_ENABLED:-false}",compose)
+
     def test_monotonic_self_hosted_catalog_versions(self):
         code=src(ROOT/"cloud/web/lib/server-vpn-catalog.mjs")
         compose=src(ROOT/"cloud/compose.yaml")

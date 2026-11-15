@@ -1,0 +1,63 @@
+{
+  "lockfile_version": 1,
+  "package": "dev.jx.clickconnect",
+  "version_code": 18,
+  "dependencies": [
+    {
+      "name": "python",
+      "version": "3.12.3",
+      "source": "system",
+      "status": "VERIFIED",
+      "note": "python3 --version en este entorno"
+    },
+    {
+      "name": "pycryptodome",
+      "version": "4.4.0",
+      "source": "PyPI (venv)",
+      "status": "VERIFIED",
+      "note": "venv ~/workspace/http-custom-update/venv"
+    },
+    {
+      "name": "argon2-cffi",
+      "version": "25.1.0",
+      "source": "PyPI (venv)",
+      "status": "VERIFIED",
+      "note": "venv ~/workspace/http-custom-update/venv"
+    },
+    {
+      "name": "jadx",
+      "version": "UNKNOWN",
+      "source": "UNKNOWN",
+      "status": "NEEDS_REVIEW",
+      "note": "Version no registrada en los logs de origen"
+    },
+    {
+      "name": "apktool",
+      "version": "UNKNOWN",
+      "source": "UNKNOWN",
+      "status": "NEEDS_REVIEW",
+      "note": "Version no registrada en los logs de origen"
+    },
+    {
+      "name": "androguard",
+      "version": "UNKNOWN",
+      "source": "UNKNOWN",
+      "status": "NEEDS_REVIEW",
+      "note": "Version no registrada en los logs de origen"
+    },
+    {
+      "name": "capstone",
+      "version": "UNKNOWN",
+      "source": "UNKNOWN",
+      "status": "NEEDS_REVIEW",
+      "note": "Version no registrada en los logs de origen"
+    },
+    {
+      "name": "curl",
+      "version": "UNKNOWN",
+      "source": "system",
+      "status": "NEEDS_REVIEW",
+      "note": "Version no registrada"
+    }
+  ]
+}

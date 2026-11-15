@@ -1,0 +1,7 @@
+{
+  "status": "VERIFIED_REAL",
+  "nativeFields": 9,
+  "perMode": 3,
+  "originalArm64EqualJCAAndPython": true,
+  "scope": "isolated XXTEA, Threefish and invisible carrier; no JNI or Android startup"
+}

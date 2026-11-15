@@ -1,0 +1,10 @@
+{
+ "config": {
+  "Note": "synthetic config",
+  "SSHHost": "example.org",
+  "Server": "example.org",
+  "Version": "88-test",
+  "t": "0"
+ },
+ "sealed": "c0ROYA1bUF0YysrMCt0aC2dW0xTm1pSkNoemdQeGdueDg1d2R1UTJsMkphSVFIZ1E5cFIyVTV6T0YrcDRJZmpVbWZtS0ZmV2N5SkJseUtVMGNXQmxuN3FuYVJOL3hxS2Z0azhHcmFxSktydFM0anNnNmhpZUxtMUcwazlZaTFvSFI1TVFuU2ZiS3EwdUJZZzJXdGdXV083Zm9IWlNlU0pUMUVmVDRxWkVvVE1GckZzRnJYMkVvTENVNGlwVDFXZlNlS0pT"
+}

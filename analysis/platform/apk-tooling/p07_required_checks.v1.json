@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "subphase": "F7-A0-P07",
+  "target_branch": "main",
+  "workflow": "F7-A0 Method Evidence",
+  "job": "evidence-gate",
+  "required_status_checks": [
+    "evidence-gate",
+    "validate"
+  ],
+  "source": "GITHUB_BRANCHES_API_2026_11_07",
+  "observed_protection": {
+    "main": {
+      "protected": false,
+      "required_status_checks": []
+    },
+    "feat/nuevas-integraciones": {
+      "protected": false,
+      "required_status_checks": []
+    }
+  },
+  "activation": "DEFERRED_BY_OWNER_DECISION",
+  "evidence": "Run required-status-check failure PR smoke test after protection is enabled; offline CI alone is not branch protection.",
+  "note": "Owner explicitly chose manual CI review before merge instead of branch protection. These status checks are desired metadata for possible future activation only; NOT a launch blocker for P08/P09. No repository rule applied."
+}

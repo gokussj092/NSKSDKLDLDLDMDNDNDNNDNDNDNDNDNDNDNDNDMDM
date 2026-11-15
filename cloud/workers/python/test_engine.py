@@ -10,8 +10,136 @@ from pathlib import Path
 
 from engine import (
     DecodeFailure, MAX_INPUT_BYTES, ROOT, _child_env,
-    decode_file, decode_text, load_file_engines,
+    _is_beevpn_bee, _is_eut_new_sza, _is_eut_payload, _C8_GENERIC_FALLBACK,
+    decode_file, decode_text, load_file_engines, load_runtime_file_engines,
 )
+
+CATALOGS = Path.home() / "workspace" / "catalogs"
+
+
+def _read_sample(path):
+    return Path(path).read_bytes()
+
+
+class ContentDiscriminatorTests(unittest.TestCase):
+    """Shared-suffix content dispatch (2026-11-15 batch).
+
+    Predicates inspect bytes only; real samples are read, never copied.
+    Sample-based cases skip when the work samples are absent (CI without
+    ~/workspace/catalogs); synthetic vectors always run.
+    """
+
+    def test_runtime_map_has_new_suffixes(self):
+        engines = load_runtime_file_engines()
+        for suffix in ("hs", "bbtun", "bee", "wyr", "tcx", "eut"):
+            self.assertIn(suffix, engines)
+        self.assertEqual(engines["hs"]["phase"], "C8")
+        self.assertEqual(engines["bbtun"]["phase"], "C8")
+
+    def test_fallback_keeps_frozen_c0_for_shared_suffixes(self):
+        for suffix in ("bee", "wyr", "tcx", "eut"):
+            self.assertIn(suffix, _C8_GENERIC_FALLBACK)
+
+    def test_bee_marker_shape(self):
+        import base64
+        blob = base64.b64encode(bytes(44)).decode()
+        self.assertFalse(_is_beevpn_bee(blob.encode()))
+        marked = blob[:3] + "Q" + blob[3:]
+        self.assertEqual(len(marked) % 4, 1)
+        self.assertTrue(_is_beevpn_bee(marked.encode()))
+        self.assertFalse(_is_beevpn_bee((blob[:3] + "7" + blob[3:]).encode()))
+        for bad in (b"abcd", b"", b"not base64 at all!!!", b"\x00\x01\x02\x03\x04"):
+            self.assertFalse(_is_beevpn_bee(bad))
+
+    @unittest.skipUnless((CATALOGS / "beevpn" / "muestra.bee").is_file(),
+                         "BeeVPN real sample absent")
+    def test_bee_real_sample_is_marker_shaped(self):
+        raw = _read_sample(CATALOGS / "beevpn" / "muestra.bee")
+        self.assertTrue(_is_beevpn_bee(raw))
+        text = raw.decode().strip()
+        self.assertEqual(len(text) % 4, 1)
+        self.assertTrue(text[3].isalpha())
+        self.assertFalse(_is_beevpn_bee((text[:3] + text[4:]).encode()))
+
+    @unittest.skipUnless((CATALOGS / "beevpn" / "muestra.bee").is_file() and
+                         importlib.util.find_spec("argon2") is not None,
+                         "BeeVPN sample or argon2-cffi absent")
+    def test_bee_marker_sample_opens_by_new_route(self):
+        expected = json.loads((CATALOGS / "beevpn" / "muestra.bee.json").read_text("utf-8"))
+        decoded = decode_file("bee", _read_sample(CATALOGS / "beevpn" / "muestra.bee"))
+        self.assertEqual(decoded["status"], "success")
+        self.assertEqual(decoded["structuredJson"], expected)
+
+    def test_bee_plain_envelope_stays_on_frozen_route(self):
+        import base64
+        blob = base64.b64encode(bytes(44))
+        with self.assertRaises(DecodeFailure) as caught:
+            decode_file("bee", blob)
+        self.assertEqual(caught.exception.code, "DECODE_FAILED")
+
+    def test_eut_new_sza_shape(self):
+        import base64
+        iv = base64.b64encode(bytes(range(16))).decode()
+        ct = base64.b64encode(bytes(32)).decode()
+        self.assertFalse(_is_eut_new_sza(f"{ct}:{iv}".encode()))
+        self.assertFalse(_is_eut_new_sza(f"eut-settings://{ct}:{iv}".encode()))
+        self.assertFalse(_is_eut_new_sza(b"hello world"))
+        self.assertFalse(_is_eut_new_sza(b"eut-settings://onlyonefield"))
+        self.assertFalse(_is_eut_payload(b"eut-settings://AAAA:BBBB"))
+        self.assertTrue(_is_eut_payload(b"eut-payload://AAAA"))
+        self.assertFalse(_is_eut_payload(b"wyrvpn://AAAA"))
+
+    @unittest.skipUnless((CATALOGS / "eut" / "muestras" / "sample_settings.eut").is_file(),
+                         "EUT real sample absent")
+    def test_eut_real_samples_route_new(self):
+        raw = _read_sample(CATALOGS / "eut" / "muestras" / "sample_settings.eut")
+        self.assertTrue(_is_eut_new_sza(raw))
+        self.assertFalse(_is_eut_payload(raw))
+        payload = _read_sample(CATALOGS / "eut" / "muestras" / "sample_payload.txt")
+        self.assertTrue(_is_eut_payload(payload))
+        self.assertFalse(_is_eut_new_sza(payload))
+
+    @unittest.skipUnless((CATALOGS / "eut" / "muestras" / "sample_settings.eut").is_file(),
+                         "EUT real sample absent")
+    def test_eut_new_sza_sample_opens_by_new_route(self):
+        expected = json.loads((CATALOGS / "eut" / "muestras" / "sample_settings.json").read_text("utf-8"))
+        decoded = decode_file("eut", _read_sample(CATALOGS / "eut" / "muestras" / "sample_settings.eut"))
+        self.assertEqual(decoded["status"], "success")
+        self.assertEqual(decoded["structuredJson"], expected)
+
+    @unittest.skipUnless((CATALOGS / "eut" / "muestras" / "sample_payload.txt").is_file(),
+                         "EUT real sample absent")
+    def test_eut_payload_link_opens_by_new_route(self):
+        expected = json.loads((CATALOGS / "eut" / "muestras" / "sample_payload.json").read_text("utf-8"))
+        text = (CATALOGS / "eut" / "muestras" / "sample_payload.txt").read_text("utf-8")
+        decoded = decode_text(text)
+        self.assertEqual(decoded["status"], "success")
+        self.assertEqual(decoded["structuredJson"], expected)
+
+    @unittest.skipUnless((CATALOGS / "jkvpn" / "samples" / "test_vector.hs").is_file(),
+                         "JK VPN real sample absent")
+    def test_hs_jk_vector_opens_by_jk_route(self):
+        decoded = decode_file("hs", _read_sample(CATALOGS / "jkvpn" / "samples" / "test_vector.hs"))
+        self.assertEqual(decoded["status"], "success")
+        structured = decoded["structuredJson"]
+        self.assertIsInstance(structured, dict)
+        self.assertIn("Version", structured)
+        self.assertIsInstance(structured.get("Servers"), list)
+
+    @unittest.skipUnless((CATALOGS / "rhtunnel" / "samples" / "muestra-sintetica.hs").is_file(),
+                         "RH Tunnel Lite real sample absent")
+    def test_hs_rh_sample_opens_by_rh_route(self):
+        decoded = decode_file("hs", _read_sample(CATALOGS / "rhtunnel" / "samples" / "muestra-sintetica.hs"))
+        self.assertEqual(decoded["status"], "success")
+        self.assertIn("Name", decoded["structuredJson"])
+
+    @unittest.skipUnless((CATALOGS / "wyrvpn" / "Tanzania_-_Vodacom_FR_2_26_0_8vue.wyr").is_file(),
+                         "WyrVPN real sample absent")
+    def test_wyr_real_file_opens_by_new_route(self):
+        decoded = decode_file("wyr", _read_sample(CATALOGS / "wyrvpn" / "Tanzania_-_Vodacom_FR_2_26_0_8vue.wyr"))
+        self.assertEqual(decoded["status"], "success")
+        self.assertIsInstance(decoded["structuredJson"], list)
+        self.assertEqual(len(decoded["structuredJson"]), 1)
 
 class FileEngineTests(unittest.TestCase):
     def test_catalog_contains_240_source_exact_paths(self):

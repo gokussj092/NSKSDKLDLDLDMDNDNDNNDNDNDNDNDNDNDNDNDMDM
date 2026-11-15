@@ -1,0 +1,33 @@
+{
+  "plain": {
+    "Status": true,
+    "Servers": [
+      {
+        "id": 1,
+        "protocol_type": "openvpn",
+        "server_name": "Fictional México 🇲🇽",
+        "server_type": "free",
+        "ip": "vpn.example.invalid",
+        "username": null,
+        "password": null,
+        "configuration": "fictional-profile",
+        "no_of_minutes": 15,
+        "server_status": "active",
+        "unknown": {
+          "preserve": true
+        }
+      }
+    ],
+    "Settings": {
+      "app_settings": {
+        "fictional": true
+      }
+    },
+    "unknown": [
+      null,
+      false,
+      123
+    ]
+  },
+  "wire": "eyJTdGF0dXMiOiB0cnVlLCAiU2VydmVycyI6IFt7ImlkIjogMSwgInByb3RvY29sX3R5cGUiOiAib3BlbnZwbiIsICJzZXJ2ZXJfbmFtZSI6ICJGaWN0aW9uYWwgTcOpeGljbyDwn4ey8J+HvSIsICJzZXJ2ZXJfdHlwZSI6ICJmcmVlIiwgImlwIjogInZwbi5leGFtcGxlLmludmFsaWQiLCAidXNlcm5hbWUiOiBudWxsLCAicGFzc3dvcmQiOiBudWxsLCAiY29uZmlndXJhdGlvbiI6ICJmaWN0aW9uYWwtcHJvZmlsZSIsICJub19vZl9taW51dGVzIjogMTUsICJzZXJ2ZXJfc3RhdHVzIjogImFjdGl2ZSIsICJ1bmtub3duIjogeyJwcmVzZXJ2ZSI6IHRydWV9fV0sICJTZXR0aW5ncyI6IHsiYXBwX3NldHRpbmdzIjogeyJmaWN0aW9uYWwiOiB0cnVlfX0sICJ1bmtub3duIjogW251bGwsIGZhbHNlLCAxMjNdfQ=="
+}

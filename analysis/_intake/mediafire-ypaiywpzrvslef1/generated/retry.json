@@ -1,0 +1,23 @@
+{
+  "date": "2026-11-04",
+  "provenance": "actual inline Python/curl retry; script preserved in tools/retry_mediafire.py",
+  "curlExit": 0,
+  "response": "200 text/html 195",
+  "bytes": 195,
+  "sha256": "5b131ca14aa96311d3432b0062c7443d3b0e6346ec279bd376a75f0a76bcd5d7",
+  "title": "Site Unavailable",
+  "directLinks": [],
+  "apkReceived": false,
+  "userEvidence": {
+    "kind": "screenshot inspected; not published",
+    "displayName": "Hex Custom",
+    "displaySize": "82.03MB",
+    "downloadButtonVisible": true
+  },
+  "userReport": {
+    "directHost": "download1587.mediafire.com",
+    "directFullUrlProvided": false,
+    "reportedErrorInOtherTool": "Unsupported content-type: application/vnd.android.package-archive",
+    "verifiedByThisExecutor": false
+  }
+}

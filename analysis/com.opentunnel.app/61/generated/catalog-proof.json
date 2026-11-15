@@ -1,0 +1,11 @@
+{
+  "inputBytes": 1515,
+  "inputSha256": "e611ab5799ac5bdd16e1bb4dd70a144ce846ff4e619f965f754e81eebad918e0",
+  "servers": 7,
+  "wholeRawJsonParity": true,
+  "wholeWorkerParity": true,
+  "publicAccountCredentialsPresent": false,
+  "accountGenerationCalled": false,
+  "warningReturned": true,
+  "canonicalJsonSha256": "e207746f68de2f8698180f3bfce535e04a4e8578b28387d3eb261e4e898fa01a"
+}

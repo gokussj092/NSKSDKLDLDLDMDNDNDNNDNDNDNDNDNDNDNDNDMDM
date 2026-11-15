@@ -1,0 +1,26 @@
+{
+    "catalog": {
+        "entrypoint": "JetRoi.py",
+        "method": "POST",
+        "networks": null,
+        "payloads": null,
+        "servers": null,
+        "status": "LIVE_DECRYPT_FAILED",
+        "url": "https://strongteam.co/api/bcnetlite/",
+        "version": null
+    },
+    "deployment": "pending",
+    "engine": "python",
+    "entrypoint": "JetRoi.py",
+    "extensions": [
+        "bccnet"
+    ],
+    "fileDecoder": "JetRoi_archivos.py",
+    "id": "jetroi",
+    "name": "JetRoi",
+    "package": "co.strongteam.jetroi",
+    "realSampleVerified": true,
+    "textPrefixes": [],
+    "versionCode": 13,
+    "versionName": "v1.9.28.1"
+}

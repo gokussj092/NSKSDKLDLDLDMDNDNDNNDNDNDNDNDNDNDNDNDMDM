@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="catalog_offer_title">Nuovo catalogo disponibile</string>
+    <string name="catalog_offer_body">La versione %1$d del catalogo è pronta. Aggiorna per ottenere nuove app supportate, metodi e miglioramenti.</string>
+    <string name="catalog_offer_update">Aggiorna</string>
+    <string name="catalog_offer_later">Annulla</string>
+    <string name="catalog_postpone_title">Continuare senza aggiornare?</string>
+    <string name="catalog_postpone_body">Se annulli, le nuove app, i metodi e i miglioramenti non saranno disponibili finché non aggiornerai il catalogo. Potrai aggiornarlo più tardi da Server VPN.</string>
+    <string name="catalog_postpone_confirm">Continua senza aggiornare</string>
+    <string name="catalog_postpone_back">Indietro</string>
+</resources>

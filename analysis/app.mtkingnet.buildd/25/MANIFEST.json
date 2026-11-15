@@ -1,0 +1,241 @@
+{
+  "schema_version": 1,
+  "package_name": "app.mtkingnet.buildd",
+  "app_name": "MT KING NET",
+  "version_name": "15.35.2",
+  "version_code": 25,
+  "observed_at": "2026-11-15",
+  "source_category": "public_store_xapk",
+  "authorization_note": "XAPK publico de APKPure; muestras aportadas por el propietario (archivo real de Pedro solo en WyrVPN) o sinteticas selladas con el metodo real. Sin credenciales de usuario ni perfiles reales en el expediente.",
+  "status": "PARTIAL",
+  "targets": [
+    {
+      "kind": "files",
+      "status": "VERIFIED_SYNTHETIC",
+      "detail": "cached_cloud_bundle.json: sin muestra REAL de telefono; la muestra local (respuesta en vivo) abre; assets del APK abren"
+    },
+    {
+      "kind": "text",
+      "status": "VERIFIED_SYNTHETIC",
+      "detail": "sin esquema propio; enlaces V2Ray estandar ya cubiertos por SP-DECODE"
+    },
+    {
+      "kind": "catalog",
+      "status": "VERIFIED",
+      "detail": "worker ISVSoft con firma App-Proof, Version 21.31.299 en vivo"
+    },
+    {
+      "kind": "export",
+      "status": "PENDING",
+      "detail": "cloud share sin verificar en vivo (necesita dispositivo registrado y creditos)"
+    }
+  ],
+  "inputs": [
+    {
+      "type": "xapk",
+      "name": "MT_KING_NET_15.35.2_APKPure.xapk (SHA-1 coincide con APKPure; APKPure no publica SHA-256 para esta variante)",
+      "size_bytes": 47634903,
+      "sha256": "122de64e293e5f5311621d513cfbaa28d24d19ff73af692a7da3dc7bf89939f8",
+      "note": "Hash verificado contra APKPure segun README/TESTING de origen; el .xapk no se guarda en Git."
+    },
+    {
+      "type": "operational_script",
+      "name": "MT_King_Net.py",
+      "kind": "catalogo",
+      "sha256": "d43c590c83d45c60c9fe85c9267793e8268abf4e497b7a98baadf67085f673fb",
+      "path": "~/workspace/catalogs/mtkingnet/MT_King_Net.py",
+      "note": "Script operativo (contiene las constantes de formato). No se copia a analysis/."
+    },
+    {
+      "type": "operational_script",
+      "name": "MT_King_Net_archivos.py",
+      "kind": "archivos",
+      "sha256": "521ab547e3a7bb00236fcf3af4a552e708170491058be7199ffaff2d4c4840f8",
+      "path": "~/workspace/catalogs/mtkingnet/MT_King_Net_archivos.py",
+      "note": "Script operativo (contiene las constantes de formato). No se copia a analysis/."
+    },
+    {
+      "type": "sample",
+      "name": "catalog_sample.json",
+      "sha256": "f86b6b928996bd52ffb53003d43324f3b51a420e0823d43b77bc670d56d71019",
+      "note": "respuesta cruda del worker type=full (331.294 B)"
+    },
+    {
+      "type": "sample",
+      "name": "cached_cloud_bundle.json",
+      "sha256": "8e6b47540ff6eeb87e10d16a759433a2535196fa70f7ef2fdf0b407a6cf97b6a",
+      "note": "muestra del cache local (respuesta en vivo guardada con ese nombre)"
+    },
+    {
+      "type": "sample",
+      "name": "servers.json",
+      "sha256": "30220e31973f7ab4f1d7d22a7860e55fee2906d8fe0e8040eb922aa7e86d5b23",
+      "note": "asset del APK v1.0.0 (9 servidores)"
+    }
+  ],
+  "tooling": [
+    {
+      "name": "Python",
+      "version": "3.12.3",
+      "origin": "sistema (verificado en este entorno)",
+      "purpose": "Ejecucion de scripts y tests"
+    },
+    {
+      "name": "pycryptodome",
+      "version": "4.4.0",
+      "origin": "PyPI, venv ~/workspace/http-custom-update/venv (verificado)",
+      "purpose": "Via rapida AES (opcional; los scripts traen fallback puro)"
+    },
+    {
+      "name": "argon2-cffi",
+      "version": "25.1.0",
+      "origin": "PyPI, venv ~/workspace/http-custom-update/venv (verificado)",
+      "purpose": "Via rapida Argon2id para sobres de campo (opcional)"
+    },
+    {
+      "name": "jadx",
+      "version": "UNKNOWN",
+      "origin": "UNKNOWN — version no registrada en los logs de origen de estas 7 apps",
+      "purpose": "Descompilacion de DEX a Java"
+    },
+    {
+      "name": "apktool / androguard",
+      "version": "UNKNOWN",
+      "origin": "UNKNOWN — version no registrada en los logs de origen",
+      "purpose": "Extraccion de APK y lectura de manifest/assets"
+    },
+    {
+      "name": "capstone",
+      "version": "UNKNOWN",
+      "origin": "UNKNOWN — version no registrada en los logs de origen",
+      "purpose": "Desensamblado AArch64 de libgojni.so en los scripts de tools/"
+    },
+    {
+      "name": "curl",
+      "version": "UNKNOWN",
+      "origin": "sistema — version no registrada",
+      "purpose": "Descarga alternativa cuando el cliente HTTP de Python trunca el cuerpo"
+    }
+  ],
+  "code_paths": [
+    "decoders/Python/apps/MT_King_Net/MT_King_Net.py",
+    "decoders/Python/apps/MT_King_Net/MT_King_Net_archivos.py"
+  ],
+  "code_paths_note": "Las rutas decoders/Python/apps/<Proveedor>/ son las rutas PREVISTAS de integracion (Fase 2 del parche); a 2026-11-15 aun no estan integradas ni subidas. No se afirma integracion.",
+  "evidence_refs": [
+    "~/workspace/catalogs/mtkingnet/README.md",
+    "~/workspace/catalogs/mtkingnet/TESTING.md",
+    "~/workspace/catalogs/mtkingnet/work/",
+    "analysis/app.mtkingnet.buildd/25/RESULTS.md",
+    "analysis/app.mtkingnet.buildd/25/tests/test_method.py"
+  ],
+  "limitations": [
+    "Falta un cached_cloud_bundle.json REAL de un telefono (la estructura es la misma por codigo, pero no hay muestra real).",
+    "El flujo cloud share (subir/descargar + registro de dispositivo + creditos) NO esta verificado en vivo: necesita un dispositivo registrado.",
+    "Falta un enlace real pegado en la app para confirmar el parseo del nucleo v2rayNG con sus servidores.",
+    "La app no tiene esquema URI propio ni deep link (solo MAIN/LAUNCHER); la importacion de enlaces es por pegado."
+  ],
+  "network_requirements": [
+    "Descarga del catalogo en vivo: red HTTPS (el script operativo replica la peticion exacta de la app).",
+    "Los tests de este expediente NO necesitan red.",
+    "Regla SP-DECODE 2026-11-15: el JSON de resultado del catalogo lleva solo los datos del catalogo, todo descifrado; las APIs de descarga NO van en el resultado ni en este expediente (ver script operativo y supplied-integrations)."
+  ],
+  "manual_steps": [
+    "Obtener el XAPK publico de APKPure y verificar su SHA-256 contra lo publicado.",
+    "Ejecutar el --self-test del script operativo (ver REPRODUCE.md).",
+    "Para la confirmacion de extremo a extremo hace falta una muestra real exportada por la app en un telefono (ver unresolved_questions)."
+  ],
+  "unresolved_questions": [
+    "Muestra real de cached_cloud_bundle.json de telefono.",
+    "Flujo cloud share completo (registro + creditos + subida/descarga)."
+  ],
+  "connection_authentication": {
+    "file_catalog_integrity": {
+      "status": "NOT_OBSERVED",
+      "note": "Integridad por tags AES-256-GCM (AEAD), no por HMAC."
+    },
+    "cryptographic_derivation": {
+      "status": "NOT_OBSERVED",
+      "note": "Sin HMAC en la derivacion de la clave de formato (clave fija verificada funcionalmente)."
+    },
+    "vpn_transport": {
+      "status": "NOT_OBSERVED",
+      "note": "No se reviso el transporte VPN de esta app."
+    },
+    "connection_authentication": {
+      "status": "NOT_OBSERVED",
+      "note": "Existe HMAC-SHA256 App-Proof (X-ISV-Signature sobre '<timestamp>:<nonce>:<encodedPath>') pero es autenticacion de la PETICION al worker del catalogo, verificada por el worker (403 sin ella). NO es autenticacion de conexion VPN: no se observo ningun HMAC que autorice el establecimiento de la conexion VPN."
+    },
+    "api_request_authentication": {
+      "status": "CONFIRMED",
+      "note": "HMAC-SHA256 App-Proof confirmado: el worker responde 403 con mensajes distintos segun falte el UA, la firma, o la firma sea invalida o vieja. Ambito: peticion al catalogo, no conexion VPN."
+    }
+  },
+  "dependencies": [
+    {
+      "name": "python",
+      "version": "3.12.3",
+      "source": "system",
+      "status": "VERIFIED",
+      "note": "python3 --version en este entorno"
+    },
+    {
+      "name": "pycryptodome",
+      "version": "4.4.0",
+      "source": "PyPI (venv)",
+      "status": "VERIFIED",
+      "note": "venv ~/workspace/http-custom-update/venv"
+    },
+    {
+      "name": "argon2-cffi",
+      "version": "25.1.0",
+      "source": "PyPI (venv)",
+      "status": "VERIFIED",
+      "note": "venv ~/workspace/http-custom-update/venv"
+    },
+    {
+      "name": "jadx",
+      "version": "UNKNOWN",
+      "source": "UNKNOWN",
+      "status": "NEEDS_REVIEW",
+      "note": "Version no registrada en los logs de origen"
+    },
+    {
+      "name": "apktool",
+      "version": "UNKNOWN",
+      "source": "UNKNOWN",
+      "status": "NEEDS_REVIEW",
+      "note": "Version no registrada en los logs de origen"
+    },
+    {
+      "name": "androguard",
+      "version": "UNKNOWN",
+      "source": "UNKNOWN",
+      "status": "NEEDS_REVIEW",
+      "note": "Version no registrada en los logs de origen"
+    },
+    {
+      "name": "capstone",
+      "version": "UNKNOWN",
+      "source": "UNKNOWN",
+      "status": "NEEDS_REVIEW",
+      "note": "Version no registrada en los logs de origen"
+    },
+    {
+      "name": "curl",
+      "version": "UNKNOWN",
+      "source": "system",
+      "status": "NEEDS_REVIEW",
+      "note": "Version no registrada"
+    }
+  ],
+  "dependencies_reference": {
+    "lockfile": "dependencies.lock.json",
+    "note": "Ver DEPENDENCIES.md. Versiones desconocidas marcadas UNKNOWN con motivo; nunca inventadas."
+  },
+  "code_paths_reference": [
+    "decoders/Python/apps/MT_King_Net/MT_King_Net.py",
+    "decoders/Python/apps/MT_King_Net/MT_King_Net_archivos.py",
+    "analysis/platform/supplied-integrations (registro; las APIs de descarga viven en el script operativo y en el registro, no en este expediente)"
+  ]
+}

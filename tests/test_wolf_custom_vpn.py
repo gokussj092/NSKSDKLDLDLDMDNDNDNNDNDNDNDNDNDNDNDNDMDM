@@ -82,7 +82,7 @@ class WolfTests(unittest.TestCase):
             parsed = json.loads(result);self.assertEqual(parsed['config']['Name'], 'synthetic historical')
         from cloud.workers.python.engine import load_file_engines, load_runtime_file_engines
         before, after = load_file_engines(), load_runtime_file_engines()
-        self.assertEqual((len(before), len(after)), (240, 256))
+        self.assertEqual((len(before), len(after)), (240, 270))
         self.assertEqual(before['wolftunnel'], after['wolftunnel'])
         self.assertNotEqual(before['wolf']['source'], after['wolf']['source'])
 
@@ -108,12 +108,13 @@ class WolfTests(unittest.TestCase):
         class Opener:
             def open(self, req, timeout):
                 self.url = req.full_url
+                if req.get_method() != 'POST' or req.data != b'hash=xsandokUpdatex':raise AssertionError()
                 if timeout != 25 or req.get_header('Accept-encoding') != 'identity':raise AssertionError()
                 return Response()
         opener = Opener()
         with patch.object(catalog, 'build_opener', return_value=opener):
             self.assertEqual(catalog.download(), V['catalog'].encode())
-            self.assertEqual(opener.url, 'https://strongteam.co/api/wolfcustom/newv1.txt')
+            self.assertEqual(opener.url, 'https://strongteam.co/api/wolfcustomv2/')
             for data in (b'', b'<html>', b'x' * (codec.MAX_BYTES + 1)):
                 with patch.object(Response, 'data', data), self.assertRaises(codec.DecodeError):catalog.download()
             with patch.object(Response, 'headers', {'Content-Encoding': 'gzip'}), self.assertRaises(codec.DecodeError):catalog.download()

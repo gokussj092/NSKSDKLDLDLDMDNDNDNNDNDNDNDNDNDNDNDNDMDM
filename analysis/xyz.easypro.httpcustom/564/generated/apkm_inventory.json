@@ -1,0 +1,306 @@
+{
+  "archive_sha256": "a4ca4bf99cd6689279033570a0510ec6a0c5be490011e5ef7c029ff9be8731ba",
+  "apks": [
+    {
+      "name": "base.apk",
+      "size": 8274194,
+      "sha256": "152fb7f61afb9d304252e9dc6f6c2668a0617bbafcfbf720a0dab5800a468601",
+      "identity": {
+        "versionCode": 564,
+        "versionName": "4.10.16",
+        "package": "xyz.easypro.httpcustom"
+      },
+      "native_libraries": []
+    },
+    {
+      "name": "split_config.xxhdpi.apk",
+      "size": 99242,
+      "sha256": "9438d6704dbf07e3effc9ac4791e234aaffab6a8526b7057ca4e5d00e18ea059",
+      "identity": {
+        "versionCode": 564,
+        "package": "xyz.easypro.httpcustom"
+      },
+      "native_libraries": []
+    },
+    {
+      "name": "split_config.xxxhdpi.apk",
+      "size": 99231,
+      "sha256": "8efebaa8828333f4fc8d92cd415878ad167e70fa7f2b2f08bdb94e234fde14d7",
+      "identity": {
+        "versionCode": 564,
+        "package": "xyz.easypro.httpcustom"
+      },
+      "native_libraries": []
+    },
+    {
+      "name": "split_config.xhdpi.apk",
+      "size": 86959,
+      "sha256": "4f55198dd85448889c7a5baa6e43189be1745b71b58429d316af9210babbb898",
+      "identity": {
+        "versionCode": 564,
+        "package": "xyz.easypro.httpcustom"
+      },
+      "native_libraries": []
+    },
+    {
+      "name": "split_config.de.apk",
+      "size": 33177,
+      "sha256": "fde4a1e0fe6b67c2d2d400bd4aedba21cdf020fa24e9e30f52225b088c4ce1f8",
+      "identity": {
+        "versionCode": 564,
+        "package": "xyz.easypro.httpcustom"
+      },
+      "native_libraries": []
+    },
+    {
+      "name": "split_config.zh.apk",
+      "size": 53657,
+      "sha256": "aac674384d86a607bde2177c7e46a2be0cbddc310c05d522d4f2d2e14aa1711d",
+      "identity": {
+        "versionCode": 564,
+        "package": "xyz.easypro.httpcustom"
+      },
+      "native_libraries": []
+    },
+    {
+      "name": "split_config.fr.apk",
+      "size": 41369,
+      "sha256": "71506dce0d57dd273299b95afffaa708bbc695646183e0498e7fac600c94ea86",
+      "identity": {
+        "versionCode": 564,
+        "package": "xyz.easypro.httpcustom"
+      },
+      "native_libraries": []
+    },
+    {
+      "name": "split_config.es.apk",
+      "size": 45465,
+      "sha256": "7043a8408840d198ac2dcb2b06689fd79ead31d318b8c53f6372746e6af7e2ec",
+      "identity": {
+        "versionCode": 564,
+        "package": "xyz.easypro.httpcustom"
+      },
+      "native_libraries": []
+    },
+    {
+      "name": "split_config.ru.apk",
+      "size": 33177,
+      "sha256": "d66a35c4628e5d564e3ebb9b1d71ee93d407e0bc27650081d81593bf62e4a899",
+      "identity": {
+        "versionCode": 564,
+        "package": "xyz.easypro.httpcustom"
+      },
+      "native_libraries": []
+    },
+    {
+      "name": "split_config.pt.apk",
+      "size": 45465,
+      "sha256": "793836b13b9178a7e5fc9423194217eaa93c0e6954f81ffaf92ad4b56c7d7660",
+      "identity": {
+        "versionCode": 564,
+        "package": "xyz.easypro.httpcustom"
+      },
+      "native_libraries": []
+    },
+    {
+      "name": "split_config.ja.apk",
+      "size": 29081,
+      "sha256": "a40f6714a9053ae145e8660870e3fdbc6b2d4fd27b1cd6585ba9b81b86faafc3",
+      "identity": {
+        "versionCode": 564,
+        "package": "xyz.easypro.httpcustom"
+      },
+      "native_libraries": []
+    },
+    {
+      "name": "split_config.hi.apk",
+      "size": 29081,
+      "sha256": "a79a7dba3f0364c41c27c75d0efad176e2af6093f8286ebb39cfb8e3b725660b",
+      "identity": {
+        "versionCode": 564,
+        "package": "xyz.easypro.httpcustom"
+      },
+      "native_libraries": []
+    },
+    {
+      "name": "split_config.nl.apk",
+      "size": 29081,
+      "sha256": "48af1f29343fa3fa2a4d1fe65429daeb3114a2d8f9e405cbc5ebce0e8edc972f",
+      "identity": {
+        "versionCode": 564,
+        "package": "xyz.easypro.httpcustom"
+      },
+      "native_libraries": []
+    },
+    {
+      "name": "split_config.in.apk",
+      "size": 29081,
+      "sha256": "b412656d08c7ca99cb48a53d352988dee99378cf42a81e3d6f2ecf8444dec73d",
+      "identity": {
+        "versionCode": 564,
+        "package": "xyz.easypro.httpcustom"
+      },
+      "native_libraries": []
+    },
+    {
+      "name": "split_config.ar.apk",
+      "size": 29081,
+      "sha256": "1cd93a65dc1cbd1281c0fdcb28fb03a143274d3a438f85d6ac3b7784a4f299af",
+      "identity": {
+        "versionCode": 564,
+        "package": "xyz.easypro.httpcustom"
+      },
+      "native_libraries": []
+    },
+    {
+      "name": "split_config.ms.apk",
+      "size": 29081,
+      "sha256": "e91921372853f89c829f391c9468696a20dd541605650442d93d06539746146a",
+      "identity": {
+        "versionCode": 564,
+        "package": "xyz.easypro.httpcustom"
+      },
+      "native_libraries": []
+    },
+    {
+      "name": "split_config.it.apk",
+      "size": 29081,
+      "sha256": "ea1caf39f4d4fe7950af4e6aa4d6fadb63a19df7905186481c63d3a44cdb8524",
+      "identity": {
+        "versionCode": 564,
+        "package": "xyz.easypro.httpcustom"
+      },
+      "native_libraries": []
+    },
+    {
+      "name": "split_config.en.apk",
+      "size": 53657,
+      "sha256": "fb88d7a9c43efa92eaef1c0f73da392095875790bb13503f6b12437b6c21c1f1",
+      "identity": {
+        "versionCode": 564,
+        "package": "xyz.easypro.httpcustom"
+      },
+      "native_libraries": []
+    },
+    {
+      "name": "split_config.arm64_v8a.apk",
+      "size": 26642182,
+      "sha256": "8a7b24dde0666a90a49ed75684f02a65d61150cff5ad6b0e8611248543219a8e",
+      "identity": {
+        "versionCode": 564,
+        "package": "xyz.easypro.httpcustom"
+      },
+      "native_libraries": [
+        {
+          "name": "lib/arm64-v8a/lib_eCrypt.so",
+          "size": 895056,
+          "sha256": "0b26d41bc61603cc360a734bebdb989fdf649ce426bacb6a66a065c0b561a6e0"
+        },
+        {
+          "name": "lib/arm64-v8a/libdns.so",
+          "size": 6026592,
+          "sha256": "d3d5f2247331e66b2bddcd12d7800287cc4d244ea3823f493bba08d84e2f97f4"
+        },
+        {
+          "name": "lib/arm64-v8a/libeCrypt.so",
+          "size": 488624,
+          "sha256": "612cff0ceee9519286a8a5105b9251afbacfd2164e719c168fb70fd9ad87c101"
+        },
+        {
+          "name": "lib/arm64-v8a/libeasypro.so",
+          "size": 383112,
+          "sha256": "16f41ddccf24ffb14ddf6719a9df94cae60425a92d04097475770a407791a2e0"
+        },
+        {
+          "name": "lib/arm64-v8a/libf2c.so",
+          "size": 1824696,
+          "sha256": "b293183dcc25fead4b8784ad38d49f0d76086ce47c4f468ce19e33f284de81f0"
+        },
+        {
+          "name": "lib/arm64-v8a/libf2cvm.so",
+          "size": 247968,
+          "sha256": "e937fe70aa9046b10f464381b958d7ebccd6f532663e73cb85ca494e91bc3ef8"
+        },
+        {
+          "name": "lib/arm64-v8a/libjbcrypto.so",
+          "size": 10064,
+          "sha256": "95899701de169bcab28b61dfd19e5f1142005384e86e54b74bd3539530068bc0"
+        },
+        {
+          "name": "lib/arm64-v8a/libmmkv.so",
+          "size": 483120,
+          "sha256": "676e9c0530bea8f60aa04f0cd37ccceced732b16a6effca152bd9b21a1349f85"
+        },
+        {
+          "name": "lib/arm64-v8a/libopenvpn.so",
+          "size": 3607184,
+          "sha256": "c8d602bb8a3e3ebfd0cfdce76ff15eb591b649f94716875fbfeb48672d4425a4"
+        },
+        {
+          "name": "lib/arm64-v8a/libopvpnutil.so",
+          "size": 9992,
+          "sha256": "98de807c5e9eede2ccdc2c3309489b94d509a64e678a4c4dcccba53e5329023f"
+        },
+        {
+          "name": "lib/arm64-v8a/libovpnexec.so",
+          "size": 5896,
+          "sha256": "92ac6e95cc671f85a658354e562816df1976b01d83fd9e0110e192fcf9756645"
+        },
+        {
+          "name": "lib/arm64-v8a/libpairipcore.so",
+          "size": 367112,
+          "sha256": "fce1528356c754b50555459019815db8cf303455c0837df7d1fb1e6f6eba31c2"
+        },
+        {
+          "name": "lib/arm64-v8a/libpdnsd.so",
+          "size": 207168,
+          "sha256": "5289fffe005cd67ffe313dd6b34f1b5002db8c559d4c7a3c1ae49824140d19e2"
+        },
+        {
+          "name": "lib/arm64-v8a/libpsiphon.so",
+          "size": 20462280,
+          "sha256": "cd76744da683df0ec8d37ef148c132323e9b4397ac4bed7cb3d22275f506e328"
+        },
+        {
+          "name": "lib/arm64-v8a/libsocks.so",
+          "size": 160288,
+          "sha256": "b8df9fe6181d9e20c864b89125bb23b18dc907bccc94942e85ef1fef08cf94b6"
+        },
+        {
+          "name": "lib/arm64-v8a/libsocks2tun.so",
+          "size": 196344,
+          "sha256": "417d4167090dc8baa6bdf93fa980f9c897b1931935653763e3867f641c578d73"
+        },
+        {
+          "name": "lib/arm64-v8a/libsysNative.so",
+          "size": 334200,
+          "sha256": "626dcdc34c51845d881a5915834c8133eb7f66eb77581e924e3ce318d3eaec8b"
+        },
+        {
+          "name": "lib/arm64-v8a/libtun2socks.so",
+          "size": 196824,
+          "sha256": "0f200a5e83b957f3f2da667c5a310f575510e596b40ea75216dbfa828a3a5d9e"
+        },
+        {
+          "name": "lib/arm64-v8a/libudp.so",
+          "size": 10323680,
+          "sha256": "8150d27c037f48569c68479c6c34e9ef9ab79fc2ea03088a13e4d1fdcef3e67d"
+        },
+        {
+          "name": "lib/arm64-v8a/libv2ray.so",
+          "size": 28427544,
+          "sha256": "d876bcae53568f328a1324311787eea121cf708a46b5132b11a78238947878fb"
+        }
+      ]
+    }
+  ],
+  "distribution_metadata": {
+    "pname": "xyz.easypro.httpcustom",
+    "release_version": "4.10.16",
+    "versioncode": "564",
+    "min_api": "23",
+    "arches": [
+      "arm64-v8a"
+    ]
+  }
+}

@@ -2,8 +2,8 @@
   "id": "tunneldoom-vpn",
   "name": "TunnelDOOM VPN",
   "package": "com.tunneldoom.http",
-  "versionName": "4.3.0",
-  "versionCode": 430,
+  "versionName": "4.3.2",
+  "versionCode": 432,
   "engine": "python",
   "catalogEntrypoint": "server_catalog_decoder.py",
   "fileEntrypoint": "file_decoder.py",
@@ -24,20 +24,22 @@
       "version": "3",
       "servers": 1,
       "encryptedFields": 13,
-      "completeParity": true
+      "completeParity": true,
+      "sourceBuild": 430
     },
     "remote": {
       "status": "verified",
       "enabled": true,
-      "sourceBuild": 430,
-      "version": "473",
-      "servers": 387,
-      "encryptedFields": 5031,
-      "ciphertextBytes": 662936,
-      "plaintextJsonBytes": 435343,
+      "sourceBuild": 432,
+      "version": "496",
+      "servers": 382,
+      "encryptedFields": 4966,
+      "ciphertextBytes": 651940,
       "completeParity": true,
       "observedHttpStatus": 200,
-      "ciphertextSha256": "62a83ca9e60d692f707476e3cc56300cd64ab965d562f2ff1fc6f6b92a123f2d"
+      "ciphertextSha256": "f50f4ded7827abc0d904bd3d8008e71f8a15254d5ff0b892892af2778e00a552",
+      "observedAt": "2026-11-09T04:36:34.001214+00:00",
+      "plaintextJsonSha256": "8473e27a736194665c4ad828e06b31f0edd81652728e5f9b83979c7aedec7ac5"
     }
   },
   "proprietaryTextFormatIdentified": false,
@@ -67,13 +69,19 @@
     {
       "versionName": "4.3.0",
       "versionCode": 430
+    },
+    {
+      "versionName": "4.3.2",
+      "versionCode": 432
     }
   ],
   "signerCertificateSha256": "12704504f5711f22d78ee436f38baeb90557c2fa72c4dfb281c766f59800461d",
   "distribution": {
     "source": "https://apkpure.net/tunneldoom-vpn-internet-seguro/com.tunneldoom.http/download",
     "sourceVersion427": "https://apkpure.net/tunneldoom-vpn-internet-seguro/com.tunneldoom.http/download/4.2.7",
-    "xapkSha256": "930e45d6356203abb8d2181b234f888a2d6499c36764a09774f2712ea62a4661",
-    "baseSha256": "c576d424dd85028dbd092312f37baa0cdbfd112eed67bdf1e9bf05f2816ece97"
-  }
+    "xapkSha256": "ccee7c659e666ab8d7bf428ba00f2a55a1ba7da731d0da034418fbe2e53c52d2",
+    "baseSha256": "c8fa18503ddaf2aaf8efea2d752935681ddf76e9a041c09bb1b6f1a2a7138276"
+  },
+  "evidence": "analysis/com.tunneldoom.http/432/MANIFEST.json",
+  "apkSignatureCryptographicallyVerified": false
 }

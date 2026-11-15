@@ -1,0 +1,84 @@
+{
+  "schema_version": 1,
+  "package_name": "com.dtunnel.v2ray.pro",
+  "version_code": 9,
+  "app_name": "DTunnel Mod",
+  "version_name": "4.2.5",
+  "status": "PARTIAL",
+  "source_category": "owner-supplied repository code",
+  "authorization_note": "Owner supplied the DTunnel user_id/token and explicitly authorized embedding them directly in the backend script and branch. Repository visibility was verified as public and disclosed before publishing. Values are omitted from public catalog representations and QA proof.",
+  "targets": [
+    {
+      "kind": "catalog",
+      "status": "VERIFIED_REAL",
+      "profiles": 49,
+      "proof": "analysis/com.dtunnel.v2ray.pro/9/generated/authorized-catalog-proof.json"
+    },
+    {
+      "kind": "files",
+      "extensions": []
+    },
+    {
+      "kind": "text",
+      "prefixes": [
+        "vpn://"
+      ]
+    }
+  ],
+  "inputs": [
+    {
+      "path": "decoders/Python/apps/DTunnel_Mod/DTunnel.py",
+      "sha256": "c0ebe3eb3f38307d16ce47692930e61c87f809cf3fa020f15f117b7ee3437e5e"
+    }
+  ],
+  "tooling": [
+    {
+      "path": "analysis/platform/supplied-integrations/2026-11-14/tools/verify_provider.py",
+      "command": "python analysis/platform/supplied-integrations/2026-11-14/tools/verify_provider.py dtunnel-mod"
+    },
+    {
+      "path": "analysis/com.dtunnel.v2ray.pro/9/tools/probe_authorized_catalog.py",
+      "scope": "One authorized fixed-origin live request plus isolated worker comparison"
+    },
+    {
+      "path": "analysis/com.dtunnel.v2ray.pro/9/tools/verify_public_assets.py",
+      "scope": "Built client/public assets checked without recording credentials"
+    }
+  ],
+  "dependencies": [
+    {
+      "lockfile": "requirements.txt",
+      "purpose": "Existing pinned server codec dependencies"
+    },
+    {
+      "lockfile": "cloud/web/package-lock.json",
+      "purpose": "Existing pinned Node broker/build dependencies"
+    }
+  ],
+  "code_paths": [
+    "cloud/web/lib/dtunnel-credentials.server.mjs",
+    "cloud/web/lib/server-vpn-catalog.mjs",
+    "cloud/web/lib/server-vpn-gateway.mjs",
+    "cloud/web/lib/server-vpn-provider.mjs",
+    "cloud/web/lib/supplied-integrations.mjs",
+    "cloud/workers/python/catalog_vpn_bridge.py",
+    "cloud/workers/python/supplied_bridge.py",
+    "decoders/Python/apps/DTunnel_Mod/DTunnel.py",
+    "tests/test_dtunnel_authorized_defaults.py"
+  ],
+  "limitations": [
+    "See supplied README and central per-app integration matrix. No new live service validation asserted."
+  ],
+  "connection_authentication": {
+    "status": "UNCONFIRMED",
+    "scope": "No new VPN connection-authentication research; existing methods only."
+  },
+  "integration_review": {
+    "scope": "Connection only; existing algorithm evidence/status preserved.",
+    "record": "analysis/platform/supplied-integrations/2026-11-14/MANIFEST.json",
+    "status": "PARTIAL"
+  },
+  "network_requirements": [
+    "HTTPS fixed DTunnel endpoint; authorized script default or explicit override; no redirects"
+  ]
+}

@@ -104,7 +104,7 @@ class TunnelDoomTests(unittest.TestCase):
             with self.assertRaises(sks.DecodeError): file_decoder.run(bytes(broken))
         from cloud.workers.python.engine import load_file_engines, load_runtime_file_engines
         self.assertEqual(len(load_file_engines()), 240)
-        self.assertEqual(len(load_runtime_file_engines()), 256)
+        self.assertEqual(len(load_runtime_file_engines()), 270)
         self.assertTrue(load_file_engines()["sks"]["source"].endswith("/sks.js"))
 
     def test_fixed_cli_download_and_redirect_rejection(self):
@@ -116,7 +116,7 @@ class TunnelDoomTests(unittest.TestCase):
             def read(inner, size): return self.cipher[:size]
         class Opener:
             def open(inner, request, timeout):
-                self.assertEqual(request.full_url, "https://panel.tunneldoom.space/config.json")
+                self.assertEqual(request.full_url, "https://web.tunneldoom.space/config.json")
                 self.assertEqual(timeout, 25)
                 return Response()
         with patch.object(server_catalog_decoder, "build_opener", return_value=Opener()):

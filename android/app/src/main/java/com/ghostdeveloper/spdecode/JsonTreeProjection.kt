@@ -2,7 +2,7 @@ package com.ghostdeveloper.spdecode
 
 import com.google.gson.JsonElement
 
-/** Read-only JSON rows. All branches open by default; no fields are paged or cut.
+/** Read-only small-document rows. Nested branches are collapsed by default.
  * Paths use sibling indices so unusual field names cannot collide.
  * Iterative traversal preserves deeply nested data without recursive projection.
  */
@@ -49,7 +49,7 @@ internal object JsonTreeProjection {
             val obj = if (element.isJsonObject) element.asJsonObject else null
             val arr = if (element.isJsonArray) element.asJsonArray else null
             val total = obj?.size() ?: arr!!.size()
-            val isExpanded = expandedOverrides[item.path] ?: true
+            val isExpanded = expandedOverrides[item.path] ?: (item.path=="root")
             result.add(Row(item.path, item.depth, Kind.NODE, item.key,
                 bracket = if (obj != null) '{' else '[', expanded = isExpanded,
                 total = total, comma = item.comma))

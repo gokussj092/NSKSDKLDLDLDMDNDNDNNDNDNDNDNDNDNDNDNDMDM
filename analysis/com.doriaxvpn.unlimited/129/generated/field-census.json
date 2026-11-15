@@ -1,0 +1,55 @@
+[
+  {
+    "source": "remote",
+    "strict_authenticated": 0,
+    "android_authenticated": 5325,
+    "protected_fields": [
+      "ServerIP",
+      "ServerUser",
+      "ServerPass",
+      "Payload",
+      "SNI",
+      "udpBuffer",
+      "udpUp",
+      "udpDown",
+      "Slowchave",
+      "Nameserver",
+      "Slowdns",
+      "UseTcp",
+      "udpObfs",
+      "v2rayAddress",
+      "v2rayPort",
+      "v2rayUuid",
+      "v2rayServerName",
+      "v2rayHost",
+      "v2rayPath",
+      "v2rayProtocol",
+      "v2rayNetwork",
+      "v2raySecurity",
+      "v2rayFlow",
+      "v2rayPublicKey",
+      "v2rayShortId",
+      "v2rayObfs",
+      "zivpnPassword"
+    ]
+  },
+  {
+    "source": "config",
+    "strict_authenticated": 0,
+    "android_authenticated": 84,
+    "protected_fields": [
+      "ServerIP",
+      "ServerUser",
+      "ServerPass",
+      "Payload",
+      "SNI",
+      "udpBuffer",
+      "udpUp",
+      "udpDown",
+      "Slowchave",
+      "Nameserver",
+      "Slowdns",
+      "UseTcp"
+    ]
+  }
+]

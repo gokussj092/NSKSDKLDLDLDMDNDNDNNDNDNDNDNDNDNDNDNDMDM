@@ -1,0 +1,1 @@
+import {ProductsPage} from '../public/account-pages.jsx';export const metadata={title:'Mis productos',robots:{index:false,follow:false}};export default function Page(){return <ProductsPage/>;}

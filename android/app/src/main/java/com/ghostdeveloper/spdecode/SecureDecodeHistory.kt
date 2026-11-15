@@ -48,50 +48,28 @@ class SecureDecodeHistory(context: Context) {
         return generator.generateKey()
     }
 
-    fun load(): List<DecodeView> =
+    fun load(metadataOnly:Boolean=false): List<DecodeView> =
         directory.listFiles().orEmpty()
             .filter { it.isFile && (it.name.endsWith(".bin") || it.name.endsWith(".bin.bak")) }
             .map { if (it.name.endsWith(".bak")) File(directory, it.name.removeSuffix(".bak")) else it }
             .distinctBy { it.name }
-            .mapNotNull { file -> runCatching { read(file) }.getOrNull() }
+            .mapNotNull { file -> runCatching { read(file,metadataOnly) }.getOrNull() }
             .sortedWith(compareByDescending<DecodeView> { it.savedAtMillis }.thenBy { it.id })
 
     fun save(record: DecodeView) {
+        require(!record.metadataOnly)
         require(UUID.fromString(record.id).toString() == record.id)
         if (!directory.isDirectory && !directory.mkdirs()) {
             error("Unable to create private history directory")
         }
-        val json = JSONObject()
-            .put("version", 3)
-            .put("id", record.id)
-            .put("filename", record.filename)
-            .put("extension", record.extension)
-            .put("rawText", record.rawText)
-            .put("fileBytes", record.fileBytes)
-            .put("savedAtMillis", record.savedAtMillis)
-            .put("favorite", record.favorite)
-            .put("compatibleExport", record.compatibleExport?.also { require(it.matches(record.rawText)) }?.toJson() ?: JSONObject.NULL)
-            .toString().toByteArray(Charsets.UTF_8)
-        val cipher = Cipher.getInstance("AES/GCM/NoPadding")
-        cipher.init(Cipher.ENCRYPT_MODE, secretKey)
-        val bytes = ByteArrayOutputStream()
-        DataOutputStream(bytes).use {
-            it.writeInt(MAGIC)
-            it.writeByte(1)
-            it.writeByte(cipher.iv.size)
-            it.write(cipher.iv)
-            it.write(cipher.doFinal(json))
-        }
-        val atomic = AtomicFile(File(directory, "${record.id}.bin"))
-        var stream: java.io.FileOutputStream? = null
+        val metadata=JSONObject().put("version",4).put("id",record.id)
+            .put("filename",record.filename).put("extension",record.extension)
+            .put("fileBytes",record.fileBytes).put("savedAtMillis",record.savedAtMillis).put("favorite",record.favorite)
+            .put("compatibleExport",record.compatibleExport?.also{require(it.matches(record.rawText))}?.toJson()?:JSONObject.NULL)
+        val atomic=AtomicFile(File(directory,"${record.id}.bin"));var stream:java.io.FileOutputStream?=null
         try {
-            stream = atomic.startWrite()
-            stream.write(bytes.toByteArray())
-            atomic.finishWrite(stream)
-        } catch (error: Exception) {
-            stream?.let { atomic.failWrite(it) }
-            throw error
-        }
+            stream=atomic.startWrite();ResultSnapshotCodec.write(record.id,record.rawText,metadata,secretKey,stream);atomic.finishWrite(stream)
+        }catch(error:Exception){stream?.let{atomic.failWrite(it)};throw error}
     }
 
     fun delete(ids: Set<String>) {
@@ -117,7 +95,7 @@ class SecureDecodeHistory(context: Context) {
 
     /** User-configured retention. Favorited records are deliberately exempt. */
     fun pruneOlderThan(cutoffMillis:Long):Set<String> {
-        val expired=load().filter {
+        val expired=load(metadataOnly=true).filter {
             !it.favorite && it.savedAtMillis < cutoffMillis
         }.map { it.id }.toSet()
         if(expired.isNotEmpty()) delete(expired)
@@ -131,7 +109,26 @@ class SecureDecodeHistory(context: Context) {
         }
     }
 
-    private fun read(file: File): DecodeView {
+    fun open(id:String):DecodeView {
+        require(UUID.fromString(id).toString()==id)
+        return read(File(directory,"$id.bin"))
+    }
+
+    private fun readModern(file:File,metadataOnly:Boolean):DecodeView {
+        val opened=AtomicFile(file).openRead().use {source ->
+            require(file.length() in 1L..48L*1024*1024)
+            if(metadataOnly)ResultSnapshotCodec.inspect(file.name.removeSuffix(".bin"),source,secretKey) to ""
+            else ResultSnapshotCodec.read(file.name.removeSuffix(".bin"),source,secretKey)
+        }
+        val data=opened.first;val text=opened.second;val id=data.getString("id");val suffix=data.getString("extension")
+        require(UUID.fromString(id).toString()==id && file.name=="$id.bin" && data.getInt("version")==4)
+        return DecodeView(data.getString("filename"),suffix,text,data.getInt("fileBytes"),id,data.getLong("savedAtMillis"),data.optBoolean("favorite",false),
+            if(metadataOnly)null else runCatching{com.ghostdeveloper.spdecode.cloud.CompatibleExportArtifact.parse(data.optJSONObject("compatibleExport"),suffix,text)}.getOrNull(),metadataOnly)
+    }
+
+    private fun read(file: File,metadataOnly:Boolean=false): DecodeView {
+        val modern=AtomicFile(file).openRead().use { val header=DataInputStream(it);require(header.readInt()==MAGIC);header.readUnsignedByte()==2 }
+        if(modern)return readModern(file,metadataOnly)
         // Avoid exhausting heap on a corrupted or maliciously oversized record.
         val atomic = AtomicFile(file)
         val bytes = atomic.openRead().use { stream ->
@@ -157,7 +154,7 @@ class SecureDecodeHistory(context: Context) {
         require(version in 1..3)
         val id = objectData.getString("id")
         require(file.name == "${id}.bin" && UUID.fromString(id).toString() == id)
-        return DecodeView(
+        val record=DecodeView(
             filename = objectData.getString("filename"),
             extension = objectData.getString("extension"),
             rawText = objectData.getString("rawText"),
@@ -170,6 +167,7 @@ class SecureDecodeHistory(context: Context) {
                     objectData.optJSONObject("compatibleExport"),objectData.getString("extension"),objectData.getString("rawText"))
             }.getOrNull() else null,
         )
+        return if(metadataOnly)record.historySummary() else record
     }
 
     private companion object {

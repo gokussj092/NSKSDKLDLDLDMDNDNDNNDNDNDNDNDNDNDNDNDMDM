@@ -1,0 +1,25 @@
+{
+  "id": "pnt-vpn",
+  "name": "PNT VPN",
+  "package": "com.pntvpn.net",
+  "versionName": "1.2.8",
+  "versionCode": 28,
+  "engine": "python",
+  "entrypoint": "PNT_VPN.py",
+  "extensions": [],
+  "textPrefixes": [],
+  "dependencies": [],
+  "credentials": [],
+  "catalog": {
+    "status": "live_verified",
+    "method": "GET",
+    "url": "https://raw.githubusercontent.com/sansoe2022/new_pntvpn/refs/heads/main/v28Api.json",
+    "version": "32",
+    "servers": 8,
+    "networks": 12,
+    "payloads": 9,
+    "note": "Catalogo en 2 etapas: v28Api.json (version 32) -> v28Config (FileName). Asset pntvpn.json abre con el mismo metodo: 8 servidores, 11 redes. Sin formato propio de archivo ni esquema URI."
+  },
+  "realSampleVerified": false,
+  "deployment": "pending"
+}

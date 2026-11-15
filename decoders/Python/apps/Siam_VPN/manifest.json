@@ -1,0 +1,24 @@
+{
+  "id": "siam-vpn",
+  "name": "Siam VPN",
+  "package": "siam.pro.net",
+  "versionName": "4.9",
+  "versionCode": 49,
+  "engine": "python",
+  "entrypoint": "Siam_VPN.py",
+  "extensions": [],
+  "textPrefixes": [],
+  "catalog": {
+    "entrypoint": "Siam_VPN.py",
+    "method": "Tink AesGcmHkdfStreaming variant: PBKDF2-HmacSHA256 100000 iters + HKDF-SHA256 + AES-256-GCM segments; ED: fields are Base32 of cleartext",
+    "url": "http://unifi.thai-vpn.com/app-patch/patch-siam-3",
+    "liveVersion": "8.70",
+    "servers": 26,
+    "networks": 23,
+    "payloads": 23,
+    "status": "live_verified",
+    "notes": "26 servers all flag th. 10 payloads are item-gated (PayloadFlag true), 13 by carrier (AIS 7, DTAC 5, MY 1). Secondary --ping endpoint https://www.thai-vpn.com/ayothaya/ping.json (58 entries, latency list, not the catalog)."
+  },
+  "filesEntrypoint": "Siam_VPN_archivos.py",
+  "filesNote": "profile.json (Base64 -> XXTEA delta 0x2e0ba747) supported; plain JSON also accepted. No profile.enc in this app."
+}

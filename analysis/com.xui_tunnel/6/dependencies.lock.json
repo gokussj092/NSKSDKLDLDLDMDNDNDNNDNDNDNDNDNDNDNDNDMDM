@@ -1,0 +1,5 @@
+{
+  "production_requirements": "requirements.txt",
+  "node_lock": "cloud/web/package-lock.json",
+  "integration_report": "analysis/platform/supplied-integrations/2026-11-14/MANIFEST.json"
+}

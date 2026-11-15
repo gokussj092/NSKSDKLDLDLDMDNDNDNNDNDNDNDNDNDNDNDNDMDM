@@ -1,0 +1,50 @@
+{
+  "success": true,
+  "message": "Ficticio ñ ไทย 🦊",
+  "servers": [
+    {
+      "id": 1,
+      "uuid": "fictional",
+      "servername": "Fictional server",
+      "ip": "vpn.example.org",
+      "cloudfront": null,
+      "gcp_host": "front.example.org",
+      "gcp_path": "/demo",
+      "is_installed": true,
+      "ulimit": 0,
+      "script": {
+        "id": 2,
+        "name": "demo",
+        "type": "SSH",
+        "v2_type": "vless"
+      },
+      "Future": {
+        "base64": "YWJjZA==",
+        "payload": "GET / HTTP/1.1\r\nHost: example.org\r\n\r\n",
+        "flags": [
+          true,
+          null,
+          3
+        ]
+      }
+    },
+    {
+      "id": 3,
+      "servername": "Second fictional server",
+      "ip": "192.0.2.1",
+      "script": null
+    }
+  ],
+  "has_defaults": true,
+  "def_user": "sample-user",
+  "def_pass_plain": "YWJjZA==",
+  "back_user": "",
+  "back_pass_plain": "",
+  "futureMetadata": {
+    "nested": [
+      1,
+      null,
+      false
+    ]
+  }
+}

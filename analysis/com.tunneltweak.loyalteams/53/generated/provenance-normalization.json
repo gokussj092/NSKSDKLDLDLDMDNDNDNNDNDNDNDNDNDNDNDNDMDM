@@ -1,0 +1,17 @@
+{
+  "analysis/com.tunneldoom.http/432/tools/acquire.py": {
+    "previousLocalExportSha256": "1fbaa2243eacdfaf4404d7ea07886e9432262010bebf3595d51240097c37ed8b",
+    "canonicalSha256": "7d8091243a8097fbaede447706aca4a0bcc03522a347396e20fe6075e5e8864b",
+    "trailingNewlineOnlyDifference": true
+  },
+  "scripts/apk_analysis/decompile.py": {
+    "previousLocalExportSha256": "00b5d0ab68b9a46a5bd18ab0160c755adbfa180e81de0625b9dc8203f1c5036c",
+    "canonicalSha256": "dd04a05c2cb46bae494af412733d9e27b71167fc86f787371e76dfbddd50a3dd",
+    "trailingNewlineOnlyDifference": true
+  },
+  "tests/golden/tunneltweak_oracle.java": {
+    "previousLocalExportSha256": "dd7438287ba357b5a83f2d25eed16ca7e97e10c34d659d9af3e5d0152acd9226",
+    "canonicalSha256": "5df4031f6c59b43f644cc07fa519c423726ef327ef5ed053604a4efb7b26f109",
+    "trailingNewlineOnlyDifference": true
+  }
+}

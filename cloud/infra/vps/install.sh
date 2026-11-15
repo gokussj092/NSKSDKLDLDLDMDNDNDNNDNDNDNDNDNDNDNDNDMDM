@@ -153,10 +153,14 @@ printf '#!/bin/sh\n/usr/sbin/nginx -t && /bin/systemctl reload nginx\n' \
 chmod 0755 /etc/letsencrypt/renewal-hooks/deploy/spdecode-nginx
 # Keep session and admin disabled; enabling requires actual Play configuration.
 cd /opt/spdecode/repo
-docker compose --project-name spdecode --env-file /etc/spdecode/cloud.env \
- -f cloud/compose.yaml config --quiet
-docker compose --project-name spdecode --env-file /etc/spdecode/cloud.env \
- -f cloud/compose.yaml up -d --build
+compose=(docker compose --project-name spdecode --env-file /etc/spdecode/cloud.env -f cloud/compose.yaml)
+resources=/etc/spdecode/compose.resources.yaml
+if [[ -e "$resources" || -L "$resources" ]]; then
+  [[ -f "$resources" && -r "$resources" ]] || fail "Resource override is not a readable file"
+  compose+=(-f "$resources")
+fi
+"${compose[@]}" config --quiet
+"${compose[@]}" up -d --build
 log "Installed. API and admin disabled, maintenance enabled. Do not publish until C7/C8 approval."
 spdecode status
 

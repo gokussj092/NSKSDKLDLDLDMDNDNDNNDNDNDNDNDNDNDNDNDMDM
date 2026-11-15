@@ -11,7 +11,12 @@ export function pushAccount(env=process.env) {
 }
 /** Sends only a wake-up hint. Notice text must be fetched with the device-bound session. */
 export async function pushNotice(id,{env=process.env,fetchImpl=fetch,validateOnly=false,
- priority='normal',ttlSeconds=86400}={}) {
+ priority='normal',ttlSeconds=86400,targetToken=null,privateKind=null}={}) {
+  // Public topic announcements and private account tokens have distinct payload
+  // types. Only authenticated backend callers can supply a device token.
+  if((targetToken!==null&&!/^[A-Za-z0-9:_-]{32,512}$/.test(targetToken))||
+     (privateKind!==null&&!['support','purchase','security'].includes(privateKind))||
+     (targetToken===null)!==(privateKind===null))throw Error('PUSH_INVALID');
   if(!/^[0-9a-f-]{36}$/.test(id)||typeof validateOnly!=='boolean'||
     !['normal','high'].includes(priority)||!Number.isInteger(ttlSeconds)||
     ttlSeconds<0||ttlSeconds>86400)throw Error('PUSH_INVALID');
@@ -32,8 +37,19 @@ export async function pushNotice(id,{env=process.env,fetchImpl=fetch,validateOnl
   const sent=await fetchImpl('https://fcm.googleapis.com/v1/projects/'+targetProject+'/messages:send',{
     method:'POST',redirect:'error',signal:AbortSignal.timeout(8000),
     headers:{'Authorization':'Bearer '+auth.access_token,'Content-Type':'application/json'},
-    body:JSON.stringify({...(validateOnly?{validate_only:true}:{}),message:{topic:'spdecode-notices-v1',data:{noticeId:id},
-      android:{priority,ttl:ttlSeconds+'s',collapse_key:'spdecode-notices'}}})});
+    body:JSON.stringify({...(validateOnly?{validate_only:true}:{}),message:{
+      ...(targetToken?{token:targetToken}:{topic:'spdecode-notices-v1'}),
+      // Android presents the notification automatically in the background.
+      // No personal messages, purchases or account data are sent to FCM.
+      notification:{title:'SP-DECODE',body:privateKind==='support'?
+        'Nueva respuesta de soporte':privateKind==='purchase'?
+        'Actualización de tu compra':privateKind==='security'?
+        'Aviso de seguridad de tu cuenta':'Nuevo aviso disponible'},
+      data:privateKind?{noticeId:id,kind:'account'}:{noticeId:id},
+      android:{priority,ttl:ttlSeconds+'s',
+        notification:{channel_id:privateKind?'account-alerts-v1':'service-notices-chime-v2',
+          tag:id}}
+    }})});
   if(!sent.ok)throw Error('PUSH_UNAVAILABLE');
   return 'push';
 }

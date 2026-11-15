@@ -1,0 +1,200 @@
+{
+  "schema_version": 1,
+  "subphase": "F7-A0-P05",
+  "status": "OWNED_APK_AND_APKS_LAB_VALIDATED_THIRD_PARTY_PENDING",
+  "author": "SP-DECODE first-party CI",
+  "policy": "NEVER_COMMIT_PRIVATE_APKS_APKS_XAPK_OR_SIGNING_KEYS",
+  "fixture_source": "scripts/ci/build_p05_owned_apk.sh",
+  "max_test_scope": "LAB_OWNED_APP_ONLY",
+  "test_workflow": ".github/workflows/f7-a0-p05-apk-lab.yml",
+  "real_third_party_authorized_apk_count": 0,
+  "cases": [
+    {
+      "id": "OWNED-SIGNED-APK",
+      "format": "APK",
+      "generation": "aapt2+d8+zipalign+ephemeral apksigner",
+      "rights": "FIRST_PARTY_SYNTHETIC",
+      "real_dex": true,
+      "expected": "INPUT_ACCEPTED_AND_ORIGINAL_INSPECTOR_EXTRACTS_DEX",
+      "status": "VERIFIED_CI_RUN_42326911352"
+    },
+    {
+      "id": "OWNED-APKS-WRAPPER",
+      "format": "APKS",
+      "generation": "zip wrapper around signed owned APK",
+      "rights": "FIRST_PARTY_SYNTHETIC",
+      "installable_bundletool_split_set": false,
+      "expected": "INPUT_ACCEPTED_AND_ORIGINAL_INSPECTOR_EXTRACTS_DEX",
+      "status": "VERIFIED_CI_RUN_42326911352"
+    },
+    {
+      "id": "ZIP-RATIO-BOMB",
+      "format": "APK",
+      "generation": "synthetic 1MiB zeros compressed",
+      "rights": "FIRST_PARTY_SYNTHETIC",
+      "expected": "REJECTED_ZIP_RATIO",
+      "status": "VERIFIED_CI_RUN_42326911352"
+    },
+    {
+      "id": "ZIP-TRAVERSAL",
+      "format": "APK",
+      "generation": "synthetic unit test",
+      "rights": "FIRST_PARTY_SYNTHETIC",
+      "expected": "ZIP_ENTRY_UNSAFE",
+      "status": "UNIT_TEST"
+    },
+    {
+      "id": "ZIP-DUPLICATE",
+      "format": "APK",
+      "generation": "synthetic unit test",
+      "rights": "FIRST_PARTY_SYNTHETIC",
+      "expected": "ZIP_DUPLICATE",
+      "status": "UNIT_TEST"
+    },
+    {
+      "id": "ZIP-SYMLINK",
+      "format": "APK",
+      "generation": "synthetic unit test",
+      "rights": "FIRST_PARTY_SYNTHETIC",
+      "expected": "ZIP_UNSAFE_TYPE",
+      "status": "UNIT_TEST"
+    },
+    {
+      "id": "APKS-NO-BASE",
+      "format": "APKS",
+      "generation": "synthetic unit test",
+      "rights": "FIRST_PARTY_SYNTHETIC",
+      "expected": "APKS_NO_BASE",
+      "status": "UNIT_TEST"
+    },
+    {
+      "id": "TRUNCATED-ZIP",
+      "format": "APK",
+      "generation": "synthetic unit test",
+      "rights": "FIRST_PARTY_SYNTHETIC",
+      "expected": "ZIP_INVALID",
+      "status": "UNIT_TEST"
+    },
+    {
+      "id": "ZIP-XAPK-EXTENSIONS-DENIED",
+      "format": "OTHER",
+      "generation": "synthetic unit test",
+      "rights": "FIRST_PARTY_SYNTHETIC",
+      "expected": "INPUT_EXTENSION",
+      "status": "VERIFIED_CI_RUN_42330901411"
+    },
+    {
+      "id": "DOCKER-RESOURCE-FAULTS",
+      "format": "NONE",
+      "generation": "CI Docker first-party scripts",
+      "rights": "FIRST_PARTY_SYNTHETIC",
+      "expected": "MEMORY_OOM_DISK_ENOSPC_TIMEOUT_REMOVAL_SANDBOX_AND_OFFLINE_CACHE",
+      "status": "VERIFIED_CI_RUN_42330872990"
+    },
+    {
+      "id": "HOST-SIGKILL-RECOVERY",
+      "format": "NONE",
+      "generation": "CI temporary first-party jobs",
+      "rights": "FIRST_PARTY_SYNTHETIC",
+      "expected": "UNFINISHED_AND_HUMAN_CASES_RETAINED_DURABLE_RESULT_REAPED",
+      "status": "VERIFIED_CI_RUN_42330872990"
+    }
+  ],
+  "input_limits": {
+    "input_max_mib": 300,
+    "entry_max_mib": 300,
+    "expanded_max_mib": 600,
+    "zip_member_max": 20000,
+    "apk_count_max": 200,
+    "nested_apk_memory_spool_mib": 8,
+    "zip_compression_ratio_max": 400,
+    "manifest_max_mib": 8
+  },
+  "runtime_controls": {
+    "network": "DISABLED_AT_DOCKER_RUN",
+    "user": "65532:65532",
+    "read_only_root": true,
+    "capabilities": "ALL_DROPPED",
+    "mem_limit_gib": 3,
+    "pids_limit": 64,
+    "cpu_limit": 1.5,
+    "jadx_install_per_job": false,
+    "pip_install_per_job": false
+  },
+  "pending_production_gates": [
+    "AUTHORIZED_THIRD_PARTY_APK_SHA256_AND_CONSENT",
+    "REAL_BUNDLETOOL_APKS_SPLITS_SIGNATURES",
+    "JADX_REAL_THIRD_PARTY_AUTHORIZED_DEX_ORACLE",
+    "ARM64_ELF_VALID_TRUNCATED_AND_ABI_FIXTURES",
+    "CONCURRENT_JOB_QUEUE_QUOTAS_ON_DEDICATED_VM",
+    "LONG_RUNNING_PRESSURE_AND_RESTART_ON_DEDICATED_VM",
+    "CHECKPOINT_TO_ENCRYPTED_RESULT_STORE_TENANT_VERIFY",
+    "HUMAN_SUPPORT_REVIEW_RETENTION_AND_DISPOSITION",
+    "ANDROID_A4_A5_A9_AUTHENTICATED_E2E",
+    "P01_LICENSE_AND_TRANSITIVE_DEPENDENCY_APPROVAL"
+  ],
+  "ci_evidence": {
+    "owned_lab_run": 42326911352,
+    "owned_lab_conclusion": "SUCCESS",
+    "method_evidence_run": 42326911348,
+    "method_evidence_conclusion": "SUCCESS",
+    "static_regression_count": 22,
+    "combined_a0_regression_count": 95,
+    "verified_original_inspect_apk": true,
+    "verified_original_decompile_jadx": true,
+    "jadx_version": "1.5.6",
+    "jadx_resource_checksum_verified": true,
+    "jadx_resource_reused_without_network": true,
+    "verified_signed_first_party_apk": true,
+    "verified_real_dex": true,
+    "verified_authentic_bundletool_apks": false,
+    "verified_third_party_apk": false,
+    "api_or_production_connected": false,
+    "previous_lab_failure_causes": [
+      "ZIP_PERMISSION_ONLY_MODE_IN_NEW_GATE",
+      "CI_ROOT_READER_OF_PRIVATE_0600_OUTPUT",
+      "MAINTENANCE_TMPFS_64_MIB",
+      "JADX_USER_HOME_ON_READ_ONLY_ROOT"
+    ],
+    "fixed_in": [
+      "cloud/apk_analysis/input_gate.py",
+      ".github/workflows/f7-a0-p05-apk-lab.yml",
+      "cloud/apk_analysis/compose.yaml",
+      "cloud/apk_analysis/Dockerfile"
+    ],
+    "new_fault_suite_status": "VERIFIED_CI_RUN_42330872990",
+    "real_memory_disk_timeout_tests_verified": true,
+    "real_sigkill_host_recovery_verified": true,
+    "real_automated_android_analysis_verified": false,
+    "real_memory_disk_timeout_scope": "DOCKER_EPHEMERAL_FIRST_PARTY_CI",
+    "real_sigkill_host_recovery_scope": "HOST_PROCESS_FIRST_PARTY_CI_AND_SYNTHETIC_DURABLE_RESULT_ORACLE",
+    "last_fault_run": 42330872990,
+    "host_recovery_tests_passed": 4,
+    "docker_fault_checks_passed": 5,
+    "last_fault_workflow_sha": "562b567dd986ceff5eaa87f2bc5b84e54a0ea840",
+    "last_full_evidence_run": 42330901411,
+    "last_full_evidence_status": "SUCCESS",
+    "tool_inventory_integrity": "63_OF_63_UNCHANGED",
+    "latest_full_lab_run": 42330901519,
+    "latest_full_lab_conclusion": "SUCCESS",
+    "latest_full_lab_sha": "bf6658398bedefcfea567d40d19c6454558ec17b",
+    "latest_real_zip_boundary_tests": 22,
+    "latest_host_crash_recovery_tests": 4,
+    "latest_docker_fault_checks": 5,
+    "latest_owned_dex_jadx_status": "OFFLINE_HASH_VERIFIED_SUCCESS"
+  },
+  "android_extensions": {
+    "enabled": [
+      ".apk",
+      ".apks"
+    ],
+    "future": [
+      ".xapk"
+    ],
+    "rejected": [
+      ".zip"
+    ],
+    "enforced_in": "cloud/apk_analysis/input_gate.py",
+    "android_client_integrated": false
+  }
+}

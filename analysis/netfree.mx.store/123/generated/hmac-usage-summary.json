@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "scanCompleted": true,
+  "package": "netfree.mx.store",
+  "versionCode": 123,
+  "baseApkSha256": "b064d225c6a7c150d922057ad1304886b3dd3100b07d3d19a85057c0f4918427",
+  "dexFiles": 1,
+  "methodsVisited": 41622,
+  "algorithmStringCounts": {
+    "HmacSHA1": 1,
+    "HmacSHA224": 1,
+    "HmacSHA256": 1,
+    "HmacSHA384": 1,
+    "HmacSHA512": 1,
+    "HmacMD5": 1,
+    "HMAC-SHA1": 0,
+    "HMAC-SHA256": 0,
+    "HMAC-SHA512": 0,
+    "PBKDF2WithHmacSHA1": 0,
+    "PBKDF2WithHmacSHA256": 1
+  },
+  "javaApiInvocationCounts": {
+    "macGetInstance": 5,
+    "macInit": 4,
+    "macDoFinal": 5,
+    "keystoreGetInstance": 8
+  },
+  "nativeFiles": 14,
+  "nativeAlgorithmMarkerCounts": {
+    "HmacSHA1": 0,
+    "HmacSHA224": 0,
+    "HmacSHA256": 0,
+    "HmacSHA384": 0,
+    "HmacSHA512": 0,
+    "HmacMD5": 0,
+    "HMAC-SHA1": 4,
+    "HMAC-SHA256": 0,
+    "HMAC-SHA512": 0,
+    "PBKDF2WithHmacSHA1": 0,
+    "PBKDF2WithHmacSHA256": 0
+  },
+  "vpnConnectionAuthenticationHmac": "UNCONFIRMED",
+  "credentialMaterialExtracted": false,
+  "apkCodeExecuted": false,
+  "limitations": [
+    "Static counts do not establish execution, key provenance or purpose.",
+    "No function inputs/outputs, key values, tokens or profiles are collected.",
+    "No VPN/service connection, authentication bypass or dynamic hook was attempted."
+  ]
+}

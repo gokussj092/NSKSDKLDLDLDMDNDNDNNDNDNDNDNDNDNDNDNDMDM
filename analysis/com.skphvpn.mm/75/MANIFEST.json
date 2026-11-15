@@ -1,0 +1,150 @@
+{
+  "schema_version": "1.0",
+  "package_name": "com.skphvpn.mm",
+  "app_name": "PPH GOOD VPN",
+  "version_name": "1.7.2",
+  "version_code": 75,
+  "observed_at": "2026-11-14/15",
+  "source_category": "tienda (APKPure, version de Google Play) + descarga en vivo con el metodo del script operativo",
+  "authorization_note": "APK de espejo publico (APKPure) de la version publica de Play; muestras de catalogo descargadas en vivo con el metodo propio de la app; sin cuentas ni datos de usuarios. Sin APK ni perfiles reales en este expediente.",
+  "status": "VERIFIED",
+  "targets": [
+    {
+      "id": "catalog",
+      "kind": "catalog",
+      "status": "VERIFIED",
+      "detail": "En vivo Version 6.6 ('pvpn_upall'): 15 servidores (5 UDP Hysteria + 5 OpenVPN/SSL + 5 SSH), 7 redes, las 7 con payload. 0 campos sin abrir tras la limpieza 2026-11-15. Incluido (assets/pphdev.json): Version 2.0, 60 servidores, 14 redes, tambien 0 campos sin abrir."
+    },
+    {
+      "id": "files",
+      "kind": "files",
+      "status": "VERIFIED",
+      "detail": "Sin formato propio exportable con extension. Se abre el catalogo crudo (una linea Base64, pphdev.json o el cuerpo descargado), el JSON ya descifrado, un campo suelto, y Parser.encode/decode. La app importa .ovpn estandar y enlaces v2ray genericos, ya cubiertos por SP-DECODE."
+    },
+    {
+      "id": "text",
+      "kind": "text",
+      "status": "NOT_APPLICABLE",
+      "detail": "Sin esquema propio; la app maneja enlaces v2ray genericos por pegar (vmess://, vless://, trojan://, ss://), ya cubiertos genericamente."
+    },
+    {
+      "id": "export",
+      "kind": "export",
+      "status": "NOT_APPLICABLE",
+      "detail": "Sin share por clave ni nube documentada para esta app."
+    }
+  ],
+  "inputs": [
+    {
+      "name": "PPH-GOOD-VPN_1.7.2_arm64-v8a.xapk",
+      "type": "xapk",
+      "bytes": 50370413,
+      "sha256": "e0759c17dca3385d715d12e908fec197e7eff315a253825a3eeaa265a104fda7",
+      "source": "APKPure, version de Google Play 1.7.2"
+    },
+    {
+      "name": "catalog_sample.b64",
+      "type": "catalog_response",
+      "bytes": 34156,
+      "sha256": "ec62a55b3fae3802c0d911d91f363abd94182766bce77ba4e504fafb535e6369",
+      "source": "Descarga en vivo (2026-11-14)"
+    },
+    {
+      "name": "catalog_sample_decrypted.json (limpio, regla Pedro)",
+      "type": "catalog_decrypted",
+      "bytes": 22732,
+      "sha256": "64da1df2cb45911231445d2d89e279772f437f9f63ccddbdb51585fae669cc88",
+      "source": "Regenerado 2026-11-15: sin APIs de descarga, todos los campos descifrados"
+    },
+    {
+      "name": "catalog_sample_bundled_decrypted.json",
+      "type": "catalog_decrypted",
+      "bytes": 116877,
+      "sha256": "84f400f14db49a107010de4b074e1f7705f14cde32526dd4e6f826a998574ce1",
+      "source": "Assets/pphdev.json descifrado (v2.0, 60 servidores, 14 redes)"
+    }
+  ],
+  "tooling": [
+    {
+      "name": "Python",
+      "version": "3.12.3 (system)",
+      "purpose": "stdlib only in operational scripts"
+    },
+    {
+      "name": "jadx",
+      "version": "1.5.3",
+      "purpose": "decompilation (2nd pass -j 2 -Xmx3500m, OOM at 99%, 10212 .java, 30 minor errors)"
+    }
+  ],
+  "dependencies": [
+    {
+      "name": "Python",
+      "version": "3.12.3 (system)",
+      "status": "RECORDED",
+      "note": "stdlib only in operational scripts"
+    },
+    {
+      "name": "jadx",
+      "version": "1.5.3",
+      "status": "RECORDED",
+      "note": "decompilation (2nd pass -j 2 -Xmx3500m, OOM at 99%, 10212 .java, 30 minor errors)"
+    }
+  ],
+  "code_paths": [
+    "decoders/Python/apps/PPH_GOOD_VPN/PPH_GOOD_VPN.py",
+    "decoders/Python/apps/PPH_GOOD_VPN/PPH_GOOD_VPN_archivos.py"
+  ],
+  "evidence_refs": [
+    "RESULTS.md (conteos en vivo, limpieza JSON, negativas)",
+    "tests/test_method.py (XXTEA delta 0x2E0BA747 + Parser +/-18 sinteticos, sin red)",
+    "tools/verify.py (verificador sintetico) + tools/defog.py (decodificador StringFog XOR + Base64, 895 strings)",
+    "~/workspace/catalogs/pph/catalog_sample.b64 (respuesta cruda, 34156 B)",
+    "~/workspace/catalogs/pph/catalog_sample_decrypted.json + catalog_sample_bundled_decrypted.json (limpios, 0 valores sin abrir)"
+  ],
+  "limitations": [
+    "La app guarda Servers/HTTPNetworks en su SQLite (tabla Harlies_table); el catalogo NO se guarda como archivo.",
+    "Los campos cortos en claro (TcpPort, ProxyPort, FLAG, etc.) no se descifran a proposito (falsos positivos Base64+XXTEA).",
+    "jadx 1.5.3: primera pasada OOM al 61%; segunda con -j 2 -Xmx3500m OOM al 99% (10212 archivos .java, 30 errores menores); todas las clases clave decompiladas."
+  ],
+  "network_requirements": [
+    "Descarga del catalogo: GET con UA okhttp/4.12.0, sin headers extra. Respuesta: una linea Base64, 34156 B. (La URL completa vive solo en el script operativo; aqui no se reproduce.)"
+  ],
+  "manual_steps": [
+    "Ninguno para el catalogo: descarga y descifrado automaticos con el script operativo.",
+    "Para el incluido: leer assets/pphdev.json del APK extraido."
+  ],
+  "unresolved_questions": [
+    "Ninguno abierto: catalogo vivo e incluido verificados con 0 campos sin abrir."
+  ],
+  "connection_authentication": {
+    "catalog_file_integrity": {
+      "status": "NOT_OBSERVED",
+      "detail": "XXTEA sin MAC/HMAC observado; la integridad se comprueba por parseo JSON y por el censo de campos (0 sin abrir)."
+    },
+    "catalog_download_auth": {
+      "status": "NOT_OBSERVED",
+      "detail": "GET simple con UA okhttp, sin firma observada."
+    },
+    "crypto_derivation": {
+      "status": "NOT_OBSERVED",
+      "detail": "Claves XXTEA fijas en el codigo; no se observo HMAC/KDF en la derivacion."
+    },
+    "vpn_transport": {
+      "status": "NOT_OBSERVED",
+      "detail": "No se observo una conexion VPN en vivo ni MAC del transporte."
+    },
+    "connection_auth": {
+      "status": "NOT_OBSERVED",
+      "detail": "No se trazo autenticacion de conexion. La mera presencia de librerias criptograficas no confirma nada."
+    }
+  },
+  "dependencies_reference": {
+    "lockfile": "dependencies.lock.json",
+    "inventory": "DEPENDENCIES.md"
+  },
+  "code_paths_reference": {
+    "catalog_decoder": "decoders/Python/apps/PPH_GOOD_VPN/PPH_GOOD_VPN.py (pendiente de integracion en este parche; operativo en ~/workspace/catalogs/pph/PPH_GOOD_VPN.py, SHA-256 68da4aa8eafe5b8da54c1ea0c10b636be19d4acef27e335822d466c60af2503f)",
+    "file_decoder": "decoders/Python/apps/PPH_GOOD_VPN/PPH_GOOD_VPN_archivos.py (pendiente de integracion; operativo en ~/workspace/catalogs/pph/PPH_GOOD_VPN_archivos.py, SHA-256 0eb446b5c7f40eb9c823f2b4c60281f7fd49791d05b26661736e5d7528aa843e)",
+    "work_notes": "~/workspace/catalogs/pph/work/"
+  }
+}

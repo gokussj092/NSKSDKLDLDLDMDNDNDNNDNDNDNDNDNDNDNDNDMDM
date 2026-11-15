@@ -1,0 +1,163 @@
+{
+  "schema_version": "1.0",
+  "package_name": "loop.uchetechs.vpn.pro",
+  "app_name": "UT Loop Pro VPN",
+  "version_name": "23.11.26",
+  "version_code": 66,
+  "observed_at": "2026-11-14/15",
+  "source_category": "tienda (APKPure, version de Google Play) + descarga en vivo con el metodo del script operativo",
+  "authorization_note": "APK de espejo publico (APKPure) de la version publica de Play; muestras de catalogo descargadas en vivo con el metodo propio de la app; sin cuentas ni datos de usuarios. Sin APK ni perfiles reales en este expediente.",
+  "status": "PENDING",
+  "targets": [
+    {
+      "id": "catalog",
+      "kind": "catalog",
+      "status": "PENDING",
+      "detail": "BLOQUEADO por tokens de dispositivo (honesto): POST /v1/premium/config sin JWT -> 403 not_entitled; GET /v1/ota/config y /v1/ota/locked sin token OTA -> 401 access_required. Hacen falta el JWT de entitlement (compra) o un token OTA de Play Integrity de un dispositivo real con la app de Play. No se fabrico ningun token. Reserva incrustada (Version 1.0, 1 servidor + 1 tweak de ejemplo) SI abre con la clave de formato."
+    },
+    {
+      "id": "files",
+      "kind": "files",
+      "status": "PARTIAL",
+      "detail": "Sin formato propio exportable. system.db (SQLite, tabla stored_data, fila ID=1, columna DATA = campo data del sobre OTA) SE ABRE OFFLINE. prem.cache / lock.cache estan sellados con clave del Android Keystore del dispositivo (alias utloop_premium_cache_v1 / utloop_locked_cache_v1): NO ABREN OFFLINE (KEYSTORE_SEALED)."
+    },
+    {
+      "id": "text",
+      "kind": "text",
+      "status": "NOT_APPLICABLE",
+      "detail": "Solo utloop://premium (abre Premium). Sin esquema de importacion ni file picker. Importacion por pegado de enlaces V2Ray estandar, ya cubiertos genericamente."
+    },
+    {
+      "id": "export",
+      "kind": "export",
+      "status": "PENDING",
+      "detail": "Sin share por codigo; la 'nube' es el API premium/OTA/locked + Firebase Messaging. Sincronizacion por version (PremiumRev / LockedRev / Version)."
+    }
+  ],
+  "inputs": [
+    {
+      "name": "UT-Loop-Pro-VPN_23.11.26_arm64-v8a.xapk",
+      "type": "xapk",
+      "bytes": 45599521,
+      "sha256": "3ed4b28d… (prefijo registrado en NOTES.md; valor completo no registrado)",
+      "source": "APKPure, version de Google Play 23.11.26"
+    },
+    {
+      "name": "samples/catalog_fallback.bin",
+      "type": "catalog_fallback",
+      "bytes": 1157,
+      "sha256": "0ab33d9f331acb98f90985dc4e892bd6dd2f70be11120898517a29fdd4524b2a",
+      "source": "Blob de reserva incrustado en util/h.java campo f19289b (doble Base64 + StringFog)"
+    },
+    {
+      "name": "samples/system.db (sintetico)",
+      "type": "file_sample",
+      "sha256": "14fa3e05f2a4ca1eec8af5d983ba7569d80894b479e86a0b91dd58a1eb7f2104",
+      "source": "SQLite sintetico con el blob de reserva como fila 1"
+    },
+    {
+      "name": "samples/probe_live.json",
+      "type": "probe",
+      "sha256": "3f1c870811e7a0b75dbc3984ddfdcd27ccafc737eb2421d74d40c62d2cf1324a",
+      "source": "Sondeo en vivo 2026-11-14 (nonce 200, premium 403, ota 401, locked 401)"
+    }
+  ],
+  "tooling": [
+    {
+      "name": "Python",
+      "version": "3.12.3 (system)",
+      "purpose": "stdlib only in operational scripts"
+    },
+    {
+      "name": "jadx",
+      "version": "UNKNOWN (version not recorded; died at 58%)",
+      "purpose": "partial decompilation; all com/utloop decompiled"
+    },
+    {
+      "name": "androguard",
+      "version": "UNKNOWN (version not recorded)",
+      "purpose": "DEX inspection (androguard.db/log in work/)"
+    }
+  ],
+  "dependencies": [
+    {
+      "name": "Python",
+      "version": "3.12.3 (system)",
+      "status": "RECORDED",
+      "note": "stdlib only in operational scripts"
+    },
+    {
+      "name": "jadx",
+      "version": "UNKNOWN",
+      "status": "NEEDS_REVIEW",
+      "note": "partial decompilation; all com/utloop decompiled"
+    },
+    {
+      "name": "androguard",
+      "version": "UNKNOWN",
+      "status": "NEEDS_REVIEW",
+      "note": "DEX inspection (androguard.db/log in work/)"
+    }
+  ],
+  "code_paths": [
+    "decoders/Python/apps/UT_Loop_Pro_VPN/codec.py",
+    "decoders/Python/apps/UT_Loop_Pro_VPN/server_catalog_decoder.py",
+    "decoders/Python/apps/UT_Loop_Pro_VPN/banner_decoder.py"
+  ],
+  "evidence_refs": [
+    "RESULTS.md (sondeo en vivo, negativas)",
+    "tests/test_method.py (sobre {data,sig} sintetico + verificacion RSA-SHA256 con clave de prueba, sin red)",
+    "tools/verify.py (verificador sintetico) + tools/stringfog.py (decodificador StringFog XOR + Base64)",
+    "~/workspace/catalogs/utloop/samples/ (catalog_fallback.json/.bin/.b64, system.db sintetico, nonce_response.json, premium_config_no_entitlement.json, ota_config_no_access.json, ota_locked_no_access.json, probe_live.json)"
+  ],
+  "limitations": [
+    "Catalogo en vivo BLOQUEADO: sin JWT de entitlement ni token OTA de Play Integrity no hay catalogo real.",
+    "prem.cache / lock.cache no abren offline: clave en Android Keystore del dispositivo (no exportable).",
+    "La app tiene lista anti-sniffing (HttpCanary, Packet Capture, Reqable, etc.).",
+    "jadx murio al 58%; todo com/utloop esta decompilado pero el resto es parcial."
+  ],
+  "network_requirements": [
+    "API con tres endpoints con el mismo sobre cifrado (util/t.java). POST /v1/nonce -> 200 con nonce (verificado en vivo, dos veces). Sin JWT/token: premium 403, ota/locked 401. (Las URLs completas y la clave API viven solo en el script operativo; aqui no se reproducen.)"
+  ],
+  "manual_steps": [
+    "Para el catalogo vivo: JWT de entitlement de un dispositivo real con la compra, o token OTA de Play Integrity de un dispositivo real con la app de Play.",
+    "Para system.db real: extraer la base del telefono y pasarla al script de archivos.",
+    "Para verificar la firma RSA en vivo: capturar un sobre real {data,sig}."
+  ],
+  "unresolved_questions": [
+    "¿Como obtener un JWT de entitlement o un token OTA legitimo? (requiere dispositivo real + compra / Play Integrity).",
+    "Contenido real del catalogo vivo (Version, servidores, tweaks)."
+  ],
+  "connection_authentication": {
+    "catalog_file_integrity": {
+      "status": "CONFIRMED",
+      "algorithm": "RSA-SHA256 (firma, no HMAC)",
+      "detail": "El sobre es JSON {data, sig}; sig = RSA-SHA256 (2048 bits, e=65537) sobre los bytes de data, verificada con la clave publica incrustada. No es HMAC, pero es el mecanismo de integridad del catalogo. Los tests de este expediente verifican RSA-SHA256 con una clave de PRUEBA generada aqui (no la real)."
+    },
+    "catalog_download_auth": {
+      "status": "NOT_OBSERVED",
+      "detail": "El acceso se controla por JWT de entitlement y token OTA (Play Integrity), no por HMAC observado."
+    },
+    "crypto_derivation": {
+      "status": "NOT_OBSERVED",
+      "detail": "Clave AES = SHA-256 de una cadena fija de esquema XOR mascara fija de 32 B; no se observo HMAC en la derivacion."
+    },
+    "vpn_transport": {
+      "status": "NOT_OBSERVED",
+      "detail": "No se observo una conexion VPN en vivo ni MAC del transporte."
+    },
+    "connection_auth": {
+      "status": "NOT_OBSERVED",
+      "detail": "No se trazo autenticacion de conexion VPN. La firma RSA del sobre autentica el catalogo, no la conexion."
+    }
+  },
+  "dependencies_reference": {
+    "lockfile": "dependencies.lock.json",
+    "inventory": "DEPENDENCIES.md"
+  },
+  "code_paths_reference": {
+    "catalog_decoder": "decoders/Python/apps/UT_Loop_Pro_VPN/UT_Loop_Pro.py (existe en el repo; operativo en ~/workspace/catalogs/utloop/UT_Loop_Pro.py, SHA-256 b2d3887e7c8085e4dee0e105bfd5062a151b818af29134bc9994ece054678cc1)",
+    "file_decoder": "decoders/Python/apps/UT_Loop_Pro_VPN/UT_Loop_Pro_archivos.py (existe en el repo; operativo en ~/workspace/catalogs/utloop/UT_Loop_Pro_archivos.py, SHA-256 41f3a2684594131c9f02272a396ddaaf3152c76278f4daf0f0bd714ca850b0fe)",
+    "work_notes": "~/workspace/catalogs/utloop/work/"
+  }
+}

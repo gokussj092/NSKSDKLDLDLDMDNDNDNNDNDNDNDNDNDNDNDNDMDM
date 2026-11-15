@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="server_vpn_filter_ssh_accounts">حساب‌های SSH</string>
+    <string name="server_vpn_ssh_notice_text">این حساب‌های SSH فقط در برنامه زیر قابل استفاده هستند:</string>
+    <string name="server_vpn_ssh_no_matches">هیچ حساب SSH مطابق جستجوی شما پیدا نشد.</string>
+</resources>

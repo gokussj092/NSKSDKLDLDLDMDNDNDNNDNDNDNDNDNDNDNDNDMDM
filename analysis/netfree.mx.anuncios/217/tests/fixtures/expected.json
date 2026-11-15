@@ -1,0 +1,72 @@
+{
+  "provider": "speicers-turbo-vpn",
+  "complete": true,
+  "catalogs": {
+    "servers": {
+      "Version": "fiction-217",
+      "ReleaseNotes": "Solo pruebas 🎯",
+      "Servers": [
+        {
+          "2kDKELRmSE143VdcX3FPzw==": "Example-0 abcXYZ 123 /\r\n",
+          "66P9ZUEM1ju4WGhv856BSg==": "Example-1 abcXYZ 123 /\r\n",
+          "ACqWMY4zuZWzSEs8cZMXIw==": "Example-2 abcXYZ 123 /\r\n",
+          "B5jcTSGuJUFbTtH5O1IaBg==": "Example-3 abcXYZ 123 /\r\n",
+          "BWTPMwR0iRu1N9twHCpbAg==": "Example-4 abcXYZ 123 /\r\n",
+          "EtNSBhechjWxm2t50NyB9Q==": "Example-5 abcXYZ 123 /\r\n",
+          "Fo3TT4oONvv69IQIMg1aLg==": "Example-6 abcXYZ 123 /\r\n",
+          "ITkWvEHp29BmMaLMEGUFcw==": "Example-7 abcXYZ 123 /\r\n",
+          "MkRXl4D9vpREVCJ0w4qrgg==": "Example-8 abcXYZ 123 /\r\n",
+          "PFFSWRJKZmOcNLTZxFwgjQ==": "Example-9 abcXYZ 123 /\r\n",
+          "QSln2zKCBJvqH9qV4M0ifg==": "Example-10 abcXYZ 123 /\r\n",
+          "SbDP19AbQur0YtkkyRlVMA==": "Example-11 abcXYZ 123 /\r\n",
+          "U7V8DoP4cYkXJjCnpqW6nQ==": "Example-12 abcXYZ 123 /\r\n",
+          "UxdyIntdYykCdV76crKnwg==": "Example-13 abcXYZ 123 /\r\n",
+          "W4CbS1nMWo6Y2noeUFHmXQ==": "Example-14 abcXYZ 123 /\r\n",
+          "aH2nzD4eDLxPSxIAlVivdg==": "Example-15 abcXYZ 123 /\r\n",
+          "asmRO4zXsRjhDYX42dbNuw==": "Example-16 abcXYZ 123 /\r\n",
+          "b3MPypEFR83rzFKUa4UbCw==": "Example-17 abcXYZ 123 /\r\n",
+          "b6stZNVaFUjLCw88dn03Ng==": "Example-18 abcXYZ 123 /\r\n",
+          "iW1aO5DgThVAeo23xTsXSw==": "Example-19 abcXYZ 123 /\r\n",
+          "l7MIgkbuXMmGaaQGd54F2w==": "Example-20 abcXYZ 123 /\r\n",
+          "mtw364P3ZslP2CZYuHTCHQ==": "Example-21 abcXYZ 123 /\r\n",
+          "oAqgFKE3WywLRvSvKffLOA==": "Example-22 abcXYZ 123 /\r\n",
+          "p0PgL3l0d89mnssz7ImPJA==": "Example MX Server",
+          "p9ZPlMv9V7gDszRoUaNaJw==": "Example-24 abcXYZ 123 /\r\n",
+          "tmSbWiCK1hvytJ9f3gflkQ==": "Example-25 abcXYZ 123 /\r\n",
+          "vXfVafVdyaCRTDj6uBT6lg==": "Example-26 abcXYZ 123 /\r\n",
+          "MIgkNbuX29MmGatZNVaFUj==": true,
+          "serverType": 0,
+          "tunnelType": 1,
+          "ssh_userpass_enabled": false,
+          "metadata": {
+            "note": "México 🎯\r\n",
+            "preserve": [
+              "AA==",
+              true,
+              7,
+              null
+            ]
+          }
+        }
+      ]
+    },
+    "users": {
+      "Version": "fiction-2",
+      "Usuarios": [
+        {
+          "Auth": "Example Auth abcXYZ 123 /\r\n",
+          "ID": "Example ID abcXYZ 123 /\r\n",
+          "Obfs": "Example Obfs abcXYZ 123 /\r\n",
+          "Password": "Example Password abcXYZ 123 /\r\n",
+          "Path": "Example Path abcXYZ 123 /\r\n",
+          "Username": "Example Username abcXYZ 123 /\r\n",
+          "Name": "Fictional user preset",
+          "metadata": {
+            "tokenLike": "QUJDREVGRw==",
+            "bool": true
+          }
+        }
+      ]
+    }
+  }
+}

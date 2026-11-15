@@ -1,0 +1,9 @@
+{
+  "actualNodeTransport": {
+    "status": "failed",
+    "code": "REMOTE_NETWORK_DENIED"
+  },
+  "replayHttpSimulated": true,
+  "replayUsesRealBytesAndChildWorkerResult": true,
+  "replayPassed": true
+}

@@ -6,6 +6,7 @@ current native updater. No alternate app profiles or unauthenticated fallback.
 from __future__ import annotations
 
 import base64
+from concurrent.futures import ThreadPoolExecutor
 import json
 from pathlib import Path
 import re
@@ -53,8 +54,10 @@ def open_envelope(text: str, *, remote: bool = False) -> str:
         raise DecodeError("Sobre Ultra Tunnel inválido o incompatible.") from error
 
 
-def decode_catalog(data: bytes) -> dict:
+def decode_catalog(data: bytes, *, field_workers: int = 1) -> dict:
     try:
+        if field_workers not in (1, 2):
+            raise ValueError()
         text = shared._bounded(data).decode("utf-8-sig").strip()
         if not text.startswith("{"):
             # Native decrypt removes byte index 3; bundled EO/DO has no marker.
@@ -67,6 +70,42 @@ def decode_catalog(data: bytes) -> dict:
                 or any(not isinstance(obj.get(name), list) or not obj[name] for name in ("Servers", "Networks"))):
             raise ValueError()
         cache = {}
+
+        if field_workers == 2:
+            # MD PROXY uses thousands of independent Argon2id field keys. The
+            # verified derivations release the GIL; two bounded threads fit a
+            # small dual-vCPU worker without changing crypto parameters.
+            unique = set()
+            pending = []
+
+            def collect(record, names):
+                for name in names:
+                    value = record.get(name)
+                    if not isinstance(value, str):
+                        continue
+                    packed = value.replace("\r", "").replace("\n", "")
+                    if len(packed) >= 60 and re.fullmatch(r"[A-Za-z0-9+/]*={0,2}", packed):
+                        if packed not in unique:
+                            if len(unique) >= MAX_FIELDS:
+                                raise ValueError()
+                            unique.add(packed)
+                            pending.append((packed, value))
+
+            collect(obj, TOP_FIELDS)
+            for section, names in (("Servers", SERVER_FIELDS), ("Networks", NETWORK_FIELDS)):
+                for row in obj[section]:
+                    if not isinstance(row, dict) or not isinstance(row.get("Name"), str):
+                        raise ValueError()
+                    collect(row, names)
+
+            # Only two Argon2id jobs may exist at once: no unbounded future
+            # queue, plaintext cache on disk, fallback keys or partial output.
+            with ThreadPoolExecutor(max_workers=2) as pool:
+                for offset in range(0, len(pending), 2):
+                    batch = pending[offset:offset + 2]
+                    values = list(pool.map(lambda item: open_envelope(item[1]), batch))
+                    for (packed, _), plaintext in zip(batch, values):
+                        cache[packed] = plaintext
 
         def fields(record, names):
             result = record.copy()

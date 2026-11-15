@@ -1,0 +1,82 @@
+{
+  "id": "speigo-vpn",
+  "name": "SpeiGo VPN",
+  "package": "netfree.mx.speigovpn",
+  "versionCode": 159,
+  "compatibleVersions": [
+    "1.3.48"
+  ],
+  "engineVersion": 1,
+  "engine": "python-sv5c-v2-ed25519-xchacha20poly1305-aes256cbc-rot5",
+  "catalog": {
+    "providerIds": [
+      "speigo-vpn-configs",
+      "speigo-vpn-ssh"
+    ],
+    "entrypoints": {
+      "speigo-vpn-configs": "server_catalog_decoder.py",
+      "speigo-vpn-ssh": "ssh_catalog_decoder.py"
+    },
+    "separateSources": true,
+    "publicCatalogVersion": 78,
+    "evidenceDirectory": "analysis/netfree.mx.speigovpn/159",
+    "currentProof": {
+      "configs": {
+        "inputBytes": 408938,
+        "inputSha256": "caa4c35cc43dff97ea87d8a9abb7686412736aee7d239134ed833aa8426d7396",
+        "purpose": 1,
+        "section": "Servers",
+        "version": "29",
+        "records": 266,
+        "innerFieldsCompared": 2872,
+        "wholeIndependentJcaSodiumParity": true,
+        "signatureAndAllTagsVerified": true,
+        "clearJsonSha256": "2e1a71a1d991146a3b3ba5dc1b4bf329d5e1024440493155e1ff41b0b2a20973",
+        "rawOutputBytes": 215803,
+        "apkCodeExecuted": false,
+        "wholeWorkerParity": true,
+        "workerRejectsOppositeSection": true,
+        "wholeCliOutsideCheckoutParity": true
+      },
+      "ssh": {
+        "inputBytes": 1233,
+        "inputSha256": "3ed9b3d9009f472005170dddd329a76ebcdbf610b624b5ee99f552ef7d84d844",
+        "purpose": 2,
+        "section": "Usuarios",
+        "version": "3",
+        "records": 1,
+        "innerFieldsCompared": 6,
+        "wholeIndependentJcaSodiumParity": true,
+        "signatureAndAllTagsVerified": true,
+        "clearJsonSha256": "437a6f0ec5a763e3b452ac55e84346ad3a7428cfc45173b48d8e98bda4493c68",
+        "rawOutputBytes": 776,
+        "apkCodeExecuted": false,
+        "wholeWorkerParity": true,
+        "workerRejectsOppositeSection": true,
+        "wholeCliOutsideCheckoutParity": true
+      }
+    }
+  },
+  "files": {
+    "supported": false,
+    "exporterCertified": false
+  },
+  "text": {
+    "supported": false
+  },
+  "icon": {
+    "file": "SpeiGo_VPN.png",
+    "source": "original res/mipmap-xxxhdpi/ic_launcher.png from analyzed APK",
+    "width": 192,
+    "height": 192,
+    "bytes": 21564,
+    "sha256": "09acd58c6af0d0892530574cd33e3d417ed1743bea741337de33f56b87dc6581"
+  },
+  "dependencies": {
+    "pycryptodome": "3.23.0",
+    "sharedWire": "../SuperFlash_VPN/codec.py",
+    "sharedFieldValidation": "../HTTP_FenixVPN/codec.py"
+  },
+  "sourceApkSha256": "37b2524bb63404e74abbfc52b73308180d141a2a0f32d182e9dfd63ced872826",
+  "sourceSignerSha256": "610389f5895406cde161eae4ed3cb245512e58aa064f2a4ae6ba06acfb7aa386"
+}

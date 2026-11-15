@@ -1,4 +1,5 @@
 # SP-DECODE — Fase 7: arquitectura de suscripciones, créditos y análisis de APK
+> **Anexos 2026-11-04 para la Fase 7:** [cuentas Google, nombres editables, Billing, reembolsos y soporte humano con descarga de APK + evidencias](FASE_7_CUENTAS_GOOGLE_PAGOS_Y_SOPORTE_APK_2026_11_04.md) · [fases de implementación y QA](FASE_7_PLAN_IMPLEMENTACION_Y_QA_2026_11_04.md). Son especificaciones pendientes, NO funciones activas.
 
 > **Anexo pendiente aprobado para planificación:** [dos modalidades de análisis automático de APK (informe o código asistido por IA)](FASE_7_APK_AUTOANALISIS_DOS_SALIDAS_PENDING_2026_11_02.md). El registro obligatorio de herramientas es [analysis/METHOD_EVIDENCE_POLICY.md](../analysis/METHOD_EVIDENCE_POLICY.md). Estos anexos no habilitan operaciones, cobros ni análisis real.
 

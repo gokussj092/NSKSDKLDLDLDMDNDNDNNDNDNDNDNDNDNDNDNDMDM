@@ -1,0 +1,40 @@
+{
+  "id": "docnet-vpn",
+  "name": "DocNet VPN",
+  "package": "tech.docnet.docnetvpn",
+  "versionName": "6.1.4",
+  "versionCode": 314,
+  "engine": "python",
+  "entrypoint": "DocNet_VPN.py",
+  "extensions": [],
+  "textPrefixes": [
+    "docnet://docnet.tech",
+    "https://import.docnet.tech"
+  ],
+  "dependencies": [],
+  "catalog": {
+    "entrypoint": "DocNet_VPN.py",
+    "method": "GET",
+    "url": "https://docnet.tech/configs/",
+    "status": "live_metadata_only",
+    "configStatus": "ENCRYPTED_AES256_PENDING",
+    "version": null,
+    "servers": null,
+    "networks": null,
+    "payloads": null,
+    "configs": 591,
+    "freeConfigs": 574,
+    "premiumConfigs": 17,
+    "httpConfigs": 371,
+    "tlsConfigs": 220,
+    "notes": "Catalogo JSON plano en vivo (591 configs con metadatos completos). Cada campo `config` es un blob AES-256 cuya clave NO se recupero offline; el script entrega metadatos + blob cifrado y marca cada payload ENCRYPTED_AES256_PENDING, no descifra configs individuales. El catalogo no trae campo de version. Deep links verificados en el manifest pero formato exacto del payload del enlace NO verificado (falta un enlace real)."
+  },
+  "files": {
+    "supported": false,
+    "entrypoint": null,
+    "notes": "La app no tiene formato propio importable (sin ACTION_VIEW ni extension propia); no hay script _archivos.py."
+  },
+  "realSampleVerified": true,
+  "sampleFile": "docnet_configs_sample.json",
+  "deployment": "pending"
+}

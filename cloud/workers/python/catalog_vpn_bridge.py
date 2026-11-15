@@ -5,8 +5,23 @@ import importlib
 import json
 import sys
 from pathlib import Path
+from cloud.workers.python.supplied_bridge import offline
 
 PROVIDERS = {
+    "thailand-vpn": "decoders.Python.apps.Thailand_VPN.server_catalog_decoder",
+    "kham-vpn": "decoders.Python.apps.KHAM_VPN.server_catalog_decoder",
+    "opentunnel-ssh": "decoders.Python.apps.OpenTunnel.server_catalog_decoder",
+    "md-proxy-vpn": "decoders.Python.apps.MD_Proxy_VPN.server_catalog_decoder",
+    "xxpicore-tunnel": "decoders.Python.apps.XXPICore_Tunnel.server_catalog_decoder",
+    "catnet-vpn": "decoders.Python.apps.CATNET_VPN.server_catalog_decoder",
+    "litron-vpn": "decoders.Python.apps.Litron_VPN.server_catalog_decoder",
+    "litron-pro-vpn": "decoders.Python.apps.Litron_Pro_VPN.server_catalog_decoder",
+    "speigo-vpn-configs": "decoders.Python.apps.SpeiGo_VPN.server_catalog_decoder",
+    "speigo-vpn-ssh": "decoders.Python.apps.SpeiGo_VPN.ssh_catalog_decoder",
+    "genis-vpn": "decoders.Python.apps.Genis_VPN.server_catalog_decoder",
+    "speicers-turbo-vpn": "decoders.Python.apps.Speicers_Turbo_VPN.server_catalog_decoder",
+    "http-conexion": "decoders.Python.apps.HTTP_Conexion.server_catalog_decoder",
+    "namo-vpn": "decoders.Python.apps.NAMO_VPN.server_catalog_decoder",
     "fnf-tunnel-bd": "decoders.Python.apps.FNF_TUNNEL_BD.server_catalog_decoder",
     "alsaher-vip": "decoders.Python.apps.ALSAHER_VIP.server_catalog_decoder",
     "halcon-r-net": "decoders.Python.apps.Halcon_R_Net.server_catalog_decoder",
@@ -72,6 +87,12 @@ PROVIDERS = {
 }
 
 def decode(provider_id: str, payload: bytes) -> str:
+    from cloud.workers.python.supplied_bridge import BY_ID, catalog as decode_supplied
+    # eut-vpn is supplied ONLY for its file route (new-format .eut); its
+    # catalog decoder stays on the C8 bridge below (server_catalog_decoder
+    # exposes run(), not decode()), so it must not be diverted here.
+    if provider_id in BY_ID and provider_id not in {"catnet-vpn", "litron-vpn", "hx-tunnel", "eut-vpn"}:
+        return json.dumps(decode_supplied(provider_id, payload), ensure_ascii=False, indent=2)
     module_name = PROVIDERS.get(provider_id)
     if module_name is None:
         raise ValueError("Unsupported provider")
@@ -89,6 +110,7 @@ def decode(provider_id: str, payload: bytes) -> str:
         raise ValueError("Invalid catalog result")
     return result
 
+@offline()
 def main() -> int:
     if len(sys.argv)!=3:
         return 2

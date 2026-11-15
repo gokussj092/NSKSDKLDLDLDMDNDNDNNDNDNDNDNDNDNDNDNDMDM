@@ -1,0 +1,28 @@
+{
+  "id": "reg-tunnel",
+  "name": "REG Tunnel VPN",
+  "package": "io.isvsoft.pub.regtunnelvpn",
+  "versionName": "v1.9.28.1",
+  "versionCode": 101,
+  "engine": "python",
+  "entrypoint": "REG_Tunnel_VPN.py",
+  "fileDecoder": "REG_Tunnel_VPN_archivos.py",
+  "extensions": [
+    "reg"
+  ],
+  "textPrefixes": [],
+  "dependencies": [],
+  "credentials": [],
+  "catalog": {
+    "status": "LIVE_DECRYPT_FAILED",
+    "method": "POST",
+    "url": "https://strongteam.co/api/regtunnel/",
+    "version": null,
+    "servers": null,
+    "networks": null,
+    "payloads": null,
+    "note": "HTTP 200, cuerpo Base64 905541 B, SHA-256 d13d3df0777b; no verifica con K1 ni K2: clave viva rotada tras v1.9.28.1. Asset configfile.json abre con K2: v1.01, 1 servidor, 1 red (byte-identico al de RNV, SHA-256 b7e47d6e6df75f8d8d31113fca0a1e82ecbea65701d499e64f0bcfb440450d77)."
+  },
+  "realSampleVerified": false,
+  "deployment": "pending"
+}

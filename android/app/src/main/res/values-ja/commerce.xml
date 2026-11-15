@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="account_sign_in">ログイン</string>
+    <string name="account_web_description">公式サイトでアカウントと購入履歴を管理できます。無料機能はアカウントなしで利用できます。</string>
+    <string name="account_continue_web">ウェブで続ける</string>
+    <string name="account_my_account">マイアカウント</string>
+    <string name="account_store">ストア</string>
+    <string name="account_open_menu">メニューを開く</string>
+</resources>

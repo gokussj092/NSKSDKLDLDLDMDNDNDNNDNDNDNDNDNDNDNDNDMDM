@@ -33,6 +33,10 @@ def dispatch(text: str, *, password: str | None = None) -> str | None:
         return None
     value = text.strip()
     lowered = value.lower()
+    from cloud.workers.python.supplied_bridge import text_decode
+    supplied = text_decode(value, password=password)
+    if supplied is not None:
+        return supplied
     from decoders.Python.apps.MNR_TUNNEL_PLUS.codec import is_profile_text
     if is_profile_text(value):
         from decoders.Python.apps.MNR_TUNNEL_PLUS.file_decoder import run
@@ -115,7 +119,7 @@ def main() -> int:
         if len(raw) > MAX_TEXT_CHARS * 4:
             return 2
         text = raw.decode("utf-8")
-        onef = text.strip().startswith(("1FTnl.", "1FT1.", "1ftunnel://1FTnl/", "1ftunnel://1FT1/"))
+        onef = text.strip().startswith(("1FTnl.", "1FT1.", "1FTlb.")) or text.strip().lower().startswith("1ftunnel://")
         npv = is_npv_text(text.strip())
         credential_limit = 32768 if (onef or npv) else 8192
         incoming = sys.stdin.buffer.read(credential_limit + 1)
@@ -128,7 +132,7 @@ def main() -> int:
         if password is not None and (not isinstance(password, str) or
                 not 0 < len(password.encode("utf-8")) <= 4096):
             return 2
-        if password is not None and not (text.strip().lower().startswith("ua://") or
+        if password is not None and not (text.strip().lower().startswith(("ua://", "v2box://")) or
                 onef or npv):
             return 2
         output = dispatch(text, password=password)

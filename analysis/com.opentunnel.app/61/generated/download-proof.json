@@ -1,0 +1,23 @@
+{
+  "source": "https://api.roosterkid.com/api/opentunnel/servers/",
+  "status": 200,
+  "bytes": 1515,
+  "sha256": "e611ab5799ac5bdd16e1bb4dd70a144ce846ff4e619f965f754e81eebad918e0",
+  "rootKeys": [
+    "status",
+    "servers",
+    "count"
+  ],
+  "serverCount": 7,
+  "serverFieldNames": [
+    "city",
+    "country",
+    "countryCode",
+    "dnstt",
+    "hostname",
+    "premium",
+    "serverName",
+    "status"
+  ],
+  "accountGenerationCalled": false
+}

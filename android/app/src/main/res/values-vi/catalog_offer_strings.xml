@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="catalog_offer_title">Có danh mục mới</string>
+    <string name="catalog_offer_body">Danh mục phiên bản %1$d đã sẵn sàng. Hãy cập nhật để sử dụng thêm ứng dụng, phương thức và các cải tiến mới.</string>
+    <string name="catalog_offer_update">Cập nhật</string>
+    <string name="catalog_offer_later">Hủy</string>
+    <string name="catalog_postpone_title">Tiếp tục mà không cập nhật?</string>
+    <string name="catalog_postpone_body">Nếu hủy, các ứng dụng, phương thức và cải tiến mới sẽ chưa khả dụng cho đến khi cập nhật danh mục. Bạn có thể cập nhật sau trong Máy chủ VPN.</string>
+    <string name="catalog_postpone_confirm">Tiếp tục không cập nhật</string>
+    <string name="catalog_postpone_back">Quay lại</string>
+</resources>

@@ -1,0 +1,13 @@
+{
+ "body_b64": "PkBjjlXXbsjC6iUC5udO5gnnI+7ZWjxDAa80kLm9CKdRbrI3kQOoi6MQtCS0g00yYuWCZgbiZIxfB4sJnWDrvxdlPE/0H6Ok/CoH70RPnlNZ48SD",
+ "plaintext": {
+  "Networks": [],
+  "Servers": [
+   {
+    "Name": "TEST-SERVER"
+   }
+  ],
+  "Version": "1-test"
+ },
+ "tcx_text": "tcxtunnelplus://PkBjjlXXbsjC6iUC5udO5gnnI+7ZWjxDAa80kLm9CKdRbrI3kQOoi6MQtCS0g00yYuWCZgbiZIxfB4sJnWDrvxdlPE/0H6Ok/CoH70RPnlNZ48SD"
+}

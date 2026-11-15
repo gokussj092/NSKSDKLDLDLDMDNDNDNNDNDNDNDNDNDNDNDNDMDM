@@ -1,0 +1,8 @@
+{
+  "transport": "SIMULATED_HTTP_REAL_BYTES",
+  "status": "PASS",
+  "calls": 1,
+  "wholeWorkerContractEqual": true,
+  "version": "1114",
+  "servers": 84
+}

@@ -1,0 +1,235 @@
+{
+  "schema_version": 1,
+  "package_name": "com.boss.actunnelvpn",
+  "app_name": "Ac Tunnel VPN",
+  "version_name": "1.4",
+  "version_code": 14,
+  "observed_at": "2026-11-14/15",
+  "source_category": "APKPure XAPK (owner-supplied sample); live catalog download 2026-11-14",
+  "authorization_note": "Owner-supplied APK sample and live catalog download requested by the owner (Pedro) for SP-DECODE integration research. No service credentials, no attestation fabrication, no account access.",
+  "status": "VERIFIED",
+  "targets": [
+    {
+      "kind": "catalog",
+      "status": "VERIFIED",
+      "note": "VERIFIED_REAL: live download 2026-11-14 (HTTP 200, 989,804 B Base64 -> 742,352 B), 100% of fields decrypted."
+    },
+    {
+      "kind": "files",
+      "status": "VERIFIED",
+      "note": "VERIFIED_SYNTHETIC: sample.actun was sealed here with the app's exact method from a real live profile (Networks[0]); sample.js is the live catalog blob. No real exported .actun yet."
+    },
+    {
+      "kind": "text",
+      "status": "VERIFIED",
+      "note": "VERIFIED_SYNTHETIC: actunnelvpn:// format verified by construction and round-trip; no real link exported by the app yet."
+    },
+    {
+      "kind": "export",
+      "status": "PENDING",
+      "note": "PENDING: a real .actun / .js exported by the app on a phone is still missing."
+    }
+  ],
+  "inputs": [
+    {
+      "type": "operational_script_catalog",
+      "path": "catalogs/actunnel/Ac_Tunnel.py",
+      "sha256": "987b066ab3c012a49f5115c7cc8dbd26d8bdd474f82f9dceb32bc9843c32656c",
+      "note": "Operational catalog script (outside this repo until integration). Contains the format keys; never copied into this dossier."
+    },
+    {
+      "type": "operational_script_files",
+      "path": "catalogs/actunnel/Ac_Tunnel_archivos.py",
+      "sha256": "724eb3f3525d333ff402bd254b33e57d4920221aa75f190d8f2cbc6379b1183d",
+      "note": "Operational file/text script (outside this repo until integration). Contains the format keys; never copied into this dossier."
+    },
+    {
+      "type": "apk_base",
+      "path": "catalogs/actunnel/apk or xapk (base APK)",
+      "sha256": "4a537ae26ec1c60dfeba02e33e2f8502cd7f5a06c75887ca2bb768685e0c0b56 (base APK on disk)",
+      "note": "Base APK hash as computed on disk in the research workspace."
+    },
+    {
+      "type": "xapk",
+      "path": "catalogs/actunnel (XAPK)",
+      "sha256": "AC TUNNEL VPN 1.4 arm64-v8a XAPK (total_size 63,030,900 B per manifest.json; SHA-256 of the XAPK file itself not recorded in TESTING.md — see unresolved questions)",
+      "note": "XAPK identity as recorded in the source TESTING.md."
+    },
+    {
+      "type": "sample",
+      "path": "catalogs/actunnel/catalog_sample.b64",
+      "sha256": "f05c6837b16ed4101b46fd84118ce65b36174a47c53a428726876b89c08d83b7",
+      "note": "Sample kept in the research workspace (not copied into this dossier)."
+    },
+    {
+      "type": "sample",
+      "path": "catalogs/actunnel/sample.actun",
+      "sha256": "23ecfddb8504a8eed3f87199a0fe883c829d215794a481ba6352defdb976c63f",
+      "note": "Sample kept in the research workspace (not copied into this dossier)."
+    },
+    {
+      "type": "sample",
+      "path": "catalogs/actunnel/sample.js",
+      "sha256": "f05c6837b16ed4101b46fd84118ce65b36174a47c53a428726876b89c08d83b7",
+      "note": "Sample kept in the research workspace (not copied into this dossier)."
+    }
+  ],
+  "tooling": [
+    {
+      "name": "Python",
+      "version": "3.12.3",
+      "purpose": "Runtime of all operational and dossier scripts (stdlib only)."
+    },
+    {
+      "name": "jadx",
+      "version": "1.5.3",
+      "purpose": "DEX decompilation (documented in the source TESTING.md files)."
+    },
+    {
+      "name": "androguard",
+      "version": "4.1.4",
+      "purpose": "DEX/APK inspection helpers in work/ research scripts."
+    },
+    {
+      "name": "OpenSSL",
+      "version": "3.0.13",
+      "purpose": "Independent oracle for AES-CBC vectors in dossier tests."
+    },
+    {
+      "name": "PyCryptodome",
+      "version": "4.4.0",
+      "purpose": "Verification oracle only, in the research venv; NOT used by the operational scripts or the dossier tests."
+    },
+    {
+      "name": "argon2-cffi",
+      "version": "25.1.0",
+      "purpose": "Verification oracle only, in the research venv; NOT used by the operational scripts or the dossier tests."
+    },
+    {
+      "name": "Unicorn",
+      "version": "2.1.4",
+      "purpose": "Native emulation oracle during research (Ac Tunnel KDF, HTTP Tweak WyrLib); NOT used by the operational scripts."
+    },
+    {
+      "name": "paranoid-deobfuscator",
+      "version": "3.0.2",
+      "purpose": "Reference LSParanoid string deobfuscator (Ac Tunnel: 1983/1983 strings)."
+    }
+  ],
+  "code_paths": [
+    "decoders/Python/apps/AC_TUNNEL_VPN/server_catalog_decoder.py",
+    "decoders/Python/apps/AC_TUNNEL_VPN/file_decoder.py",
+    "decoders/Python/apps/AC_TUNNEL_VPN/codec.py"
+  ],
+  "evidence_refs": [
+    "Source research notes: ~/workspace/catalogs/NOTES.md (per-app section)",
+    "Source README: ~/workspace/catalogs/actunnel/README.md",
+    "Source TESTING.md: ~/workspace/catalogs/actunnel/TESTING.md",
+    "Dossier tests: tests/test_method.py (unittest, offline, synthetic vectors)",
+    "Dossier verifier: tools/verify.py (synthetic round-trip, no network, no secrets)"
+  ],
+  "limitations": [
+    "Real .actun file exported by the app (the included sample was sealed here with the same method).",
+    "Real .js/.rj file exported by the app (the sample is the live catalog blob, same format).",
+    "Re-verify when the server serves a new catalog version (today 22.242) or the app is updated (today 1.4).",
+    "SHA-256 of the full XAPK file was not recorded in TESTING.md; only the base-APK hash on disk is recorded here."
+  ],
+  "network_requirements": "Live catalog verification needs network access to the vendor's catalog host (exact request lives in the operational script; no download endpoint is reproduced in this dossier). All dossier tests run offline.",
+  "manual_steps": [
+    "Real .actun file exported by the app (the included sample was sealed here with the same method).",
+    "Real .js/.rj file exported by the app (the sample is the live catalog blob, same format).",
+    "Re-verify when the server serves a new catalog version (today 22.242) or the app is updated (today 1.4).",
+    "SHA-256 of the full XAPK file was not recorded in TESTING.md; only the base-APK hash on disk is recorded here."
+  ],
+  "unresolved_questions": [
+    "Real .actun file exported by the app (the included sample was sealed here with the same method).",
+    "Real .js/.rj file exported by the app (the sample is the live catalog blob, same format).",
+    "Re-verify when the server serves a new catalog version (today 22.242) or the app is updated (today 1.4).",
+    "SHA-256 of the full XAPK file was not recorded in TESTING.md; only the base-APK hash on disk is recorded here."
+  ],
+  "connection_authentication": {
+    "files_integrity_hmac": "NOT_OBSERVED",
+    "catalog_integrity_hmac": "NOT_OBSERVED",
+    "key_derivation_hmac": "NOT_OBSERVED",
+    "vpn_transport_hmac": "UNCONFIRMED",
+    "connection_authentication_hmac": "UNCONFIRMED",
+    "note": "Catalog/file integrity rests on AES PKCS#7 padding and the XXTEA length word, not on an HMAC. No HMAC was traced to a connection-authentication purpose. VPN transport and connection authentication were not researched for this build.",
+    "rule": "The mere presence of an HMAC library or a Mac.init call confirms nothing. No key values and no hook inputs/outputs are stored in this dossier."
+  },
+  "dependencies": [
+    {
+      "name": "Python (stdlib)",
+      "version": "3.12.3",
+      "source": "system",
+      "hash": "UNKNOWN (system runtime, no distribution hash recorded)",
+      "license": "PSF-2.0"
+    },
+    {
+      "name": "jadx",
+      "version": "1.5.3",
+      "source": "github.com/skylot/jadx",
+      "hash": "UNKNOWN (distribution hash not recorded in the source notes)",
+      "license": "Apache-2.0"
+    },
+    {
+      "name": "androguard",
+      "version": "4.1.4",
+      "source": "PyPI (research venv pip list)",
+      "hash": "UNKNOWN (wheel hash not recorded)",
+      "license": "Apache-2.0"
+    },
+    {
+      "name": "OpenSSL",
+      "version": "3.0.13",
+      "source": "system",
+      "hash": "UNKNOWN (system package, no distribution hash recorded)",
+      "license": "Apache-2.0"
+    },
+    {
+      "name": "PyCryptodome",
+      "version": "4.4.0",
+      "source": "PyPI (research venv pip list; oracle only)",
+      "hash": "UNKNOWN (wheel hash not recorded)",
+      "license": "BSD-2-Clause"
+    },
+    {
+      "name": "argon2-cffi",
+      "version": "25.1.0",
+      "source": "PyPI (research venv pip list; oracle only)",
+      "hash": "UNKNOWN (wheel hash not recorded)",
+      "license": "MIT"
+    },
+    {
+      "name": "Unicorn",
+      "version": "2.1.4",
+      "source": "PyPI (research venv pip list; emulation oracle only)",
+      "hash": "UNKNOWN (wheel hash not recorded)",
+      "license": "GPL-2.0"
+    },
+    {
+      "name": "paranoid-deobfuscator",
+      "version": "3.0.2",
+      "source": "reference tool (Ac Tunnel research)",
+      "hash": "UNKNOWN (distribution hash not recorded)",
+      "license": "UNKNOWN (not recorded — NEEDS_REVIEW)"
+    },
+    {
+      "name": "loguru",
+      "version": "0.8.0",
+      "source": "PyPI (research venv pip list; used by some work/ scripts)",
+      "hash": "UNKNOWN (wheel hash not recorded)",
+      "license": "MIT"
+    },
+    {
+      "name": "lxml",
+      "version": "6.1.3",
+      "source": "PyPI (research venv pip list; used by the ZIVPN strings script)",
+      "hash": "UNKNOWN (wheel hash not recorded)",
+      "license": "BSD-3-Clause"
+    }
+  ],
+  "dependencies_reference": {
+    "lockfile": "dependencies.lock.json",
+    "note": "See DEPENDENCIES.md. Versions marked UNKNOWN were not recorded in the source research notes; they are not invented here."
+  }
+}

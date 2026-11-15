@@ -1,0 +1,236 @@
+{
+  "schema_version": 1,
+  "package_name": "vpn.marvs.v2ray",
+  "app_name": "RH Tunnel Secure (Marvs V2Ray)",
+  "version_name": "RHV1",
+  "version_code": 22,
+  "observed_at": "2026-11-15",
+  "source_category": "public_store_xapk",
+  "authorization_note": "XAPK publico de APKPure; muestras aportadas por el propietario (archivo real de Pedro solo en WyrVPN) o sinteticas selladas con el metodo real. Sin credenciales de usuario ni perfiles reales en el expediente.",
+  "status": "PARTIAL",
+  "targets": [
+    {
+      "kind": "files",
+      "status": "VERIFIED_SYNTHETIC",
+      "detail": ".bbtun: muestra sintetica sellada con el metodo real; falta uno REAL exportado"
+    },
+    {
+      "kind": "text",
+      "status": "VERIFIED_SYNTHETIC",
+      "detail": "sin esquema propio; solo v2rayng://install-config/install-sub estandar"
+    },
+    {
+      "kind": "catalog",
+      "status": "VERIFIED",
+      "detail": "GET estatico, sobre Argon2id + AES-256-GCM con letra marcadora, Version 2.74 en vivo"
+    },
+    {
+      "kind": "export",
+      "status": "PENDING",
+      "detail": "sin compartir por codigo ni registro de dispositivo en RHV1"
+    }
+  ],
+  "inputs": [
+    {
+      "type": "xapk",
+      "name": "RH_Tunnel_Secure_RHV1_APKPure.xapk",
+      "size_bytes": 53253787,
+      "sha256": "cc060ad5cb0d5f78305d3afc566d579f7d675b56eb97fce112650b789b4adf47",
+      "note": "Hash verificado contra APKPure segun README/TESTING de origen; el .xapk no se guarda en Git."
+    },
+    {
+      "type": "operational_script",
+      "name": "Marvs_V2Ray.py",
+      "kind": "catalogo",
+      "sha256": "5edb448085be9395fad392980efe74d10e4d0cbecf898971a14ed60238c5e745",
+      "path": "~/workspace/catalogs/marvsv2ray/Marvs_V2Ray.py",
+      "note": "Script operativo (contiene las constantes de formato). No se copia a analysis/."
+    },
+    {
+      "type": "operational_script",
+      "name": "Marvs_V2Ray_archivos.py",
+      "kind": "archivos",
+      "sha256": "843412da7bdb32a85416d45afa8ee87a1269766783e070778010b244063fb81d",
+      "path": "~/workspace/catalogs/marvsv2ray/Marvs_V2Ray_archivos.py",
+      "note": "Script operativo (contiene las constantes de formato). No se copia a analysis/."
+    },
+    {
+      "type": "sample",
+      "name": "catalog_sample.b64",
+      "sha256": "7ddf17b2791e3b7454aeed5ace7efee079486a79bef745a0da0b3caf12be659d",
+      "note": "cuerpo en vivo 2026-11-15 (325.897 B, una linea Base64)"
+    },
+    {
+      "type": "sample",
+      "name": "muestra.bbtun",
+      "sha256": "4b0051af71eab8070f2be0f025cf25aa8ef2634decffd672c0c168755ab9e949",
+      "note": "perfil .bbtun SINTETICO sellado con el metodo de exportacion"
+    },
+    {
+      "type": "sample",
+      "name": "configfile.json",
+      "sha256": "39ceb516b67ce5e0b36f8436d9e38f0c56751d9896a0e1eedef33f712d1809c1",
+      "note": "asset incluido del APK (Version 1.24, 10 servidores, 32 redes)"
+    }
+  ],
+  "tooling": [
+    {
+      "name": "Python",
+      "version": "3.12.3",
+      "origin": "sistema (verificado en este entorno)",
+      "purpose": "Ejecucion de scripts y tests"
+    },
+    {
+      "name": "pycryptodome",
+      "version": "4.4.0",
+      "origin": "PyPI, venv ~/workspace/http-custom-update/venv (verificado)",
+      "purpose": "Via rapida AES (opcional; los scripts traen fallback puro)"
+    },
+    {
+      "name": "argon2-cffi",
+      "version": "25.1.0",
+      "origin": "PyPI, venv ~/workspace/http-custom-update/venv (verificado)",
+      "purpose": "Via rapida Argon2id para sobres de campo (opcional)"
+    },
+    {
+      "name": "jadx",
+      "version": "UNKNOWN",
+      "origin": "UNKNOWN — version no registrada en los logs de origen de estas 7 apps",
+      "purpose": "Descompilacion de DEX a Java"
+    },
+    {
+      "name": "apktool / androguard",
+      "version": "UNKNOWN",
+      "origin": "UNKNOWN — version no registrada en los logs de origen",
+      "purpose": "Extraccion de APK y lectura de manifest/assets"
+    },
+    {
+      "name": "capstone",
+      "version": "UNKNOWN",
+      "origin": "UNKNOWN — version no registrada en los logs de origen",
+      "purpose": "Desensamblado AArch64 de libgojni.so en los scripts de tools/"
+    },
+    {
+      "name": "curl",
+      "version": "UNKNOWN",
+      "origin": "sistema — version no registrada",
+      "purpose": "Descarga alternativa cuando el cliente HTTP de Python trunca el cuerpo"
+    }
+  ],
+  "code_paths": [
+    "decoders/Python/apps/Marvs_V2Ray/Marvs_V2Ray.py",
+    "decoders/Python/apps/Marvs_V2Ray/Marvs_V2Ray_archivos.py"
+  ],
+  "code_paths_note": "Las rutas decoders/Python/apps/<Proveedor>/ son las rutas PREVISTAS de integracion (Fase 2 del parche); a 2026-11-15 aun no estan integradas ni subidas. No se afirma integracion.",
+  "evidence_refs": [
+    "~/workspace/catalogs/marvsv2ray/README.md",
+    "~/workspace/catalogs/marvsv2ray/TESTING.md",
+    "~/workspace/catalogs/marvsv2ray/work/",
+    "analysis/vpn.marvs.v2ray/22/RESULTS.md",
+    "analysis/vpn.marvs.v2ray/22/tests/test_method.py"
+  ],
+  "limitations": [
+    "Falta un .bbtun REAL exportado por la app en un telefono para confirmar el decodificador de archivos de extremo a extremo (hoy solo muestra sintetica sellada con el mismo metodo).",
+    "Los iconos de red se descargan de una ruta de iconos del mismo dominio (no forma parte del catalogo).",
+    "En Play y APKPure figura como RH Tunnel Secure (antes Marvs V2Ray)."
+  ],
+  "network_requirements": [
+    "Descarga del catalogo en vivo: red HTTPS (el script operativo replica la peticion exacta de la app).",
+    "Los tests de este expediente NO necesitan red.",
+    "Regla SP-DECODE 2026-11-15: el JSON de resultado del catalogo lleva solo los datos del catalogo, todo descifrado; las APIs de descarga NO van en el resultado ni en este expediente (ver script operativo y supplied-integrations)."
+  ],
+  "manual_steps": [
+    "Obtener el XAPK publico de APKPure y verificar su SHA-256 contra lo publicado.",
+    "Ejecutar el --self-test del script operativo (ver REPRODUCE.md).",
+    "Para la confirmacion de extremo a extremo hace falta una muestra real exportada por la app en un telefono (ver unresolved_questions)."
+  ],
+  "unresolved_questions": [
+    ".bbtun real exportado por la app RHV1.",
+    "Re-verificar cuando el servidor sirva una version nueva del catalogo (hoy 2.74) o la app se actualice (hoy RHV1 / build 22)."
+  ],
+  "connection_authentication": {
+    "file_catalog_integrity": {
+      "status": "NOT_OBSERVED",
+      "note": "Integridad por tags AES-256-GCM (AEAD), no por HMAC."
+    },
+    "cryptographic_derivation": {
+      "status": "NOT_OBSERVED",
+      "note": "Derivacion por Argon2id; sin HMAC en la derivacion."
+    },
+    "vpn_transport": {
+      "status": "NOT_OBSERVED",
+      "note": "No se reviso el transporte VPN de esta app."
+    },
+    "connection_authentication": {
+      "status": "NOT_OBSERVED",
+      "note": "No se observo HMAC de autenticacion de conexion."
+    }
+  },
+  "dependencies": [
+    {
+      "name": "python",
+      "version": "3.12.3",
+      "source": "system",
+      "status": "VERIFIED",
+      "note": "python3 --version en este entorno"
+    },
+    {
+      "name": "pycryptodome",
+      "version": "4.4.0",
+      "source": "PyPI (venv)",
+      "status": "VERIFIED",
+      "note": "venv ~/workspace/http-custom-update/venv"
+    },
+    {
+      "name": "argon2-cffi",
+      "version": "25.1.0",
+      "source": "PyPI (venv)",
+      "status": "VERIFIED",
+      "note": "venv ~/workspace/http-custom-update/venv"
+    },
+    {
+      "name": "jadx",
+      "version": "UNKNOWN",
+      "source": "UNKNOWN",
+      "status": "NEEDS_REVIEW",
+      "note": "Version no registrada en los logs de origen"
+    },
+    {
+      "name": "apktool",
+      "version": "UNKNOWN",
+      "source": "UNKNOWN",
+      "status": "NEEDS_REVIEW",
+      "note": "Version no registrada en los logs de origen"
+    },
+    {
+      "name": "androguard",
+      "version": "UNKNOWN",
+      "source": "UNKNOWN",
+      "status": "NEEDS_REVIEW",
+      "note": "Version no registrada en los logs de origen"
+    },
+    {
+      "name": "capstone",
+      "version": "UNKNOWN",
+      "source": "UNKNOWN",
+      "status": "NEEDS_REVIEW",
+      "note": "Version no registrada en los logs de origen"
+    },
+    {
+      "name": "curl",
+      "version": "UNKNOWN",
+      "source": "system",
+      "status": "NEEDS_REVIEW",
+      "note": "Version no registrada"
+    }
+  ],
+  "dependencies_reference": {
+    "lockfile": "dependencies.lock.json",
+    "note": "Ver DEPENDENCIES.md. Versiones desconocidas marcadas UNKNOWN con motivo; nunca inventadas."
+  },
+  "code_paths_reference": [
+    "decoders/Python/apps/Marvs_V2Ray/Marvs_V2Ray.py",
+    "decoders/Python/apps/Marvs_V2Ray/Marvs_V2Ray_archivos.py",
+    "analysis/platform/supplied-integrations (registro; las APIs de descarga viven en el script operativo y en el registro, no en este expediente)"
+  ]
+}

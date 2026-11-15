@@ -1,0 +1,22 @@
+{
+  "package": "net.catnet.vpn",
+  "build": 29,
+  "sourceSha256": {
+    "net/xj/vpn/api/ApiClient.java": "05350d07295121d7209dc9e9f4b87b81e9658b3285147cd5da8cb824a9a789e1",
+    "net/xj/vpn/api/MobileApiService.java": "a5edf5c6557dbabc1fc7553b7cc47db3fac903f349f706397ffaccc74fec881b",
+    "defpackage/fe.java": "7e3cfb3d5cfde147bac1ae658608ce998421cb4d3b8b4c313c91377f167d675e"
+  },
+  "outcome": "PREFLIGHT_UNAVAILABLE",
+  "requests": [
+    {
+      "source": "preflight",
+      "httpStatus": 503,
+      "bytes": 91,
+      "sha256": "2f85832e31ca57711e6107af6b142363351ae516adb71c69afc643fac26be7f6",
+      "seconds": 8.997
+    }
+  ],
+  "sameCertificateAsBuild27": true,
+  "apkCodeExecuted": false,
+  "integrityBypassed": false
+}

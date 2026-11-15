@@ -1,0 +1,79 @@
+{
+  "schema_version": 1,
+  "package_name": "com.oneftunnel.app",
+  "version_code": 127,
+  "app_name": "1FTunnel",
+  "version_name": "0.7.1",
+  "status": "PARTIAL",
+  "source_category": "owner-supplied repository code",
+  "authorization_note": "Owner explicitly requested connection of all supplied methods on ci/unity-ads-online-qa; no service credentials or attestation fabrication authorized.",
+  "targets": [
+    {
+      "kind": "catalog",
+      "status": "USER_PROFILES_ONLY"
+    },
+    {
+      "kind": "files",
+      "extensions": [
+        "1ftnl"
+      ]
+    },
+    {
+      "kind": "text",
+      "prefixes": [
+        "1FTnl.",
+        "1FT1.",
+        "1ftunnel://1FTnl/",
+        "1ftunnel://1FT1/",
+        "1ftunnel://locked-v2/",
+        "1ftunnel://locked/",
+        "1FTlb.",
+        "1ftunnel://1FTlb/",
+        "1ftunnel://"
+      ]
+    }
+  ],
+  "inputs": [
+    {
+      "path": "decoders/Python/apps/OneFTunnel/1FTunnel.py",
+      "sha256": "d3d6762fb084da04b61da374d82f730f59e8dce04f7b387573dc32667d63f8f5"
+    }
+  ],
+  "tooling": [
+    {
+      "path": "analysis/platform/supplied-integrations/2026-11-14/tools/verify_provider.py",
+      "command": "python analysis/platform/supplied-integrations/2026-11-14/tools/verify_provider.py oneftunnel"
+    }
+  ],
+  "dependencies": [
+    {
+      "lockfile": "requirements.txt",
+      "purpose": "Existing pinned server codec dependencies"
+    },
+    {
+      "lockfile": "cloud/web/package-lock.json",
+      "purpose": "Existing pinned Node broker/build dependencies"
+    }
+  ],
+  "code_paths": [
+    "cloud/web/lib/server-vpn-catalog.mjs",
+    "cloud/web/lib/server-vpn-gateway.mjs",
+    "cloud/web/lib/server-vpn-provider.mjs",
+    "cloud/web/lib/supplied-integrations.mjs",
+    "cloud/workers/python/catalog_vpn_bridge.py",
+    "cloud/workers/python/supplied_bridge.py",
+    "decoders/Python/apps/OneFTunnel/1FTunnel.py"
+  ],
+  "limitations": [
+    "See supplied README and central per-app integration matrix. No new live service validation asserted."
+  ],
+  "connection_authentication": {
+    "status": "UNCONFIRMED",
+    "scope": "No new VPN connection-authentication research; existing methods only."
+  },
+  "integration_review": {
+    "scope": "Connection only; existing algorithm evidence/status preserved.",
+    "record": "analysis/platform/supplied-integrations/2026-11-14/MANIFEST.json",
+    "status": "PARTIAL"
+  }
+}

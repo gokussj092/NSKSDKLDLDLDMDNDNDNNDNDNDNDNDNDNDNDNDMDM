@@ -1,0 +1,211 @@
+{
+  "schema_version": 1,
+  "source": "scripts/apk_analysis/requirements.txt",
+  "source_branch": "feat/nuevas-integraciones",
+  "purpose": "F7-A0 direct dependency registry: no download, installation or license approval performed",
+  "packages": [
+    {
+      "id": "pypi:androguard",
+      "name": "androguard",
+      "version": "4.1.4",
+      "requirement": "androguard==4.1.4",
+      "ecosystem": "PyPI",
+      "purpose": "APK analysis toolkit; individual consumers and transitives require review",
+      "distribution_sha256": null,
+      "license": "Apache-2.0 (PyPI classifier Other/Proprietary)",
+      "review": "UPSTREAM_METADATA_REVIEWED_RUNTIME_AND_LEGAL_APPROVAL_PENDING",
+      "unattended_execution": "DISABLED",
+      "python_requires_reported": ">=3.9",
+      "notes": "14 Requires-Dist; full transitive lock missing",
+      "license_evidence_url": "https://pypi.org/project/androguard/4.1.4/",
+      "source_distribution": {
+        "filename": "androguard-4.1.4.tar.gz",
+        "sha256_reported_by_pypi": "1e117ee4574366a2d7376b8c858433ad724b0a29e4036d9f1a9fda4372180267",
+        "checksum_scope": "REFERENCE_SDIST_NOT_INSTALLED_WHEEL"
+      }
+    },
+    {
+      "id": "pypi:pillow",
+      "name": "Pillow",
+      "version": "13.0.0",
+      "requirement": "Pillow==13.0.0",
+      "ecosystem": "PyPI",
+      "purpose": "APK analysis toolkit; individual consumers and transitives require review",
+      "distribution_sha256": null,
+      "license": "MIT-CMU",
+      "review": "UPSTREAM_METADATA_REVIEWED_RUNTIME_AND_LEGAL_APPROVAL_PENDING",
+      "unattended_execution": "DISABLED",
+      "python_requires_reported": ">=3.11",
+      "notes": "README Python >=3.10 is insufficient for this pin",
+      "license_evidence_url": "https://pypi.org/project/Pillow/13.0.0/",
+      "source_distribution": {
+        "filename": "pillow-13.0.0.tar.gz",
+        "sha256_reported_by_pypi": "cdcd1ba258178f7356d74170c9a81ba4eab6a5d55748bc402a5a2a6fe6be3510",
+        "checksum_scope": "REFERENCE_SDIST_NOT_INSTALLED_WHEEL"
+      }
+    },
+    {
+      "id": "pypi:pyelftools",
+      "name": "pyelftools",
+      "version": "0.33",
+      "requirement": "pyelftools==0.33",
+      "ecosystem": "PyPI",
+      "purpose": "APK analysis toolkit; individual consumers and transitives require review",
+      "distribution_sha256": null,
+      "license": "Public Domain",
+      "review": "UPSTREAM_METADATA_REVIEWED_RUNTIME_AND_LEGAL_APPROVAL_PENDING",
+      "unattended_execution": "DISABLED",
+      "python_requires_reported": ">=3.10",
+      "notes": "Installed wheel/ABI to verify",
+      "license_evidence_url": "https://pypi.org/project/pyelftools/0.33/",
+      "source_distribution": {
+        "filename": "pyelftools-0.33.tar.gz",
+        "sha256_reported_by_pypi": "660d82dcbeb8e83d1702bd97f223f761625da06111c0cc988eac6b8ab0c1b61f",
+        "checksum_scope": "REFERENCE_SDIST_NOT_INSTALLED_WHEEL"
+      }
+    },
+    {
+      "id": "pypi:capstone",
+      "name": "capstone",
+      "version": "5.0.9",
+      "requirement": "capstone==5.0.9",
+      "ecosystem": "PyPI",
+      "purpose": "APK analysis toolkit; individual consumers and transitives require review",
+      "distribution_sha256": null,
+      "license": "BSD",
+      "review": "UPSTREAM_METADATA_REVIEWED_RUNTIME_AND_LEGAL_APPROVAL_PENDING",
+      "unattended_execution": "DISABLED",
+      "python_requires_reported": ">=3.8",
+      "notes": "Native wheel/ABI to verify",
+      "license_evidence_url": "https://pypi.org/project/capstone/5.0.9/",
+      "source_distribution": {
+        "filename": "capstone-5.0.9.tar.gz",
+        "sha256_reported_by_pypi": "0429af292ddc604d3c9344696807e281d5e728db029f00e6a4ea9e3bff1aac9e",
+        "checksum_scope": "REFERENCE_SDIST_NOT_INSTALLED_WHEEL"
+      }
+    },
+    {
+      "id": "pypi:unicorn",
+      "name": "unicorn",
+      "version": "2.1.4",
+      "requirement": "unicorn==2.1.4",
+      "ecosystem": "PyPI",
+      "purpose": "APK analysis toolkit; individual consumers and transitives require review",
+      "distribution_sha256": null,
+      "license": "CONFLICT: PyPI license field BSD; upstream description GPLv2",
+      "review": "UPSTREAM_METADATA_REVIEWED_RUNTIME_AND_LEGAL_APPROVAL_PENDING",
+      "unattended_execution": "DISABLED",
+      "python_requires_reported": "upstream metadata excludes obsolete Python 3.x",
+      "notes": "Review core/QEMU/binding license obligations before commercial automation",
+      "license_evidence_url": "https://pypi.org/project/unicorn/2.1.4/",
+      "source_distribution": {
+        "filename": "unicorn-2.1.4.tar.gz",
+        "sha256_reported_by_pypi": "00567a70e323f749b419cd86bee4f9115beab7ebba32194581c090cbb7c59cff",
+        "checksum_scope": "REFERENCE_SDIST_NOT_INSTALLED_WHEEL"
+      }
+    },
+    {
+      "id": "pypi:pycryptodome",
+      "name": "pycryptodome",
+      "version": "3.23.0",
+      "requirement": "pycryptodome==3.23.0",
+      "ecosystem": "PyPI",
+      "purpose": "APK analysis toolkit; individual consumers and transitives require review",
+      "distribution_sha256": null,
+      "license": "BSD / Public Domain",
+      "review": "UPSTREAM_METADATA_REVIEWED_RUNTIME_AND_LEGAL_APPROVAL_PENDING",
+      "unattended_execution": "DISABLED",
+      "python_requires_reported": "upstream metadata supports Python >=2.7 with exclusions",
+      "notes": "Installed wheel/ABI to verify",
+      "license_evidence_url": "https://pypi.org/project/pycryptodome/3.23.0/",
+      "source_distribution": {
+        "filename": "pycryptodome-3.23.0.tar.gz",
+        "sha256_reported_by_pypi": "447700a657182d60338bab09fdb27518f8856aecd80ae4c6bdddb67ff5da44ef",
+        "checksum_scope": "REFERENCE_SDIST_NOT_INSTALLED_WHEEL"
+      }
+    },
+    {
+      "id": "pypi:cairosvg",
+      "name": "CairoSVG",
+      "version": "2.9.1",
+      "requirement": "CairoSVG==2.9.1",
+      "ecosystem": "PyPI",
+      "purpose": "APK analysis toolkit; individual consumers and transitives require review",
+      "distribution_sha256": null,
+      "license": "LGPL-3.0-or-later",
+      "review": "UPSTREAM_METADATA_REVIEWED_RUNTIME_AND_LEGAL_APPROVAL_PENDING",
+      "unattended_execution": "DISABLED",
+      "python_requires_reported": ">=3.10",
+      "notes": "Review LGPL obligations and Cairo native dependency",
+      "license_evidence_url": "https://pypi.org/project/CairoSVG/2.9.1/",
+      "source_distribution": {
+        "filename": "cairosvg-2.9.1.tar.gz",
+        "sha256_reported_by_pypi": "861bc28ad97ce4f537d50eb3d6ee97a7afcccec9c61ac25c4e7d073fe409aec7",
+        "checksum_scope": "REFERENCE_SDIST_NOT_INSTALLED_WHEEL"
+      }
+    }
+  ],
+  "other_toolchains": [
+    {
+      "name": "JADX",
+      "version": "1.5.6",
+      "origin": "https://github.com/skylot/jadx/releases/tag/v1.5.6",
+      "checksum_source": "scripts/apk_analysis/decompile.py",
+      "license": "Apache-2.0 (upstream tagged LICENSE)",
+      "review": "NEEDS_REVIEW",
+      "unattended_execution": "DISABLED",
+      "zip_sha256_in_decompile_py": "545ea2be9c242511bc145755cf4bda2485ade42966e096f8b4d3da2a230e8974",
+      "jar_sha256_in_decompile_py": "fe3e12c45acf75f92369685fd02d1d7a7323385dc725680a9b98a0dac0ea554b",
+      "download_rechecked_this_session": false
+    },
+    {
+      "name": "Java JDK",
+      "version": "17+ (documented minimum)",
+      "origin": "scripts/apk_analysis/README.md",
+      "license": "DISTRIBUTION_DEPENDENT",
+      "review": "NEEDS_REVIEW",
+      "unattended_execution": "DISABLED"
+    },
+    {
+      "name": "Frida",
+      "version": "17.24.3",
+      "origin": "scripts/apk_analysis/ha_runtime_capture.py",
+      "review": "PENDING_LICENSE_AND_RUNTIME",
+      "unattended_execution": "DISABLED"
+    },
+    {
+      "name": "frida-tools",
+      "version": "14.11.0",
+      "origin": "scripts/apk_analysis/ha_runtime_capture.py",
+      "review": "PENDING_LICENSE_AND_RUNTIME",
+      "unattended_execution": "DISABLED"
+    },
+    {
+      "name": "libsodium/Cairo native",
+      "version": "ENVIRONMENT_DEPENDENT",
+      "origin": "scripts/apk_analysis/RESTORE.md; CairoSVG upstream",
+      "review": "PENDING_PACKAGE_HASH_ABI_LICENSE",
+      "unattended_execution": "DISABLED"
+    },
+    {
+      "name": "ADB/Android SDK/Node",
+      "version": "ENVIRONMENT_DEPENDENT",
+      "origin": "scripts/apk_analysis/RESTORE.md",
+      "review": "PENDING_CONDITIONAL_SCOPE",
+      "unattended_execution": "DISABLED"
+    }
+  ],
+  "transitive_dependencies": "NOT_LOCKED: Androguard 4.1.4 declares 14 Requires-Dist; exact transitives/wheels/ABI not verified",
+  "runtime_checks": "EXISTING_SCRIPTS_UNCHANGED; NO_NEW_INSTALL_OR_METHOD_EXECUTION",
+  "p01_review": {
+    "date": "2026-11-06",
+    "status": "PARTIAL_METADATA_ONLY",
+    "source_script_blobs_unchanged": 63,
+    "reference_sdist_sha256_count": 7,
+    "installed_artifact_hash_count": 0,
+    "transitive_lock_complete": false,
+    "license_approval": false,
+    "automated_worker_approval": false,
+    "report": "docs/FASE_7_A0_P01_AUDITORIA_DEPENDENCIAS_2026_11_06.md"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "package": "com.khamvpn.net",
+  "versionName": "24",
+  "versionCode": 24,
+  "apkBytes": 6905767,
+  "apkSha256": "a9834982efb6d635bd8154c729a407debac50de7062077f98c5e45ef916469b9",
+  "distributionBytes": 32001938,
+  "distributionSha256": "eb39a9945879746809c4b4d807dbd0189985359cc2cd87041379983a73a87a3e",
+  "certificateSha256": [
+    "34eab6d53e94fd963f12c73f19f156cad48cf7c53cb6b65a40ea65aa575c476d"
+  ],
+  "cryptographicApkSignatureVerified": false,
+  "apkCodeExecuted": false
+}

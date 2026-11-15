@@ -1,0 +1,172 @@
+{
+  "schema_version": "1.0",
+  "package_name": "org.tcx.tunnel.plus",
+  "app_name": "TCx Tunnel Plus",
+  "version_name": "1.0.15",
+  "version_code": 115,
+  "observed_at": "2026-11-14/15",
+  "source_category": "tienda (APKPure, version de Google Play) + descarga en vivo con el metodo del script operativo",
+  "authorization_note": "APK de espejo publico (APKPure) de la version publica de Play; muestras de catalogo descargadas en vivo con el metodo propio de la app; sin cuentas ni datos de usuarios. Sin APK ni perfiles reales en este expediente.",
+  "status": "PARTIAL",
+  "targets": [
+    {
+      "id": "catalog",
+      "kind": "catalog",
+      "status": "FAILED",
+      "detail": "MUERTO: HTTP 404 (14 B) en vivo, re-verificado; el repo GitHub del desarrollador esta eliminado. Solo vuelve si el desarrollador lo republica o aparece un classes5.dex/a.rlb de un telefono."
+    },
+    {
+      "id": "files",
+      "kind": "files",
+      "status": "VERIFIED_SYNTHETIC",
+      "detail": ".tcx = texto tcxtunnelplus://<cifrado modo 0> del JSON de perfil. Muestra SINTETICA sample.tcx abre con el script de archivos y con renz_decrypt nativo bajo Unicorn (devuelve el JSON exacto del perfil de prueba). custom_payload.json se escribe CIFRADO (modo 0 sin prefijo). Sin .tcx REAL ni custom_payload.json real del telefono."
+    },
+    {
+      "id": "text",
+      "kind": "text",
+      "status": "VERIFIED_SYNTHETIC",
+      "detail": "tcxtunnelplus:// (pegado dentro de la app; sin intent-filter para el esquema en el manifest). La muestra sintetica abre; sin enlace real."
+    },
+    {
+      "id": "export",
+      "kind": "export",
+      "status": "NOT_APPLICABLE",
+      "detail": "Sin share por clave ni nube documentada para esta app."
+    }
+  ],
+  "inputs": [
+    {
+      "name": "TCx-Tunnel-Plus_1.0.15_armeabi-v7a.xapk",
+      "type": "xapk",
+      "bytes": 62691144,
+      "sha256": "7be7146f650429d40ad6a2f11f251d67bb25e4852a3016dcf1a8cd50fd5033bc",
+      "source": "APKPure, version de Google Play 1.0.15. Unica variante para esta version (no hay arm64-v8a)"
+    },
+    {
+      "name": "catalog_sample.b64 (vector known-answer SINTETICO)",
+      "type": "catalog_vector",
+      "sha256": "9f7630902da2ffe1d71121125ea860a7129b11c9f004b68a263949fe24eb8ce3",
+      "source": "Generado con el pipeline validado (AES-128-CBC dentro, XXTEA fuera)"
+    },
+    {
+      "name": "sample.tcx (SINTETICO)",
+      "sha256": "f2c08a06d63407ea503d386c5b2cc6f4d45d8308dc2c02c582935292853bb411",
+      "source": "Perfil de prueba cifrado; abre con renz_decrypt nativo bajo Unicorn"
+    },
+    {
+      "name": "catalog_live_raw.txt",
+      "type": "probe",
+      "bytes": 14,
+      "sha256": "d5558cd4… (prefijo registrado en NOTES.md; valor completo no registrado)",
+      "source": "Respuesta viva 404 (2026-11-14)"
+    }
+  ],
+  "tooling": [
+    {
+      "name": "Python",
+      "version": "3.12.3 (system)",
+      "purpose": "stdlib only in operational scripts"
+    },
+    {
+      "name": "jadx",
+      "version": "1.5.3",
+      "purpose": "decompilation (2nd pass on classes3.dex only, 99%, 3 errors)"
+    },
+    {
+      "name": "paranoid-deobfuscator",
+      "version": "3.0.2",
+      "purpose": "LSParanoid string resolution (1953/1953 strings)"
+    },
+    {
+      "name": "Unicorn",
+      "version": "UNKNOWN (version not recorded)",
+      "purpose": "emulation of renz_decrypt in libovpn3.so; PyCryptodome as AES oracle (UNKNOWN version)"
+    }
+  ],
+  "dependencies": [
+    {
+      "name": "Python",
+      "version": "3.12.3 (system)",
+      "status": "RECORDED",
+      "note": "stdlib only in operational scripts"
+    },
+    {
+      "name": "jadx",
+      "version": "1.5.3",
+      "status": "RECORDED",
+      "note": "decompilation (2nd pass on classes3.dex only, 99%, 3 errors)"
+    },
+    {
+      "name": "paranoid-deobfuscator",
+      "version": "3.0.2",
+      "status": "RECORDED",
+      "note": "LSParanoid string resolution (1953/1953 strings)"
+    },
+    {
+      "name": "Unicorn",
+      "version": "UNKNOWN",
+      "status": "NEEDS_REVIEW",
+      "note": "emulation of renz_decrypt in libovpn3.so; PyCryptodome as AES oracle (UNKNOWN version)"
+    }
+  ],
+  "code_paths": [
+    "decoders/Python/apps/TCx_Tunnel/TCx_Tunnel.py",
+    "decoders/Python/apps/TCx_Tunnel/TCx_Tunnel_archivos.py"
+  ],
+  "evidence_refs": [
+    "RESULTS.md (404 en vivo, vector sintetico, negativas)",
+    "tests/test_method.py (XXTEA + AES-128-CBC sinteticos + prefijo tcxtunnelplus://, sin red)",
+    "tools/verify.py (verificador sintetico) + tools/resolve_jn.py (deofuscador LSParanoid, 1953/1953 strings)",
+    "~/workspace/catalogs/tcx/catalog_sample.b64 + catalog_sample_decrypted.json (SHA-256 a9a8f272…)",
+    "~/workspace/catalogs/tcx/sample.tcx (sintetico)",
+    "~/workspace/catalogs/tcx/catalog_live_raw.txt (404)"
+  ],
+  "limitations": [
+    "Catalogo muerto: repo GitHub eliminado; sin fuente viva.",
+    "Sin .tcx REAL ni custom_payload.json real del telefono (nombres exactos de campos del perfil pendientes de confirmar).",
+    "La semilla se fija en runtime desde la firma del APK (getSignKey): el catalogo/.tcx solo abre en la app ORIGINAL firmada (anti-tamper).",
+    "jadx: primera pasada murio al 56% (OOM); segunda solo sobre classes3.dex termino al 99% con 3 errores."
+  ],
+  "network_requirements": [
+    "Descarga del catalogo: repo GitHub eliminado -> HTTP 404 en vivo (exit 2 del script operativo). Sin red util hoy."
+  ],
+  "manual_steps": [
+    "Para un .tcx real: exportar desde la app en un telefono (o copiar un tcxtunnelplus:// real) y pasarlo al script de archivos.",
+    "Para un custom_payload.json real: extraerlo del telefono."
+  ],
+  "unresolved_questions": [
+    "¿Republicara el desarrollador el catalogo (nuevo repo) o aparecera un classes5.dex/a.rlb con la fuente?",
+    "Nombres exactos de campos de un perfil .tcx real."
+  ],
+  "connection_authentication": {
+    "catalog_file_integrity": {
+      "status": "NOT_OBSERVED",
+      "detail": "Body = Base64(XXTEA(AES-128-CBC(JSON))) sin MAC/HMAC observado; la integridad se comprueba por parseo JSON y padding PKCS#7."
+    },
+    "catalog_download_auth": {
+      "status": "NOT_OBSERVED",
+      "detail": "Catalogo muerto (404); no se observo autenticacion de descarga."
+    },
+    "crypto_derivation": {
+      "status": "NOT_OBSERVED",
+      "detail": "Clave AES = SHA-256(semilla)[:16]; semilla = SHA-256 hex del certificado de firma del APK. No se observo HMAC en la derivacion."
+    },
+    "vpn_transport": {
+      "status": "NOT_OBSERVED",
+      "detail": "No se observo una conexion VPN en vivo ni MAC del transporte."
+    },
+    "connection_auth": {
+      "status": "NOT_OBSERVED",
+      "detail": "No se trazo autenticacion de conexion. El anti-tamper por firma del APK no es autenticacion de conexion VPN."
+    }
+  },
+  "dependencies_reference": {
+    "lockfile": "dependencies.lock.json",
+    "inventory": "DEPENDENCIES.md"
+  },
+  "code_paths_reference": {
+    "catalog_decoder": "decoders/Python/apps/TCx_Tunnel/TCx_Tunnel.py (pendiente de integracion en este parche; operativo en ~/workspace/catalogs/tcx/TCx_Tunnel.py, SHA-256 13651e96745a6ed5773d1a739f5bbcf0e1bdf0dd22e5faf6ca06de6f52594415)",
+    "file_decoder": "decoders/Python/apps/TCx_Tunnel/TCx_Tunnel_archivos.py (pendiente de integracion; operativo en ~/workspace/catalogs/tcx/TCx_Tunnel_archivos.py, SHA-256 cf0c039ca83a72fbfeacf389f0f824430f86667c6a813f0e08b207c53aadbf3a)",
+    "work_notes": "~/workspace/catalogs/tcx/work/"
+  }
+}

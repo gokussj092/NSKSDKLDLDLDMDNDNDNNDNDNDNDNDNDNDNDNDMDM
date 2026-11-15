@@ -1,0 +1,24 @@
+{
+  "id": "rovpn",
+  "name": "RoVPN",
+  "package": "com.mobileapp.rovpn",
+  "versionName": "7.6",
+  "versionCode": 76,
+  "engine": "python",
+  "entrypoint": "RoVPN.py",
+  "extensions": [],
+  "textPrefixes": [],
+  "catalog": {
+    "entrypoint": "RoVPN.py",
+    "method": "Google Tink AesGcmHkdfStreaming: PBKDF2-HmacSHA256 100000 iters + HKDF-SHA256 + AES-256-GCM segments; ED: fields are Base32 of cleartext",
+    "url": "https://iovpn.me/app/config/rooojshsh727272h3n.php",
+    "liveVersion": "46.1",
+    "servers": 12,
+    "networks": 23,
+    "payloads": 23,
+    "status": "live_verified",
+    "notes": "Live body byte-identical to V2OVPN (same endpoint, same key_secured, same catalog). Endpoint is chunked without Content-Length; script uses http.client and retries (no Range)."
+  },
+  "filesEntrypoint": "RoVPN_archivos.py",
+  "filesNote": "profile.json legacy (Base64 -> modified XXTEA delta 0x2E0BA747) supported. profile.enc is Tink + Android Keystore master key: NOT openable offline, reported as PROFILE_ENC_KEYSTORE."
+}

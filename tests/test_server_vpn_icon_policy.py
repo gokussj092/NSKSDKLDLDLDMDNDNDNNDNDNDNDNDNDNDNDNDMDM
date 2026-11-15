@@ -30,7 +30,9 @@ class ServerVpnIconPolicyTests(unittest.TestCase):
         self.assertIn("ServerVpnIconPolicy.sampleSize", source)
         self.assertIn("ServerVpnIconPolicy.isPng(bytes)", source)
         self.assertIn("digest(bytes)!=checksum", source)
-        self.assertIn('candidates.add("icon-$id" to bytes)', source)
+        self.assertIn("val cacheKey=iconCacheKey(checksum)", source)
+        self.assertIn("candidates.add(cacheKey to bytes)", source)
+        self.assertIn('vault.read("icon-$id")', source)
         self.assertIn("ServerVpnIconPolicy.CACHE_RECORD_BYTES", cache)
         self.assertIn("kMaxReplyBytes = 6 * 1024 * 1024", transport)
 

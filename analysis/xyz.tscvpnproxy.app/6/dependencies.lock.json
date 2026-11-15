@@ -1,0 +1,25 @@
+{
+  "lockfile_version": 1,
+  "package": "xyz.tscvpnproxy.app",
+  "version_code": 6,
+  "dependencies": [
+    {
+      "name": "Python",
+      "version": "3.12.3 (system)",
+      "status": "RECORDED",
+      "note": "stdlib only in operational scripts"
+    },
+    {
+      "name": "Unicorn",
+      "version": "UNKNOWN",
+      "status": "NEEDS_REVIEW",
+      "note": "emulation oracle of libisvcrypto.so nativeDecrypt/nativeEncrypt/nativeSignProof"
+    },
+    {
+      "name": "PyCryptodome",
+      "version": "UNKNOWN",
+      "status": "NEEDS_REVIEW",
+      "note": "oracle for cross-checking the pure-Python AES-GCM; NOT used by the operational scripts"
+    }
+  ]
+}

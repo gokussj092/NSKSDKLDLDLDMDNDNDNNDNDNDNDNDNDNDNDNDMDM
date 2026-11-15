@@ -1,305 +1,279 @@
 <div align="center">
 
-> **Android migration Phases A–G:** all **239 file suffixes** have Kotlin offline decoder routes (61 legacy + 178 new) and text protocol handlers have native coverage. Original exporter-version compatibility remains **experimental and not independently certified**. Phase H targets **1.0.6 (versionCode 17)** for signed QA; **public stable and preview publication are NO-GO pending real-exporter/device evidence**. [Phase H audit](docs/android/PHASE_H_PRODUCTION_AUDIT.md) · [Phases B–G](docs/android/PHASE_G_TEXT_PROTOCOLS.md).
+<img src="docs/assets/spdecode-readme-banner.svg" alt="SP-DECODE — Advanced Configuration Processing Platform" width="100%">
 
-> **Android v1.0.7 production patch (owner-approved, CI/signature gated):** HTTP Injector (`.ehi`) now preserves non-encrypted/unknown fields and multiline HTTP payloads in the full JSON view. 239 native file routes and offline text protocols remain. The owner reports manually validating the other formats; current-vendor exhaustive certification remains incomplete. Stable release approval applies **only to 1.0.7 after exact-main Python/Android success and permanent keystore signing**. [Evidence and limits](docs/android/EHI_COMPLETE_JSON_1_0_7.md).
+# SP-DECODE
 
-> **Android v1.0.8 stable production update (OWNER-GO, exact-main CI/signature gated):** NPVS v5 compact app-key decoding now has Python/Kotlin parity for nested `npvs1:` fields and produces fully unwrapped JSON after cryptographic authentication. The existing HTTP Injector v1.0.7 complete JSON fix is preserved. NPVS v1 and recipient-locked v6 remain outside this decoder's coverage; independent testing of every current vendor exporter is not claimed. [Release evidence and limits](docs/android/NPVS_V5_ANDROID_1_0_8_RELEASE.md).\n\n# SP-DECODE
+**Secure configuration processing · Native Android applications · Centralized cloud services**
 
-**Modular Telegram configuration decoder powered by Python, Node.js and PHP.**
+[![Android Online](https://img.shields.io/badge/Online-1.1.28-16a37c?style=flat-square&logo=android&logoColor=white)](https://spdecode.xyz)
+![Android](https://img.shields.io/badge/Android-Native-3DDC84?style=flat-square&logo=android&logoColor=white)
+![Transport](https://img.shields.io/badge/Transport-HPKE%20V2-167D65?style=flat-square)
+![Infrastructure](https://img.shields.io/badge/Infrastructure-Docker-2496ED?style=flat-square&logo=docker&logoColor=white)
 
-A structured, extensible decoder platform for processing supported configuration files and text protocols through a centralized Telegram bot.
-
-<p>
-  <img src="https://img.shields.io/badge/Python-3.11%2B-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python 3.11+" />
-  <img src="https://img.shields.io/badge/Node.js-20%2B-339933?style=for-the-badge&logo=nodedotjs&logoColor=white" alt="Node.js 20+" />
-  <img src="https://img.shields.io/badge/PHP-8.1%2B-777BB4?style=for-the-badge&logo=php&logoColor=white" alt="PHP 8.1+" />
-  <img src="https://img.shields.io/badge/Telegram-Bot-26A5E4?style=for-the-badge&logo=telegram&logoColor=white" alt="Telegram Bot" />
-</p>
-
-<p>
-  <a href="https://github.com/Gh0stDeveloper"><img src="https://img.shields.io/badge/GitHub-Gh0stDeveloper-181717?style=flat-square&logo=github" alt="GitHub" /></a>
-  <a href="https://t.me/GhostDeve"><img src="https://img.shields.io/badge/Telegram-Channel-26A5E4?style=flat-square&logo=telegram&logoColor=white" alt="Telegram channel" /></a>
-  <a href="https://t.me/CodeBreakersHub"><img src="https://img.shields.io/badge/Telegram-Community-26A5E4?style=flat-square&logo=telegram&logoColor=white" alt="Telegram community" /></a>
-</p>
+[Official website](https://spdecode.xyz) · [Telegram channel](https://t.me/GhostDeve) · [Community](https://t.me/CodeBreakersHub) · [Documentation](#documentation)
 
 </div>
-
-> [!WARNING]
-> **Maintenance notice:** not every legacy decoder has been fully revalidated against the latest versions of the applications it targets. Some formats may fail or behave differently depending on the exporting app version. If you find a broken decoder, please report it in the [Telegram community](https://t.me/CodeBreakersHub), the [Telegram channel](https://t.me/GhostDeve), or directly to [@Gh0stDeveloper](https://t.me/Gh0stDeveloper).
-
----
-
-## SP-DECODE Android — Offline application (functional alpha)
-
-> [!NOTE]
-> **Android 1.0.3-rc.1 candidate** adds offline LinkLayer VPN `.lnk` VER6 support (60 Go gob fields), alongside the existing 59 formats, and an on-device localized one-time **What's New** notice after updating. Real Python export tested by Codex; Android parity must pass CI and a real device before claiming external exporter certification. Production signing uses the permanent GitHub Secrets keystore and public prereleases; stable release QA remains **NO-GO**. The Android app requires no Telegram, login, backend or Internet access. Download the APK artifact from the latest successful Android validation workflow.
-
-- [Official Android documentation and design references](docs/android/README.md)
-- [Visual identity, UI tokens and SVG mockups](docs/android/DESIGN_SYSTEM.md)
-- [Offline UI localization (Spanish, English, Brazilian Portuguese, Arabic RTL) — decoder output never translated](docs/android/LOCALIZATION.md)
-- [Architecture](docs/android/ARCHITECTURE.md) · [Decoder compatibility matrix](docs/android/DECODER_MATRIX.md)
-- [Phased roadmap](docs/android/ROADMAP.md) · [Cross-chat handoff](docs/android/HANDOFF.md)
-- [Decoder A.2 source audit (48 scripts)](docs/android/DECODER_AUDIT.md) · [Golden fixture policy](docs/android/A2_FIXTURE_POLICY.md)
-- [A.2.3 synthetic Linux golden corpus — sixty exact cases, all fifty-nine registered suffixes](docs/android/A23_GOLDEN_CORPUS.md)
-- [A.2.4 Android parity and decoder security: experimental Kotlin host, CI emulator and risk matrix](docs/android/A24_PARITY_SECURITY.md)
-
-The Android implementation follows the user's approved AMOLED reference: shield header, centered import panel, **all ordered decoded fields including nested JSON**, copy/export as JSON, human-readable structured output or exact original text, selectable UI languages (es/en/pt-BR/ar), credits and collaboration links, and bottom navigation.
 
 ---
 
 ## Overview
 
-SP-DECODE is a modular Telegram bot designed to process and decode configuration formats used by multiple tunneling, proxy and VPN-related applications.
+SP-DECODE is an integrated platform for processing authorized VPN, proxy and tunneling configurations. It combines native Android applications, a centralized decoding infrastructure, dynamic provider catalogs, account management and administrative tools.
 
-The project separates configuration, authorization, decoder registration, runtime execution and Telegram handlers into independent modules. Most file decoders are registered through `decoders.json`; the bot-only Ultra/Sandok and RENZ/7NET families are registered through their standalone `decoders/Python/ultra.py` and `decoders/Python/renz.py` metadata; the bot may run decoders through **Python**, **Node.js** or **PHP**, allowing new formats to be added without turning the main bot entry point into a monolithic script.
+The platform supports structured configuration files, text protocols and provider catalogs through dedicated, version-aware processing engines. Results can be inspected, copied or exported in supported formats without requiring a complete list of file extensions in this README.
 
-### Core features
+## The SP-DECODE ecosystem
 
-- **239 registered bot file extensions/suffixes**: 61 original, 41 Ultra/Sandok, 16 RENZ/7NET, 27 modular aliases, 13 independent-engine aliases and 81 generic AES-GCM/PBKDF2 + DES-ECB aliases. Android Phases A–G implement native routes for all 239 registered suffixes; current vendor-exporter version coverage remains experimental pending Phase H real-world QA.
-- Python, Node.js and PHP decoder runtimes.
-- Centralized decoder registry through `decoders.json`.
-- Telegram file processing with automatic format detection.
-- Text protocol decoding for supported URI/configuration schemes.
-- Multipart reconstruction for large SSC Custom and Dark Tunnel payloads.
-- Centralized authorization for administrators and allowed groups.
-- Configurable file-size, decoder timeout and text-session limits.
-- Temporary input/output cleanup after processing.
-- Validation tooling and automated unit tests.
-- Local configuration with optional environment-variable token injection.
+| Component | Description |
+| --- | --- |
+| **SP-DECODE Online** | Cloud-powered Android client for configuration processing, VPN catalogs, accounts and support. |
+| **SP-DECODE Offline** | Independent Android edition for supported on-device processing without advertising. |
+| **SP-DECODE Admin** | Native Android administration console for authorized operators and support staff. |
+| **SP-DECODE Cloud** | Centralized processing, catalog delivery, security, accounts and service infrastructure. |
+| **SP-DECODE Web** | Official website, account access, digital products and service information. |
+| **SP-DECODE Bot** | Independent Telegram integration for supported files and text protocols. |
+
+### SP-DECODE Online
+
+**Public version: 1.1.28 (build 43).**
+
+- Server-side processing of supported files and text configurations.
+- Dynamic VPN and server catalogs, including version notifications and favorites.
+- Structured JSON results with copy, export and history features.
+- Google sign-in, account management and secure session handling.
+- Integrated support conversations, account activity and notifications.
+- Digital store, purchases, receipts, licenses and commercial access.
+- Unity Ads integration and advertising privacy controls in enabled builds.
+- Multilingual interface and AMOLED visual identity.
+
+[Visit the official website](https://spdecode.xyz) for public downloads and information.
+
+### SP-DECODE Offline
+
+A separate edition designed for local processing of supported configurations.
+
+- Native C++ processing with Android integration.
+- Local history, structured results and JSON export.
+- Customizable appearance and multilingual interface.
+- No advertising.
+
+Compatibility and distribution depend on the Offline edition's own release and licensing requirements. Its processing capabilities are not assumed to match the Online catalog.
+
+### SP-DECODE Admin
+
+An independent native application connected to the administrative backend. Access is restricted to authorized accounts and their assigned permissions.
+
+| Area | Capabilities |
+| --- | --- |
+| Users and access | User search, account details, staff management, custom roles and permissions. |
+| Support | Authorized conversations, replies, assignments and ticket management. |
+| Commerce | Products, orders, transactions, licenses, API access, gift codes and credit history. |
+| Catalogs and notices | Provider controls, catalog notifications and service announcements. |
+| Operations | Service status, audit records, maintenance and cleanup requests. |
+| Security | Authenticated sessions, staff password management and remote sign-out. |
+
+The release build uses native C++/JNI networking, encrypted session storage, R8 and the existing permanent signing identity. Deployment requires a compatible backend and valid administrative credentials.
+
+### SP-DECODE Cloud and Web
+
+The centralized infrastructure provides:
+
+- Private processing workers and modular Python, Node.js and PHP engines.
+- Dynamic catalog delivery and provider availability controls.
+- Account authentication and role-based administrative access.
+- PostgreSQL for persistent commercial and account records.
+- Redis for caching, sessions and operational state.
+- Digital products, commercial API access and payment-provider integrations.
+- Service notices, support workflows, monitoring and deployment controls.
+
+Commercial services depend on configured providers, entitlement rules and production enablement. APK analysis is not presented as an available public Online feature.
+
+### SP-DECODE Bot
+
+The Telegram integration remains available as an independent component for supported configuration files, text protocols, access-controlled processing and multipart sessions. It has its own installation and service commands.
 
 ---
+
+## Security and infrastructure
+
+| Layer | Design |
+| --- | --- |
+| Transport | HTTPS/TLS and HPKE V2 (X25519) for the Online processing transport. |
+| Android | Native C++/JNI boundaries, Android Keystore and encrypted session storage where applicable. |
+| Access | Server-side authorization, scoped roles, session expiration and revocation. |
+| Integrity | Device attestation and integrity controls for protected Online operations. |
+| Release | R8 optimization and permanent Android signing for configured release builds. |
+| Infrastructure | Private workers, restricted services, controlled deployment and persistent data. |
+
+Operational secrets, signing keys and production credentials must remain outside version control. Only process configurations that you own or are explicitly authorized to inspect.
+
+## Architecture
+
+```mermaid
+flowchart TD
+    O["SP-DECODE Online"]
+    A["SP-DECODE Admin"]
+    W["SP-DECODE Web"]
+    G["HTTPS / Nginx"]
+    C["SP-DECODE Cloud / Next.js"]
+    D["Private decoder workers"]
+    P[("PostgreSQL")]
+    R[("Redis")]
+    F["SP-DECODE Offline"]
+    L["On-device processing"]
+    B["Telegram bot"]
+    E["Independent decoder runtime"]
+
+    O --> G
+    A --> G
+    W --> G
+    G --> C
+    C --> D
+    C --> P
+    C --> R
+    F --> L
+    B --> E
+```
+
+Online processing, administrative operations, offline processing and the Telegram integration have distinct execution and access boundaries.
 
 ## Technology stack
 
 <div align="center">
-  <a href="https://www.python.org/"><img src="https://cdn.simpleicons.org/python/3776AB" width="44" height="44" alt="Python" /></a>&nbsp;&nbsp;
-  <a href="https://nodejs.org/"><img src="https://cdn.simpleicons.org/nodedotjs/339933" width="44" height="44" alt="Node.js" /></a>&nbsp;&nbsp;
-  <a href="https://www.php.net/"><img src="https://cdn.simpleicons.org/php/777BB4" width="44" height="44" alt="PHP" /></a>&nbsp;&nbsp;
-  <a href="https://telegram.org/"><img src="https://cdn.simpleicons.org/telegram/26A5E4" width="44" height="44" alt="Telegram" /></a>&nbsp;&nbsp;
-  <a href="https://github.com/"><img src="https://cdn.simpleicons.org/github/181717" width="44" height="44" alt="GitHub" /></a>
+
+<img src="https://cdn.simpleicons.org/cplusplus/00599C" width="36" height="36" alt="C++" title="C++">&nbsp;&nbsp;
+<img src="https://cdn.simpleicons.org/kotlin/7F52FF" width="36" height="36" alt="Kotlin" title="Kotlin">&nbsp;&nbsp;
+<img src="https://cdn.simpleicons.org/python/3776AB" width="36" height="36" alt="Python" title="Python">&nbsp;&nbsp;
+<img src="https://cdn.simpleicons.org/nextdotjs/888888" width="36" height="36" alt="Next.js" title="Next.js">&nbsp;&nbsp;
+<img src="https://cdn.simpleicons.org/nodedotjs/339933" width="36" height="36" alt="Node.js" title="Node.js">&nbsp;&nbsp;
+<img src="https://cdn.simpleicons.org/php/777BB4" width="36" height="36" alt="PHP" title="PHP">
+
+<img src="https://cdn.simpleicons.org/docker/2496ED" width="36" height="36" alt="Docker" title="Docker">&nbsp;&nbsp;
+<img src="https://cdn.simpleicons.org/postgresql/4169E1" width="36" height="36" alt="PostgreSQL" title="PostgreSQL">&nbsp;&nbsp;
+<img src="https://cdn.simpleicons.org/redis/DC382D" width="36" height="36" alt="Redis" title="Redis">&nbsp;&nbsp;
+<img src="https://cdn.simpleicons.org/nginx/009639" width="36" height="36" alt="Nginx" title="Nginx">&nbsp;&nbsp;
+<img src="https://cdn.simpleicons.org/firebase/FFCA28" width="36" height="36" alt="Firebase" title="Firebase">&nbsp;&nbsp;
+<img src="https://cdn.simpleicons.org/githubactions/2088FF" width="36" height="36" alt="GitHub Actions" title="GitHub Actions">
+
 </div>
 
-### Main libraries
-
-| Component | Purpose |
-|---|---|
-| [pyTelegramBotAPI](https://github.com/eternnoir/pyTelegramBotAPI) | Telegram Bot API integration |
-| [PyCryptodome](https://www.pycryptodome.org/) | Cryptographic primitives used by supported decoders |
-| [argon2-cffi](https://github.com/hynek/argon2-cffi) | Argon2 support |
-| [MessagePack](https://msgpack.org/) | Binary serialization support |
-| [Requests](https://requests.readthedocs.io/) | HTTP client functionality |
-| [base64-js](https://github.com/beatgammit/base64-js) | Base64 support for Node.js decoders |
+| Environment | Technologies |
+| --- | --- |
+| Android | Kotlin, Jetpack Compose, C++, JNI, Android NDK, Gradle |
+| Cloud and web | Next.js, Node.js, Python, PHP |
+| Data | PostgreSQL, Redis |
+| Operations | Docker Compose, Nginx, Linux, GitHub Actions |
+| Mobile services | Firebase Cloud Messaging, Google authentication, Unity Ads |
 
 ---
 
-## Supported file formats
+## Deployment and server management
 
-The following original extensions are registered in `decoders.json`. Additionally, 41 Ultra/Sandok aliases, 16 RENZ/7NET aliases , 27 modular 2026 config aliases, and 13 new standalone engine aliases, and 81 generic legacy AES/DES aliases are registered by the bot directly from the independent Python engines, without affecting Android. Detection supports both regular and compound suffixes, including `.sksrv.png`.
+The Cloud installer and the standalone Telegram bot installer are different deployment paths. Do not run both management scripts under the same system-wide command name without isolating the installations.
 
-| Application / format | Supported extension(s) | Runtime |
-|---|---|---|
-| HA Tunnel Plus | `.hat` | Node.js |
-| X-Socks | `.xscks` | Python |
-| PHC Tunnel | `.phc` | Python |
-| HTTP Injector Lite | `.ehil` | Python |
-| MinaProNet | `.mina` | Python |
-| ASH Tunnel | `.at` | Python |
-| Gold Tunnel | `.gold` | Python |
-| NetMod | `.nm` | Python |
-| NPV Tunnel v4 | `.npv4`, `.npvt` | Python |
-| HTTP Tweak | `.ht`, `.htb` | Python |
-| Tunnel | `.tnl` | Python |
-| TLS Tunnel | `.tls` | Python |
-| e-V2Ray | `.v2` | Python |
-| ZIVPN | `.ziv` | Python |
-| XrayPB | `.pb` | Python |
-| Rez Tunnel | `.rez` | Node.js |
-| SocksIP | `.sks` | Node.js |
-| Stark VPN | `.stk` | Node.js |
-| PCX Tunnel | `.pcx` | Python |
-| SSH Injector | `.ssh` | Python |
-| Net Tunnel | `.nt` | Python |
-| VPN Lite | `.vpnlite` | Python |
-| SUT Tunnel | `.sut` | Python |
-| Maya Tunnel | `.maya` | Python |
-| XUI Tunnel | `.xui` | Python |
-| SocksIP Tunnel | `.sip` | Python |
-| FN Tunnel | `.fɴ` | Python |
-| MIJ Tunnel | `.mij` | Python |
-| MTL Tunnel | `.mtl` | Python |
-| FN Network | `.fnnetwork` | Python |
-| MRC Tunnel | `.mrc` | Python |
-| SKS Server | `.sksrv`, `.sksrv.png` | Python |
-| V2Ray Injector | `.v2i` | Python |
-| AGN Injector | `.agn` | Python |
-| JVI Tunnel | `.jvi` | Python |
-| JVC Tunnel | `.jvc` | Python |
-| ARMOD | `.aro` | Python |
-| Cloudy Inject | `.cloudy` | Python |
-| ePro Tunnel | `.epro` | Node.js |
-| Cloudy | `.cly` | Python |
-| XTProy | `.xtp` | Python |
-| Royal Tunnel | `.roy` | Python |
-| WeTunnel | `.ipt` | Python |
-| Rez Tunnel Lite | `.rezl` | Node.js |
-| TV Tunnel | `.tvt` | Node.js |
-| UWU Tunnel | `.uwu` | Python |
-| NPV Tunnel v2 | `.npv2` | Node.js |
-| Dark Tunnel | `.dark` | Python |
-| OUSS Tunnel / Ultra fallback | `.ost` | Python |
-| Ultra / Sandok VPN family | 41 additional suffixes (`.ultra`, `.ulti`, `.bee`, `.aura`, `.tx`, `.wolf`, `.flynet`, etc.) | Python — `decoders/Python/ultra.py` |
-| RENZ / 7NET family | `.7net`, `.tcx`, `.xhypher`, `.osp`, `.bshield`, `.actunnelvpn`, `.actun`, `.safetunnel`, `.mhrtunnel`, `.letsvpngo`, `.aloplusvpn`, `.cranetunnel`, `.vipsnipherpro`, `.deshtunnelvpn`, `.hamotunnelplus`, `.gcpvpn` | Python — `decoders/Python/renz.py` |
-| Config modules batch: Sentinel, ITV, EUT, V2Box, SlipNet, JuanScript, WyrLite/WyrVPN, IntVPN, FTHP, AR Pro/MSY, EC, XOR | 27 suffixes; see [complete catalog](docs/BOT_CONFIG_BATCHES.md) | Python — 13 independent engines |
-| Independent VPN engines: IZPH, FlexNet, N4, CREV, KTR, Zoba, LTM, DEV, VN7 | `.izph`, `.flex`, `.flexnet`, `.n4`, `.crev`, `.cer`, `.cerv`, `.ktr`, `.zoba`, `.lt`, `.ltm`, `.dev`, `.vn7` | Python — 9 separate engines ([documentation](docs/BOT_INDEPENDENT_DECODERS_9.md)) |
-| Generic legacy AES-GCM/PBKDF2 and DES-ECB | 81 new suffixes (74 AES, 13 DES, 6 shared), e.g. `.ace`, `.cks`, `.net`, `.garuda`, `.clay`, `.vpc` | Python — 2 shared engines ([full mappings](docs/BOT_GENERIC_AES_DES.md)) |
-| SBR Injector | `.sbr` | Python |
-| SocksIP Plus | `.sksplus` | PHP |
-| JEZ Tunnel | `.jez` | PHP |
-| HRT Tunnel | `.hrt` | PHP |
-| HTTP Custom | `.hc` | Python |
-| LinkLayer VPN (VER6) | `.lnk` | Python |
-| HTTP Injector | `.ehi` | Python |
-| SSC Custom | `.ssc` | Python |
+### Cloud: first installation
 
-> The Telegram bot now supports **239 registered suffixes**: 61 in `decoders.json`, 41 Ultra/Sandok suffixes, 16 RENZ/7NET suffixes, 27 modular aliases, 13 independent-engine aliases and 81 generic AES/DES aliases. The generic families use two Python engines and preserve all existing application-specific decoders. **The 42 Ultra variants share `ultra.py`, while the 16 RENZ file variants and 23 supported RENZ text schemes share `renz.py`.** Android Phases A–F now provide native source-matched routes for 239 formats; real exporter compatibility is not certified by synthetic fixtures. The new bot decoders have synthetic regression tests; third-party real export compatibility is not yet certified.
-
----
-
-## Supported text protocols
-
-SP-DECODE decodes supported VPN configuration text links locally in Telegram
-with centralized authorization. The additional source-based phase provides
-**38 explicit protocol prefixes plus Creeb JSON bundles**, in addition to
-the previously supported file-family text protocols.
-
-| Family | Supported schemes / prefixes |
-|---|---|
-| NetMod | `nm-dns://`, `nm-vless://`, `nm-vmess://`, `nm-trojan://`, `nm-socks://`, `nm-ss://`, `nm-ssr://`, `nm-ssh://`, `nm-xray-json://`, `nm-wireguard://`, `nm-trojan-go://` |
-| AR Tunnel / ARMOD | `ar-dns://`, `ar-vless://`, `ar-vmess://`, `ar-trojan://`, `ar-ssr://`, `ar-socks://`, `ar-trojan-go://`, `ar-ssh://`, `ar-ss://` |
-| XrayPB | `pb-ssh://`, `pb-vless://`, `pb-vmess://`, `pb-trojan://`, `pb-socks://`, `pb-ss://` |
-| Howdy / Mark / N7pr | `howdy://`, `Mark://`, `N7pr://` |
-| ZI VPN | `zivpn://` |
-| FlexNet | `flex://`, `flexnet://` |
-| NPV Tunnel v5 | `npvs://`, `vpvs://` (authenticated app-key payloads) |
-| V2Box | `v2box://locked=...` links and authenticated `v2box://` export envelopes; private-chat password flow when protected |
-| Dark/Kivu | `kivuvpn://` plus existing Dark Tunnel link aliases |
-| SlipNet plain | `slipnet://` (Base64 UTF-8; different from AES-GCM `slipnet-enc://`) |
-| VMess | `vmess://` (Base64 JSON representation) |
-| Creeb | A JSON object with `"type": "creeb_profile_bundle"`; extracts links and retains original metadata |
-| Existing family protocols | SSC `ssc://`, TLS `tls://`, Dark Tunnel `darktunnel://`, RENZ/7NET, IZPH, HAPP, XOR VPN, Falcon Tunnel, HTTP Tweak, EUT, WyrLite, WyrVPN, IntVPN and JuanScript |
-| NPVT / NPVS1 historical text | `npvt-ssh://`, `dns://` and recursive `npvs1:` fields |
-
-[Complete scheme matrix and maintenance notes](docs/BOT_TEXT_PROTOCOL_PARITY_66.md).
-
-Some formats above use Base64 or JSON decoding rather than cryptographic decryption.
-Multipart text sessions remain implemented for **SSC Custom** and **Dark Tunnel**;
-the bot retries decoding as fragments arrive and closes completed sessions.
-The additional text handlers do not modify the **239 bot file extensions** or the
-Android decoding inventory.
-
----
-
-## Project architecture
-
-```text
-SP-DECODE/
-├── main.py
-├── decoders.json
-├── config.example.json
-├── requirements.txt
-├── package.json
-├── validate_project.py
-├── decoders/
-│   ├── Python/
-│   ├── JavaScript/
-│   └── PHP/
-├── installers/
-│   ├── configure.py
-│   ├── install-termux.sh
-│   └── install-vps.sh
-├── scripts/
-│   ├── spdecode-termux.sh
-│   └── spdecode-vps.sh
-├── spdecode/
-│   ├── access.py
-│   ├── config.py
-│   ├── executor.py
-│   ├── registry.py
-│   ├── runtime.py
-│   ├── text_sessions.py
-│   ├── utils.py
-│   └── handlers/
-│       ├── commands.py
-│       ├── documents.py
-│       ├── text_protocols.py
-│       └── fallback.py
-└── tests/
-```
-
-### Runtime flow
-
-```text
-Telegram
-   │
-   ▼
-Authorization
-   │
-   ├── File ──► Extension detection ──► decoders.json ──► Python / Node.js / PHP
-   │
-   └── Text ──► Protocol handler ──► Optional multipart session ──► Decoder
-   │
-   ▼
-Formatted Telegram response + result file
-```
-
----
-
-## Requirements
-
-Recommended runtime versions:
-
-- **Python 3.11+**
-- **Node.js 20+**
-- **PHP 8.1+**
-- A Telegram bot token created through [@BotFather](https://t.me/BotFather)
-
----
-
-## Automated installers
-
-SP-DECODE includes dedicated installers for **Termux** and **Linux VPS** environments. They install the required runtimes, Python dependencies, Node.js packages, create the local configuration, ask for the Telegram bot token, configure administrators/groups and start the bot automatically.
-
-> **Why Node.js is installed:** JavaScript decoders require an actual Node.js runtime. The repository intentionally does not ship `node_modules`; the installer detects/installs Node.js when needed and runs `npm ci`.
-
-### Termux
-
-From a cloned repository:
+Use an Ubuntu or Debian VPS, a configured domain with the required DNS records, HTTPS and adequate resources. Review the installer before execution, especially its deployment ref and configuration requirements. Use the existing deployment and update procedure on a server that is already installed.
 
 ```bash
+git clone --branch ci/unity-ads-online-qa https://github.com/gokussj092/NSKSDKLDLDLDMDNDNDNNDNDNDNDNDNDNDNDNDMDM.git SP-DECODE
+cd SP-DECODE
+sudo bash cloud/infra/vps/install.sh --domain example.com --email admin@example.com --ref ci/unity-ads-online-qa
+```
+
+Replace the illustrative domain and administrator email with your authorized deployment values. Where repository access requires authentication, configure it before installation; the installer supports an authorized SSH setup. Complete the provisioning and security configuration before enabling public services.
+
+### Status and diagnostics
+
+```bash
+sudo spdecode help
+sudo spdecode status
+sudo spdecode panel check
+sudo spdecode logs all
+sudo spdecode logs worker
+```
+
+### Updates
+
+```bash
+# Full Cloud update
+sudo spdecode update all ci/unity-ads-online-qa
+
+# Web/API and administrative backend only
+sudo spdecode update web ci/unity-ads-online-qa
+
+# Decoder worker only
+sudo spdecode update worker ci/unity-ads-online-qa
+```
+
+Choose the scope that matches the change; these are alternatives, not a sequence. Take appropriate data backups and inspect the target revision before deploying.
+
+> [!IMPORTANT]
+> On the optimized production VPS, preserve the local Compose resource override and installed CLI adjustments before updating or rolling back. The automatic preservation of those resource settings is not yet implemented in the repository updater. Verify that the settings are still applied after deployment. See the [production operations notes](docs/PRODUCTION_VPS_OPTIMIZATION_2026_11_14.md).
+
+### Service administration
+
+```bash
+sudo spdecode restart web
+sudo spdecode restart worker
+sudo spdecode restart all
+sudo spdecode providers status
+sudo spdecode cleanup status
+```
+
+### Backups and recovery
+
+```bash
+sudo spdecode backup
+# Roll back to the recorded previous revision when needed
+sudo spdecode rollback
+```
+
+The built-in backup command saves deployment configuration and the current revision; it is not a full PostgreSQL, Redis or volume backup. Maintain encrypted off-server backups of persistent data and required keys, and test restoration. Rollback is an operational recovery action, not a routine update step.
+
+### Administrative panel and commerce
+
+```bash
+sudo spdecode panel check
+sudo spdecode panel sync-routes
+sudo spdecode commerce status
+```
+
+The following commands are reserved for authorized operators when explicitly needed:
+
+```bash
+sudo spdecode panel enable
+sudo spdecode panel reset-admin
+sudo spdecode commerce migrate
+```
+
+Resetting administrative credentials and applying database migrations are intentional administrative actions; review their impact before execution.
+
+### Android artifact publication
+
+```bash
+sudo spdecode android public-status online
+sudo spdecode android public-build online --ci-run SUCCESSFUL_RUN_ID
+# Restore the previous published build when necessary
+sudo spdecode android public-rollback online
+```
+
+Replace the placeholder with an eligible successful CI run ID. Publication is gated by the configured release workflow and permanent signing requirements. Offline publication has its own release gates. The Admin application uses its independent [signed release workflow](.github/workflows/android-admin-release.yml).
+
+### Telegram bot: Termux and Linux
+
+For the standalone bot, clone the repository and run the installer appropriate to the target:
+
+```bash
+# Termux
 bash installers/install-termux.sh
+
+# Linux VPS — standalone bot only
+bash installers/install-vps.sh
 ```
 
-Or install directly from GitHub:
-
-```bash
-pkg install -y curl
-curl -fsSL https://raw.githubusercontent.com/Gh0stDeveloper/SP-DECODE/main/installers/install-termux.sh -o install-spdecode.sh
-bash install-spdecode.sh
-```
-
-The Termux installer:
-
-- installs Python, PHP, Node.js, Git and native build dependencies;
-- creates an isolated Python virtual environment;
-- installs PyCryptodome, pyTelegramBotAPI, Argon2, MessagePack and Requests;
-- installs Node.js decoder dependencies with `npm ci`;
-- runs the validator and unit tests;
-- launches an interactive setup for the Telegram token and access policy;
-- creates the `spdecode` management command;
-- starts the bot automatically in the background.
-
-Available commands:
+Configure the bot token and access policy through the setup wizard. In the standalone bot environment, use:
 
 ```bash
 spdecode status
@@ -308,235 +282,96 @@ spdecode stop
 spdecode restart
 spdecode logs
 spdecode config
-spdecode update
 spdecode validate
 ```
 
-For reliable long-running operation on Android, disable battery optimization for Termux.
-
-### VPS / Linux server
-
-Supported installers currently target Debian/Ubuntu and Fedora/RHEL-compatible systems using `apt`, `dnf` or `yum`.
-
-From a cloned repository:
-
-```bash
-bash installers/install-vps.sh
-```
-
-Or install directly from GitHub:
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/Gh0stDeveloper/SP-DECODE/main/installers/install-vps.sh -o /tmp/install-spdecode.sh
-bash /tmp/install-spdecode.sh
-```
-
-Do **not** run the entire VPS installer with `sudo`; it requests elevated permissions only when system packages or the `systemd` service need them.
-
-The VPS installer creates and enables a persistent `systemd` service named `spdecode`, starts it immediately and installs the same `spdecode` management command globally.
-
-### Interactive access configuration
-
-During installation, the setup wizard securely asks for:
-
-1. the Telegram bot token;
-2. administrator Telegram user IDs;
-3. either:
-   - specific allowed group IDs, or
-   - **all groups/supergroups** where the bot is present.
-
-The **all groups** option does not make private chats public. Private protected actions still require an administrator ID.
-
-The generated `config.json` remains local, is ignored by Git and is written with restrictive file permissions where supported.
+These commands are for the bot's launcher, not the Cloud management CLI.
 
 ---
 
-## Manual installation
+## Repository structure
 
-### 1. Clone the repository
+```text
+SP-DECODE/
+├── android/          # Android application source
+├── android-admin/    # Native administrative application
+├── cloud/
+│   ├── web/           # Public site and backend
+│   ├── workers/       # Private processing services
+│   ├── accounts/      # Account infrastructure
+│   ├── attestation/   # Device trust services
+│   ├── contracts/     # API contracts
+│   └── infra/         # Deployment and operations
+├── decoders/         # Modular processing engines
+├── installers/       # Standalone bot installers
+├── scripts/          # Validation and management utilities
+├── spdecode/         # Telegram integration
+├── website/          # Additional web resources
+├── docs/             # Technical documentation and runbooks
+├── tests/            # Regression and contract tests
+└── README.md
+```
+
+## Validation
+
+From the repository root:
 
 ```bash
-git clone https://github.com/Gh0stDeveloper/SP-DECODE.git
-cd SP-DECODE
+python3 validate_project.py
+python3 -m unittest discover -s tests -v
+sh android-admin/tests/run-native.sh
+sh android-admin/tests/run-jni-host.sh
 ```
 
-### 2. Create a Python virtual environment
-
-Linux / macOS:
+Cloud web checks, from a configured development environment:
 
 ```bash
-python3 -m venv .venv
-source .venv/bin/activate
+cd cloud/web
+npm ci --no-audit --no-fund
+npm test
+npm run build
 ```
 
-Windows:
+Release workflows additionally validate Android build artifacts, signing, native compatibility and relevant automated tests. Automated tests do not establish compatibility with every third-party exporter or replace authenticated production and physical-device testing.
 
-```powershell
-py -m venv .venv
-.\.venv\Scripts\Activate.ps1
-```
+## Documentation
 
-### 3. Install dependencies
+| Resource | Description |
+| --- | --- |
+| [Android Admin](android-admin/README.md) | Application architecture, access and release requirements. |
+| [Android Admin validation](android-admin/VALIDATION.md) | Test coverage and production prerequisites. |
+| [Online account and support](docs/commerce/ONLINE_QA_AUTH_SUPPORT_UPDATER.md) | Authentication, support and account integration. |
+| [Notifications and roles](docs/commerce/ONLINE_PUSH_ACTIVITY_ROLES_QA.md) | Private notifications, activity and role management. |
+| [Catalog operations](docs/cloud/CATALOGS_UPDATE_RUNBOOK.md) | Catalog maintenance and deployment. |
+| [Transport security](docs/V2_HPKE_TRANSPORT.md) | Secure Online transport. |
+| [Production operations](docs/PRODUCTION_VPS_OPTIMIZATION_2026_11_14.md) | VPS resources, persistence and updater requirements. |
+| [Technical documentation](docs/) | Additional implementation, compatibility and operational references. |
 
-```bash
-python -m pip install -r requirements.txt
-npm ci
-```
+## Compatibility and responsible use
 
-PHP decoders use the local PHP runtime and do not currently require Composer packages.
+Supported formats and catalogs evolve continuously. Availability can vary by application version, configuration variant, account permissions and provider status. Unsupported or protected inputs remain subject to their respective compatibility and authorization requirements.
 
-### 4. Create the local configuration
+Report reproducible issues through the support channels without sharing private credentials, configuration secrets or personal information.
 
-```bash
-cp config.example.json config.json
-```
+## Official links and credits
 
-On Windows PowerShell:
-
-```powershell
-Copy-Item config.example.json config.json
-```
-
-Edit `config.json` and configure:
-
-- Telegram bot token.
-- Administrator user IDs.
-- Access mode: selected groups or all groups/supergroups.
-- Allowed Telegram group IDs when selected-group mode is used.
-- Runtime limits and temporary directories.
-
-For server deployments, the bot token may instead be supplied through:
-
-```bash
-export SPDECODE_BOT_TOKEN="YOUR_TELEGRAM_BOT_TOKEN"
-```
-
-> `config.json` is intentionally ignored by Git and must remain local.
-
----
-
-## Running SP-DECODE
-
-```bash
-python main.py
-```
-
-At startup, SP-DECODE validates the decoder registry and checks that every registered decoder script exists before beginning Telegram long polling.
-
-Administrators may use protected decoding features from any chat. Regular users are authorized inside explicitly configured groups, or inside every group/supergroup when `access.allow_all_groups` is enabled.
-
----
-
-## Telegram commands
-
-| Command | Description |
-|---|---|
-| `/start` | Open the main menu |
-| `/help` | Show usage instructions |
-| `/formats` | List all registered file formats |
-| `/texts` | List supported text protocols |
-| `/session` | Show the active multipart text session |
-| `/ssc` | Show the current SSC session |
-| `/dark` | Show the current Dark Tunnel session |
-| `/cancel` | Cancel the pending multipart session |
-| `/id` | Show user and chat IDs |
-| `/ping` | Check whether the bot is responding |
-| `/status` | Show internal status for administrators |
-| `/about` | Show project information |
-
----
-
-## Validation and tests
-
-Run the project validator:
-
-```bash
-python validate_project.py
-```
-
-Run the test suite:
-
-```bash
-python -m unittest discover -s tests -v
-```
-
-The validation layer checks project syntax, decoder registration, missing decoder files, protected handlers, pinned dependencies and accidental Telegram token exposure.
-
----
-
-## Adding a new decoder
-
-1. Add the decoder implementation to the appropriate runtime directory:
-   - `decoders/Python/`
-   - `decoders/JavaScript/`
-   - `decoders/PHP/`
-2. Register its extension, public name, script path and runtime in `decoders.json`.
-3. Make sure the decoder accepts the file path expected by the executor.
-4. Run `python validate_project.py`.
-5. Run the full unit-test suite.
-
-Example registry entry:
-
-```json
-{
-  "example": {
-    "script": "decoders/Python/example.py",
-    "runtime": "python",
-    "name": "Example Tunnel"
-  }
-}
-```
-
----
-
-## Security
-
-SP-DECODE is designed so operational credentials remain outside version control.
-
-- Never commit `config.json`, `.env` files or bot tokens.
-- Prefer `SPDECODE_BOT_TOKEN` for hosted/server deployments.
-- Keep administrator and allowed-group IDs under your control.
-- Rotate a Telegram bot token immediately if it is ever exposed.
-- Deleting a secret from the latest branch does **not** remove it from previous Git history.
-- Use the project only with configurations you own or are explicitly authorized to inspect.
-
----
-
-## Known compatibility note: SocksIP `.sip`
-
-The current decoder supports the Java-serialization variant protected with Base64 and AES-ECB.
-
-Some analyzed samples open the outer encrypted layer successfully but then begin with `VER7` instead of a Java serialization header. The analyzed SocksIP 15.14.4 application (`com.newtoolsworks.sockstunnel`, internal version 124) does not contain the corresponding `VER7` implementation, so the current decoder reports this case explicitly instead of returning misleading output.
-
-A compatible SocksIP build that can import those samples, or a fresh `.sip` export generated directly by the analyzed application, is required to reproduce that variant accurately.
-
----
-
-## Credits
-
-**SP-DECODE** is created and maintained by **Ghost Developer** (`@Gh0stDeveloper`).
-
-The project also relies on the open-source ecosystems around Python, Node.js, PHP, Telegram and the libraries listed above. Their respective projects and maintainers retain ownership of their software and trademarks.
-
----
-
-## Contact
-
-| Channel | Link |
-|---|---|
-| Developer | [@Gh0stDeveloper](https://t.me/Gh0stDeveloper) |
+| Resource | Link |
+| --- | --- |
+| Official website | [spdecode.xyz](https://spdecode.xyz) |
 | Telegram channel | [@GhostDeve](https://t.me/GhostDeve) |
 | Community | [@CodeBreakersHub](https://t.me/CodeBreakersHub) |
-| GitHub | [github.com/Gh0stDeveloper](https://github.com/Gh0stDeveloper) |
-| Website | [GhostDeveloper.vercel.app](https://GhostDeveloper.vercel.app) |
+| GitHub | [gokussj092](https://github.com/gokussj092) |
+
+Created and maintained by **Ghost Developer**. Third-party software, libraries and trademarks remain the property of their respective owners.
 
 ---
 
 <div align="center">
 
-**SP-DECODE — modular decoding, centralized authorization, multiple runtimes.**
+**SP-DECODE**
 
-Made by [Ghost Developer](https://github.com/Gh0stDeveloper).
+Native clients. Secure processing. Centralized infrastructure.
+
+Made by [Ghost Developer](https://github.com/gokussj092).
 
 </div>
-

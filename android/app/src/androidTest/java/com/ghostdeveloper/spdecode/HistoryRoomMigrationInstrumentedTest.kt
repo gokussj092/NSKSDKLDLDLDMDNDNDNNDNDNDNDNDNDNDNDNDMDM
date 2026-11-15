@@ -23,7 +23,9 @@ class HistoryRoomMigrationInstrumentedTest {
             store.save(record) // simulates a pre-Room 0.3.4 installation
             val repo=HistoryRepository(store,db)
             val recovered=repo.load().single{it.id==record.id}
-            assertEquals(record.rawText,recovered.rawText)
+            assertTrue(recovered.metadataOnly)
+            assertEquals("",recovered.rawText)
+            assertEquals(record.rawText,repo.open(record.id).rawText)
             assertEquals(record.id,repo.indexRows().single{it.id==record.id}.id)
             val name=ctx.getDatabasePath("history-index.db")
             // Tests use in-memory DB; inspect only stored row model.

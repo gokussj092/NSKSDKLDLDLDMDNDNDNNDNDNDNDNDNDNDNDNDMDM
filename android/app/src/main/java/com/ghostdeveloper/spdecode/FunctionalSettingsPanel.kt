@@ -35,6 +35,8 @@ private val SurfaceLine=Color(0xFF343434)
 fun FunctionalSettingsPanel(
     language:String,
     maskCredentials:Boolean,
+    telegramCreditUsername:String="",
+    onSaveTelegramCredit:(String)->Boolean={false},
     onLanguage:(String)->Unit,
     onMaskCredentials:(Boolean)->Unit,
     onClear:()->Unit,
@@ -44,6 +46,9 @@ fun FunctionalSettingsPanel(
     onShowGuide:()->Unit={},
     onLegalLink:(String)->Unit={},
     onWithdrawConsent:()->Unit={},
+    onAdsPrivacyOptions:()->Unit={},
+    catalogDownloadChunks:Boolean=false,
+    onCatalogDownloadChunks:(Boolean)->Unit={},
     catalogUpdatesEnabled:Boolean=false,
     onCatalogUpdates:(Boolean)->Unit={},
     usageAnalyticsEnabled:Boolean=false,
@@ -55,6 +60,13 @@ fun FunctionalSettingsPanel(
     onFeedbackSubmit:suspend (FeedbackDraft)->String={throw IllegalStateException("FEEDBACK_UNAVAILABLE")},
 ){
     var clearDialog by remember { mutableStateOf(false) }
+    var creditDraft by rememberSaveable(telegramCreditUsername) {
+        mutableStateOf(telegramCreditUsername.trimStart('@'))
+    }
+    var editingCredit by rememberSaveable { mutableStateOf(false) }
+    var deleteCreditDialog by remember { mutableStateOf(false) }
+    val hasSavedCredit=telegramCreditUsername.isNotBlank()
+    val normalizedCredit=TelegramResultCopy.normalizeUsername(creditDraft)
     var languagePage by rememberSaveable { mutableStateOf(false) }
     var formatsPage by rememberSaveable { mutableStateOf(false) }
     var feedbackPage by rememberSaveable { mutableStateOf(false) }
@@ -180,6 +192,64 @@ fun FunctionalSettingsPanel(
             Text(stringResource(R.string.export_security_note),
                 color=MutedText,fontSize=12.sp,lineHeight=17.sp)
         }
+        if(BuildConfig.SPDECODE_CLOUD_ENABLED) SettingsCard {
+            Row(verticalAlignment=Alignment.CenterVertically) {
+                Icon(Icons.Outlined.AlternateEmail,null,tint=TitleText)
+                Spacer(Modifier.width(10.dp))
+                Text(stringResource(R.string.decrypt_credits_title),
+                    color=TitleText,fontWeight=FontWeight.SemiBold,fontSize=17.sp)
+            }
+            Text(stringResource(R.string.decrypt_credits_description),
+                color=MutedText,fontSize=12.sp,lineHeight=18.sp)
+            if(hasSavedCredit && !editingCredit) {
+                Text(stringResource(R.string.decrypt_credits_saved),
+                    color=MutedText,fontSize=12.sp)
+                Text(telegramCreditUsername,color=TitleText,
+                    fontSize=17.sp,fontWeight=FontWeight.SemiBold,
+                    modifier=Modifier.testTag("telegram_decrypt_credit_saved"))
+                Row(horizontalArrangement=Arrangement.spacedBy(10.dp),
+                    modifier=Modifier.fillMaxWidth()) {
+                    OutlinedButton(
+                        onClick={
+                            creditDraft=telegramCreditUsername.trimStart('@')
+                            editingCredit=true
+                        },
+                        modifier=Modifier.weight(1f).testTag("telegram_decrypt_credit_edit")
+                    ) { Text(stringResource(R.string.decrypt_credits_edit)) }
+                    OutlinedButton(
+                        onClick={deleteCreditDialog=true},
+                        modifier=Modifier.weight(1f).testTag("telegram_decrypt_credit_delete")
+                    ) { Text(stringResource(R.string.decrypt_credits_delete)) }
+                }
+            } else {
+                OutlinedTextField(
+                    value=creditDraft,
+                    onValueChange={creditDraft=it.trimStart('@').take(40)},
+                    label={Text(stringResource(R.string.decrypt_credits_handle))},
+                    prefix={Text("@")},
+                    singleLine=true,
+                    isError=normalizedCredit==null,
+                    modifier=Modifier.fillMaxWidth().testTag("telegram_decrypt_credit")
+                )
+                if(normalizedCredit==null)
+                    Text(stringResource(R.string.decrypt_credits_invalid),
+                        color=Color(0xFFFF9696),fontSize=12.sp)
+                Button(onClick={
+                    normalizedCredit?.takeIf{it.isNotEmpty()}?.let{normalized->
+                        if(onSaveTelegramCredit(normalized))editingCredit=false
+                    }
+                },enabled=normalizedCredit?.isNotEmpty()==true,
+                    modifier=Modifier.fillMaxWidth().testTag("telegram_decrypt_credit_save")) {
+                    Text(stringResource(R.string.decrypt_credits_save))
+                }
+                if(hasSavedCredit) TextButton(
+                    onClick={
+                        creditDraft=telegramCreditUsername.trimStart('@')
+                        editingCredit=false
+                    },modifier=Modifier.fillMaxWidth()
+                ) { Text(stringResource(R.string.cancel)) }
+            }
+        }
         SettingsCard{
             Row(verticalAlignment=Alignment.CenterVertically){
                 Icon(Icons.Outlined.Lock,null,tint=TitleText)
@@ -213,6 +283,9 @@ fun FunctionalSettingsPanel(
                 Spacer(Modifier.width(8.dp))
                 Text(stringResource(R.string.delete_session))
             }
+            if(BuildConfig.SPDECODE_UNITY_ADS_ENABLED) OutlinedButton(
+                onClick=onAdsPrivacyOptions,modifier=Modifier.fillMaxWidth()
+            ) { Text(stringResource(R.string.ads_privacy_options)) }
             // Consent withdrawal remains accessible without duplicating legal links.
             if(BuildConfig.SPDECODE_CLOUD_ENABLED) OutlinedButton(
                 onClick={withdrawDialog=true},modifier=Modifier.fillMaxWidth()
@@ -251,6 +324,36 @@ fun FunctionalSettingsPanel(
                         checkedTrackColor=TitleText))
             }
         }
+        if(BuildConfig.SPDECODE_CLOUD_ENABLED) SettingsCard {
+            val labels=when(language.substringBefore('-')){
+                "es"->listOf("Modo de descarga del catálogo","Descarga completa","Conexión estable · descarga normal","Por partes (chunks)","Conexión lenta o inestable · permite reanudar","Se aplicará en la próxima descarga.")
+                "pt"->listOf("Modo de download do catálogo","Download completo","Conexão estável · download normal","Por partes (chunks)","Conexão lenta ou instável · permite retomar","Aplica-se ao próximo download.")
+                "fr"->listOf("Mode de téléchargement du catalogue","Téléchargement complet","Connexion stable · téléchargement normal","Par fragments","Connexion lente ou instable · reprise possible","Appliqué au prochain téléchargement.")
+                "de"->listOf("Katalog-Downloadmodus","Vollständiger Download","Stabile Verbindung · normaler Download","In Teilen (Chunks)","Langsame oder instabile Verbindung · fortsetzbar","Gilt für den nächsten Download.")
+                "it"->listOf("Modalità download catalogo","Download completo","Connessione stabile · download normale","A blocchi","Connessione lenta o instabile · riprendibile","Si applica al prossimo download.")
+                "ru"->listOf("Режим загрузки каталога","Полная загрузка","Стабильное соединение · обычная загрузка","По частям","Медленное или нестабильное соединение · с возобновлением","Применится при следующей загрузке.")
+                "ar"->listOf("وضع تنزيل الكتالوج","تنزيل كامل","اتصال مستقر · تنزيل عادي","تنزيل على أجزاء","اتصال بطيء أو غير مستقر · قابل للاستئناف","يطبق عند التنزيل التالي.")
+                "fa"->listOf("روش دانلود کاتالوگ","دانلود کامل","اتصال پایدار · دانلود عادی","دانلود بخش‌بخش","اتصال کند یا ناپایدار · قابل ادامه","در دانلود بعدی اعمال می‌شود.")
+                "hi"->listOf("कैटलॉग डाउनलोड मोड","पूरा डाउनलोड","स्थिर कनेक्शन · सामान्य डाउनलोड","भागों में (chunks)","धीमा या अस्थिर कनेक्शन · फिर शुरू कर सकते हैं","अगले डाउनलोड पर लागू होगा।")
+                "id","in"->listOf("Mode unduhan katalog","Unduhan penuh","Koneksi stabil · unduhan normal","Per bagian (chunks)","Koneksi lambat atau tidak stabil · dapat dilanjutkan","Berlaku untuk unduhan berikutnya.")
+                "ja"->listOf("カタログのダウンロード方式","一括ダウンロード","安定した接続 · 通常のダウンロード","分割ダウンロード","低速・不安定な接続 · 再開可能","次回のダウンロードから適用されます。")
+                "tr"->listOf("Katalog indirme modu","Tam indirme","Kararlı bağlantı · normal indirme","Parçalı indirme","Yavaş veya kararsız bağlantı · devam edilebilir","Sonraki indirmede uygulanır.")
+                "vi"->listOf("Chế độ tải danh mục","Tải đầy đủ","Kết nối ổn định · tải thông thường","Tải theo phần","Kết nối chậm hoặc không ổn định · có thể tiếp tục","Áp dụng cho lần tải tiếp theo.")
+                else->listOf("Catalog download mode","Full download","Stable connection · normal download","Chunked download","Slow or unstable connection · resumable","Applies to the next download.")
+            }
+            Text(labels[0],color=TitleText,fontWeight=FontWeight.SemiBold,fontSize=17.sp)
+            listOf(false,true).forEachIndexed { index,value->
+                Row(Modifier.fillMaxWidth().clickable(enabled=!catalogLoading){onCatalogDownloadChunks(value)}
+                    .padding(vertical=6.dp),verticalAlignment=Alignment.CenterVertically){
+                    RadioButton(selected=catalogDownloadChunks==value,onClick={onCatalogDownloadChunks(value)},enabled=!catalogLoading)
+                    Column(Modifier.weight(1f)){
+                        Text(labels[1+index*2],color=TitleText,fontSize=14.sp)
+                        Text(labels[2+index*2],color=MutedText,fontSize=12.sp)
+                    }
+                }
+            }
+            Text(labels[5],color=MutedText,fontSize=11.sp)
+        }
         // Settings additions injected here by the Android Gradle task.
         SettingsCard {
             Row(verticalAlignment=Alignment.CenterVertically) {
@@ -288,6 +391,24 @@ fun FunctionalSettingsPanel(
         }
         Spacer(Modifier.height(6.dp))
     }
+    if(deleteCreditDialog) AlertDialog(
+        onDismissRequest={deleteCreditDialog=false},
+        title={Text(stringResource(R.string.decrypt_credits_delete),color=TitleText)},
+        text={Text(stringResource(R.string.decrypt_credits_delete_confirm),color=MutedText)},
+        confirmButton={TextButton(onClick={
+            if(onSaveTelegramCredit("")) {
+                creditDraft=""
+                editingCredit=false
+                deleteCreditDialog=false
+            }
+        }) { Text(stringResource(R.string.decrypt_credits_delete)) }},
+        dismissButton={TextButton(onClick={deleteCreditDialog=false}) {
+            Text(stringResource(R.string.cancel))
+        }},
+        containerColor=Color.Black,
+        titleContentColor=TitleText,
+        textContentColor=TitleText
+    )
     if(withdrawDialog) AlertDialog(
         onDismissRequest={withdrawDialog=false},
         title={Text(stringResource(R.string.cloud_legal_withdraw))},

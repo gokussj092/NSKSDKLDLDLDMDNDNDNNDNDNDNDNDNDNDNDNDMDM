@@ -1,0 +1,5 @@
+# Revisión de consumidores — OpenTunnel y MD PROXY
+
+2026-11-09. Nuevas entradas independientes opentunnel-ssh y md-proxy-vpn; no se cambia el contrato PAIRED_SOURCES ni se añade descarga agrupada. OpenTunnel devuelve únicamente el listado público de hosts y advierte que las credenciales son individuales; MD conserva Servers/Networks en una sola fuente. tnl usa overlay servidor con propiedades completas; C0/Android no se editan.
+
+Se revisaron estáticamente paired-vpn-catalogs y server-vpn-gateway, allowlist, controles por proveedor, transporte TLS/DNS/denegación de redirecciones y validación del documento completo. Se ejecutan las regresiones de catálogo y brokers previos, incluidas HTTP Conexión, SpeiGo y los consumidores de esta rama; los fixtures no se presentan como validación remota de todos los proveedores. Los mocks de raster de cuatro pruebas se limitan a PNG para dejar pasar el WebP original real de MD. No se cambian claves, credenciales ni endpoints anteriores. Revisión de rama; sin aprobación automática de herramientas ni despliegue.

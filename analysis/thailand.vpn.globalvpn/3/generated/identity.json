@@ -1,0 +1,14 @@
+{
+  "package": "thailand.vpn.globalvpn",
+  "versionName": "1.0.3",
+  "versionCode": 3,
+  "apkBytes": 73411053,
+  "apkSha256": "5ddc85ef29bd8a59d0817931c54e52c730b10d2189329a6c12b6591deedd29a5",
+  "distributionBytes": 85085542,
+  "distributionSha256": "d5cf3e75cde7840373487da78040d476d298f36c342c30d6659ca3d9b7fc5e90",
+  "certificateSha256": [
+    "578102eabb9362fa465106ba66ed40b09e79c6b1126019a8c68f11629367af2f"
+  ],
+  "cryptographicApkSignatureVerified": false,
+  "apkCodeExecuted": false
+}

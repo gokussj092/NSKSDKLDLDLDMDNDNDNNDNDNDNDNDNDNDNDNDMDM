@@ -1,0 +1,112 @@
+name: SP-DECODE Branch Release APK Signed
+on:
+  push:
+    branches: [feat/nuevas-integraciones]
+    paths:
+      - android/**
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: spdecode-current-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  release:
+    if: github.repository_owner == 'gokussj092' && github.ref == 'refs/heads/feat/nuevas-integraciones'
+    runs-on: ubuntu-latest
+    timeout-minutes: 75
+    env:
+      SPDECODE_CLOUD_API_BASE_URL: https://api.spdecode.xyz
+      SPDECODE_CLOUD_RELEASE: "true"
+      SPDECODE_CLOUD_QA_BUILD: "false"
+      ORG_GRADLE_PROJECT_noticeFirebaseAPP_ID: ${{ vars.SPDECODE_NOTICE_FIREBASE_APP_ID }}
+      ORG_GRADLE_PROJECT_noticeFirebaseAPI_KEY: ${{ vars.SPDECODE_NOTICE_FIREBASE_API_KEY }}
+      ORG_GRADLE_PROJECT_noticeFirebasePROJECT_ID: ${{ vars.SPDECODE_NOTICE_FIREBASE_PROJECT_ID }}
+      ORG_GRADLE_PROJECT_noticeFirebaseSENDER_ID: ${{ vars.SPDECODE_NOTICE_FIREBASE_SENDER_ID }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.11.1"
+      - name: Version and source preflight
+        run: |
+          set -euo pipefail
+          python3 scripts/ci/current_android_contracts.py --github-env "$GITHUB_ENV"
+          python3 scripts/android_s3_security_audit.py
+          python3 scripts/android_s4_provisioning_audit.py
+      - name: Android SDK / NDK
+        run: |
+          set -euo pipefail
+          MANAGER="$(find "$ANDROID_HOME/cmdline-tools" -type f -name sdkmanager | sort -V | tail -1)"
+          "$MANAGER" --install "platforms;android-36" "build-tools;35.0.0" "platform-tools" "cmake;3.22.1" "ndk;27.2.12479018"
+      - name: Restore permanent signing key (secrets only)
+        env:
+          STORE_BASE64: ${{ secrets.SPDECODE_SIGNING_KEYSTORE_BASE64 }}
+          STORE_PASSWORD: ${{ secrets.SPDECODE_SIGNING_STORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.SPDECODE_SIGNING_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.SPDECODE_SIGNING_KEY_PASSWORD }}
+          PLAY_CERT: ${{ secrets.SPDECODE_PLAY_APP_SIGNER_SHA256 || vars.SPDECODE_PLAY_APP_SIGNER_SHA256 }}
+        run: |
+          set -euo pipefail
+          test -n "$STORE_BASE64" && test -n "$STORE_PASSWORD" && test -n "$KEY_ALIAS" && test -n "$KEY_PASSWORD"
+          umask 077
+          printf '%s' "$STORE_BASE64" | base64 --decode > "$RUNNER_TEMP/spdecode-release.p12"
+          keytool -list -keystore "$RUNNER_TEMP/spdecode-release.p12" -storetype PKCS12 -storepass:env STORE_PASSWORD -alias "$KEY_ALIAS" >/dev/null
+          CERT="$(keytool -exportcert -keystore "$RUNNER_TEMP/spdecode-release.p12" -storetype PKCS12 -storepass:env STORE_PASSWORD -alias "$KEY_ALIAS" | sha256sum | cut -d' ' -f1)"
+          [[ "$CERT" =~ ^[0-9a-f]{64}$ ]]
+          PLAY_CERT="$(printf '%s' "$PLAY_CERT" | tr -d '[:space:]:' | tr '[:upper:]' '[:lower:]')"
+          [[ "$PLAY_CERT" =~ ^[0-9a-f]{64}$ ]]
+          echo "SPDECODE_TRUSTED_SIGNER_SHA256=$CERT" >> "$GITHUB_ENV"
+          echo "SPDECODE_PLAY_APP_SIGNER_SHA256=$PLAY_CERT" >> "$GITHUB_ENV"
+          echo "SPDECODE_RELEASE_STORE_FILE=$RUNNER_TEMP/spdecode-release.p12" >> "$GITHUB_ENV"
+      - name: Compile production signed APK
+        working-directory: android
+        env:
+          SPDECODE_RELEASE_STORE_PASSWORD: ${{ secrets.SPDECODE_SIGNING_STORE_PASSWORD }}
+          SPDECODE_RELEASE_KEY_ALIAS: ${{ secrets.SPDECODE_SIGNING_KEY_ALIAS }}
+          SPDECODE_RELEASE_KEY_PASSWORD: ${{ secrets.SPDECODE_SIGNING_KEY_PASSWORD }}
+        run: gradle --no-daemon --max-workers=2 :app:assembleRelease
+      - name: Validate signed external APK only (no AAB)
+        run: |
+          set -euo pipefail
+          APK=android/app/build/outputs/apk/release/app-release.apk
+          test -s "$APK"
+          python3 scripts/ci/verify_release_signer_pins.py
+          python3 scripts/android_16kb_elf_audit.py "$APK"
+          python3 tests/cloud_c5_apk_audit.py "$APK"
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose --print-certs "$APK"
+          "$ANDROID_HOME/build-tools/35.0.0/zipalign" -c -P 16 -v 4 "$APK"
+          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$APK" | grep -F "versionName='$SPDECODE_VERSION_NAME'"
+          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$APK" | grep -F "versionCode='$SPDECODE_VERSION_CODE'"
+          # Telegram/distribution APK must not accidentally contain the Play updater.
+          python3 - "$APK" <<'PY'
+          import sys
+          from zipfile import ZipFile
+          with ZipFile(sys.argv[1]) as apk:
+              files=set(apk.namelist())
+              assert "assets/spdecode-play-updates-enabled.marker" not in files
+              assert any(x.startswith("classes") and x.endswith(".dex") for x in files)
+          print("PASS: signed external APK contains dex and no Play updater marker")
+          PY
+          mkdir -p dist
+          cp "$APK" dist/SP-DECODE-v${SPDECODE_VERSION_NAME}-b${SPDECODE_VERSION_CODE}-release-signed.apk
+          (cd dist && sha256sum *.apk > SHA256SUMS.txt)
+          printf 'Version: %s\nBuild: %s\nSource SHA: %s\n' "$SPDECODE_VERSION_NAME" "$SPDECODE_VERSION_CODE" "$GITHUB_SHA" > dist/BUILD_INFO.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: SP-DECODE-BRANCH-APK-RELEASE-SIGNED
+          path: dist/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Erase signing material
+        if: always()
+        run: rm -f "$RUNNER_TEMP/spdecode-release.p12"

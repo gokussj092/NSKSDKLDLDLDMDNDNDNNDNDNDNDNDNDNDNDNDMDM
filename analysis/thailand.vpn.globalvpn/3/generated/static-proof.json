@@ -1,0 +1,30 @@
+{
+  "apkCodeExecuted": false,
+  "nativeCodeExecuted": false,
+  "jadxVersion": "1.5.6",
+  "jadxGlobalErrors": null,
+  "jadxGlobalComplete": false,
+  "sources": [
+    {
+      "path": "thailand/vpn/globalvpn/servers/ServerModule.java",
+      "sha256": "0d3169d46a228ebe783f21a5d855d13971e285d3f0f47cdc98e0cee58abee9b1"
+    },
+    {
+      "path": "thailand/vpn/globalvpn/servers/apis/ApiService.java",
+      "sha256": "92b01b810bf8c10357858941fd7858262a6d3a557d192cf6a78cb22b2213aa3e"
+    },
+    {
+      "path": "thailand/vpn/globalvpn/servers/Config.java",
+      "sha256": "f7313b27fc1a80fac43ba277ffe45458d41ca5a98fad10e2d0b79f980a774aa3"
+    },
+    {
+      "path": "thailand/vpn/globalvpn/ext/_ExtensionsKt.java",
+      "sha256": "3ea9006dd3615d0dbaa1afbca67356ef788dab47134d30b126c52e40c4aee94a"
+    },
+    {
+      "path": "thailand/vpn/globalvpn/viewModels/MainViewModel.java",
+      "sha256": "fa542c16d4c90f4b46438d4c1b0d45fd13a86d25b47be85850b34416f36b31c9"
+    }
+  ],
+  "note": "Unbounded simultaneous JADX attempts exited137. Thailand full run interrupted after relevant classes; targeted JADX runs succeeded. KHAM bounded full run exit1/26 errors; AR PRO bounded full run exit1/119 errors. Relevant call paths were reviewed separately."
+}

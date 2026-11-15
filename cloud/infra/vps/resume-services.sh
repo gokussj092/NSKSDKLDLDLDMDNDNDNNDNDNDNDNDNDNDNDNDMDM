@@ -23,6 +23,11 @@ log "Updating managed source only; existing secrets and certificates remain unch
 git -C "$REPO" pull --ff-only origin "$SPDECODE_REF" || die "Managed checkout cannot fast-forward"
 cd "$REPO"
 compose=(docker compose --project-name spdecode --env-file "$ENVFILE" -f cloud/compose.yaml)
+resources=/etc/spdecode/compose.resources.yaml
+if [[ -e "$resources" || -L "$resources" ]]; then
+  [[ -f "$resources" && -r "$resources" ]] || die "Resource override is not a readable file"
+  compose+=(-f "$resources")
+fi
 "${compose[@]}" config --quiet || die "Invalid Compose config"
 log "Building and restarting private worker, Redis and web"
 if ! "${compose[@]}" up -d --build; then

@@ -1,0 +1,2 @@
+from tests.test_catnet_vpn import CatnetCatalogTests
+from tests.test_catnet_retry import CatnetRetryTests

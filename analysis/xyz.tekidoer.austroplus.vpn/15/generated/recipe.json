@@ -1,0 +1,40 @@
+{
+  "identity": {
+    "package": "xyz.tekidoer.austroplus.vpn",
+    "versionName": "15.0.1",
+    "versionCode": 15,
+    "xapkBytes": 56213853,
+    "xapkSha256": "6f63005534a7add46791da4d0ab57fc97692d5d4820229ab547fd670946541c8",
+    "apkBytes": 26809725,
+    "apkSha256": "72b5976c94cbfa757f414af0634fda922910ad998d651c1b256ff139b89d1691",
+    "certificateSha256": [
+      "84f5332115ade1f014c654d0069dfd484c8c5e3cd2fd394323a18011ae679aea"
+    ],
+    "cryptographicApkSignatureVerified": false,
+    "apkCodeExecuted": false
+  },
+  "resolvedStrings": {
+    "resolvedStrings": 6203,
+    "sourceFiles": 192
+  },
+  "sourceSha256": {
+    "defpackage/gj.java": "2ed168aecf7229111c7abd3ed5a62334efca9eaedd849929c1d8038183c75e36",
+    "defpackage/hg3.java": "cfb6ca6af544b1d9057bab0febc8a39176752832c4efdad9caa0b01910e35398",
+    "defpackage/w14.java": "c883301b5f0f16b5dba8037cd0d17f10183eb45611cd0f10b07f558f9925ff32",
+    "defpackage/pa.java": "dbd9f1273e10b877f8a1857e4fa276a4b3a2308dd56568b5323befb519e2fc2c",
+    "com/tekidoer/austrovpn/activities/BaseActivity.java": "39aa880b028f5399031d0b779541b762274d7ea3c9fd00491dd2348a0a655b66",
+    "defpackage/hz0.java": "b8e0bf978333a5e56897624ae4201d2297c84de86cf8e0967e1c69e8d93f9951",
+    "defpackage/la.java": "2c33c5413be8af58260248baede0461e79182e89b6bce4c1cf24a352e783da09",
+    "defpackage/ka.java": "e5e74cea9fc52ab91c4373f1447521abf373f6c9075ccab474973a1665f2fb34",
+    "com/tekidoer/austrovpn/activities/MainActivity.java": "24fe08dadb5f7395aa529a5057642f92ce10130eb95736c0193396a234e033d2"
+  },
+  "embeddedBytes": 2320,
+  "embeddedSha256": "176158b99d377034803f31937efba673b53d16ff1aa4f610113d70050351f1ea",
+  "embeddedVersion": "0.0",
+  "embeddedServers": 1,
+  "embeddedTweaks": 1,
+  "updater": "https://raw.githubusercontent.com/SpkHexX/HexX/refs/heads/main/AustroTunVPN.json",
+  "catalogKdfInputSha256": "03d3c7d042135297c132def9ba08d8688198e3e20b0fbad8e13c239350e5fb90",
+  "xorInputSha256": "91bc6d4f38fa9a60d58285d5bade662dd3938f62e3b73cb679574f3abffccfe2",
+  "apkCodeExecuted": false
+}

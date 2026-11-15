@@ -1,0 +1,173 @@
+{
+  "schema_version": 1,
+  "package_name": "com.tunneltweak.loyalteams",
+  "app_name": "Tunneltweak",
+  "version_name": "6.2.3",
+  "version_code": 53,
+  "observed_at": "2026-11-09T06:07:30.818435+00:00",
+  "source_category": "public-distribution-static-and-authorized-public-catalog",
+  "authorization_note": "Owner requested method maintenance. Public client APK and public updater inspected statically; no account or subscription credentials, APK execution or authentication bypass.",
+  "status": "VERIFIED",
+  "targets": [
+    {
+      "kind": "catalog",
+      "status": "VERIFIED_REAL",
+      "scope": "complete independent oracle/Python/isolated worker JSON parity"
+    },
+    {
+      "kind": "files",
+      "status": "PARTIAL",
+      "scope": "owned synthetic vectors and backward compatibility; independent real phone exports not supplied"
+    }
+  ],
+  "inputs": {
+    "package": "com.tunneltweak.loyalteams",
+    "versionName": "6.2.3",
+    "versionCode": 53,
+    "xapkBytes": 31455919,
+    "xapkSha256": "87399209c1babdf9f1d952e752e622e17f656e8bf3c4863f7969cfac3e1ae722",
+    "apkBytes": 10581300,
+    "apkSha256": "9e99c8d964a965663d4ddbcfff0d79bfb229173aa52b11d1272f858d4d0fa178",
+    "certificateSha256": [
+      "795578ceb41ec3b22f67ad915963e5615d7faa94c486a76cc057bc65bdc60189"
+    ],
+    "certificateSha1MatchesPreviousDistribution": true,
+    "cryptographicApkSignatureVerified": false,
+    "apkCodeExecuted": false
+  },
+  "tooling": [
+    {
+      "name": "Androguard",
+      "version": "4.1.3",
+      "role": "APK manifest and certificate digest extraction; APK signature cryptographic verification not performed"
+    },
+    {
+      "name": "JADX",
+      "version": "1.5.6",
+      "script": "scripts/apk_analysis/decompile.py",
+      "mode": "auto",
+      "role": "reviewed pinned installer reused; CLI auto invoked by tools/inspect_apk.py; unrelated methods may have decompiler errors"
+    },
+    {
+      "name": "Own reproduction tools",
+      "path": "analysis/com.tunneltweak.loyalteams/53/tools",
+      "apkCodeExecuted": false
+    },
+    {
+      "name": "Independent Java/JCA oracle",
+      "path": "tests/golden/tunneltweak_oracle.java",
+      "version": "existing repository oracle; unchanged"
+    }
+  ],
+  "dependencies": [
+    {
+      "name": "androguard",
+      "version": "4.1.3",
+      "source": "https://github.com/androguard/androguard",
+      "license": "Apache-2.0",
+      "lockfile": "analysis/com.tunneltweak.loyalteams/53/dependencies.lock.json"
+    },
+    {
+      "name": "argon2-cffi",
+      "version": "25.1.0",
+      "source": "https://github.com/hynek/argon2-cffi",
+      "license": "MIT",
+      "lockfile": "analysis/com.tunneltweak.loyalteams/53/dependencies.lock.json"
+    },
+    {
+      "name": "argon2-cffi-bindings",
+      "version": "26.1.0",
+      "source": "https://github.com/hynek/argon2-cffi-bindings",
+      "license": "MIT",
+      "lockfile": "analysis/com.tunneltweak.loyalteams/53/dependencies.lock.json"
+    },
+    {
+      "name": "capstone",
+      "version": "5.0.6",
+      "source": "https://www.capstone-engine.org/",
+      "license": "BSD-3-Clause",
+      "lockfile": "analysis/com.tunneltweak.loyalteams/53/dependencies.lock.json"
+    },
+    {
+      "name": "pycryptodome",
+      "version": "3.23.0",
+      "source": "https://www.pycryptodome.org/",
+      "license": "BSD-2-Clause / Public-Domain components",
+      "lockfile": "analysis/com.tunneltweak.loyalteams/53/dependencies.lock.json"
+    },
+    {
+      "name": "pyelftools",
+      "version": "0.32",
+      "source": "https://github.com/eliben/pyelftools",
+      "license": "Public-Domain",
+      "lockfile": "analysis/com.tunneltweak.loyalteams/53/dependencies.lock.json"
+    },
+    {
+      "name": "JADX",
+      "version": "1.5.6",
+      "source": "https://github.com/skylot/jadx/releases/tag/v1.5.6",
+      "license": "Apache-2.0",
+      "checksum": "fe3e12c45acf75f92369685fd02d1d7a7323385dc725680a9b98a0dac0ea554b"
+    },
+    {
+      "name": "OpenJDK",
+      "version": "21.0.13",
+      "source": "https://openjdk.org/",
+      "license": "GPL-2.0-with-Classpath-exception"
+    },
+    {
+      "name": "Node.js",
+      "version": "24.22.1 (local research tests); 22 in CI",
+      "source": "https://nodejs.org/",
+      "license": "MIT"
+    }
+  ],
+  "code_paths": [
+    "cloud/web/lib/server-vpn-provider.mjs",
+    "cloud/web/lib/server-vpn-catalog.mjs",
+    "cloud/workers/python/catalog_vpn_bridge.py",
+    "decoders/Python/apps/Tunneltweak/codec.py",
+    "decoders/Python/apps/Tunneltweak/server_catalog_decoder.py",
+    "decoders/Python/apps/Tunneltweak/file_decoder.py",
+    "decoders/Python/apps/Tunneltweak/network.py",
+    "cloud/web/lib/tunneltweak-builds.mjs",
+    "decoders/Python/apps/Tunneltweak/build_history.py"
+  ],
+  "evidence_refs": [
+    "analysis/com.tunneltweak.loyalteams/53/ANALYSIS.md",
+    "analysis/com.tunneltweak.loyalteams/53/REPRODUCE.md",
+    "analysis/com.tunneltweak.loyalteams/53/RESULTS.md",
+    "analysis/com.tunneltweak.loyalteams/53/DEPENDENCIES.md",
+    "analysis/com.tunneltweak.loyalteams/53/dependencies.lock.json",
+    "analysis/com.tunneltweak.loyalteams/53/generated/identity.json",
+    "analysis/com.tunneltweak.loyalteams/53/generated/catalog-proof.json",
+    "analysis/com.tunneltweak.loyalteams/53/generated/static-proof.json",
+    "analysis/com.tunneltweak.loyalteams/53/generated/auto-build-proof.json",
+    "analysis/com.tunneltweak.loyalteams/53/generated/build-history-real.json",
+    "analysis/com.tunneltweak.loyalteams/53/tools/verify_auto_builds.py"
+  ],
+  "limitations": [
+    "No APK code or native application library was executed.",
+    "Certificate digest continuity checked; full APK cryptographic signature verification was not performed.",
+    "No independent real phone export or VPN connection was tested.",
+    "VPS rollout and authenticated acceptance on the operator device remain pending; no automatic deployment."
+  ],
+  "network_requirements": [
+    "Allowlisted APKPure distribution CDN for reproducible input acquisition.",
+    "Fixed original public updater only; no arbitrary destinations or private-account endpoints."
+  ],
+  "manual_steps": [
+    "Review CI and evidence, then update server web and worker from feat/nuevas-integraciones."
+  ],
+  "maintenance_20261109": {
+    "autoBuildHistory": "ENABLED",
+    "initialSeedBuild": 53,
+    "realRecoveryObserved": [
+      51,
+      53
+    ],
+    "advancement": "explicit HTTP426 update_required; prefer advertised minimum, otherwise bounded +1",
+    "temporaryOutagesDoNotInvalidateVersion": true,
+    "privateStateDefault": "/app/provider-control/tunneltweak-builds.json"
+  }
+}

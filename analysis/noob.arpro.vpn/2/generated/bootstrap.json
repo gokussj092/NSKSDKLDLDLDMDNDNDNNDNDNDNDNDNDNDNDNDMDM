@@ -1,0 +1,10 @@
+{
+  "source": "https://jezvpn.xyz/api/app?json=20ec37d9ba9316e8a793",
+  "status": 200,
+  "content_type": "text/html",
+  "bytes": 195,
+  "sha256": "5b131ca14aa96311d3432b0062c7443d3b0e6346ec279bd376a75f0a76bcd5d7",
+  "html": true,
+  "authorization": "none in original GET",
+  "agent_scope": "analytical HttpURLConnection Android profile, not physical device capture"
+}

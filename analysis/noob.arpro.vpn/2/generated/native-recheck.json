@@ -1,0 +1,56 @@
+{
+  "librarySha256": "e4388396c5b5e7c4da6b22db50cb43605509b0c6cae75526fe20f45be6aebd32",
+  "methods": [
+    {
+      "name": "a",
+      "signature": "([BIZ)Ljava/lang/String;",
+      "address": "0x47aeb8"
+    },
+    {
+      "name": "b",
+      "signature": "(Ljava/lang/String;IZ)[B",
+      "address": "0x47b0a4"
+    },
+    {
+      "name": "c",
+      "signature": "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V",
+      "address": "0x479538"
+    },
+    {
+      "name": "d",
+      "signature": "(Ljava/lang/String;)Ljava/lang/String;",
+      "address": "0x479b34"
+    },
+    {
+      "name": "e",
+      "signature": "(Ljava/lang/String;)Ljava/lang/String;",
+      "address": "0x47b6dc"
+    },
+    {
+      "name": "f",
+      "signature": "(Ljava/lang/String;)Ljava/lang/String;",
+      "address": "0x47c0d0"
+    },
+    {
+      "name": "g",
+      "signature": "(Ljava/lang/Object;Z)V",
+      "address": "0x47c4d4"
+    },
+    {
+      "name": "h",
+      "signature": "(ILjava/lang/String;)Ljava/lang/String;",
+      "address": "0x47c710"
+    },
+    {
+      "name": "i",
+      "signature": "(ILjava/lang/String;)Ljava/lang/String;",
+      "address": "0x47c9b0"
+    },
+    {
+      "name": "j",
+      "signature": "(Ljava/lang/String;)V",
+      "address": "0x47cc58"
+    }
+  ],
+  "nativeCodeExecuted": false
+}

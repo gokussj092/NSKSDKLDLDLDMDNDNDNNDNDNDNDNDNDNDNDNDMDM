@@ -1,3 +1,7 @@
+# Actualización 2026-11-09
+
+La evidencia vigente está en [RESULTS.md](../../../../analysis/core.vpn3jx.xtreme/16/RESULTS.md) y su [REPRODUCE.md](../../../../analysis/core.vpn3jx.xtreme/16/REPRODUCE.md). El informe histórico siguiente se conserva y no describe el build actual.
+
 # Comprobaciones: Wolf Custom VPN build 13
 
 Fecha de análisis: 2026-10-31. Cuenta Goku, rama

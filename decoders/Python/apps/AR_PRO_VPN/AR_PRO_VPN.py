@@ -1,0 +1,472 @@
+#!/usr/bin/env python3
+"""AR PRO VPN 1.0 (noob.arpro.vpn): catalog decoder, local or explicit HTTPS.
+
+Standalone Python 3.10+, standard library only; no APK needed at runtime.
+For .ar profile files use AR_PRO_VPN_archivos.py. See README.md here.
+
+Method (verified against this APK, versionCode 1, versionName 1.0):
+  GET https://jezvpn.xyz/api/app?json=0b791e09b974f136ed62   (plain GET,
+  no custom headers, no auth; the app reads the URL from the
+  "DefUpdateUrL" preference whose default is this endpoint)
+  -> response body is one Base64 line
+  -> Base64 decode -> XXTEA decrypt (delta 0x9a7393b4, key "HexXVPNPass"
+     padded with zero bytes to 16; last word is the plaintext length,
+     as in the app's lv0/KR0 path)
+  -> JSON with Version, Servers, Tweaks and ad/timer fields
+  -> every string value that is a valid Base64 AES ciphertext is
+     decrypted with the app's Jdecrypt (AES/CBC/PKCS5Padding, key =
+     SHA-256 of the native key string below, fixed IV 01 23 45 67 89 ab
+     cd ef 10 32 54 76 98 ba dc fe); plaintext fields stay as-is.
+The endpoint ignores Range (it answers 200 with the full body), so a
+truncated download is handled by retrying the plain GET; the XXTEA
+length word plus the JSON parse validate that the body is complete.
+"""
+from __future__ import annotations
+
+import argparse
+import base64
+import binascii
+from http.client import HTTPException
+import json
+import math
+from pathlib import Path
+import re
+import struct
+import sys
+import time
+from urllib.error import HTTPError, URLError
+from urllib.parse import urlsplit
+from urllib.request import HTTPRedirectHandler, Request, build_opener
+
+MAX_BYTES = 32 * 1024 * 1024
+MAX_DEPTH = 64
+MAX_NODES = 1_000_000
+MASK = 0xffffffff
+XXTEA_DELTA = 0x9A7393B4
+CATALOG_KEY = b"HexXVPNPass"
+CATALOG_URL = "https://jezvpn.xyz/api/app?json=0b791e09b974f136ed62"
+# Jdecrypt key: the native key string passed by libwg-pro.so (NoobCrypt
+# Jdecrypt) to AESCBCEncryptor.decrypt; a format constant, not a password.
+JDECRYPT_KEY = (
+    b"AESCBCcrptor;Java/com/jztunnel_vpn_libandroid.so_:crypto_NativeCrypto"
+    b"/Fdecrypt/(Ljava/lang/String;Ljava/lang/Strin"
+)
+JDECRYPT_IV = bytes(
+    [1, 35, 69, 103, 0x89, 0xAB, 0xCD, 0xEF,
+     0x10, 0x32, 0x54, 0x76, 0x98, 0xBA, 0xDC, 0xFE]
+)
+
+
+class DecodeError(ValueError):
+    def __init__(self, code: str, message: str):
+        super().__init__(message)
+        self.code = code
+
+
+# ---------------------------------------------------------------- AES (pure python, stdlib only)
+
+_SBOX = (
+    0x63, 0x7c, 0x77, 0x7b, 0xf2, 0x6b, 0x6f, 0xc5, 0x30, 0x01, 0x67, 0x2b,
+    0xfe, 0xd7, 0xab, 0x76, 0xca, 0x82, 0xc9, 0x7d, 0xfa, 0x59, 0x47, 0xf0,
+    0xad, 0xd4, 0xa2, 0xaf, 0x9c, 0xa4, 0x72, 0xc0, 0xb7, 0xfd, 0x93, 0x26,
+    0x36, 0x3f, 0xf7, 0xcc, 0x34, 0xa5, 0xe5, 0xf1, 0x71, 0xd8, 0x31, 0x15,
+    0x04, 0xc7, 0x23, 0xc3, 0x18, 0x96, 0x05, 0x9a, 0x07, 0x12, 0x80, 0xe2,
+    0xeb, 0x27, 0xb2, 0x75, 0x09, 0x83, 0x2c, 0x1a, 0x1b, 0x6e, 0x5a, 0xa0,
+    0x52, 0x3b, 0xd6, 0xb3, 0x29, 0xe3, 0x2f, 0x84, 0x53, 0xd1, 0x00, 0xed,
+    0x20, 0xfc, 0xb1, 0x5b, 0x6a, 0xcb, 0xbe, 0x39, 0x4a, 0x4c, 0x58, 0xcf,
+    0xd0, 0xef, 0xaa, 0xfb, 0x43, 0x4d, 0x33, 0x85, 0x45, 0xf9, 0x02, 0x7f,
+    0x50, 0x3c, 0x9f, 0xa8, 0x51, 0xa3, 0x40, 0x8f, 0x92, 0x9d, 0x38, 0xf5,
+    0xbc, 0xb6, 0xda, 0x21, 0x10, 0xff, 0xf3, 0xd2, 0xcd, 0x0c, 0x13, 0xec,
+    0x5f, 0x97, 0x44, 0x17, 0xc4, 0xa7, 0x7e, 0x3d, 0x64, 0x5d, 0x19, 0x73,
+    0x60, 0x81, 0x4f, 0xdc, 0x22, 0x2a, 0x90, 0x88, 0x46, 0xee, 0xb8, 0x14,
+    0xde, 0x5e, 0x0b, 0xdb, 0xe0, 0x32, 0x3a, 0x0a, 0x49, 0x06, 0x24, 0x5c,
+    0xc2, 0xd3, 0xac, 0x62, 0x91, 0x95, 0xe4, 0x79, 0xe7, 0xc8, 0x37, 0x6d,
+    0x8d, 0xd5, 0x4e, 0xa9, 0x6c, 0x56, 0xf4, 0xea, 0x65, 0x7a, 0xae, 0x08,
+    0xba, 0x78, 0x25, 0x2e, 0x1c, 0xa6, 0xb4, 0xc6, 0xe8, 0xdd, 0x74, 0x1f,
+    0x4b, 0xbd, 0x8b, 0x8a, 0x70, 0x3e, 0xb5, 0x66, 0x48, 0x03, 0xf6, 0x0e,
+    0x61, 0x35, 0x57, 0xb9, 0x86, 0xc1, 0x1d, 0x9e, 0xe1, 0xf8, 0x98, 0x11,
+    0x69, 0xd9, 0x8e, 0x94, 0x9b, 0x1e, 0x87, 0xe9, 0xce, 0x55, 0x28, 0xdf,
+    0x8c, 0xa1, 0x89, 0x0d, 0xbf, 0xe6, 0x42, 0x68, 0x41, 0x99, 0x2d, 0x0f,
+    0xb0, 0x54, 0xbb, 0x16,
+)
+_INV_SBOX = (
+    0x52, 0x09, 0x6a, 0xd5, 0x30, 0x36, 0xa5, 0x38, 0xbf, 0x40, 0xa3, 0x9e,
+    0x81, 0xf3, 0xd7, 0xfb, 0x7c, 0xe3, 0x39, 0x82, 0x9b, 0x2f, 0xff, 0x87,
+    0x34, 0x8e, 0x43, 0x44, 0xc4, 0xde, 0xe9, 0xcb, 0x54, 0x7b, 0x94, 0x32,
+    0xa6, 0xc2, 0x23, 0x3d, 0xee, 0x4c, 0x95, 0x0b, 0x42, 0xfa, 0xc3, 0x4e,
+    0x08, 0x2e, 0xa1, 0x66, 0x28, 0xd9, 0x24, 0xb2, 0x76, 0x5b, 0xa2, 0x49,
+    0x6d, 0x8b, 0xd1, 0x25, 0x72, 0xf8, 0xf6, 0x64, 0x86, 0x68, 0x98, 0x16,
+    0xd4, 0xa4, 0x5c, 0xcc, 0x5d, 0x65, 0xb6, 0x92, 0x6c, 0x70, 0x48, 0x50,
+    0xfd, 0xed, 0xb9, 0xda, 0x5e, 0x15, 0x46, 0x57, 0xa7, 0x8d, 0x9d, 0x84,
+    0x90, 0xd8, 0xab, 0x00, 0x8c, 0xbc, 0xd3, 0x0a, 0xf7, 0xe4, 0x58, 0x05,
+    0xb8, 0xb3, 0x45, 0x06, 0xd0, 0x2c, 0x1e, 0x8f, 0xca, 0x3f, 0x0f, 0x02,
+    0xc1, 0xaf, 0xbd, 0x03, 0x01, 0x13, 0x8a, 0x6b, 0x3a, 0x91, 0x11, 0x41,
+    0x4f, 0x67, 0xdc, 0xea, 0x97, 0xf2, 0xcf, 0xce, 0xf0, 0xb4, 0xe6, 0x73,
+    0x96, 0xac, 0x74, 0x22, 0xe7, 0xad, 0x35, 0x85, 0xe2, 0xf9, 0x37, 0xe8,
+    0x1c, 0x75, 0xdf, 0x6e, 0x47, 0xf1, 0x1a, 0x71, 0x1d, 0x29, 0xc5, 0x89,
+    0x6f, 0xb7, 0x62, 0x0e, 0xaa, 0x18, 0xbe, 0x1b, 0xfc, 0x56, 0x3e, 0x4b,
+    0xc6, 0xd2, 0x79, 0x20, 0x9a, 0xdb, 0xc0, 0xfe, 0x78, 0xcd, 0x5a, 0xf4,
+    0x1f, 0xdd, 0xa8, 0x33, 0x88, 0x07, 0xc7, 0x31, 0xb1, 0x12, 0x10, 0x59,
+    0x27, 0x80, 0xec, 0x5f, 0x60, 0x51, 0x7f, 0xa9, 0x19, 0xb5, 0x4a, 0x0d,
+    0x2d, 0xe5, 0x7a, 0x9f, 0x93, 0xc9, 0x9c, 0xef, 0xa0, 0xe0, 0x3b, 0x4d,
+    0xae, 0x2a, 0xf5, 0xb0, 0xc8, 0xeb, 0xbb, 0x3c, 0x83, 0x53, 0x99, 0x61,
+    0x17, 0x2b, 0x04, 0x7e, 0xba, 0x77, 0xd6, 0x26, 0xe1, 0x69, 0x14, 0x63,
+    0x55, 0x21, 0x0c, 0x7d,
+)
+_RCON = (0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x1b, 0x36)
+
+
+def _xtime(a):
+    return ((a << 1) ^ 0x1b) & 0xff if a & 0x80 else (a << 1) & 0xff
+
+
+def _mul(a, b):
+    r = 0
+    while b:
+        if b & 1:
+            r ^= a
+        a = _xtime(a)
+        b >>= 1
+    return r
+
+
+def _key_expansion(key):
+    nk = len(key) // 4
+    nr = nk + 6
+    w = [list(key[4 * i:4 * i + 4]) for i in range(nk)]
+    for i in range(nk, 4 * (nr + 1)):
+        t = list(w[i - 1])
+        if i % nk == 0:
+            t = [_SBOX[t[1]] ^ _RCON[i // nk - 1], _SBOX[t[2]],
+                 _SBOX[t[3]], _SBOX[t[0]]]
+        elif nk > 6 and i % nk == 4:
+            t = [_SBOX[b] for b in t]
+        w.append([w[i - nk][j] ^ t[j] for j in range(4)])
+    return w, nr
+
+
+def _add_rk(s, w, rnd):
+    for c in range(4):
+        for r in range(4):
+            s[4 * c + r] ^= w[4 * rnd + c][r]
+
+
+def _sub(s, inv=False):
+    box = _INV_SBOX if inv else _SBOX
+    for i in range(16):
+        s[i] = box[s[i]]
+
+
+def _shift(s, inv=False):
+    for r in range(1, 4):
+        row = [s[4 * c + r] for c in range(4)]
+        sh = (4 - r) if inv else r
+        row = row[sh:] + row[:sh]
+        for c in range(4):
+            s[4 * c + r] = row[c]
+
+
+def _mix(s, inv=False):
+    for c in range(4):
+        a = s[4 * c:4 * c + 4]
+        if inv:
+            s[4 * c + 0] = _mul(a[0], 14) ^ _mul(a[1], 11) ^ _mul(a[2], 13) ^ _mul(a[3], 9)
+            s[4 * c + 1] = _mul(a[0], 9) ^ _mul(a[1], 14) ^ _mul(a[2], 11) ^ _mul(a[3], 13)
+            s[4 * c + 2] = _mul(a[0], 13) ^ _mul(a[1], 9) ^ _mul(a[2], 14) ^ _mul(a[3], 11)
+            s[4 * c + 3] = _mul(a[0], 11) ^ _mul(a[1], 13) ^ _mul(a[2], 9) ^ _mul(a[3], 14)
+        else:
+            s[4 * c + 0] = _mul(a[0], 2) ^ _mul(a[1], 3) ^ a[2] ^ a[3]
+            s[4 * c + 1] = a[0] ^ _mul(a[1], 2) ^ _mul(a[2], 3) ^ a[3]
+            s[4 * c + 2] = a[0] ^ a[1] ^ _mul(a[2], 2) ^ _mul(a[3], 3)
+            s[4 * c + 3] = _mul(a[0], 3) ^ a[1] ^ a[2] ^ _mul(a[3], 2)
+
+
+def _aes_decrypt_block(key, block):
+    w, nr = _key_expansion(key)
+    s = list(block)
+    _add_rk(s, w, nr)
+    for rnd in range(nr - 1, 0, -1):
+        _sub(s, True)
+        _shift(s, True)
+        _add_rk(s, w, rnd)
+        _mix(s, True)
+    _sub(s, True)
+    _shift(s, True)
+    _add_rk(s, w, 0)
+    return bytes(s)
+
+
+def _aes_cbc_decrypt(key, iv, data):
+    if len(data) % 16:
+        raise ValueError("ciphertext length must be a multiple of 16")
+    out = bytearray()
+    prev = iv
+    for i in range(0, len(data), 16):
+        blk = data[i:i + 16]
+        dec = _aes_decrypt_block(key, blk)
+        out += bytes(a ^ b for a, b in zip(dec, prev))
+        prev = blk
+    return bytes(out)
+
+
+def _pkcs7_unpad(data):
+    if not data:
+        raise ValueError("empty data")
+    pad = data[-1]
+    if pad < 1 or pad > 16 or data[-pad:] != bytes([pad]) * pad:
+        raise ValueError("bad PKCS#7 padding")
+    return data[:-pad]
+
+
+# ---------------------------------------------------------------- helpers
+
+def _text(data):
+    if not isinstance(data, (bytes, str)):
+        raise DecodeError("FORMAT_ERROR", "Se esperaba texto o bytes UTF-8.")
+    if len(data) > MAX_BYTES:
+        raise DecodeError("SIZE_LIMIT", "La entrada supera el límite de tamaño.")
+    try:
+        value = data.decode("utf-8-sig") if isinstance(data, bytes) else data.removeprefix("\ufeff")
+        if len(value.encode("utf-8")) > MAX_BYTES:
+            raise DecodeError("SIZE_LIMIT", "La entrada supera el límite de tamaño.")
+    except UnicodeError as exc:
+        raise DecodeError("FORMAT_ERROR", "La entrada no es UTF-8 válido.") from exc
+    return value.strip()
+
+
+def _base64(text):
+    compact = re.sub(r"[ \t\r\n]", "", text)
+    if not re.fullmatch(r"[A-Za-z0-9+/]+={0,2}", compact) or len(compact) % 4 == 1:
+        raise DecodeError("FORMAT_ERROR", "Se esperaba Base64 estándar.")
+    try:
+        return base64.b64decode(compact + "=" * (-len(compact) % 4), validate=True)
+    except (ValueError, binascii.Error) as exc:
+        raise DecodeError("FORMAT_ERROR", "Base64 inválido.") from exc
+
+
+def _unique(pairs):
+    result = {}
+    for key, value in pairs:
+        if key in result:
+            raise ValueError("duplicate key")
+        result[key] = value
+    return result
+
+
+def _nonfinite(_value):
+    raise ValueError("nonfinite number")
+
+
+def _validate(doc):
+    pending, count = [(doc, 0)], 0
+    while pending:
+        value, depth = pending.pop()
+        count += 1
+        if depth > MAX_DEPTH or count > MAX_NODES:
+            raise DecodeError("SIZE_LIMIT", "El JSON supera el límite de complejidad.")
+        if isinstance(value, dict):
+            pending.extend((v, depth + 1) for v in value.values())
+            pending.extend((k, depth + 1) for k in value)
+        elif isinstance(value, list):
+            pending.extend((v, depth + 1) for v in value)
+        elif isinstance(value, float) and not math.isfinite(value):
+            raise DecodeError("INVALID_JSON", "Número JSON no finito.")
+        elif isinstance(value, str):
+            try:
+                value.encode("utf-8")
+            except UnicodeError as exc:
+                raise DecodeError("INVALID_JSON", "Unicode JSON inválido.") from exc
+    return doc
+
+
+def _json(data):
+    try:
+        doc = json.loads(data, object_pairs_hook=_unique, parse_constant=_nonfinite)
+    except (ValueError, UnicodeError, RecursionError) as exc:
+        raise DecodeError("INVALID_JSON", "JSON inválido o con claves duplicadas.") from exc
+    if not isinstance(doc, dict):
+        raise DecodeError("WRONG_DOCUMENT", "El documento debe contener un objeto JSON.")
+    return _validate(doc)
+
+
+# ---------------------------------------------------------------- XXTEA (app variant)
+
+def _mx(total, y, z, position, e, key):
+    return (((total ^ y) + (key[(position & 3) ^ e] ^ z))
+            ^ (((z >> 5) ^ (y << 2)) + ((y >> 3) ^ (z << 4)))) & MASK
+
+
+def xxtea_decrypt(data, key=CATALOG_KEY):
+    """XXTEA decrypt with the app's delta; last word is the plain length."""
+    if len(data) < 8 or len(data) % 4:
+        raise DecodeError("TRUNCATED", "El cuerpo no contiene palabras XXTEA completas.")
+    values = list(struct.unpack("<" + "I" * (len(data) // 4), data))
+    key = struct.unpack("<4I", key[:16].ljust(16, b"\0"))
+    count = len(values)
+    total = ((6 + 52 // count) * XXTEA_DELTA) & MASK
+    y = values[0]
+    while total:
+        e = (total >> 2) & 3
+        for position in range(count - 1, 0, -1):
+            values[position] = (values[position] - _mx(total, y, values[position - 1], position, e, key)) & MASK
+            y = values[position]
+        values[0] = (values[0] - _mx(total, y, values[-1], 0, e, key)) & MASK
+        y = values[0]
+        total = (total - XXTEA_DELTA) & MASK
+    length = values[-1]
+    maximum = count * 4 - 4
+    if not maximum - 3 <= length <= maximum:
+        raise DecodeError("DECRYPT_FAILED", "La longitud interna XXTEA no es válida para esta aplicación.")
+    return struct.pack("<" + "I" * (count - 1), *values[:-1])[:length]
+
+
+# ---------------------------------------------------------------- Jdecrypt (AES-CBC)
+
+def _sha256(data):
+    import hashlib
+    return hashlib.sha256(data).digest()
+
+
+def jdecrypt(value):
+    """App Jdecrypt: AES/CBC/PKCS5Padding, key = SHA-256(native key string).
+
+    Returns the plaintext string, or None when the value is not a Jdecrypt
+    ciphertext (wrong length, bad padding, or not UTF-8).
+    """
+    try:
+        raw = base64.b64decode(value, validate=True)
+    except (ValueError, binascii.Error):
+        return None
+    if not raw or len(raw) % 16:
+        return None
+    try:
+        plain = _pkcs7_unpad(_aes_cbc_decrypt(_sha256(JDECRYPT_KEY), JDECRYPT_IV, raw))
+        return plain.decode("utf-8")
+    except (ValueError, UnicodeError):
+        return None
+
+
+def _decrypt_fields(doc):
+    """Recursively Jdecrypt every string value that is a Jdecrypt ciphertext."""
+    if isinstance(doc, dict):
+        return {k: _decrypt_fields(v) for k, v in doc.items()}
+    if isinstance(doc, list):
+        return [_decrypt_fields(v) for v in doc]
+    if isinstance(doc, str):
+        decrypted = jdecrypt(doc)
+        return decrypted if decrypted is not None else doc
+    return doc
+
+
+# ---------------------------------------------------------------- catalog
+
+def decrypt_catalog_bytes(data):
+    """Base64 response body -> XXTEA -> catalog JSON bytes."""
+    return xxtea_decrypt(_base64(_text(data)))
+
+
+def decode(data):
+    """Offline API: decrypt the complete catalog and return its dict."""
+    doc = _json(decrypt_catalog_bytes(data))
+    if "Servers" not in doc or "Tweaks" not in doc:
+        raise DecodeError("WRONG_DOCUMENT", "El catálogo no trae Servers ni Tweaks.")
+    if not isinstance(doc["Servers"], list) or not isinstance(doc["Tweaks"], list):
+        raise DecodeError("WRONG_DOCUMENT", "Servers y Tweaks deben ser listas.")
+    return _decrypt_fields(doc)
+
+
+def run(file_bytes):
+    """Offline API: complete catalog JSON or None; never a partial list."""
+    try:
+        return json.dumps(decode(file_bytes), ensure_ascii=False, indent=2, allow_nan=False) + "\n"
+    except DecodeError:
+        return None
+
+
+# ---------------------------------------------------------------- download
+
+def _https_url(url):
+    parsed = urlsplit(url)
+    if (parsed.scheme != "https" or not parsed.hostname or parsed.username is not None
+            or parsed.password is not None or parsed.fragment):
+        raise ValueError("invalid HTTPS URL")
+    return parsed
+
+
+class _NoRedirect(HTTPRedirectHandler):
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        return None
+
+
+def _plain_get(url, timeout=25):
+    """One plain GET exactly as the app makes it: no custom headers, no auth.
+
+    The server answers with chunked encoding and no Content-Length, so
+    completeness is validated by the XXTEA/JSON decode afterwards.
+    """
+    request = Request(url, method="GET")
+    with build_opener(_NoRedirect()).open(request, timeout=timeout) as response:
+        if response.status != 200:
+            raise DecodeError("DOWNLOAD_FAILED", "El endpoint no devolvió HTTP 200.")
+        data = response.read(MAX_BYTES + 1)
+    if not data or len(data) > MAX_BYTES:
+        raise DecodeError("DOWNLOAD_FAILED", "La respuesta está vacía o supera el límite.")
+    return data
+
+
+def fetch_catalog(url=CATALOG_URL):
+    """Download the catalog, retrying the plain GET; validates by decoding.
+
+    The endpoint ignores Range (it answers 200 with the full body), so
+    range resume is not available here; a truncated body fails the XXTEA
+    length check and the GET is retried.
+    """
+    _https_url(url)
+    last_error = None
+    for _ in range(3):
+        try:
+            data = _plain_get(url)
+            decode(data)
+            return data
+        except (DecodeError, OSError, HTTPError, URLError, HTTPException) as exc:
+            last_error = exc
+            time.sleep(1)
+    raise DecodeError(
+        "DOWNLOAD_FAILED",
+        "No se pudo descargar un catálogo válido de AR PRO VPN.",
+    ) from last_error
+
+
+def _read(path):
+    with path.open("rb") as stream:
+        data = stream.read(MAX_BYTES + 1)
+    if len(data) > MAX_BYTES:
+        raise DecodeError("SIZE_LIMIT", "El archivo supera el límite de tamaño.")
+    return data
+
+
+def main(argv=None):
+    parser = argparse.ArgumentParser(description=__doc__)
+    source = parser.add_mutually_exclusive_group(required=True)
+    source.add_argument("file", nargs="?", type=Path, help="Respuesta del catálogo guardada localmente")
+    source.add_argument("--url", nargs="?", const=CATALOG_URL, help="Descarga explícita; por defecto usa el endpoint original")
+    parser.add_argument("-o", "--output", type=Path, help="Guardar JSON completo; por defecto stdout")
+    args = parser.parse_args(argv)
+    try:
+        result = decode(fetch_catalog(args.url) if args.url is not None else _read(args.file))
+        rendered = json.dumps(result, ensure_ascii=False, indent=2, allow_nan=False) + "\n"
+        if args.output:
+            args.output.write_text(rendered, encoding="utf-8")
+        else:
+            sys.stdout.write(rendered)
+        return 0
+    except DecodeError as exc:
+        print(json.dumps({"error": exc.code, "message": str(exc)}, ensure_ascii=False), file=sys.stderr)
+        return 1
+    except OSError:
+        print(json.dumps({"error": "IO_ERROR", "message": "No se pudo leer o escribir el archivo."}), file=sys.stderr)
+        return 2
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

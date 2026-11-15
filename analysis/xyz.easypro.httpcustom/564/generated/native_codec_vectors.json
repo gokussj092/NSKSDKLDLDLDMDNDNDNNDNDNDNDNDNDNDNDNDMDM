@@ -1,0 +1,21 @@
+{
+  "source_sha256": "16f41ddccf24ffb14ddf6719a9df94cae60425a92d04097475770a407791a2e0",
+  "jni_entry": "0xfe6c",
+  "vectors": [
+    {
+      "algorithm": 2,
+      "plaintext": "Native synthetic {\"a\":[1,null,true]}",
+      "encoded": "QW95ZX1vKXt+aHFsZnZoY9+F350tNFY9J2R8ZGsqcXZ2Z1x9"
+    },
+    {
+      "algorithm": 3,
+      "plaintext": "Native synthetic {\"a\":[1,null,true]}",
+      "encoded": "Rmh+YnpoLnxof3FsZnZoY9+F350qM1E6IGN7Y309cXZ2Z1x9"
+    },
+    {
+      "algorithm": 4,
+      "plaintext": "Native synthetic {\"a\":[1,null,true]}",
+      "encoded": "o42fg5+Nx5WcinFsZnZoY9+F353P1rDbxYaSionIcXZ2Z1x9"
+    }
+  ]
+}

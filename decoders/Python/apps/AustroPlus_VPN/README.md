@@ -1,3 +1,9 @@
+# Actualización 2026-11-09 — build15
+
+Catálogo actual: nueva fuente AustroTunVPN.json y esquema de campos en minúsculas, con compatibilidad build13. Paridad completa Java/Python/worker:5 servidores y174 ajustes. Evidencia y herramientas: [expediente build15](../../../../analysis/xyz.tekidoer.austroplus.vpn/15/RESULTS.md). Archivos build15 independientes no certificados.
+
+## Documento histórico build13
+
 # AustroPlus VPN 13.0.1
 
 Paquete `xyz.tekidoer.austroplus.vpn`, versionCode **13**. Lectores separados

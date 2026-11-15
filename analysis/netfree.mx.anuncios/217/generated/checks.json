@@ -1,0 +1,61 @@
+{
+  "pythonTests": 10,
+  "nodeTests": 154,
+  "allPassed": true,
+  "commands": [
+    {
+      "runtime": "python",
+      "exit_code": 0,
+      "cwd": ".",
+      "arguments": [
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "analysis/netfree.mx.anuncios/217/tests",
+        "-v"
+      ],
+      "log": "python.log"
+    },
+    {
+      "runtime": "node",
+      "exit_code": 0,
+      "cwd": "cloud/web",
+      "arguments": [
+        "--test",
+        "tests/speicers-turbo-vpn.test.mjs",
+        "tests/http-conexion.test.mjs",
+        "tests/namo-vpn.test.mjs",
+        "tests/fnf-tunnel-bd.test.mjs",
+        "tests/alsaher-vip.test.mjs",
+        "tests/halcon-r-net.test.mjs",
+        "tests/server-vpn-provider.test.mjs",
+        "tests/server-vpn-worker-contract.test.mjs",
+        "tests/alfaisal-tunnel-plus.test.mjs",
+        "tests/server-vpn-catalog.test.mjs",
+        "tests/zig-tunnel.test.mjs",
+        "tests/mm-tunnel.test.mjs",
+        "tests/text-format-catalog.test.mjs",
+        "tests/vip-snipher-pro.test.mjs",
+        "tests/server-vpn-any-speicers.test.mjs",
+        "tests/enaa-tunnel.test.mjs",
+        "tests/ultra-tunnel.test.mjs",
+        "tests/jyfast-vpn-ultra.test.mjs"
+      ],
+      "log": "node.log"
+    }
+  ],
+  "nodeReal": {
+    "transport": "REAL_HTTP",
+    "status": "NETWORK_UNAVAILABLE",
+    "code": "REMOTE_NETWORK_DENIED"
+  },
+  "nodeReplay": {
+    "transport": "SIMULATED_HTTP_REAL_BYTES",
+    "status": "PASS",
+    "calls": 2,
+    "whole_worker_contract_equal": true,
+    "servers": 266,
+    "users": 2
+  }
+}

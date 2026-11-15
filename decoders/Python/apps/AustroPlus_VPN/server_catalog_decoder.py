@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""AustroPlus VPN 13.0.1: fetch its fixed catalog, or decode a local encrypted catalog copy."""
+"""AustroPlus VPN 15.0.1 updater, compatible build13/build15 offline catalogs."""
 from __future__ import annotations
 import argparse
 from pathlib import Path
@@ -11,7 +11,7 @@ if __package__:
 else:
     from codec import DecodeError, MAX_BYTES, decode_catalog, render
 
-CATALOG_URL = "https://raw.githubusercontent.com/SpkHexX/HexX/refs/heads/main/AustroPlusVPN.json"
+CATALOG_URL = "https://raw.githubusercontent.com/SpkHexX/HexX/refs/heads/main/AustroTunVPN.json"
 
 
 class _NoRedirect(HTTPRedirectHandler):
@@ -20,7 +20,7 @@ class _NoRedirect(HTTPRedirectHandler):
 
 
 def download() -> bytes:
-    request = Request(CATALOG_URL, headers={"User-Agent": "AustroPlus VPN/13.0.1", "Accept-Encoding": "identity"})
+    request = Request(CATALOG_URL, headers={"User-Agent": "AustroPlus VPN/15.0.1", "Accept-Encoding": "identity"})
     try:
         with build_opener(_NoRedirect()).open(request, timeout=25) as response:
             if response.status != 200 or response.headers.get("Content-Encoding", "identity") != "identity":

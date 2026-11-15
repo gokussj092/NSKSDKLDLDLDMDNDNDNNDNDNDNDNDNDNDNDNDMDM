@@ -1,7 +1,7 @@
 # SP-DECODE — POLÍTICA OBLIGATORIA DE EVIDENCIAS Y SCRIPTS POR APLICACIÓN
 
 **Vigencia documental:** 2026-11-02.  
-**Estado:** regla de trabajo **OBLIGATORIA para nuevas investigaciones y revisiones**, con automatización CI pendiente de implementación.  
+**Estado:** regla de trabajo **OBLIGATORIA para nuevas investigaciones y revisiones**. **CI inicial F7-A0 IMPLEMENTADO y VALIDADO** (2026-11-06); su cobertura ampliada sigue **PARCIAL**; la protección obligatoria de rama es **OPCIONAL Y APLAZADA por decisión del propietario**. [Registro de avance](../docs/FASE_7_SEGUIMIENTO_ESTADOS_Y_PENDIENTES_2026_11_06.md).  
 **Ámbito:** todo método de archivo, texto, catálogo VPN, descarga autorizada, exportación compatible, actualización de decodificador y nuevo proveedor que se integre en SP-DECODE.  
 **Carpeta maestra:** analysis/ (nombre del repositorio en inglés). No confundir con scripts/apk_analysis/ ni con la documentación ANALYSIS.md existente dentro de cada decodificador.
 
@@ -79,7 +79,7 @@ Campos mínimos que el validador CI deberá exigir:
 
 ## 2.1. Registro obligatorio de herramientas, librerías y dependencias
 
-La regla estricta cubre **scripts propios, herramientas nuevas y de terceros, librerías, paquetes, runtimes, plugins y dependencias directas/transitivas relevantes** utilizados realmente durante una investigación, corrección o prueba. Guardar solo el script de descifrado NO satisface esta política. Esta exigencia documental es vigente; la instalación automática y el bloqueo en CI permanecen PENDIENTES.
+La regla estricta cubre **scripts propios, herramientas nuevas y de terceros, librerías, paquetes, runtimes, plugins y dependencias directas/transitivas relevantes** utilizados realmente durante una investigación, corrección o prueba. Guardar solo el script de descifrado NO satisface esta política. Esta exigencia documental es vigente; la instalación automática continúa **DESHABILITADA**. Existe un validador CI **parcial**, pero la ampliación de cobertura y su condición de check requerido para merge siguen **PENDIENTES**.
 
 ### Expediente obligatorio por aplicación y build
 
@@ -102,6 +102,23 @@ La regla estricta cubre **scripts propios, herramientas nuevas y de terceros, li
 
 **Ejemplos meramente ilustrativos:** PyCryptodome (paquete Python normalmente importado como `Crypto`), implementaciones de Argon2 como `argon2-cffi`, JADX, apktool y una herramienta «Hydra» específicamente identificada. Los ejemplos NO acreditan que esas dependencias estén instaladas, usadas ni aprobadas en SP-DECODE.
 
+## 2.2. Auditoría HMAC de conexión, separada del catálogo — 2026-11-09
+
+Toda investigación nueva o revisión debe comprobar y documentar si existe HMAC y cuál es su finalidad. No confundir estos ámbitos:
+
+| Ámbito | Evidencia necesaria |
+| --- | --- |
+| Archivo/catálogo | Verificación de integridad, derivación de una clave de formato u otra operación local documentada. |
+| Transporte VPN | MAC del protocolo de transporte, distinguiéndolo de la autenticación de una cuenta o cliente. |
+| Autenticación de conexión | Evidencia de que un verificador del servicio usa ese HMAC para autorizar el establecimiento de la conexión. |
+| Desconocido | Referencias estáticas o marcadores sin trazado suficiente: mantener UNCONFIRMED. |
+
+Registrar en el expediente `connection_authentication`: versión/paquete, estado (`CONFIRMED`, `NOT_OBSERVED` o `UNCONFIRMED`), algoritmo si está probado, ámbito, procedencia por categoría del material (negociado por sesión, Keystore, configuración autorizada o desconocida), verificador observado, fuente de evidencia y limitaciones. `NOT_OBSERVED` solo describe la cobertura revisada; no prueba ausencia universal. Referencias de bibliotecas, `Mac.init`, nombres de algoritmos o una cadena de 16 caracteres no bastan para confirmar el propósito.
+
+La auditoría conserva conteos, hashes y conclusiones sanitizadas. No captura, extrae, imprime ni versiona secretos de autenticación de servicios ajenos, claves de sesión, tokens, entradas/salidas sensibles de hooks o generadores reutilizables para suplantar al cliente. Las pruebas de autenticación se hacen con secretos ficticios o material suministrado por el propietario del servicio por sus mecanismos autorizados, sin incluir sus valores en Git.
+
+Esta regla añade una comprobación documental a la investigación. No activa nuevos adaptadores F7, instrumentación automática, pruebas contra servicios o un bloqueo CI adicional. La extracción de un catálogo no certifica la autenticación de una conexión VPN.
+
 ## 3. Prohibiciones y manejo de materiales
 
 - PROHIBIDO subir a Git: archivos APK/APKS/XAPK privados sin derechos de redistribución, muestras de clientes, perfiles VPN reales con credenciales, JSON descifrado sensible, private keys, claves de firma, usuarios/contraseñas, tokens, Google Play Integrity tokens, cookies, secretos de proveedores o logs con datos personales.
@@ -123,9 +140,9 @@ La regla estricta cubre **scripts propios, herramientas nuevas y de terceros, li
 
 Las peticiones de solo investigación (sin método funcional) también deben dejar expediente mínimo con scripts y estado PENDING. Si el equipo descubre un método manualmente, registrar un procedimiento reproducible o script de inventario antes de llamarlo integrado.
 
-## 5. Bloqueo de CI requerido (PENDIENTE DE CÓDIGO, NO ACTIVO HOY)
+## 5. Bloqueo de CI requerido (IMPLEMENTACIÓN PARCIAL; REQUIRED CHECK PENDIENTE)
 
-**Requisito funcional de la siguiente implementación de tooling**: crear scripts/ci/check_method_evidence.py y un job requerido en GitHub Actions (branch protection, cuando el propietario lo configure). Debe:
+**Estado observado 2026-11-06:** existen `scripts/ci/check_method_evidence.py`, `tests/test_method_evidence_a0.py` y `.github/workflows/f7-a0-method-evidence.yml`. El workflow [run 42303343370](https://github.com/gokussj092/NSKSDKLDLDLDMDNDNDNNDNDNDNDNDNDNDNDNDMDM/actions/runs/42303343370), intento 2, pasó 11/11 tests y el gate de cambios de PR. **No** se considera completo el gate requerido: faltan cobertura de todas las rutas, comprobaciones de licencia/seguridad/hashes y configuración efectiva de branch protection. Los siguientes puntos son los requisitos completos, incluso cuando hoy exista una comprobación parcial de ellos:
 - Leer git diff para detectar apps nuevas/cambios en decoders/Python/apps/, fuentes de catálogo, workers o scripts de método.
 - Localizar analysis/<paquete>/<build>/MANIFEST.json actualizado, ANALYSIS.md, REPRODUCE.md, RESULTS.md, tools/, tests/.
 - Validar JSON/schema, rutas locales, existencia de scripts, hashes esperados, estado coherente con «habilitado» y mínimo de pruebas; prohibir rutas temporales y secretos evidentes. No imprimir muestras al fallar.
@@ -133,7 +150,7 @@ Las peticiones de solo investigación (sin método funcional) también deben dej
 - Bloquear merge cuando no exista el expediente requerido; mantener excepción explícita aprobada para cambios de documentación únicamente y modificaciones realmente no relacionadas.
 - Para legado existente: establecer baseline de paquetes previos y no invalidar todo el repositorio; exigir expediente desde la PRIMERA modificación futura de cada método y abrir inventario de migración gradual. No introducir excepciones silenciosas por proveedor.
 
-**Distinción de estado:** esta política ya es obligatoria para trabajos nuevos que realice cualquier asistente/colaborador, pero GitHub todavía NO la exige automáticamente mediante CI hasta que se implemente el check anterior y se active protección de rama. Ninguna documentación puede asegurar falsamente que existe ese bloqueo mecánico.
+**Distinción de estado:** esta política ya es obligatoria para trabajos nuevos de cualquier asistente/colaborador. El CI **ya ejecuta un control parcial**; no está demostrado que GitHub **bloquee todos los merges** hasta configurar/validar el check requerido y cerrar los huecos de cobertura. No equiparar presencia del workflow a protección completa. Véase el [seguimiento F7-A0–A9](../docs/FASE_7_SEGUIMIENTO_ESTADOS_Y_PENDIENTES_2026_11_06.md).
 
 ## 6. Reutilización por futuro servicio automático de APK
 
@@ -153,3 +170,7 @@ Este archivo es un contrato de procedencia para la futura función de APK (fase 
 - ANÁLISIS de SocksIP actual: analysis/SOCKSIP_VER8_VER7_VER6_STUDY.md es un documento histórico válido, pero NO sustituye el expediente por build requerido para integraciones nuevas.
 
 **Referencias existentes:** scripts/apk_analysis/README.md; scripts/apk_analysis/RESTORE.md; docs/cloud/SERVER_VPN_NEXT_CHAT_GUIDE.md; docs/FASE_7_ARQUITECTURA_SUSCRIPCIONES_CREDITOS_APK_2026_11_02.md; decoders/Python/apps/README.md.
+
+## Decisión de GitHub CI y protección de rama — 2026-11-06
+
+El propietario exige continuar con **todos los controles de GitHub Actions y pruebas funcionales reales** antes de merge/despliegue, pero **NO autoriza activar Branch Protection por ahora**. La política de evidencias por método sigue obligatoria; su gate CI parcial y las regresiones F7-A0-P08 siguen ejecutándose. La falta de protección remota no es criterio de bloqueo para avanzar a P08/P09. Nunca afirmar que GitHub bloquea merges automáticamente si la regla no está activada. Las pruebas con fixtures sintéticos no certifican APK de terceros ni métodos contra servidores reales. Referencias: [P07](../docs/FASE_7_A0_P07_REQUIRED_CHECK_PROTECCION_2026_11_06.md) y [P08](../docs/FASE_7_A0_P08_REGRESION_FORMATOS_CONSUMIDORES_2026_11_06.md).

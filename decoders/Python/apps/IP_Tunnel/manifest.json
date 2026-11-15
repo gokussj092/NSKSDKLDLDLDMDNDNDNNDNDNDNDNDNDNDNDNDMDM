@@ -1,0 +1,35 @@
+{
+  "id": "ip-tunnel",
+  "name": "IP Tunnel",
+  "package": "com.iptunnel.tunnel",
+  "versionName": "1.4.8-alpha",
+  "versionCode": 49,
+  "engine": "python",
+  "entrypoint": "IP_Tunnel.py",
+  "extensions": [],
+  "textPrefixes": [],
+  "dependencies": [],
+  "catalog": {
+    "entrypoint": "IP_Tunnel.py",
+    "method": "GET",
+    "url": "https://iptunnel.internetshub.com/api/v2/index.php?action=app_config",
+    "status": "live_verified",
+    "version": "1.91",
+    "servers": 3,
+    "networks": null,
+    "payloads": 151,
+    "tweaks": 366,
+    "notes": "Base64 + XXTEA (delta 0x9A7393B4, misma que AR PRO). Cabeceras exactas X-App-Id/X-App-Device/X-App-Ts/X-App-Nonce/X-App-Auth-Mode session_v2/X-App-Version 49; UA Dalvik obligatorio (Cloudflare 403 sin el). Catalogo incluido bundled_config.b64 (vc.y): Version 1.00, 1 servidor, 1 tweak."
+  },
+  "files": {
+    "supported": true,
+    "entrypoint": "IP_Tunnel_archivos.py",
+    "extensions": [],
+    "notes": "Export sin extension propia ni esquema URI (ACTION_CREATE_DOCUMENT / ACTION_GET_CONTENT, el usuario elige el nombre): Base64(XXTEA(JSON, clave \"@Adedayo's WeTunnel\")). El script VERIFICA la firma RS256 obligatoria al importar (clave publica vc.H) pero no puede crear una valida (falta la privada). Tambien abre blobs de catalogo / DATA de system.db. Standalone (no importa IP_Tunnel.py). Sin .sks."
+  },
+  "embeddedAsset": "bundled_config.b64",
+  "embeddedVersion": "1.00",
+  "embeddedServers": 1,
+  "realSampleVerified": true,
+  "deployment": "pending"
+}

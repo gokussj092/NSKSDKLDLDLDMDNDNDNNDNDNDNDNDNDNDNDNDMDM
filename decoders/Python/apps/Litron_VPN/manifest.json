@@ -1,0 +1,65 @@
+{
+  "id": "litron-vpn",
+  "name": "LITRON VPN",
+  "package": "com.fleet.vpn",
+  "versionCode": 25,
+  "compatibleVersions": [
+    "3.5.9"
+  ],
+  "engineVersion": 1,
+  "engine": "python-unicode-nibbles-base64-aes256-cbc",
+  "catalog": {
+    "entrypoint": "server_catalog_decoder.py",
+    "providerId": "litron-vpn",
+    "source": "https://godtechprime.github.io/latestv2ray.txt",
+    "sourceBuild": 25,
+    "publicCatalogVersion": 76,
+    "validation": "whole independent JCA, owner helper, Python and isolated-worker JSON parity",
+    "currentProof": {
+      "inputBytes": 446856,
+      "inputSha256": "209b15fd112fe99d44163410987edebfcda74b46c824ebbd27f70189e4bfb96a",
+      "version": "293",
+      "servers": 8,
+      "networks": 86,
+      "hiddenFieldsCompared": 40,
+      "wholeIndependentJcaParity": true,
+      "wholeProvidedHelperParity": true,
+      "providedAutoInstallerCalled": false,
+      "clearJsonSha256": null,
+      "rawOutputBytes": null,
+      "apkCodeExecuted": false,
+      "cipherAuthenticated": false,
+      "wholeWorkerParity": true,
+      "note": "v293 verified live 2026-11-13 with the standalone stdlib Fleet_VPN.py (PyCryptodome-independent parity); clearJsonSha256/rawOutputBytes not documented for v293, so the v289 values were removed, not carried over. JCA/worker parity flags are carried from the v289 validation."
+    },
+    "evidenceDirectory": "analysis/com.fleet.vpn/25",
+    "note": "Standalone stdlib decoder staged as server_catalog_decoder.py (Fleet_VPN.py, byte-identical content); repo codec.py (PyCryptodome + BD_NET_VPN shared validator) is NOT staged — merge must decide whether it stays or is retired."
+  },
+  "files": {
+    "supported": false,
+    "exporterCertified": false
+  },
+  "text": {
+    "supported": false
+  },
+  "icon": {
+    "file": "Litron_VPN.png",
+    "source": "owner supplied icon for base Litron VPN",
+    "bytes": 86055,
+    "width": 288,
+    "height": 288,
+    "sha256": "38a931316e6ea65793f377eccd66924790a3ff273d250d8955b6b48a7867aae0"
+  },
+  "dependencies": {
+    "python": ">=3.10",
+    "pycryptodome": "3.23.0",
+    "sharedJsonValidation": "../BD_NET_VPN/codec.py"
+  },
+  "sourceApkSha256": "8d3818e7a60998f18275e9339f5578aba68153d79b50cfac7c0b7a1201f24a52",
+  "sourceSignerSha256": "ead8ad35c1d49802a84d12495885d96e29e40242f3be95e682eab8a2ab1a11f7",
+  "notLitronPro": true,
+  "limitations": [
+    "CBC is unauthenticated; deterministic re-encryption is not an authenticity check.",
+    "No Pro, file or text support certified."
+  ]
+}

@@ -1,0 +1,12 @@
+authenticated_container_shape 57 565 32
+pycryptodome_ietf_mac_accepts False
+base64_xor_constraints 8 [0, 0, 0, 0, 0, 0, 0, 0]
+base64_xor_constraints 10 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+base64_xor_constraints 16 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+base64_xor_constraints 20 [10, 1, 3, 2, 10, 1, 1, 1, 4, 2, 1, 1, 2, 1, 1, 1, 6, 1, 1, 1]
+base64_xor_constraints 32 [10, 0, 0, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0]
+layer_candidate historical not-json
+layer_candidate native3 not-json
+layer_candidate observed565 json_bytes 1026 keys ['inbounds', 'outbounds', 'policy']
+unresolved_slot17_known_aes_candidates []
+slot24_is_existing_split_marker True

@@ -1,0 +1,15 @@
+{
+  "package": "core.vpn3jx.xtreme",
+  "versionName": "v1.11.06.1",
+  "versionCode": 16,
+  "xapkBytes": 56651661,
+  "xapkSha256": "074247463d1555dae35cd10ed7b15701a4076e659eaeebee70827e47fe09d860",
+  "apkBytes": 30557753,
+  "apkSha256": "bc2327ebe88f52a777701ac9332103078a7a3d7411cd65c3249ee167d9cbd726",
+  "certificateSha256": [
+    "bd6515d3f58f73aa59ae99ae1d2aff74c4e2665c3bd677fbefea77222e88fc6b"
+  ],
+  "certificateSha1MatchesPreviousDistribution": true,
+  "cryptographicApkSignatureVerified": false,
+  "apkCodeExecuted": false
+}

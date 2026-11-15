@@ -1,0 +1,15 @@
+{
+  "package": "netfree.mx.speigovpn",
+  "versionName": "1.3.48",
+  "versionCode": 159,
+  "apkBytes": 14164543,
+  "apkSha256": "37b2524bb63404e74abbfc52b73308180d141a2a0f32d182e9dfd63ced872826",
+  "xapkBytes": 42557767,
+  "xapkSha256": "1953f51f01a77f9693f5cde7f7099b5163b44fe5c54220a729d695cd90402f49",
+  "certificateSha256": [
+    "610389f5895406cde161eae4ed3cb245512e58aa064f2a4ae6ba06acfb7aa386"
+  ],
+  "cryptographicApkSignatureVerified": false,
+  "apkCodeExecuted": false,
+  "sourceCategory": "public distribution for owner-requested catalog interoperability"
+}

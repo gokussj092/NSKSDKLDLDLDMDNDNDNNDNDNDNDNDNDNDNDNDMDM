@@ -1,4 +1,4 @@
-"""APK-derived Tunneltweak 6.2.1 profiles and SecureConfigEncryption catalogs."""
+"""APK-derived Tunneltweak builds 51/53 profiles and SecureConfigEncryption catalogs."""
 from __future__ import annotations
 import base64
 import hashlib
@@ -126,7 +126,7 @@ def decode_profile(data: bytes, *, password: str | None = None) -> dict:
     except (PasswordRequired, AuthFailed):
         raise
     except (ValueError, UnicodeError, TypeError, RecursionError) as exc:
-        raise DecodeError("Archivo inválido o no compatible con Tunneltweak 6.2.1.") from exc
+        raise DecodeError("Archivo inválido o no compatible con Tunneltweak.") from exc
 
 
 def _catalog_blob(text: str, api_key: str | None) -> dict:
@@ -175,7 +175,7 @@ def decode_catalog(data: bytes, *, api_key: str | None = None) -> dict:
         # config IDs and unknown fields. Models in the APK discard some of them.
         return result
     except (ValueError, UnicodeError, TypeError, RecursionError) as exc:
-        raise DecodeError("Catálogo inválido o no compatible con Tunneltweak 6.2.1.") from exc
+        raise DecodeError("Catálogo inválido o no compatible con Tunneltweak.") from exc
 
 
 def render(value) -> str:
@@ -184,3 +184,4 @@ def render(value) -> str:
     if len(text.encode("utf-8")) > MAX_BYTES:
         raise DecodeError("La salida supera 8 MiB.")
     return text
+

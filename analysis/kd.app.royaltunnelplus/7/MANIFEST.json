@@ -1,0 +1,169 @@
+{
+  "schema_version": "1.0",
+  "package_name": "kd.app.royaltunnelplus",
+  "app_name": "Royal Tunnel VPN",
+  "version_name": "7.0",
+  "version_code": 7,
+  "observed_at": "2026-11-14/15",
+  "source_category": "tienda (APKPure, version de Google Play) + descarga en vivo con el metodo del script operativo",
+  "authorization_note": "APK de espejo publico (APKPure) de la version publica de Play; muestras de catalogo descargadas en vivo con el metodo propio de la app; sin cuentas ni datos de usuarios. Sin APK ni perfiles reales en este expediente.",
+  "status": "PARTIAL",
+  "targets": [
+    {
+      "id": "catalog",
+      "kind": "catalog",
+      "status": "VERIFIED",
+      "detail": "En vivo v5.43: 29 servidores (V2Ray 14, UDP 4, WireGuard 3, SSH 3, DNS 3, OpenVPN 2), 105 tweaks (19 con Payload, 10 con SNI, 3 con v2rayjson), 0 errores de campo. Respaldo v5.17: 27 servidores, 100 tweaks."
+    },
+    {
+      "id": "files",
+      "kind": "files",
+      "status": "VERIFIED_SYNTHETIC",
+      "detail": ".ROY: metodo completo por codigo (ExportActivity.n / RoyalTunnelMain.R) y muestra SINTETICA sample.roy (2648 B) generada desde el catalogo real; sin .ROY REAL exportado por la app. Controles observados: ExpireDate, RootBlock, DeviceID, PSInstall, isPassON/MyPass en texto plano."
+    },
+    {
+      "id": "text",
+      "kind": "text",
+      "status": "NOT_APPLICABLE",
+      "detail": "Sin esquema de texto propio documentado para importar perfiles; la importacion es por archivo .ROY o por clave de nube."
+    },
+    {
+      "id": "export",
+      "kind": "export",
+      "status": "PARTIAL",
+      "detail": "Nube por clave: Firebase Storage, ruta Roy://<20 caracteres [0-9a-z]>.roy; flujo descrito por codigo, sin clave real probada en vivo."
+    }
+  ],
+  "inputs": [
+    {
+      "name": "Royal-Tunnel-VPN_7.0_arm64-v8a.xapk",
+      "type": "xapk",
+      "bytes": 57199635,
+      "sha256": "901af7e346c81ddaa7b6581782953d3addec1751c6c71dcd0e6585257e77a1b5",
+      "source": "APKPure, version de Google Play 7.0"
+    },
+    {
+      "name": "catalog_sample.bin",
+      "type": "catalog_response",
+      "bytes": 276080,
+      "sha256": "70df160d2df62a89ed7a41636d41c7897edc93917b24798ca133657141a68425",
+      "source": "Descarga en vivo (2026-11-14)"
+    },
+    {
+      "name": "sample.roy (SINTETICO)",
+      "type": "file_sample",
+      "bytes": 2648,
+      "sha256": "6b7c84325a32356aeae5a2032e82ee969ab246e31326d1cd77b4b5fcdb6d9794",
+      "source": "Generado con --create desde el servidor UDP del catalogo real y un tweak real; no es un .ROY exportado por la app"
+    }
+  ],
+  "tooling": [
+    {
+      "name": "Python",
+      "version": "3.12.3 (system)",
+      "purpose": "stdlib only in operational scripts"
+    },
+    {
+      "name": "jadx",
+      "version": "1.5.3",
+      "purpose": "decompilation (2nd pass, -j 2, 47 errors)"
+    },
+    {
+      "name": "paranoid-deobfuscator",
+      "version": "3.0.2",
+      "purpose": "LSParanoid string resolution (4789/4789 strings)"
+    },
+    {
+      "name": "androguard",
+      "version": "UNKNOWN (version not recorded)",
+      "purpose": "verification of critical classes against the DEX (jadx LS0.java was wrong)"
+    }
+  ],
+  "dependencies": [
+    {
+      "name": "Python",
+      "version": "3.12.3 (system)",
+      "status": "RECORDED",
+      "note": "stdlib only in operational scripts"
+    },
+    {
+      "name": "jadx",
+      "version": "1.5.3",
+      "status": "RECORDED",
+      "note": "decompilation (2nd pass, -j 2, 47 errors)"
+    },
+    {
+      "name": "paranoid-deobfuscator",
+      "version": "3.0.2",
+      "status": "RECORDED",
+      "note": "LSParanoid string resolution (4789/4789 strings)"
+    },
+    {
+      "name": "androguard",
+      "version": "UNKNOWN",
+      "status": "NEEDS_REVIEW",
+      "note": "verification of critical classes against the DEX (jadx LS0.java was wrong)"
+    }
+  ],
+  "code_paths": [
+    "decoders/Python/apps/Royal_Tunnel_VPN/codec.py",
+    "decoders/Python/apps/Royal_Tunnel_VPN/file_decoder.py",
+    "decoders/Python/apps/Royal_Tunnel_VPN/server_catalog_decoder.py"
+  ],
+  "evidence_refs": [
+    "RESULTS.md (conteos en vivo, negativas)",
+    "tests/test_method.py (XXTEA delta modificado + sobre .ROY sinteticos, sin red)",
+    "tools/verify.py (verificador sintetico) + tools/resolve_hw0.py (deofuscador LSParanoid, 4789 strings)",
+    "~/workspace/catalogs/royaltunnel/catalog_sample.bin (respuesta cruda, 276080 B)",
+    "~/workspace/catalogs/royaltunnel/catalog_sample_decrypted.json (SHA-256 33e52aec…, regenerado 2026-11-15 limpio: sin APIs de descarga, anidados descifrados)",
+    "~/workspace/catalogs/royaltunnel/sample.roy + sample_config.json + sample_decrypted.json (sinteticos)"
+  ],
+  "limitations": [
+    "Sin .ROY REAL exportado por la app: el extremo a extremo con un perfil real sigue pendiente (nombres exactos de campos del perfil).",
+    "Los Jdecrypt/Fdecrypt nativos de libwg-pro.so (AES-CBC/CFB) NO los usa el catalogo: sin llamadores Java y fallan sobre campos reales (codigo muerto o solo nativo).",
+    "El actualizador de GitHub dice latest_version_code 6 (la app es 7); el endpoint actualizador no hace nada para este paquete.",
+    "Modos NoobCrypt 2 (ChaCha20) y 3 (ChaCha20-Poly1305) implementados por completitud: la app los define pero ningun campo .ROY observado los usa."
+  ],
+  "network_requirements": [
+    "Descarga del catalogo: GET plano sin headers (HttpURLConnection). Respuesta HTTP 200, 276080 B, una linea Base64. (La URL completa vive solo en el script operativo; aqui no se reproduce.)"
+  ],
+  "manual_steps": [
+    "Para un .ROY real: exportar desde la app en un telefono y pasarlo al script de archivos.",
+    "Para una clave de nube real: copiar la CONFIG KEY (Roy://<20 chars>) que muestra la app al exportar."
+  ],
+  "unresolved_questions": [
+    "Nombres exactos de campos de un perfil .ROY real (vs. la muestra sintetica).",
+    "¿Alguna vez usa la app los modos NoobCrypt 2 y 3 en perfiles reales?"
+  ],
+  "connection_authentication": {
+    "catalog_file_integrity": {
+      "status": "NOT_OBSERVED",
+      "detail": "El catalogo usa XXTEA + AES-CFB/CBC sin MAC/HMAC observado; la integridad se comprueba por parseo JSON y conteo de campos (0 errores), no por HMAC."
+    },
+    "catalog_download_auth": {
+      "status": "NOT_OBSERVED",
+      "detail": "GET plano sin headers ni firma observada."
+    },
+    "crypto_derivation": {
+      "status": "NOT_OBSERVED",
+      "detail": "Claves derivadas por SHA-256/MD5 de material fijo; no se observo HMAC en la derivacion."
+    },
+    "vpn_transport": {
+      "status": "NOT_OBSERVED",
+      "detail": "No se observo una conexion VPN en vivo ni MAC del transporte."
+    },
+    "connection_auth": {
+      "status": "NOT_OBSERVED",
+      "detail": "No se trazo autenticacion de conexion. La mera presencia de librerias criptograficas en libwg-pro.so no confirma nada."
+    }
+  },
+  "dependencies_reference": {
+    "lockfile": "dependencies.lock.json",
+    "inventory": "DEPENDENCIES.md"
+  },
+  "code_paths_reference": {
+    "catalog_decoder": "decoders/Python/apps/Royal_Tunnel_VPN/Royal_Tunnel.py (existe en el repo; operativo en ~/workspace/catalogs/royaltunnel/Royal_Tunnel.py, SHA-256 8659efafff7252e8dd72db01172b3267f111402bc740f12c55f7cd4e97df57a7)",
+    "file_decoder": "decoders/Python/apps/Royal_Tunnel_VPN/Royal_Tunnel_archivos.py (existe en el repo; operativo en ~/workspace/catalogs/royaltunnel/Royal_Tunnel_archivos.py, SHA-256 3e9cd25088b87ca9cf1436cce37080fd9e8c22c0b341750bfd2622844f571341)",
+    "work_notes": "~/workspace/catalogs/royaltunnel/work/"
+  }
+}

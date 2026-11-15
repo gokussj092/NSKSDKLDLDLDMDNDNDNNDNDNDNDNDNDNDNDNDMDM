@@ -1,0 +1,450 @@
+package com.ghostdeveloper.spdecode
+
+import android.app.Activity
+import android.content.Context
+import android.content.ContextWrapper
+import android.security.keystore.KeyGenParameterSpec
+import android.security.keystore.KeyProperties
+import android.util.Base64
+import androidx.credentials.CredentialManager
+import androidx.credentials.CustomCredential
+import androidx.credentials.GetCredentialRequest
+import androidx.credentials.exceptions.GetCredentialCancellationException
+import androidx.credentials.exceptions.GetCredentialException
+import androidx.credentials.exceptions.GetCredentialInterruptedException
+import androidx.credentials.exceptions.GetCredentialProviderConfigurationException
+import androidx.credentials.exceptions.GetCredentialUnsupportedException
+import androidx.credentials.exceptions.NoCredentialException
+import com.google.android.libraries.identity.googleid.GetSignInWithGoogleOption
+import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import org.json.JSONObject
+import java.io.ByteArrayOutputStream
+import java.net.HttpURLConnection
+import java.net.URL
+import java.security.KeyStore
+import javax.crypto.Cipher
+import javax.crypto.KeyGenerator
+import javax.crypto.SecretKey
+import javax.crypto.spec.GCMParameterSpec
+
+/**
+ * Native Android account connector. Google verifies identity through Android
+ * Credential Manager, Better Auth verifies the signed ID token server-side.
+ * No in-app WebView, no Google password interception and no API keys in prefs.
+ */
+internal class NativeCommerceAuth(private val context:Context) {
+    /** A diagnostic identifier, never a bearer or Google ID token. */
+    internal class AuthFailure(val code:String):IllegalStateException(code)
+    companion object {
+        internal fun diagnostic(error:Throwable):String {
+            val code=(error as? AuthFailure)?.code
+                ?: (error as? IllegalStateException)?.message.orEmpty()
+            return code.takeIf{it.matches(Regex("[A-Z][A-Z0-9_]{2,64}"))}
+                ?: "NATIVE_AUTH_FAILED"
+        }
+    }
+    private fun hostActivity():Activity {
+        var current:Context=context
+        repeat(8) {
+            val activity=current as? Activity
+            if(activity!=null)return activity
+            current=(current as? ContextWrapper)?.baseContext
+                ?:throw AuthFailure("ACTIVITY_REQUIRED")
+        }
+        throw AuthFailure("ACTIVITY_REQUIRED")
+    }
+    private val origin="https://spdecode.xyz"
+    private val prefs=context.getSharedPreferences("spdecode-native-commerce-session",Context.MODE_PRIVATE)
+    private val keyAlias="spdecode_commerce_session_v1"
+    private fun encrypt(value:String):String {
+        val storage=KeyStore.getInstance("AndroidKeyStore").apply{load(null)}
+        val key=(storage.getKey(keyAlias,null) as? SecretKey)?:run {
+            val generator=KeyGenerator.getInstance(KeyProperties.KEY_ALGORITHM_AES,"AndroidKeyStore")
+            generator.init(KeyGenParameterSpec.Builder(keyAlias,
+                KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT)
+                .setBlockModes(KeyProperties.BLOCK_MODE_GCM)
+                .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_NONE)
+                .setRandomizedEncryptionRequired(true).build())
+            generator.generateKey()
+        }
+        val cipher=Cipher.getInstance("AES/GCM/NoPadding")
+        cipher.init(Cipher.ENCRYPT_MODE,key)
+        val iv=cipher.iv
+        return Base64.encodeToString(iv+cipher.doFinal(value.toByteArray(Charsets.UTF_8)),
+            Base64.NO_WRAP)
+    }
+    private fun decrypt(value:String):String {
+        val bytes=Base64.decode(value,Base64.NO_WRAP)
+        if(bytes.size<29)throw IllegalStateException("SESSION_INVALID")
+        val storage=KeyStore.getInstance("AndroidKeyStore").apply{load(null)}
+        val key=storage.getKey(keyAlias,null) as? SecretKey
+            ?:throw IllegalStateException("SESSION_KEY_MISSING")
+        val cipher=Cipher.getInstance("AES/GCM/NoPadding")
+        cipher.init(Cipher.DECRYPT_MODE,key,GCMParameterSpec(128,bytes.copyOfRange(0,12)))
+        return String(cipher.doFinal(bytes.copyOfRange(12,bytes.size)),Charsets.UTF_8)
+    }
+    fun sessionToken():String? {
+        val stored=prefs.getString("session",null)?:return null
+        return try{decrypt(stored).takeIf{it.length in 24..1024}}
+        catch(_:Exception){prefs.edit().remove("session").apply();null}
+    }
+    fun restoreCachedIdentity(){
+        if(sessionToken()==null)return
+        if(CommerceSession.user!=null)return
+        val cached=prefs.getString("profile",null)?:return
+        runCatching{CommerceSession.restore(JSONObject(decrypt(cached)))}
+    }
+    private fun cacheIdentity(snapshot:JSONObject){
+        val user=snapshot.optJSONObject("user")?:return
+        val copy=JSONObject().put("id",user.optString("id"))
+            .put("name",user.optString("name"))
+            .put("username",user.optString("username"))
+            .put("email",user.optString("email"))
+            .put("avatar",user.optString("avatar"))
+        val text=copy.toString()
+        if(text.length<=125_000)
+            runCatching{prefs.edit().putString("profile",encrypt(text)).apply()}
+    }
+    private fun wipeSession(){
+        prefs.edit().remove("session").remove("profile").commit()
+        CommerceSession.clear()
+    }
+    private fun save(token:String) {
+        require(token.length in 24..1024 && !token.any{it.isWhitespace()})
+        if(!prefs.edit().putString("session",encrypt(token)).commit())
+            throw IllegalStateException("SESSION_NOT_PERSISTED")
+    }
+    private suspend fun http(path:String,method:String="GET",body:JSONObject?=null,
+        authenticated:Boolean=false):Pair<JSONObject,String?> = withContext(Dispatchers.IO){
+        require(path.startsWith("/api/") && !path.contains("..") && !path.contains("://"))
+        val url=URL(origin+path)
+        val connection=url.openConnection() as HttpURLConnection
+        try{
+            connection.instanceFollowRedirects=false
+            connection.connectTimeout=8000
+            connection.readTimeout=8000
+            connection.requestMethod=method
+            connection.setRequestProperty("Accept","application/json")
+            connection.setRequestProperty("Cache-Control","no-store")
+            if(authenticated){
+                val token=sessionToken()?:throw IllegalStateException("SIGN_IN_REQUIRED")
+                connection.setRequestProperty("Authorization","Bearer "+token)
+            }
+            if(method!="GET"){
+                connection.doOutput=true
+                connection.setRequestProperty("Origin",origin)
+                connection.setRequestProperty("Content-Type","application/json")
+                if(path=="/api/auth/sign-in/social")
+                    connection.setRequestProperty("X-SPDECODE-Mobile-Auth","android-v1")
+                val bytes=(body?:JSONObject()).toString().toByteArray(Charsets.UTF_8)
+                require(bytes.size<=if(path=="/api/account/profile")119_000 else 16*1024)
+                connection.outputStream.use{it.write(bytes)}
+            }
+            val status=connection.responseCode
+            if(status !in 200..299){
+                // Parse bounded, non-sensitive API error codes. Never expose tokens
+                // or arbitrary server response bodies in the user interface.
+                val returned=runCatching{
+                    connection.errorStream?.use{stream->
+                        val buffer=ByteArray(2048)
+                        val count=stream.read(buffer)
+                        if(count>0)JSONObject(String(buffer,0,count,Charsets.UTF_8))
+                            .optJSONObject("error")?.optString("code") else null
+                    }
+                }.getOrNull()
+                val known=returned?.takeIf{it.matches(Regex("[A-Z][A-Z0-9_]{2,64}"))}
+                val error=known?:when(status){
+                    400->"MOBILE_AUTH_BAD_REQUEST"
+                    401->"SIGN_IN_REQUIRED"
+                    403->"NOT_AUTHORIZED"
+                    404->"MOBILE_AUTH_ENDPOINT_MISSING"
+                    409->"AUTH_CONFLICT"
+                    503->"SERVICE_UNAVAILABLE"
+                    else->"MOBILE_AUTH_HTTP_"+status
+                }
+                throw AuthFailure(error)
+            }
+            if(!connection.contentType.orEmpty().startsWith("application/json"))
+                throw IllegalStateException("INVALID_RESPONSE")
+            val output=ByteArrayOutputStream()
+            connection.inputStream.use{input->
+                val buffer=ByteArray(4096)
+                while(true){
+                    val n=input.read(buffer)
+                    if(n<0)break
+                    if(output.size()+n>256*1024)throw IllegalStateException("RESPONSE_TOO_LARGE")
+                    output.write(buffer,0,n)
+                }
+            }
+            Pair(JSONObject(output.toString(Charsets.UTF_8.name())),
+                connection.getHeaderField("set-auth-token"))
+        } finally {connection.disconnect()}
+    }
+    suspend fun signInWithGoogle(acceptedPolicies:Boolean):JSONObject {
+        if(!acceptedPolicies)throw IllegalStateException("CONSENT_REQUIRED")
+        val config=try { http("/api/auth/native-config").first }
+            catch(e:AuthFailure){throw AuthFailure(
+                if(e.code=="MOBILE_AUTH_ENDPOINT_MISSING")"NATIVE_AUTH_NOT_DEPLOYED"
+                else e.code)}
+        if(!config.optBoolean("enabled",false))
+            throw AuthFailure("NATIVE_AUTH_DISABLED_ON_SERVER")
+        val clientId=config.optString("googleWebClientId")
+        if(!clientId.endsWith(".apps.googleusercontent.com") || clientId.length>256)
+            throw AuthFailure("GOOGLE_WEB_CLIENT_ID_UNAVAILABLE")
+        // This is an explicit "Continue with Google" button; Google specifies
+        // GetSignInWithGoogleOption here, rather than the silent/bottom-sheet
+        // GetGoogleIdOption intended for sign-in suggestions.
+        val options=GetSignInWithGoogleOption.Builder(clientId).build()
+        // Credential Manager needs the foreground Activity, not an application
+        // or locale-wrapped non-Activity context.
+        val activity=hostActivity()
+        val credential=try {
+            CredentialManager.create(activity).getCredential(
+                activity,GetCredentialRequest.Builder()
+                    .addCredentialOption(options).build()
+            ).credential
+        }catch(e:GetCredentialCancellationException){
+            throw AuthFailure("GOOGLE_SIGN_IN_CANCELLED")
+        }catch(e:NoCredentialException){
+            throw AuthFailure("GOOGLE_NO_AVAILABLE_CREDENTIAL")
+        }catch(e:GetCredentialProviderConfigurationException){
+            throw AuthFailure("GOOGLE_CREDENTIAL_PROVIDER_MISCONFIGURED")
+        }catch(e:GetCredentialUnsupportedException){
+            throw AuthFailure("GOOGLE_CREDENTIAL_PROVIDER_UNSUPPORTED")
+        }catch(e:GetCredentialInterruptedException){
+            throw AuthFailure("GOOGLE_CREDENTIAL_INTERRUPTED")
+        }catch(e:GetCredentialException){
+            throw AuthFailure("GOOGLE_CREDENTIAL_PICKER_FAILED")
+        }
+        if(credential !is CustomCredential ||
+            credential.type!=GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL)
+            throw AuthFailure("GOOGLE_CREDENTIAL_REQUIRED")
+        val idToken=try{GoogleIdTokenCredential.createFrom(credential.data).idToken}
+            catch(_:Exception){throw AuthFailure("GOOGLE_ID_TOKEN_INVALID")}
+        val body=JSONObject().put("provider","google").put("idToken",
+            JSONObject().put("token",idToken))
+            .put("acceptedTerms","2026-11-10")
+            .put("acceptedPrivacy","2026-11-10")
+        val response=http("/api/auth/sign-in/social","POST",body)
+        if(response.first.optBoolean("redirect",false))
+            throw AuthFailure("GOOGLE_NATIVE_TOKEN_FLOW_UNSUPPORTED")
+        val session=response.second?.takeIf{it.isNotBlank()}
+            ?:response.first.optString("token").takeIf{it.isNotBlank()}
+            ?:throw AuthFailure("SESSION_NOT_ISSUED")
+        save(session)
+        return try {
+            account()?:throw AuthFailure("SESSION_NOT_CONFIRMED")
+        }catch(e:AuthFailure){throw e}
+        catch(_:Exception){throw AuthFailure("ACCOUNT_SESSION_UNAVAILABLE")}
+    }
+    suspend fun account():JSONObject?{
+        if(sessionToken()==null){CommerceSession.clear();return null}
+        val response=try{http("/api/account",authenticated=true).first}
+            catch(e:AuthFailure){
+                if(e.code=="SIGN_IN_REQUIRED")wipeSession()
+                return null
+            }catch(_:Exception){return null}
+        // A temporary commerce outage is not session revocation. Keep the
+        // Android Keystore-encrypted bearer for recovery after server rollout,
+        // but don't expose cached entitlements while authentication is offline.
+        if(!response.optBoolean("authEnabled",true)){
+            CommerceSession.clear();return null
+        }
+        if(response.isNull("user")||response.optJSONObject("user")==null){
+            wipeSession();return null
+        }
+        CommerceSession.update(response)
+        cacheIdentity(response)
+        // The app may have started before Google/email sign-in. At startup FCM
+        // had no authenticated account to bind the device token to; register it
+        // after every confirmed account session so background support/purchase
+        // notifications work without needing another app launch.
+        runCatching{
+            com.ghostdeveloper.spdecode.cloud.CloudNoticePush.syncAccount(context)
+        }
+        return response
+    }
+    /** Profile edits use the persistent authenticated account session. */
+    suspend fun editProfile(name:String,username:String,avatarData:String?,
+        replaceAvatar:Boolean):JSONObject {
+        val normalizedName=name.trim()
+        val normalizedHandle=username.trim().lowercase(java.util.Locale.ROOT)
+        if(!NativeProfileRules.validDisplayName(normalizedName) ||
+            !NativeProfileRules.validUsername(normalizedHandle))
+            throw AuthFailure("INVALID_PROFILE")
+        if(replaceAvatar && avatarData!=null &&
+            (avatarData.length>115000 || !avatarData.startsWith("data:image/jpeg;base64,")))
+            throw AuthFailure("INVALID_AVATAR")
+        val body=JSONObject().put("name",normalizedName).put("username",normalizedHandle)
+        if(replaceAvatar)body.put("avatarData",avatarData ?: JSONObject.NULL)
+        http("/api/account/profile","PATCH",body,true)
+        return account()?:throw AuthFailure("ACCOUNT_SESSION_UNAVAILABLE")
+    }
+    suspend fun redeemGift(code:String):JSONObject {
+        val normalized=code.trim()
+        if(!Regex("SPG-[A-Za-z0-9_-]{22}").matches(normalized))
+            throw AuthFailure("GIFT_INVALID")
+        val result=http("/api/store/redeem","POST",JSONObject().put("code",normalized),true).first
+        account()
+        return result
+    }
+    suspend fun changeAccountPassword(current:String?,newPassword:String):JSONObject {
+        if(newPassword.length !in 12..128 || (current!=null&&current.length !in 1..128))
+            throw AuthFailure("INVALID_PASSWORD")
+        val body=JSONObject().put("newPassword",newPassword)
+        if(current!=null)body.put("currentPassword",current)
+        return http("/api/account/password","PATCH",body,true).first
+    }
+    suspend fun signInWithEmail(email:String,password:String):JSONObject{
+        val identity=email.trim().lowercase(java.util.Locale.ROOT)
+        if(identity.length !in 3..254||!identity.contains("@")||password.isEmpty()||
+            password.length>128)throw AuthFailure("INVALID_CREDENTIALS")
+        val response=http("/api/auth/sign-in/email","POST",
+            JSONObject().put("email",identity).put("password",password)
+                .put("rememberMe",true))
+        val session=response.second?.takeIf{it.isNotBlank()}
+            ?:response.first.optString("token").takeIf{it.isNotBlank()}
+            ?:throw AuthFailure("SESSION_NOT_ISSUED")
+        save(session)
+        return account()?:throw AuthFailure("SESSION_NOT_CONFIRMED")
+    }
+    suspend fun reauthenticateWithGoogle(expectedId:String):JSONObject {
+        val snapshot=signInWithGoogle(true)
+        if(snapshot.optJSONObject("user")?.optString("id")!=expectedId)
+            throw AuthFailure("ACCOUNT_CHANGED_REAUTH")
+        return snapshot
+    }
+    suspend fun notificationInbox():JSONObject =
+        http("/api/account/notifications",authenticated=true).first
+    suspend fun markNotification(id:String):JSONObject =
+        http("/api/account/notifications","POST",
+            JSONObject().put("action","read").put("id",id),true).first
+    suspend fun markAllNotifications():JSONObject =
+        http("/api/account/notifications","POST",
+            JSONObject().put("action","read-all"),true).first
+    suspend fun accountActivity():JSONObject =
+        http("/api/account/activity",authenticated=true).first
+    suspend fun registerPushToken(token:String):JSONObject {
+        if(!token.matches(Regex("[A-Za-z0-9:_-]{32,512}")))
+            throw AuthFailure("INVALID_PUSH_TOKEN")
+        return http("/api/account/notifications","POST",
+            JSONObject().put("action","register").put("token",token),true).first
+    }
+    suspend fun unregisterPushToken(token:String):JSONObject =
+        http("/api/account/notifications","POST",
+            JSONObject().put("action","unregister").put("token",token),true).first
+    suspend fun supportInbox():JSONObject =
+        http("/api/support",authenticated=true).first
+    suspend fun openSupportThread(subject:String,category:String,message:String):JSONObject =
+        http("/api/support","POST",JSONObject().put("action","new")
+            .put("subject",subject).put("category",category).put("message",message),true).first
+    suspend fun sendSupportMessage(threadId:String,message:String):JSONObject =
+        http("/api/support","POST",JSONObject().put("action","send")
+            .put("threadId",threadId).put("message",message),true).first
+    suspend fun registerDeviceKey(device:NativeDeviceAccountGuard.DeviceKey,signature:String):JSONObject =
+        http("/api/account/device-key","POST",JSONObject().put("keyId",device.keyId)
+            .put("publicKey",device.publicKey).put("signature",signature),true).first
+    suspend fun deletionChallenge(device:NativeDeviceAccountGuard.DeviceKey):JSONObject =
+        http("/api/account/delete-challenge","POST",
+            JSONObject().put("keyId",device.keyId),true).first
+    suspend fun deleteWithDevice(device:NativeDeviceAccountGuard.DeviceKey,
+        challenge:JSONObject,signature:String):JSONObject{
+        val result=http("/api/account/delete","POST",JSONObject().put("method","device")
+            .put("keyId",device.keyId)
+            .put("challengeId",challenge.getString("challengeId"))
+            .put("challenge",challenge.getString("challenge"))
+            .put("signature",signature),true).first
+        wipeSession()
+        return result
+    }
+    suspend fun deleteWithGoogle(expectedId:String):JSONObject{
+        reauthenticateWithGoogle(expectedId)
+        val result=http("/api/account/delete","POST",JSONObject().put("method","google"),true).first
+        wipeSession()
+        return result
+    }
+    suspend fun deleteWithPassword(password:String):JSONObject{
+        if(password.isEmpty()||password.length>128)throw AuthFailure("INVALID_PASSWORD")
+        val result=http("/api/account/delete","POST",JSONObject().put("method","password")
+            .put("password",password),true).first
+        wipeSession()
+        return result
+    }
+    /** Server-authoritative quote; amounts and taxes are never calculated here. */
+    suspend fun quoteAdFree(provider:String,country:String):JSONObject {
+        if(provider !in setOf("stripe","paypal") || !Regex("[A-Z]{2}").matches(country))
+            throw AuthFailure("INVALID_CHECKOUT")
+        val data=JSONObject().put("product","ads-free").put("provider",provider)
+            .put("currency","USD").put("country",country).put("region","")
+            .put("term","base")
+        return http("/api/store/quote","POST",data,true).first
+    }
+    suspend fun checkoutAdFree(provider:String,country:String,version:Int):String {
+        if(version<1 || provider !in setOf("stripe","paypal") ||
+            !Regex("[A-Z]{2}").matches(country))throw AuthFailure("INVALID_CHECKOUT")
+        val body=JSONObject().put("product","ads-free")
+            .put("provider",provider).put("currency","USD")
+            .put("country",country).put("region","")
+            .put("term","base").put("version",version)
+            .put("idempotencyKey",java.util.UUID.randomUUID().toString())
+            .put("acceptedTerms","2026-11-10")
+        val response=http("/api/store/checkout","POST",body,true).first
+        val checkout=response.optString("url")
+        val url=runCatching{URL(checkout)}.getOrNull()
+        val host=if(provider=="stripe")setOf("checkout.stripe.com") else
+            setOf("www.paypal.com","www.sandbox.paypal.com")
+        if(url==null || url.protocol!="https" || url.host !in host ||
+            url.userInfo!=null || url.port!=-1)
+            throw AuthFailure("INVALID_CHECKOUT_URL")
+        return checkout
+    }
+    private fun purchaseInput(product:String,term:String,provider:String,currency:String,country:String,region:String,allowedIp:String):JSONObject {
+        if(product !in setOf("api-ip","ads-free")||
+            (product=="ads-free"&&term!="base")||
+            (product=="api-ip"&&term !in setOf("base","1m","2m","3m","6m","12m"))||
+            provider !in setOf("stripe","paypal","mercadopago")||currency !in setOf("USD","MXN","EUR")||
+            (provider=="mercadopago"&&currency!="MXN")||!Regex("[A-Z]{2}").matches(country)||
+            !Regex("[A-Z0-9-]{0,12}").matches(region)||
+            (allowedIp.isNotBlank()&&(product!="api-ip"||!CommercialServerIp.isPublicLiteral(allowedIp))))
+            throw AuthFailure("INVALID_CHECKOUT")
+        return JSONObject().put("product",product).put("term",term).put("provider",provider)
+            .put("currency",currency).put("country",country).put("region",region).put("allowedIp",allowedIp)
+    }
+    suspend fun quoteProduct(product:String,term:String,provider:String,currency:String,country:String,region:String,allowedIp:String):JSONObject =
+        http("/api/store/quote","POST",purchaseInput(product,term,provider,currency,country,region,allowedIp),true).first
+
+    suspend fun checkoutProduct(product:String,term:String,provider:String,currency:String,country:String,region:String,
+        allowedIp:String,version:Int,idempotencyKey:String):String {
+        if(version<1||!Regex("[0-9a-f-]{36}").matches(idempotencyKey))throw AuthFailure("INVALID_CHECKOUT")
+        val data=purchaseInput(product,term,provider,currency,country,region,allowedIp)
+            .put("version",version).put("idempotencyKey",idempotencyKey).put("acceptedTerms","2026-11-10")
+        val response=http("/api/store/checkout","POST",data,true).first
+        val urlString=response.optString("url")
+        val url=runCatching{URL(urlString)}.getOrNull()
+        val hosts=when(provider){
+            "stripe"->setOf("checkout.stripe.com")
+            "paypal"->setOf("www.paypal.com","www.sandbox.paypal.com")
+            else->setOf("www.mercadopago.com.mx","www.mercadopago.com","sandbox.mercadopago.com.mx")
+        }
+        if(url==null||url.protocol!="https"||url.host !in hosts||url.userInfo!=null||url.port!=-1)
+            throw AuthFailure("INVALID_CHECKOUT_URL")
+        return urlString
+    }
+
+    suspend fun editApiIp(entitlementId:String,ip:String):JSONObject {
+        if(!CommercialServerIp.isPublicLiteral(ip))throw IllegalArgumentException("INVALID_PUBLIC_IP")
+        return http("/api/account/api-ip","PATCH",
+            JSONObject().put("id",entitlementId).put("allowedIp",ip),true).first
+    }
+    suspend fun signOut(){
+        try{
+            if(sessionToken()!=null){
+                // Revoke only this device's private FCM token before session deletion.
+                runCatching{com.ghostdeveloper.spdecode.cloud.CloudNoticePush.revokeAccount(context)}
+                http("/api/auth/sign-out","POST",JSONObject(),true)
+            }
+        }finally{wipeSession()}
+    }
+}

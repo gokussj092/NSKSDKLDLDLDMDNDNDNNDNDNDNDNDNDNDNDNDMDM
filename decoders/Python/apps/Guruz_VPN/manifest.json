@@ -1,0 +1,32 @@
+{
+  "id": "guruz-vpn",
+  "name": "Guruz VPN",
+  "package": "guruz.vpn.tunnel",
+  "versionName": "18.4",
+  "versionCode": 184,
+  "engine": "python",
+  "entrypoint": "Guruz_VPN.py",
+  "extensions": [],
+  "textPrefixes": [],
+  "dependencies": [],
+  "catalog": {
+    "entrypoint": "Guruz_VPN.py",
+    "method": "GET",
+    "url": "https://raw.githubusercontent.com/guruzgh-ed/edd/refs/heads/main/gv.js",
+    "status": "live_verified",
+    "version": "0.7",
+    "servers": 49,
+    "networks": null,
+    "payloads": 436,
+    "tweaks": 887,
+    "freeServers": 0,
+    "notes": "STGCM3.GV AES-256-GCM (claves propias, distintas de Guruz Tunnel; sufijos .GV./GVCR1. en vez de .GT./GTCR1.). Familia tekidoer. Seed del APK: version 0.1, 1 servidor, 1 tweak (el script tambien abre esa version anterior / STGCM2 legacy). Espejo antiguo guruzgh-ed/conf/gv.js = config_revision 4, mas viejo; la URL canonica es edd."
+  },
+  "files": {
+    "supported": false,
+    "entrypoint": null,
+    "notes": "Sin formato propio de archivo ni esquema URI propio (sin ACTION_VIEW, sin extension, sin file picker); la config guardada vive cifrada en system.db, no en archivo de usuario; no hay script _archivos.py. Sin .sks."
+  },
+  "realSampleVerified": true,
+  "deployment": "pending"
+}

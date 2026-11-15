@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="catalog_offer_title">Доступен новый каталог</string>
+    <string name="catalog_offer_body">Доступна версия каталога %1$d. Обновите его, чтобы получить новые поддерживаемые приложения, методы и улучшения.</string>
+    <string name="catalog_offer_update">Обновить</string>
+    <string name="catalog_offer_later">Отмена</string>
+    <string name="catalog_postpone_title">Продолжить без обновления?</string>
+    <string name="catalog_postpone_body">При отмене новые приложения, методы и улучшения будут недоступны до обновления каталога. Обновить его можно позже в разделе VPN-серверов.</string>
+    <string name="catalog_postpone_confirm">Продолжить без обновления</string>
+    <string name="catalog_postpone_back">Назад</string>
+</resources>

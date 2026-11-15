@@ -3,6 +3,7 @@ import { adminSettings, adminLogin, authenticateAdmin, validMutation,
 import { opsStore, maintenanceEnabled, setMaintenance, aggregateMetrics, usageReport,
   SERVICE_IDS,serviceMaintenanceStates,setServiceMaintenance,resetErrorBaselines } from "./c6-ops-store.mjs";
 import {throttle} from "./c3-store.mjs";
+import {loginStaff,staffCookie,clearStaffCookie,logoutStaff,panelPrincipal} from "./commerce/staff.mjs";
 import { settings } from "./c3-config.mjs";
 import {admissionPolicy,setAdmissionPolicy} from "./c11-play-admission.mjs";
 import {v1ProtectionStatus,v1PolicyStatus,changeV1Policy,changeV1Retirement} from "./v1-protection-policy.mjs";
@@ -11,7 +12,9 @@ import {v2PlayPolicyStatus,changeV2PlayPolicy,changeV2PlaySettings} from "./v2-p
 import {v2DevicePolicyStatus,changeV2DevicePolicy,PATCH_MONTHS,TEST_HOURS} from "./v2-device-admission-policy.mjs";
 import {admissionDiagnostics} from "./v2-admission-diagnostics.mjs";
 import {v2Settings} from "./v2-config.mjs";
-import {providerOverview,updateProvider,updateMethodState,PUBLIC_PROVIDER_IDS} from "./c12-provider-controls.mjs";
+import {providerOverview,updateProvider,updateMethodState,updateDisplayVersion,PUBLIC_PROVIDER_IDS} from "./c12-provider-controls.mjs";
+import {currentSnapshot} from "./catalog-chunk-api.mjs";
+import {chunksEnabled} from "./catalog-snapshots.mjs";
 import { ehiConfigured,nurConfigured } from "./c35-provider.mjs";
 import { jsonReply } from "./responses.mjs";
 import {readOpsReport,hostHealth} from "./c14-ops-observability.mjs";
@@ -45,17 +48,43 @@ export async function loginRequest(request,options={}) {
       return error("INVALID_REQUEST",400);
     const redis=await (options.storeProvider||opsStore)();
     const result=await adminLogin(redis,request,body.username,body.password,cfg);
-    if(result.error)return error(result.error,result.status);
-    return api({expiresIn:result.expiresIn},200,{
-      "Set-Cookie":cookieHeader(result.token),
-    });
+    if(!result.error){
+      const response=api({expiresIn:result.expiresIn,role:'owner'},200,{
+        "Set-Cookie":cookieHeader(result.token)
+      });
+      response.headers.append("Set-Cookie",clearStaffCookie());
+      return response;
+    }
+    if(result.error!=='INVALID_CREDENTIALS')return error(result.error,result.status);
+    // Staff sessions cannot authenticate on existing owner-only API routes.
+    if(!process.env.SPDECODE_DATABASE_URL)return error("INVALID_CREDENTIALS",401);
+    try{
+      const staff=await loginStaff(redis,body.username,body.password,{config:cfg});
+      const response=api({expiresIn:staff.expiresIn,role:staff.role,staff:true,
+        mustChangePassword:staff.mustChangePassword},200,{
+        "Set-Cookie":staffCookie(staff.token)
+      });
+      response.headers.append("Set-Cookie",deleteCookie());
+      return response;
+    }catch(e){return error(e?.code==='RATE_LIMITED'?'RATE_LIMITED':'INVALID_CREDENTIALS',
+      e?.code==='RATE_LIMITED'?429:401);}
   }catch{return error("SERVICE_UNAVAILABLE",503);}
 }
 export async function statusRequest(request,options={}) {
   if(!adminSettings().enabled)return error("ADMIN_DISABLED",503);
   try{
     const redis=await (options.storeProvider||opsStore)();
-    if(!await authenticateAdmin(redis,request))return error("UNAUTHORIZED",401);
+    const owner=await authenticateAdmin(redis,request);
+    if(!owner){
+      if(!process.env.SPDECODE_DATABASE_URL)return error("UNAUTHORIZED",401);
+      const principal=await panelPrincipal(request,{redis});
+      if(!principal)return error("UNAUTHORIZED",401);
+      return api({staff:true,principal:{
+        username:principal.username,name:principal.name,role:principal.role,
+        mustChangePassword:principal.mustChangePassword,
+        capabilities:principal.mustChangePassword?[]:principal.capabilities
+      }});
+    }
     const [maintenance,legacyMetrics,ping,serviceMaintenance,playAdmission,providerControls,v1Protection,v1Policy,v2PolicyState,v2PlayPolicy,v2DevicePolicy]=await Promise.all([
       maintenanceEnabled(redis),aggregateMetrics(redis),redis.ping(),serviceMaintenanceStates(redis),
       admissionPolicy(redis),providerOverview(),v1ProtectionStatus(),v1PolicyStatus(),v2PolicyStatus(),v2PlayPolicyStatus(),v2DevicePolicyStatus(),
@@ -305,9 +334,14 @@ export async function logoutRequest(request,options={}) {
   try {
     const redis=await (options.storeProvider||opsStore)();
     const claims=await authenticateAdmin(redis,request,cfg);
-    if(!claims)return error("UNAUTHORIZED",401);
-    await revokeAdmin(redis,claims);
-    return api({loggedOut:true},200,{"Set-Cookie":deleteCookie()});
+    if(claims){
+      await revokeAdmin(redis,claims);
+      return api({loggedOut:true},200,{"Set-Cookie":deleteCookie()});
+    }
+    const principal=await panelPrincipal(request,{redis});
+    if(!principal||principal.owner)return error("UNAUTHORIZED",401);
+    await logoutStaff(request,{redis,config:cfg});
+    return api({loggedOut:true},200,{"Set-Cookie":clearStaffCookie()});
   }catch{return error("SERVICE_UNAVAILABLE",503);}
 }
 
@@ -347,6 +381,19 @@ export async function playAdmissionRequest(request,options={}){
 }
 
 /** Fixed-provider availability: CSRF protected, authenticated, never writes credentials. */
+export async function catalogEditionRequest(request,options={}){
+ const cfg=adminSettings();if(!cfg.enabled)return error("ADMIN_DISABLED",503);
+ if(!validMutation(request,cfg))return error("CSRF_REJECTED",403);
+ try{
+  const redis=await (options.storeProvider||opsStore)();
+  if(!await authenticateAdmin(redis,request,cfg))return error("UNAUTHORIZED",401);
+  const body=await parseSmallJson(request,128);
+  if(!own(body,["displayVersion"])||!Number.isSafeInteger(body.displayVersion)||body.displayVersion<1)return error("INVALID_REQUEST",400);
+  const providerControls=await updateDisplayVersion(body.displayVersion,process.env,{prepare:chunksEnabled()?async next=>currentSnapshot(request,{...await providerOverview(),catalogVersion:next.version,displayVersion:String(next.displayVersion)}):null});
+  return api({providerControls},200,{"Cache-Control":"private, no-store"});
+ }catch(cause){if(["DISPLAY_VERSION_ROLLBACK","MAINTENANCE_LOCKED","PROVIDER_BUSY"].includes(cause?.message))return error(cause.message,409);return error("SERVICE_UNAVAILABLE",503);}
+}
+
 export async function providerControlRequest(request,options={}){
  const cfg=adminSettings();
  if(!cfg.enabled)return error("ADMIN_DISABLED",503);

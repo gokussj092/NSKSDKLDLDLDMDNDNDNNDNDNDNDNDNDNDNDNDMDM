@@ -1,0 +1,16 @@
+{
+  "package": "com.evozi.injector",
+  "versionName": "6.5.0",
+  "versionCode": 244,
+  "source": "User-provided HTTP Injector_6.5.0.zip",
+  "distributionBytes": 38832542,
+  "distributionSha256": "2eeab20e7a2193d63730fbae3dcee8ac439b4f644e45465640ed80c68a92e6e4",
+  "baseApkBytes": 12439507,
+  "baseApkSha256": "5dc3976ad0d90c14b79f5848109296998f930c9d36be88fba9115c078f60dfe3",
+  "certificateSha256": [
+    "58d881e0c06db0d715cee5c281c84ccb571fc3a109ce5f05b796154c76c0748a"
+  ],
+  "apkSignatureCryptographicallyVerified": false,
+  "apkCodeExecuted": false,
+  "bundleSha256": "03737e8e7985fdf8227f393d570316f65ea075863007fc2b002ad8e3ff97b698"
+}

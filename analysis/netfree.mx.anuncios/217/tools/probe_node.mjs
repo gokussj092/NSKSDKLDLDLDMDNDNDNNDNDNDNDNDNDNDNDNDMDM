@@ -1,0 +1,15 @@
+/** Real Node transport or explicitly simulated HTTP with both complete real bodies. */
+import assert from "node:assert/strict";import fs from "node:fs";import dns from "node:dns/promises";import https from "node:https";import {EventEmitter} from "node:events";import {createHash} from "node:crypto";
+import {downloadVpnCatalog} from "../../../../cloud/web/lib/server-vpn-provider.mjs";import {packPairedVpnCatalogs} from "../../../../cloud/web/lib/paired-vpn-catalogs.mjs";import {fetchWorker} from "../../../../cloud/web/lib/c3-gateway.mjs";
+process.env.CLOUD_SERVER_VPN_ENABLED="true";const [mode,directory,workerFile]=process.argv.slice(2),id="speicers-turbo-vpn",root="https://raw.githubusercontent.com/apksdemons/apks2/refs/heads/main/speicers/";
+if(mode==="--real"){
+ try{const raw={};for(const name of ["servers","users"]){raw[name]=await downloadVpnCatalog(id,name);fs.writeFileSync(directory+"/node-"+name+".enc",raw[name],{mode:0o600});}console.log(JSON.stringify({transport:"REAL_HTTP",status:"PASS",sources:Object.fromEntries(Object.entries(raw).map(([n,b])=>[n,{bytes:b.length,sha256:createHash("sha256").update(b).digest("hex")}]))}));}
+ catch(e){console.log(JSON.stringify({transport:"REAL_HTTP",status:"NETWORK_UNAVAILABLE",code:e.code||e.message}));process.exitCode=3;}
+}else if(mode==="--replay"){
+ const raw={servers:fs.readFileSync(directory+"/servers.enc"),users:fs.readFileSync(directory+"/users.enc")},worker=JSON.parse(fs.readFileSync(workerFile,"utf8")),lookup=dns.lookup,request=https.request;let calls=0;
+ try{
+  dns.lookup=async()=>[{address:"93.184.216.34",family:4}];https.request=(url,o,callback)=>{const source=url.href===root+"spei_servrs"?"servers":url.href===root+"spei_users"?"users":null;assert(source);assert.equal(o.method,"GET");assert.equal(o.headers["User-Agent"],"Dalvik/2.1.0 (Linux; U; Android 14)");assert.equal(o.rejectUnauthorized,true);const req=new EventEmitter();req.destroy=()=>{};req.end=()=>queueMicrotask(()=>{calls++;const res=new EventEmitter();res.statusCode=200;res.headers={};res.resume=()=>{};callback(res);res.emit("data",raw[source]);res.emit("end");});return req;};
+  const sources=Object.fromEntries(await Promise.all(["servers","users"].map(async n=>[n,await downloadVpnCatalog(id,n)]))),bundle=packPairedVpnCatalogs(id,sources);assert.deepEqual(bundle,fs.readFileSync(directory+"/verified/remote.bundle"));process.env.WORKER_INTERNAL_URL="http://decoder-worker:8787";
+  const result=await fetchWorker("server-vpn",{providerId:id,dataBase64:bundle.toString("base64")},{workerToken:"synthetic-replay-internal"},{fetchImpl:async()=>Response.json(worker)});assert.deepEqual((await result.json()).structuredJson,worker.structuredJson);console.log(JSON.stringify({transport:"SIMULATED_HTTP_REAL_BYTES",status:"PASS",calls,whole_worker_contract_equal:true,servers:worker.structuredJson.catalogs.servers.Servers.length,users:worker.structuredJson.catalogs.users.Usuarios.length}));
+ }finally{dns.lookup=lookup;https.request=request;}
+}else throw Error("Choose --real or --replay");

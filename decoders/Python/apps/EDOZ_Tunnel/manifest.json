@@ -1,0 +1,26 @@
+{
+  "id": "edoz-tunnel",
+  "name": "EDOZ Tunnel",
+  "package": "net.androidtechvilla.edoztunnel",
+  "versionName": "3.7",
+  "versionCode": 28,
+  "engine": "python",
+  "entrypoint": "EDOZ_Tunnel.py",
+  "extensions": [],
+  "textPrefixes": [],
+  "catalog": {
+    "entrypoint": "EDOZ_Tunnel.py",
+    "method": "Base64 -> OpenSSL Salted__ container -> EVP_BytesToKey/MD5 -> AES-256-CBC, format password securedjson (tcodes framework)",
+    "url": "https://raw.githubusercontent.com/chrisrepair/Updates/main/Edoztunnnel%20lite%20V7%202024",
+    "vipUrl": null,
+    "liveVersion": "50.8",
+    "servers": 23,
+    "networks": null,
+    "payloads": 1558,
+    "status": "live_verified",
+    "assetVersion": "23.08",
+    "assetServers": 20,
+    "assetPayloads": 889,
+    "notes": "Payloads = Tweaks; 1445 of 1558 live Tweaks carry a Payload. VIP URL field is empty by default in this build. Bundled defconf/vip_defconf assets are byte-identical (v23.08, 20/889) but no asset file was delivered in this batch. Free catalog body byte-identical to EDOZ Tunnel Pro free catalog."
+  }
+}

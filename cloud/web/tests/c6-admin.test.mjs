@@ -256,7 +256,7 @@ test("provider availability API rejects cross-origin, unauthenticated and arbitr
   response=await providerControlRequest(request("/api/admin/providers",{id:"https://attacker.invalid",
     enabled:true},cookie),args);
   assert.equal(response.status,400);
-  response=await providerControlRequest(request("/api/admin/providers",{id:"royal-tunnel",
+  response=await providerControlRequest(request("/api/admin/providers",{id:"unregistered-vpn",
     enabled:true},cookie),args);
   assert.equal(response.status,400);
   response=await providerControlRequest(request("/api/admin/providers",{id:"http-jireh",

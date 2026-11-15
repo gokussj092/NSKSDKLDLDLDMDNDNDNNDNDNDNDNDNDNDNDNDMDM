@@ -71,23 +71,42 @@ internal object CloudCatalogUpdates {
         // A push already supplies a version hint. Verify/download only after the user's tap.
     }
 
-    /** Only reads local push hints while visible. Network recovery is opt-in and daily. */
+    /** HTTPS long-poll from the VPS while the consenting app is visible.
+     * The server responds only on a newer version or after a bounded timeout.
+     * Version hints never trigger catalog downloads or decode operations.
+     */
     suspend fun watchWhileVisible(
         context:Context,client:CloudDecodeClient,repository:ServerVpnCatalogRepository,
         onAvailable:(Int)->Unit
     ) {
-        while(currentCoroutineContext().isActive && enabled(context) &&
+        var known=repository.currentVersion()
+        var lastNotified=known
+        while(currentCoroutineContext().isActive && BuildConfig.SPDECODE_CLOUD_ENABLED &&
             CloudLegalConsent.accepted(context)){
             try {
-                val local=repository.currentVersion()
-                val hint=pendingVersion(context)
-                if(hint>local) {
-                    markOffered(context,hint)
-                    onAvailable(hint)
+                val cached=pendingVersion(context)
+                if(cached>lastNotified && cached>repository.currentVersion()){
+                    lastNotified=cached
+                    onAvailable(cached)
                 }
-                delay(60_000)
+                // Keep the watch at the latest observed version even if the
+                // user postponed downloading it. This avoids busy-loop requests.
+                known=maxOf(known,repository.currentVersion(),cached)
+                val remote=client.watchCatalogVersion(known)
+                if(remote>known){
+                    known=remote
+                    markOffered(context,remote)
+                    if(remote>lastNotified && remote>repository.currentVersion()){
+                        lastNotified=remote
+                        onAvailable(remote)
+                    }
+                }
+                delay(1_500)
             }catch(error:CancellationException){throw error}
-             catch(_:Exception){delay(60_000)}
+             catch(_:Exception){
+                // Rate limits and connectivity errors must never block the UI.
+                delay(30_000)
+            }
         }
     }
 }

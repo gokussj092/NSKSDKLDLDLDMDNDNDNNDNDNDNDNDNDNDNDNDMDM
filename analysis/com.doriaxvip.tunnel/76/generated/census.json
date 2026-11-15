@@ -1,0 +1,154 @@
+{
+  "included": {
+    "counts": {
+      "decrypted": 8,
+      "empty": 3
+    },
+    "fields": {
+      "p0PgL3l0d89mnssz7ImPJA==": {
+        "decrypted": 1
+      },
+      "ACqWMY4zuZWzSEs8cZMXIw==": {
+        "decrypted": 1
+      },
+      "66P9ZUEM1ju4WGhv856BSg==": {
+        "decrypted": 1
+      },
+      "U7V8DoP4cYkXJjCnpqW6nQ==": {
+        "decrypted": 1
+      },
+      "p9ZPlMv9V7gDszRoUaNaJw==": {
+        "decrypted": 1
+      },
+      "SbDP19AbQur0YtkkyRlVMA==": {
+        "empty": 1
+      },
+      "vXfVafVdyaCRTDj6uBT6lg==": {
+        "empty": 1
+      },
+      "mtw364P3ZslP2CZYuHTCHQ==": {
+        "decrypted": 1
+      },
+      "Fo3TT4oONvv69IQIMg1aLg==": {
+        "decrypted": 1
+      },
+      "PFFSWRJKZmOcNLTZxFwgjQ==": {
+        "decrypted": 1
+      },
+      "tmSbWiCK1hvytJ9f3gflkQ==": {
+        "empty": 1
+      }
+    }
+  },
+  "included-users": {
+    "counts": {
+      "decrypted": 7
+    },
+    "fields": {
+      "Name": {
+        "decrypted": 1
+      },
+      "Username": {
+        "decrypted": 1
+      },
+      "Password": {
+        "decrypted": 1
+      },
+      "Obfs": {
+        "decrypted": 1
+      },
+      "Auth": {
+        "decrypted": 1
+      },
+      "ID": {
+        "decrypted": 1
+      },
+      "Path": {
+        "decrypted": 1
+      }
+    }
+  },
+  "remote": {
+    "counts": {
+      "decrypted": 658,
+      "empty": 241
+    },
+    "fields": {
+      "p0PgL3l0d89mnssz7ImPJA==": {
+        "decrypted": 84
+      },
+      "ACqWMY4zuZWzSEs8cZMXIw==": {
+        "decrypted": 83,
+        "empty": 1
+      },
+      "66P9ZUEM1ju4WGhv856BSg==": {
+        "decrypted": 46,
+        "empty": 38
+      },
+      "ITkWvEHp29BmMaLMEGUFcw==": {
+        "decrypted": 4
+      },
+      "2kDKELRmSE143VdcX3FPzw==": {
+        "decrypted": 4
+      },
+      "iW1aO5DgThVAeo23xTsXSw==": {
+        "decrypted": 4
+      },
+      "b3MPypEFR83rzFKUa4UbCw==": {
+        "decrypted": 4
+      },
+      "asmRO4zXsRjhDYX42dbNuw==": {
+        "decrypted": 4
+      },
+      "MkRXl4D9vpREVCJ0w4qrgg==": {
+        "decrypted": 4
+      },
+      "B5jcTSGuJUFbTtH5O1IaBg==": {
+        "decrypted": 4
+      },
+      "U7V8DoP4cYkXJjCnpqW6nQ==": {
+        "decrypted": 79
+      },
+      "p9ZPlMv9V7gDszRoUaNaJw==": {
+        "decrypted": 79
+      },
+      "mtw364P3ZslP2CZYuHTCHQ==": {
+        "decrypted": 79
+      },
+      "Fo3TT4oONvv69IQIMg1aLg==": {
+        "decrypted": 79
+      },
+      "Qz8kR1uPmNvT4sXbHc2AwQ==": {
+        "decrypted": 6
+      },
+      "Lp3vN9tYsKdE6rWqZuJb1A==": {
+        "decrypted": 6
+      },
+      "UxdyIntdYykCdV76crKnwg==": {
+        "decrypted": 1
+      },
+      "l7MIgkbuXMmGaaQGd54F2w==": {
+        "decrypted": 1
+      },
+      "QSln2zKCBJvqH9qV4M0ifg==": {
+        "decrypted": 1
+      },
+      "SbDP19AbQur0YtkkyRlVMA==": {
+        "empty": 71,
+        "decrypted": 1
+      },
+      "vXfVafVdyaCRTDj6uBT6lg==": {
+        "empty": 70,
+        "decrypted": 2
+      },
+      "PFFSWRJKZmOcNLTZxFwgjQ==": {
+        "decrypted": 42,
+        "empty": 30
+      },
+      "tmSbWiCK1hvytJ9f3gflkQ==": {
+        "empty": 31,
+        "decrypted": 41
+      }
+    }
+  }
+}

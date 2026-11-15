@@ -1,0 +1,235 @@
+{
+  "schema_version": 1,
+  "package_name": "dev.jx.clickconnect",
+  "app_name": "VLX Tunnel VPN",
+  "version_name": "VLX v14",
+  "version_code": 18,
+  "observed_at": "2026-11-15",
+  "source_category": "public_store_xapk",
+  "authorization_note": "XAPK publico de APKPure; muestras aportadas por el propietario (archivo real de Pedro solo en WyrVPN) o sinteticas selladas con el metodo real. Sin credenciales de usuario ni perfiles reales en el expediente.",
+  "status": "PARTIAL",
+  "targets": [
+    {
+      "kind": "files",
+      "status": "VERIFIED_SYNTHETIC",
+      "detail": ".vlx: muestra sintetica sellada con el metodo real; falta uno REAL exportado"
+    },
+    {
+      "kind": "text",
+      "status": "VERIFIED_SYNTHETIC",
+      "detail": "sin esquema URI propio; solo v2rayng://install-config/install-sub y enlaces estandar"
+    },
+    {
+      "kind": "catalog",
+      "status": "VERIFIED",
+      "detail": "GET estatico con User-Agent obligatorio, sobre Argon2id + AES-256-GCM sin marcadora, Version 23.759 en vivo"
+    },
+    {
+      "kind": "export",
+      "status": "PENDING",
+      "detail": "sin compartir por codigo, registro de dispositivo ni creditos en VLX v14"
+    }
+  ],
+  "inputs": [
+    {
+      "type": "xapk",
+      "name": "VLX_Tunnel_VPN_VLX_v14_APKPure.xapk (SHA-256 y SHA-1 coinciden con APKPure)",
+      "size_bytes": 47374199,
+      "sha256": "973ec793bb9e2374c073c2c9199b38e70989ddccd17d34ebd4080c372095a548",
+      "note": "Hash verificado contra APKPure segun README/TESTING de origen; el .xapk no se guarda en Git."
+    },
+    {
+      "type": "operational_script",
+      "name": "VLX_Tunnel_VPN.py",
+      "kind": "catalogo",
+      "sha256": "908ab7a911661594cbf9ecbc8694236b2d2078a8a6c095c56b4d952e201432c1",
+      "path": "~/workspace/catalogs/vlx/VLX_Tunnel_VPN.py",
+      "note": "Script operativo (contiene las constantes de formato). No se copia a analysis/."
+    },
+    {
+      "type": "operational_script",
+      "name": "VLX_Tunnel_VPN_archivos.py",
+      "kind": "archivos",
+      "sha256": "899852131e637da6cc2762147e91ae8eeb78ccba99786a72d27daaf412095213",
+      "path": "~/workspace/catalogs/vlx/VLX_Tunnel_VPN_archivos.py",
+      "note": "Script operativo (contiene las constantes de formato). No se copia a analysis/."
+    },
+    {
+      "type": "sample",
+      "name": "catalog_sample.b64",
+      "sha256": "ceb5eee6e08ba41052a90570e2d385c5723f871a77d7491600e3d824fcdb8708",
+      "note": "cuerpo en vivo 2026-11-15 (1.082.108 B, una linea Base64)"
+    },
+    {
+      "type": "sample",
+      "name": "muestra.vlx",
+      "sha256": "1d5d48792feaec1420c6641f283ef9b36801dec23bf8cec47fbb21bd68e2a9aa",
+      "note": "perfil .vlx SINTETICO sellado con el metodo de exportacion"
+    },
+    {
+      "type": "sample",
+      "name": "configfile.json",
+      "sha256": "0666481ba538b591aa87e52c212d0f3c8e219b14beb80b6faa98353d8e8fc075",
+      "note": "asset incluido del APK (Version 1.01, 1 servidor, 1 red)"
+    }
+  ],
+  "tooling": [
+    {
+      "name": "Python",
+      "version": "3.12.3",
+      "origin": "sistema (verificado en este entorno)",
+      "purpose": "Ejecucion de scripts y tests"
+    },
+    {
+      "name": "pycryptodome",
+      "version": "4.4.0",
+      "origin": "PyPI, venv ~/workspace/http-custom-update/venv (verificado)",
+      "purpose": "Via rapida AES (opcional; los scripts traen fallback puro)"
+    },
+    {
+      "name": "argon2-cffi",
+      "version": "25.1.0",
+      "origin": "PyPI, venv ~/workspace/http-custom-update/venv (verificado)",
+      "purpose": "Via rapida Argon2id para sobres de campo (opcional)"
+    },
+    {
+      "name": "jadx",
+      "version": "UNKNOWN",
+      "origin": "UNKNOWN — version no registrada en los logs de origen de estas 7 apps",
+      "purpose": "Descompilacion de DEX a Java"
+    },
+    {
+      "name": "apktool / androguard",
+      "version": "UNKNOWN",
+      "origin": "UNKNOWN — version no registrada en los logs de origen",
+      "purpose": "Extraccion de APK y lectura de manifest/assets"
+    },
+    {
+      "name": "capstone",
+      "version": "UNKNOWN",
+      "origin": "UNKNOWN — version no registrada en los logs de origen",
+      "purpose": "Desensamblado AArch64 de libgojni.so en los scripts de tools/"
+    },
+    {
+      "name": "curl",
+      "version": "UNKNOWN",
+      "origin": "sistema — version no registrada",
+      "purpose": "Descarga alternativa cuando el cliente HTTP de Python trunca el cuerpo"
+    }
+  ],
+  "code_paths": [
+    "decoders/Python/apps/VLX_Tunnel_VPN/VLX_Tunnel_VPN.py",
+    "decoders/Python/apps/VLX_Tunnel_VPN/VLX_Tunnel_VPN_archivos.py"
+  ],
+  "code_paths_note": "Las rutas decoders/Python/apps/<Proveedor>/ son las rutas PREVISTAS de integracion (Fase 2 del parche); a 2026-11-15 aun no estan integradas ni subidas. No se afirma integracion.",
+  "evidence_refs": [
+    "~/workspace/catalogs/vlx/README.md",
+    "~/workspace/catalogs/vlx/TESTING.md",
+    "~/workspace/catalogs/vlx/work/",
+    "analysis/dev.jx.clickconnect/18/RESULTS.md",
+    "analysis/dev.jx.clickconnect/18/tests/test_method.py"
+  ],
+  "limitations": [
+    "Falta un .vlx REAL exportado por la app en un telefono.",
+    "El servidor exige el User-Agent exacto de la app (con otro UA responde 404)."
+  ],
+  "network_requirements": [
+    "Descarga del catalogo en vivo: red HTTPS (el script operativo replica la peticion exacta de la app).",
+    "Los tests de este expediente NO necesitan red.",
+    "Regla SP-DECODE 2026-11-15: el JSON de resultado del catalogo lleva solo los datos del catalogo, todo descifrado; las APIs de descarga NO van en el resultado ni en este expediente (ver script operativo y supplied-integrations)."
+  ],
+  "manual_steps": [
+    "Obtener el XAPK publico de APKPure y verificar su SHA-256 contra lo publicado.",
+    "Ejecutar el --self-test del script operativo (ver REPRODUCE.md).",
+    "Para la confirmacion de extremo a extremo hace falta una muestra real exportada por la app en un telefono (ver unresolved_questions)."
+  ],
+  "unresolved_questions": [
+    ".vlx real exportado por la app.",
+    "Re-verificar cuando el servidor sirva una version nueva del catalogo (hoy 23.759) o la app se actualice (hoy VLX v14 / build 18)."
+  ],
+  "connection_authentication": {
+    "file_catalog_integrity": {
+      "status": "NOT_OBSERVED",
+      "note": "Integridad por tags AES-256-GCM (AEAD), no por HMAC."
+    },
+    "cryptographic_derivation": {
+      "status": "NOT_OBSERVED",
+      "note": "Derivacion por Argon2id; sin HMAC en la derivacion."
+    },
+    "vpn_transport": {
+      "status": "NOT_OBSERVED",
+      "note": "No se reviso el transporte VPN de esta app."
+    },
+    "connection_authentication": {
+      "status": "NOT_OBSERVED",
+      "note": "No se observo HMAC de autenticacion de conexion."
+    }
+  },
+  "dependencies": [
+    {
+      "name": "python",
+      "version": "3.12.3",
+      "source": "system",
+      "status": "VERIFIED",
+      "note": "python3 --version en este entorno"
+    },
+    {
+      "name": "pycryptodome",
+      "version": "4.4.0",
+      "source": "PyPI (venv)",
+      "status": "VERIFIED",
+      "note": "venv ~/workspace/http-custom-update/venv"
+    },
+    {
+      "name": "argon2-cffi",
+      "version": "25.1.0",
+      "source": "PyPI (venv)",
+      "status": "VERIFIED",
+      "note": "venv ~/workspace/http-custom-update/venv"
+    },
+    {
+      "name": "jadx",
+      "version": "UNKNOWN",
+      "source": "UNKNOWN",
+      "status": "NEEDS_REVIEW",
+      "note": "Version no registrada en los logs de origen"
+    },
+    {
+      "name": "apktool",
+      "version": "UNKNOWN",
+      "source": "UNKNOWN",
+      "status": "NEEDS_REVIEW",
+      "note": "Version no registrada en los logs de origen"
+    },
+    {
+      "name": "androguard",
+      "version": "UNKNOWN",
+      "source": "UNKNOWN",
+      "status": "NEEDS_REVIEW",
+      "note": "Version no registrada en los logs de origen"
+    },
+    {
+      "name": "capstone",
+      "version": "UNKNOWN",
+      "source": "UNKNOWN",
+      "status": "NEEDS_REVIEW",
+      "note": "Version no registrada en los logs de origen"
+    },
+    {
+      "name": "curl",
+      "version": "UNKNOWN",
+      "source": "system",
+      "status": "NEEDS_REVIEW",
+      "note": "Version no registrada"
+    }
+  ],
+  "dependencies_reference": {
+    "lockfile": "dependencies.lock.json",
+    "note": "Ver DEPENDENCIES.md. Versiones desconocidas marcadas UNKNOWN con motivo; nunca inventadas."
+  },
+  "code_paths_reference": [
+    "decoders/Python/apps/VLX_Tunnel_VPN/VLX_Tunnel_VPN.py",
+    "decoders/Python/apps/VLX_Tunnel_VPN/VLX_Tunnel_VPN_archivos.py",
+    "analysis/platform/supplied-integrations (registro; las APIs de descarga viven en el script operativo y en el registro, no en este expediente)"
+  ]
+}

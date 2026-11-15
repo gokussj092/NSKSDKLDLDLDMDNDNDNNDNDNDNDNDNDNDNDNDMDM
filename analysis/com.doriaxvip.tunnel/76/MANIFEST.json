@@ -1,0 +1,761 @@
+{
+  "schema_version": 1,
+  "package_name": "com.doriaxvip.tunnel",
+  "app_name": "Genis VPN",
+  "version_name": "2.2.6",
+  "version_code": 76,
+  "observed_at": "2026-11-04T19:01:31.384091+00:00",
+  "source_category": "owner_requested_public_store_app; APKPure binary acquisition",
+  "authorization_note": "Owner requested manual catalog research and Cloud implementation. No APK redistribution, Android modification or service authentication bypass.",
+  "status": "VERIFIED",
+  "verification_level": "VERIFIED_REAL",
+  "rollout_status": "NOT_DEPLOYED_NODE_VPS_TRANSPORT_PENDING",
+  "targets": [
+    {
+      "kind": "catalog",
+      "method": "genis-vpn",
+      "status": "VERIFIED_REAL",
+      "remote_version": "1114",
+      "server_count": 84
+    },
+    {
+      "kind": "catalog",
+      "method": "included_users",
+      "status": "VERIFIED_OFFLINE_ONLY",
+      "user_count": 1,
+      "note": "Bundled users document; not claimed as a remote source or mixed into remote output."
+    },
+    {
+      "kind": "files",
+      "status": "NOT_INVESTIGATED"
+    },
+    {
+      "kind": "text",
+      "status": "NOT_INVESTIGATED"
+    },
+    {
+      "kind": "export",
+      "status": "NOT_CERTIFIED"
+    }
+  ],
+  "inputs": [
+    {
+      "type": "XAPK",
+      "bytes": 43416878,
+      "sha256": "a19dcdb4cd1c1af697e7f2b7dd76af19f5e018313e2ae9a94ca752cb4a372831",
+      "source": "https://d.apkpure.com/b/XAPK/com.doriaxvip.tunnel?version=latest&nc=arm64-v8a&sv=23"
+    },
+    {
+      "type": "base_APK",
+      "sha256": "172da6fc4405d1cc4b70f69ce48b0f17f1b867c89a01017c991234f58ade229d"
+    },
+    {
+      "type": "remote_encrypted_catalog",
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=utf-8",
+      "inputBytes": 107480,
+      "inputSha256": "0eb4a091e0f522cadb76c1172063bad1e1c136535b7945854fc0fdb88c01aa55",
+      "version": "1114",
+      "keys": [
+        "Version",
+        "ReleaseNotes",
+        "Servers"
+      ],
+      "sections": {
+        "Servers": 84
+      }
+    }
+  ],
+  "tooling": [
+    {
+      "path": "analysis/com.doriaxvip.tunnel/76/tools/CatalogOracle.java",
+      "sha256": "b81ccb33c5158ead53c4135a09fcefc651501f801beace904b1f5982568e5fb8",
+      "version": "1",
+      "kind": "project_research_script",
+      "license": "project_owned; automatic Phase7 approval pending"
+    },
+    {
+      "path": "analysis/com.doriaxvip.tunnel/76/tools/census.py",
+      "sha256": "74f9fea26f4c4b8bdc369752a96fff11bbc4d7a4b100fca3eb743c02c4e72009",
+      "version": "1",
+      "kind": "project_research_script",
+      "license": "project_owned; automatic Phase7 approval pending"
+    },
+    {
+      "path": "analysis/com.doriaxvip.tunnel/76/tools/finalize.py",
+      "sha256": "596ad1f0f763f8c4f8663f6a1afe1c99d117b4251ca743562df3604c5ccb808e",
+      "version": "1",
+      "kind": "project_research_script",
+      "license": "project_owned; automatic Phase7 approval pending"
+    },
+    {
+      "path": "analysis/com.doriaxvip.tunnel/76/tools/history/set_constants.py.v1-to-v2.patch",
+      "sha256": "e2eb0dbfc285ddab461aa021c6ba5f110b3f8a22ad83ab68b9b889b985cc90eb",
+      "version": "1",
+      "kind": "historical_revision_patch",
+      "license": "project_owned; automatic Phase7 approval pending"
+    },
+    {
+      "path": "analysis/com.doriaxvip.tunnel/76/tools/history/verify.py.v1-to-v2.patch",
+      "sha256": "c0efbf083b04fd8b6c172dadb899365245a948390257d58eff56db25916218e8",
+      "version": "1",
+      "kind": "historical_revision_patch",
+      "license": "project_owned; automatic Phase7 approval pending"
+    },
+    {
+      "path": "analysis/com.doriaxvip.tunnel/76/tools/integrate.py",
+      "sha256": "5ce53401ef6d59bbf333b3ce0abb28f5cafb0d8e657f37d908dd56dcee198d7b",
+      "version": "1",
+      "kind": "project_research_script",
+      "license": "project_owned; automatic Phase7 approval pending"
+    },
+    {
+      "path": "analysis/com.doriaxvip.tunnel/76/tools/make_vectors.py",
+      "sha256": "823c745d954e14d0ba843237d17b9d00cab933e2cd003d481dc91e67f0a3d8f2",
+      "version": "1",
+      "kind": "project_research_script",
+      "license": "project_owned; automatic Phase7 approval pending"
+    },
+    {
+      "path": "analysis/com.doriaxvip.tunnel/76/tools/prepare.py",
+      "sha256": "3417f6d479fc010dfbdb0d453ea0d0db7144dbd8cba9fd3e9db8c4fc990dc4af",
+      "version": "1",
+      "kind": "project_research_script",
+      "license": "project_owned; automatic Phase7 approval pending"
+    },
+    {
+      "path": "analysis/com.doriaxvip.tunnel/76/tools/probe_node.mjs",
+      "sha256": "bcd460dcf636758e873a8e6bfa71fa98278f2f9a5ce7a1fd18aa70a4a74ef11d",
+      "version": "1",
+      "kind": "project_research_script",
+      "license": "project_owned; automatic Phase7 approval pending"
+    },
+    {
+      "path": "analysis/com.doriaxvip.tunnel/76/tools/recover.py",
+      "sha256": "4173293cb0974b3412128959c8d9c7d0eff063c88ed8cc5abf6a3457b91a046d",
+      "version": "1",
+      "kind": "project_research_script",
+      "license": "project_owned; automatic Phase7 approval pending"
+    },
+    {
+      "path": "analysis/com.doriaxvip.tunnel/76/tools/resources.py",
+      "sha256": "48ac804f23f793e42b321e18659f43fd9b1d16865da466a95a76b0f6fdfd0383",
+      "version": "1",
+      "kind": "project_research_script",
+      "license": "project_owned; automatic Phase7 approval pending"
+    },
+    {
+      "path": "analysis/com.doriaxvip.tunnel/76/tools/run_checks.py",
+      "sha256": "3917f20b060624fcfefe17fe84549715cbf52e41d755b7e50abb901163af0d35",
+      "version": "1",
+      "kind": "project_research_script",
+      "license": "project_owned; automatic Phase7 approval pending"
+    },
+    {
+      "path": "analysis/com.doriaxvip.tunnel/76/tools/set_constants.py",
+      "sha256": "d8d3fbbb5ef1839bd5d93c7349abb818f8e63de1a9cfc7ea3ca37bac3037c824",
+      "version": "2",
+      "kind": "project_research_script",
+      "license": "project_owned; automatic Phase7 approval pending"
+    },
+    {
+      "path": "analysis/com.doriaxvip.tunnel/76/tools/verify.py",
+      "sha256": "ddc16e3bcff88ade497179353953cc75b55b02926f60d64b9d8088814447d9e7",
+      "version": "2",
+      "kind": "project_research_script",
+      "license": "project_owned; automatic Phase7 approval pending"
+    }
+  ],
+  "dependencies": [
+    {
+      "id": "pypi:alembic",
+      "version": "1.20.1",
+      "source": [
+        "Homepage, https://alembic.sqlalchemy.org",
+        "Documentation, https://alembic.sqlalchemy.org/en/latest/",
+        "Changelog, https://alembic.sqlalchemy.org/en/latest/changelog.html",
+        "Source, https://github.com/sqlalchemy/alembic/",
+        "Issue Tracker, https://github.com/sqlalchemy/alembic/issues/"
+      ],
+      "license": "MIT",
+      "license_review": "NEEDS_REVIEW",
+      "lockfile": "dependencies.lock.json"
+    },
+    {
+      "id": "pypi:androguard",
+      "version": "4.1.4",
+      "source": [
+        "Homepage, https://github.com/androguard/androguard"
+      ],
+      "license": "Apache Licence, Version 2.0",
+      "license_review": "NEEDS_REVIEW",
+      "lockfile": "dependencies.lock.json"
+    },
+    {
+      "id": "pypi:apkInspector",
+      "version": "1.3.7",
+      "source": [
+        "Repository, https://github.com/erev0s/apkInspector"
+      ],
+      "license": "Apache-2.0",
+      "license_review": "NEEDS_REVIEW",
+      "lockfile": "dependencies.lock.json"
+    },
+    {
+      "id": "pypi:asn1crypto",
+      "version": "1.5.1",
+      "source": [
+        "https://github.com/wbond/asn1crypto"
+      ],
+      "license": "MIT",
+      "license_review": "NEEDS_REVIEW",
+      "lockfile": "dependencies.lock.json"
+    },
+    {
+      "id": "pypi:asttokens",
+      "version": "3.0.2",
+      "source": [
+        "Documentation, https://asttokens.readthedocs.io/en/latest/index.html",
+        "Issue Tracker, https://github.com/gristlabs/asttokens/issues"
+      ],
+      "license": "Apache 2.0",
+      "license_review": "NEEDS_REVIEW",
+      "lockfile": "dependencies.lock.json"
+    },
+    {
+      "id": "pypi:capstone",
+      "version": "5.0.9",
+      "source": [
+        "https://www.capstone-engine.org"
+      ],
+      "license": "UNKNOWN",
+      "license_review": "NEEDS_REVIEW",
+      "lockfile": "dependencies.lock.json"
+    },
+    {
+      "id": "pypi:cffi",
+      "version": "2.1.1",
+      "source": [
+        "Documentation, https://cffi.readthedocs.io/",
+        "Changelog, https://cffi.readthedocs.io/en/latest/whatsnew.html",
+        "Download, https://github.com/python-cffi/cffi/releases",
+        "Contact, https://groups.google.com/forum/#!forum/python-cffi",
+        "Source Code, https://github.com/python-cffi/cffi",
+        "Issue Tracker, https://github.com/python-cffi/cffi/issues"
+      ],
+      "license": "MIT-0",
+      "license_review": "NEEDS_REVIEW",
+      "lockfile": "dependencies.lock.json"
+    },
+    {
+      "id": "pypi:click",
+      "version": "8.5.0",
+      "source": [
+        "Changes, https://click.palletsprojects.com/page/changes/",
+        "Chat, https://discord.gg/pallets",
+        "Documentation, https://click.palletsprojects.com/",
+        "Donate, https://palletsprojects.com/donate",
+        "Source, https://github.com/pallets/click/"
+      ],
+      "license": "BSD-3-Clause",
+      "license_review": "NEEDS_REVIEW",
+      "lockfile": "dependencies.lock.json"
+    },
+    {
+      "id": "pypi:colorama",
+      "version": "0.4.6",
+      "source": [
+        "Homepage, https://github.com/tartley/colorama"
+      ],
+      "license": "UNKNOWN",
+      "license_review": "NEEDS_REVIEW",
+      "lockfile": "dependencies.lock.json"
+    },
+    {
+      "id": "pypi:cryptography",
+      "version": "50.0.2",
+      "source": [
+        "changelog, https://cryptography.io/en/latest/changelog/",
+        "documentation, https://cryptography.io/",
+        "homepage, https://github.com/pyca/cryptography",
+        "issues, https://github.com/pyca/cryptography/issues",
+        "source, https://github.com/pyca/cryptography/"
+      ],
+      "license": "Apache-2.0 OR BSD-3-Clause",
+      "license_review": "NEEDS_REVIEW",
+      "lockfile": "dependencies.lock.json"
+    },
+    {
+      "id": "pypi:dataset",
+      "version": "2.0.0",
+      "source": [
+        "Homepage, https://github.com/pudo/dataset",
+        "Repository, https://github.com/pudo/dataset",
+        "Documentation, https://dataset.readthedocs.io/"
+      ],
+      "license": "Copyright (c) 2013, Open Knowledge Foundation, Friedrich Lindenberg,",
+      "license_review": "NEEDS_REVIEW",
+      "lockfile": "dependencies.lock.json"
+    },
+    {
+      "id": "pypi:executing",
+      "version": "2.3.0",
+      "source": [
+        "Homepage, https://github.com/alexmojaki/executing",
+        "Repository, https://github.com/alexmojaki/executing"
+      ],
+      "license": "MIT",
+      "license_review": "NEEDS_REVIEW",
+      "lockfile": "dependencies.lock.json"
+    },
+    {
+      "id": "pypi:ipython",
+      "version": "9.18.1",
+      "source": [
+        "Homepage, https://ipython.org",
+        "Documentation, https://ipython.readthedocs.io/",
+        "Funding, https://jupyter.org/about#donate",
+        "Source, https://github.com/ipython/ipython",
+        "Tracker, https://github.com/ipython/ipython/issues"
+      ],
+      "license": "BSD-3-Clause",
+      "license_review": "NEEDS_REVIEW",
+      "lockfile": "dependencies.lock.json"
+    },
+    {
+      "id": "pypi:ipython_pygments_lexers",
+      "version": "1.1.1",
+      "source": [
+        "Source, https://github.com/ipython/ipython-pygments-lexers"
+      ],
+      "license": "UNKNOWN",
+      "license_review": "NEEDS_REVIEW",
+      "lockfile": "dependencies.lock.json"
+    },
+    {
+      "id": "pypi:jedi",
+      "version": "0.20.1",
+      "source": [
+        "Documentation, https://jedi.readthedocs.io/en/latest/"
+      ],
+      "license": "MIT",
+      "license_review": "NEEDS_REVIEW",
+      "lockfile": "dependencies.lock.json"
+    },
+    {
+      "id": "pypi:loguru",
+      "version": "0.7.3",
+      "source": [
+        "Changelog, https://github.com/Delgan/loguru/blob/master/CHANGELOG.rst",
+        "Documentation, https://loguru.readthedocs.io/en/stable/index.html",
+        "Homepage, https://github.com/Delgan/loguru"
+      ],
+      "license": "UNKNOWN",
+      "license_review": "NEEDS_REVIEW",
+      "lockfile": "dependencies.lock.json"
+    },
+    {
+      "id": "pypi:lxml",
+      "version": "6.1.3",
+      "source": [
+        "Source, https://github.com/lxml/lxml",
+        "Bug Tracker, https://bugs.launchpad.net/lxml"
+      ],
+      "license": "BSD-3-Clause",
+      "license_review": "NEEDS_REVIEW",
+      "lockfile": "dependencies.lock.json"
+    },
+    {
+      "id": "pypi:Mako",
+      "version": "1.4.3",
+      "source": [
+        "Homepage, https://www.makotemplates.org/",
+        "Documentation, https://docs.makotemplates.org",
+        "Issue Tracker, https://github.com/sqlalchemy/mako"
+      ],
+      "license": "MIT",
+      "license_review": "NEEDS_REVIEW",
+      "lockfile": "dependencies.lock.json"
+    },
+    {
+      "id": "pypi:MarkupSafe",
+      "version": "3.0.4",
+      "source": [
+        "Donate, https://palletsprojects.com/donate",
+        "Documentation, https://markupsafe.palletsprojects.com/",
+        "Changes, https://markupsafe.palletsprojects.com/page/changes/",
+        "Source, https://github.com/pallets/markupsafe/",
+        "Chat, https://discord.gg/pallets"
+      ],
+      "license": "BSD-3-Clause",
+      "license_review": "NEEDS_REVIEW",
+      "lockfile": "dependencies.lock.json"
+    },
+    {
+      "id": "pypi:matplotlib-inline",
+      "version": "0.2.2",
+      "source": [
+        "Homepage, https://github.com/ipython/matplotlib-inline"
+      ],
+      "license": "BSD-3-Clause",
+      "license_review": "NEEDS_REVIEW",
+      "lockfile": "dependencies.lock.json"
+    },
+    {
+      "id": "pypi:mutf8",
+      "version": "1.1.0",
+      "source": [
+        "Homepage, https://github.com/TkTech/mutf8",
+        "Source, https://github.com/TkTech/mutf8",
+        "Issues, https://github.com/TkTech/mutf8/issues"
+      ],
+      "license": "MIT",
+      "license_review": "NEEDS_REVIEW",
+      "lockfile": "dependencies.lock.json"
+    },
+    {
+      "id": "pypi:networkx",
+      "version": "3.7",
+      "source": [
+        "Homepage, https://networkx.org/",
+        "Bug Tracker, https://github.com/networkx/networkx/issues",
+        "Documentation, https://networkx.org/documentation/stable/",
+        "Source Code, https://github.com/networkx/networkx"
+      ],
+      "license": "BSD-3-Clause",
+      "license_review": "NEEDS_REVIEW",
+      "lockfile": "dependencies.lock.json"
+    },
+    {
+      "id": "pypi:parso",
+      "version": "0.8.7",
+      "source": [
+        "https://github.com/davidhalter/parso"
+      ],
+      "license": "MIT",
+      "license_review": "NEEDS_REVIEW",
+      "lockfile": "dependencies.lock.json"
+    },
+    {
+      "id": "pypi:pexpect",
+      "version": "4.9.0",
+      "source": [
+        "Bug Tracker, https://github.com/pexpect/pexpect/issues",
+        "Documentation, https://pexpect.readthedocs.io/",
+        "Source Code, https://github.com/pexpect/pexpect",
+        "History, https://pexpect.readthedocs.io/en/stable/history.html"
+      ],
+      "license": "ISC license",
+      "license_review": "NEEDS_REVIEW",
+      "lockfile": "dependencies.lock.json"
+    },
+    {
+      "id": "pypi:pillow",
+      "version": "13.0.0",
+      "source": [
+        "Release notes, https://pillow.readthedocs.io/en/stable/releasenotes/index.html",
+        "Changelog, https://github.com/python-pillow/Pillow/releases",
+        "Documentation, https://pillow.readthedocs.io",
+        "Funding, https://tidelift.com/lifter/search/pypi/pillow",
+        "Homepage, https://python-pillow.org",
+        "Mastodon, https://fosstodon.org/@pillow",
+        "Security, https://pillow.readthedocs.io/en/stable/handbook/security.html",
+        "Source, https://github.com/python-pillow/Pillow"
+      ],
+      "license": "MIT-CMU",
+      "license_review": "NEEDS_REVIEW",
+      "lockfile": "dependencies.lock.json"
+    },
+    {
+      "id": "pypi:pip",
+      "version": "25.0.1",
+      "source": [
+        "Homepage, https://pip.pypa.io/",
+        "Documentation, https://pip.pypa.io",
+        "Source, https://github.com/pypa/pip",
+        "Changelog, https://pip.pypa.io/en/stable/news/"
+      ],
+      "license": "MIT",
+      "license_review": "NEEDS_REVIEW",
+      "lockfile": "dependencies.lock.json"
+    },
+    {
+      "id": "pypi:prompt_toolkit",
+      "version": "3.0.53",
+      "source": [
+        "Homepage, https://github.com/prompt-toolkit/python-prompt-toolkit",
+        "Documentation, https://python-prompt-toolkit.readthedocs.io/en/stable/"
+      ],
+      "license": "UNKNOWN",
+      "license_review": "NEEDS_REVIEW",
+      "lockfile": "dependencies.lock.json"
+    },
+    {
+      "id": "pypi:psutil",
+      "version": "7.2.2",
+      "source": [
+        "https://github.com/giampaolo/psutil"
+      ],
+      "license": "BSD-3-Clause",
+      "license_review": "NEEDS_REVIEW",
+      "lockfile": "dependencies.lock.json"
+    },
+    {
+      "id": "pypi:ptyprocess",
+      "version": "0.7.0",
+      "source": [
+        "https://github.com/pexpect/ptyprocess"
+      ],
+      "license": "UNKNOWN",
+      "license_review": "NEEDS_REVIEW",
+      "lockfile": "dependencies.lock.json"
+    },
+    {
+      "id": "pypi:pure_eval",
+      "version": "0.2.4",
+      "source": [
+        "http://github.com/alexmojaki/pure_eval"
+      ],
+      "license": "MIT",
+      "license_review": "NEEDS_REVIEW",
+      "lockfile": "dependencies.lock.json"
+    },
+    {
+      "id": "pypi:pycparser",
+      "version": "3.12",
+      "source": [
+        "Homepage, https://github.com/eliben/pycparser"
+      ],
+      "license": "BSD-3-Clause",
+      "license_review": "NEEDS_REVIEW",
+      "lockfile": "dependencies.lock.json"
+    },
+    {
+      "id": "pypi:pycryptodome",
+      "version": "3.23.0",
+      "source": [
+        "Source, https://github.com/Legrandin/pycryptodome/",
+        "Changelog, https://www.pycryptodome.org/src/changelog"
+      ],
+      "license": "BSD, Public Domain",
+      "license_review": "NEEDS_REVIEW",
+      "lockfile": "dependencies.lock.json"
+    },
+    {
+      "id": "pypi:pydot",
+      "version": "4.0.1",
+      "source": [
+        "Homepage, https://github.com/pydot/pydot",
+        "Changelog, https://github.com/pydot/pydot/blob/main/ChangeLog",
+        "Bug Tracker, https://github.com/pydot/pydot/issues"
+      ],
+      "license": "MIT",
+      "license_review": "NEEDS_REVIEW",
+      "lockfile": "dependencies.lock.json"
+    },
+    {
+      "id": "pypi:pyelftools",
+      "version": "0.33",
+      "source": [
+        "Homepage, https://github.com/eliben/pyelftools",
+        "Repository, https://github.com/eliben/pyelftools.git",
+        "Issues, https://github.com/eliben/pyelftools/issues"
+      ],
+      "license": "Public domain",
+      "license_review": "NEEDS_REVIEW",
+      "lockfile": "dependencies.lock.json"
+    },
+    {
+      "id": "pypi:Pygments",
+      "version": "2.21.0",
+      "source": [
+        "Homepage, https://pygments.org",
+        "Documentation, https://pygments.org/docs",
+        "Source, https://github.com/pygments/pygments",
+        "Bug Tracker, https://github.com/pygments/pygments/issues",
+        "Changelog, https://github.com/pygments/pygments/blob/master/CHANGES"
+      ],
+      "license": "BSD-2-Clause",
+      "license_review": "NEEDS_REVIEW",
+      "lockfile": "dependencies.lock.json"
+    },
+    {
+      "id": "pypi:pyparsing",
+      "version": "3.3.3",
+      "source": [
+        "Documentation, https://pyparsing-docs.readthedocs.io/en/latest/",
+        "Homepage, https://github.com/pyparsing/pyparsing/",
+        "Source, https://github.com/pyparsing/pyparsing.git"
+      ],
+      "license": "MIT",
+      "license_review": "NEEDS_REVIEW",
+      "lockfile": "dependencies.lock.json"
+    },
+    {
+      "id": "pypi:PyYAML",
+      "version": "6.0.3",
+      "source": [
+        "Bug Tracker, https://github.com/yaml/pyyaml/issues",
+        "CI, https://github.com/yaml/pyyaml/actions",
+        "Documentation, https://pyyaml.org/wiki/PyYAMLDocumentation",
+        "Mailing lists, http://lists.sourceforge.net/lists/listinfo/yaml-core",
+        "Source Code, https://github.com/yaml/pyyaml"
+      ],
+      "license": "MIT",
+      "license_review": "NEEDS_REVIEW",
+      "lockfile": "dependencies.lock.json"
+    },
+    {
+      "id": "pypi:SQLAlchemy",
+      "version": "2.1.8",
+      "source": [
+        "Homepage, https://www.sqlalchemy.org",
+        "Documentation, https://docs.sqlalchemy.org",
+        "Changelog, https://docs.sqlalchemy.org/latest/changelog/index.html",
+        "Source Code, https://github.com/sqlalchemy/sqlalchemy",
+        "Issue Tracker, https://github.com/sqlalchemy/sqlalchemy/issues",
+        "Discussions, https://github.com/sqlalchemy/sqlalchemy/discussions"
+      ],
+      "license": "MIT",
+      "license_review": "NEEDS_REVIEW",
+      "lockfile": "dependencies.lock.json"
+    },
+    {
+      "id": "pypi:stack-data",
+      "version": "0.6.3",
+      "source": [
+        "http://github.com/alexmojaki/stack_data"
+      ],
+      "license": "MIT",
+      "license_review": "NEEDS_REVIEW",
+      "lockfile": "dependencies.lock.json"
+    },
+    {
+      "id": "pypi:traitlets",
+      "version": "5.16.1",
+      "source": [
+        "Homepage, https://github.com/ipython/traitlets",
+        "Documentation, https://traitlets.readthedocs.io",
+        "Source, https://github.com/ipython/traitlets",
+        "Tracker, https://github.com/ipython/traitlets/issues"
+      ],
+      "license": "BSD 3-Clause License",
+      "license_review": "NEEDS_REVIEW",
+      "lockfile": "dependencies.lock.json"
+    },
+    {
+      "id": "pypi:typing_extensions",
+      "version": "4.16.0",
+      "source": [
+        "Bug Tracker, https://github.com/python/typing_extensions/issues",
+        "Changes, https://github.com/python/typing_extensions/blob/main/CHANGELOG.md",
+        "Documentation, https://typing-extensions.readthedocs.io/",
+        "Home, https://github.com/python/typing_extensions",
+        "Q & A, https://github.com/python/typing/discussions",
+        "Repository, https://github.com/python/typing_extensions"
+      ],
+      "license": "PSF-2.0",
+      "license_review": "NEEDS_REVIEW",
+      "lockfile": "dependencies.lock.json"
+    },
+    {
+      "id": "pypi:wcwidth",
+      "version": "0.9.4",
+      "source": [
+        "Homepage, https://github.com/jquast/wcwidth"
+      ],
+      "license": "UNKNOWN",
+      "license_review": "NEEDS_REVIEW",
+      "lockfile": "dependencies.lock.json"
+    }
+  ],
+  "runtime_dependencies": {
+    "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+    "java": "openjdk version \"17.0.20\" 2026-07-21\nOpenJDK Runtime Environment (build 17.0.20+8-1-24.04-Ubuntu)\nOpenJDK 64-Bit Server VM (build 17.0.20+8-1-24.04-Ubuntu, mixed mode, sharing)",
+    "curl": "curl 8.5.0 (x86_64-pc-linux-gnu) libcurl/8.5.0 OpenSSL/3.0.13 zlib/1.3 brotli/1.1.0 zstd/1.5.5 libidn2/2.3.7 libpsl/0.21.2 (+libidn2/2.3.7) libssh/0.10.6/openssl/zlib nghttp2/1.59.0 librtmp/2.3 OpenLDAP/2.6.7\nRelease-Date: 2023-12-06, security patched: 8.5.0-2ubuntu10.13\nProtocols: dict file ftp ftps gopher gophers http https imap imaps ldap ldaps mqtt pop3 pop3s rtmp rtsp scp sftp smb smbs smtp smtps telnet tftp\nFeatures: alt-svc AsynchDNS brotli GSS-API HSTS HTTP2 HTTPS-proxy IDN IPv6 Kerberos Largefile libz NTLM PSL SPNEGO SSL threadsafe TLS-SRP UnixSockets zstd",
+    "node": "v24.22.1",
+    "rg": "ripgrep 15.2.0 (rev e89fff89ac)",
+    "bash": "GNU bash, version 5.2.21(1)-release (x86_64-pc-linux-gnu)",
+    "architecture": "x86_64"
+  },
+  "shared_tools": [
+    {
+      "path": "scripts/apk_analysis/inspect_apk.py",
+      "sha256": "3207559b8bf015e374c695614cb3cb65b22eb6c960373ec863e81c91ad8606cb"
+    },
+    {
+      "path": "scripts/apk_analysis/decompile.py",
+      "sha256": "dd04a05c2cb46bae494af412733d9e27b71167fc86f787371e76dfbddd50a3dd"
+    },
+    {
+      "path": "scripts/apk_analysis/elf_inspect.py",
+      "sha256": "b20adfae49329677c313fddb4674a6964a26867b9a27868e6da906fd5aeddee1"
+    },
+    {
+      "path": "scripts/apk_analysis/requirements.txt",
+      "sha256": "d8e6584b366fcde750f250464517b124e475d223f3bc0bda3ce58d1b9c271475"
+    },
+    {
+      "path": "analysis/com.halcon.connect/1391/tools/dependency_inventory.py",
+      "sha256": "ec181cd81869c3c7f1d8015b9055642f1b701b6c8f7a600aa72b5d486ef86fc4"
+    },
+    {
+      "path": "decoders/Python/apps/HTTP_FenixVPN/codec.py",
+      "sha256": "7e3de48e36d88dcbfa9afa94cc736d763bd7fe89de6d6d87d1d6ecb31e456c34"
+    },
+    {
+      "path": "decoders/Python/apps/HTTP_FenixVPN/field_names.json",
+      "sha256": "0352b854bbb8153ac6a961e624e19e93de32ffdd3acc618d5f1a5ca02b2ad798"
+    }
+  ],
+  "code_paths": {
+    "codec": "decoders/Python/apps/Genis_VPN/codec.py",
+    "cli": "decoders/Python/apps/Genis_VPN/server_catalog_decoder.py",
+    "broker": "cloud/web/lib/server-vpn-provider.mjs",
+    "gateway_contract": "cloud/web/lib/c3-gateway.mjs",
+    "worker": "cloud/workers/python/catalog_vpn_bridge.py",
+    "worker_isolation": "cloud/workers/python/engine.py",
+    "catalog": "cloud/web/lib/server-vpn-catalog.mjs",
+    "controls": "cloud/web/lib/c12-provider-controls.mjs",
+    "tests": "cloud/web/tests/genis-vpn.test.mjs"
+  },
+  "evidence_refs": [
+    "ANALYSIS.md",
+    "REPRODUCE.md",
+    "RESULTS.md",
+    "DEPENDENCIES.md",
+    "dependencies.lock.json",
+    "generated/input_inventory.json",
+    "generated/recovery.json",
+    "generated/verification.json",
+    "generated/resources.json",
+    "generated/census.json",
+    "generated/checks.json",
+    "generated/node-real.json",
+    "generated/node-replay.json",
+    "tests/test_catalog.py"
+  ],
+  "limitations": [
+    "CBC has no authentication tag; correctness is not authenticity.",
+    "Original Java JSON keys/types preserved; empty optional strings stay empty instead of UI ERROR sentinels.",
+    "JADX exited3 with14 errors; relevant recovered routines and full real documents independently checked with JCA.",
+    "APKPure binary is2.2.6/build76; no claim of latest Google Play build.",
+    "Node real transport unavailable in this executor; offline HTTP/DNS replay explicitly simulated.",
+    "Certificate scheme presence/fingerprints only; no full apksigner verification.",
+    "No standalone file/text format, unlocked export, Android change, merge or deploy."
+  ],
+  "network_requirements": [
+    "Public fixed GitHub updater via HTTPS, normal TLS and public IPv4.",
+    "No HTTP Authorization, session renewal or external secret files required for this updater."
+  ],
+  "manual_steps": [
+    "Validate real Node broker transport on VPS before rollout.",
+    "Keep any higher configured catalog version monotonic when deploying.",
+    "Review licenses and central registry before automatic Phase7 reuse."
+  ],
+  "unresolved_questions": [
+    "No separate remote users updater established; bundled document only.",
+    "Automatic license registry and evidence CI enforcement remain pending."
+  ]
+}

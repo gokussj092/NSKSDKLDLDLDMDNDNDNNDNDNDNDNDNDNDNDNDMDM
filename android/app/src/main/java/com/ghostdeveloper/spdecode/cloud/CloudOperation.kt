@@ -19,5 +19,10 @@ internal object CloudOperation {
     const val ACTION_CHALLENGE = 16
     const val NOTIFICATIONS = 17
     const val FEEDBACK = 18
+    const val CATALOG_MANIFEST = 19
+    const val CATALOG_CHUNK = 20
+    const val APK_QA_START = 21
+    const val APK_QA_CHUNK = 22
+    const val APK_QA_FINISH = 23
+    const val APK_QA_RESULT = 24
 }
-

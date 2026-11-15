@@ -1,4 +1,4 @@
-"""UT Loop Pro VPN 22.10.26: signed OTA, cached catalogs and SSH banners."""
+"""UT Loop Pro VPN 23.11.26: signed OTA, cached catalogs and SSH banners."""
 from __future__ import annotations
 import base64
 import hashlib
@@ -66,13 +66,30 @@ def _gcm(raw: bytes, key: bytes, aad=b'') -> bytes:
 
 
 def decode_catalog(data: bytes, *, require_signature=False) -> dict:
-    """Open a signed remote envelope or an explicitly offline Base64 cache copy.
+    """Open a signed remote envelope, an offline Base64 cache copy, or the
+    raw embedded fallback blob (binary GCM, nonce||ct||tag).
 
     All original sections, records, types and metadata are returned unchanged.
     A signed input never falls back to the unsigned cache format on failure.
     """
     try:
-        text = _bounded(data).decode('utf-8-sig').strip()
+        raw = _bounded(data)
+        try:
+            text = raw.decode('utf-8-sig').strip()
+        except UnicodeError:
+            text = None
+        digest = hashlib.sha256(OTA_SCHEME).digest()
+        ota_key = bytes(a ^ b for a, b in zip(OTA_MASK, digest))
+        if text is None:
+            # Raw binary GCM blob: the embedded fallback asset form
+            # (catalog_fallback.bin, 1,157 B). The GCM tag authenticates it.
+            doc = _json(_gcm(raw, ota_key).decode('utf-8'))
+            if not isinstance(doc, dict) or not any(k in doc for k in ('Servers', 'Tweaks')):
+                raise DecodeError('Documento de catálogo inválido.')
+            for name in ('Servers', 'Tweaks'):
+                if name in doc and (not isinstance(doc[name], list) or any(not isinstance(v, dict) for v in doc[name])):
+                    raise DecodeError('Sección de catálogo inválida.')
+            return doc
         if text.startswith('{'):
             envelope = _json(text)
             if not isinstance(envelope, dict) or not {'data', 'sig'} <= envelope.keys():
@@ -86,8 +103,6 @@ def decode_catalog(data: bytes, *, require_signature=False) -> dict:
             raise DecodeError('La descarga requiere firma RSA.')
         else:
             encoded = text
-        digest = hashlib.sha256(OTA_SCHEME).digest()
-        ota_key = bytes(a ^ b for a, b in zip(OTA_MASK, digest))
         doc = _json(_gcm(_base64(encoded), ota_key).decode('utf-8'))
         if not isinstance(doc, dict) or not any(k in doc for k in ('Servers', 'Tweaks')):
             raise DecodeError('Documento de catálogo inválido.')
@@ -96,7 +111,7 @@ def decode_catalog(data: bytes, *, require_signature=False) -> dict:
                 raise DecodeError('Sección de catálogo inválida.')
         return doc
     except (ValueError, TypeError, KeyError, UnicodeError, RecursionError, OverflowError):
-        raise DecodeError('Catálogo inválido o incompatible con UT Loop Pro VPN 22.10.26.') from None
+        raise DecodeError('Catálogo inválido o incompatible con UT Loop Pro VPN 23.11.26.') from None
 
 
 def _xxtea(raw: bytes, key=b'uchehacks') -> bytes:

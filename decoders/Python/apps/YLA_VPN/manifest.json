@@ -1,0 +1,22 @@
+{
+  "id": "yla-vpn",
+  "name": "YLA VPN",
+  "package": "com.thuaung.ylavpn",
+  "versionName": "1.2.4",
+  "versionCode": 10,
+  "engine": "python",
+  "entrypoint": "YLA_VPN.py",
+  "extensions": [],
+  "textPrefixes": [],
+  "catalog": {
+    "entrypoint": "YLA_VPN.py",
+    "method": "POST /api/user/init device registration (verified live); GET /api/v2ray/list?device_id=<id>&signature=<firma> with SHA-256 signature using salt YLA_VPN_SECURE_SALT_2026 — exact formula unresolved",
+    "url": "https://adminpannel.ylavpn.store/api/v2ray/list",
+    "liveVersion": null,
+    "servers": null,
+    "networks": null,
+    "payloads": null,
+    "status": "blocked_signature_403",
+    "notes": "~280 signature combinations tried live, all 403 Unauthorized access or invalid signature. --url stops with LIVE_AUTH_FAILED (exit 2). Open endpoints verified live: /api/app-yla-setting, /api/plans, /api/user/notifications."
+  }
+}

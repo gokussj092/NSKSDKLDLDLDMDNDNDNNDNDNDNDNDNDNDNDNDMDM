@@ -1,0 +1,130 @@
+name: Wolf16 and Tunneltweak53 method regression
+on:
+  push:
+    branches: [feat/nuevas-integraciones, main]
+    paths:
+      - decoders/Python/apps/Wolf_Custom_VPN/**
+      - decoders/Python/apps/Tunneltweak/**
+      - analysis/core.vpn3jx.xtreme/16/**
+      - analysis/com.tunneltweak.loyalteams/53/**
+      - tests/test_wolf*
+      - tests/test_tunneltweak.py
+      - cloud/web/lib/server-vpn-provider.mjs
+      - cloud/web/lib/server-vpn-catalog.mjs
+      - .github/workflows/wolf-tweak-methods.yml
+  pull_request:
+    branches: [main, feat/nuevas-integraciones]
+    paths:
+      - decoders/Python/apps/Wolf_Custom_VPN/**
+      - decoders/Python/apps/Tunneltweak/**
+      - analysis/core.vpn3jx.xtreme/16/**
+      - analysis/com.tunneltweak.loyalteams/53/**
+      - tests/test_wolf*
+      - tests/test_tunneltweak.py
+      - cloud/web/lib/server-vpn-provider.mjs
+      - cloud/web/lib/server-vpn-catalog.mjs
+      - .github/workflows/wolf-tweak-methods.yml
+  workflow_dispatch:
+    inputs:
+      verify_live:
+        description: "Repetir adquisición, análisis estático y prueba completa de ambos métodos"
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+jobs:
+  offline-regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install fixed decoder dependencies
+        run: python -m pip install pycryptodome==3.23.0 argon2-cffi==25.1.0
+      - name: Actual worker, old formats, new Go vectors and negative crypto cases
+        run: python -m unittest tests.test_wolf_v16 tests.test_wolf_custom_vpn tests.test_tunneltweak -v
+      - name: Install existing server test dependencies
+        working-directory: cloud/web
+        run: npm install --ignore-scripts --no-audit --no-fund
+      - name: Broker POST, build header, shared catalog and consumer regressions
+        working-directory: cloud/web
+        run: >-
+          node --test --test-concurrency=4
+          tests/wolf-custom-vpn.test.mjs tests/server-vpn-provider.test.mjs
+          tests/server-vpn-catalog.test.mjs tests/ultra-tunnel.test.mjs
+          tests/halcon-r-net.test.mjs tests/namo-vpn.test.mjs
+          tests/genis-vpn.test.mjs tests/zig-tunnel.test.mjs
+          tests/http-conexion.test.mjs tests/mm-tunnel.test.mjs
+          tests/alfaisal-tunnel-plus.test.mjs tests/jyfast-vpn-ultra.test.mjs
+          tests/catnet-vpn.test.mjs tests/enaa-tunnel.test.mjs
+          tests/vip-snipher-pro.test.mjs tests/server-vpn-any-speicers.test.mjs
+          tests/xxpicore-tunnel.test.mjs tests/text-format-catalog.test.mjs
+          tests/speicers-turbo-vpn.test.mjs tests/alsaher-vip.test.mjs
+          tests/fnf-tunnel-bd.test.mjs
+
+  reproduce-live:
+    # Normal catalog health remains download-only with warnings in its own workflow.
+    if: github.event_name == 'workflow_dispatch' && inputs.verify_live
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.27.3"
+          cache: false
+      - name: Install the recorded research dependencies
+        run: python -m pip install -r analysis/core.vpn3jx.xtreme/16/requirements.lock.txt
+      - name: Compile our independent oracle
+        working-directory: analysis/core.vpn3jx.xtreme/16/tools/oracle
+        run: go build -buildvcs=false -o "$RUNNER_TEMP/wolf16-oracle" .
+      - name: Reacquire fixed public builds and inspect without executing APK code
+        run: |
+          python analysis/core.vpn3jx.xtreme/16/tools/acquire.py --out "$RUNNER_TEMP/wolf16"
+          python analysis/com.tunneltweak.loyalteams/53/tools/acquire.py --out "$RUNNER_TEMP/tweak53"
+          python analysis/core.vpn3jx.xtreme/16/tools/inspect_apk.py "$RUNNER_TEMP/wolf16"
+          python analysis/com.tunneltweak.loyalteams/53/tools/inspect_apk.py "$RUNNER_TEMP/tweak53"
+      - name: Compare the full real catalogs with independent oracles and isolated worker
+        run: |
+          python analysis/core.vpn3jx.xtreme/16/tools/probe_catalog.py --output "$RUNNER_TEMP/wolf16/catalog.bin"
+          python analysis/com.tunneltweak.loyalteams/53/tools/probe_catalog.py --output "$RUNNER_TEMP/tweak53/catalog.bin"
+          python analysis/core.vpn3jx.xtreme/16/tools/verify.py "$RUNNER_TEMP/wolf16/catalog.bin" --elf "$RUNNER_TEMP/wolf16/native/libgojni.so" --oracle "$RUNNER_TEMP/wolf16-oracle" --worker --report "$RUNNER_TEMP/wolf16/proof.json"
+          python analysis/com.tunneltweak.loyalteams/53/tools/verify.py "$RUNNER_TEMP/tweak53/catalog.bin" --worker --report "$RUNNER_TEMP/tweak53/proof.json"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: wolf16-tweak53-sanitized-proof
+          path: |
+            ${{ runner.temp }}/wolf16/identity.json
+            ${{ runner.temp }}/wolf16/static-proof.json
+            ${{ runner.temp }}/wolf16/proof.json
+            ${{ runner.temp }}/tweak53/identity.json
+            ${{ runner.temp }}/tweak53/static-proof.json
+            ${{ runner.temp }}/tweak53/proof.json
+          if-no-files-found: warn
+      - name: Remove private APK, native and catalog scratch
+        if: always()
+        run: rm -rf "$RUNNER_TEMP/wolf16" "$RUNNER_TEMP/tweak53"
+

@@ -1,0 +1,19 @@
+{
+  "resourceId": 2131820545,
+  "resourcePath": "res/raw/pdnsd_config",
+  "resourceBytes": 425,
+  "resourceSha256": "85a6d6701bc763a26e63e407b94758d02987122397909d2f4e8cbc966b755bd1",
+  "fieldPasswordBytes": 16,
+  "fieldKeySha256": "70d914ed726e2de2476506a5b1754414408d0bc09f42d2097c42ad4e845d153e",
+  "resourceFieldIds": 38,
+  "v1": true,
+  "v2": true,
+  "v3": true,
+  "certificateSha1": [
+    "0d830fbfc97ac7d73b9ef865ddfb235870a526ad"
+  ],
+  "certificateSha256": [
+    "2f0dc073b524ca2194efefab09e547fc40e8361467cd36d7228a48b881e23067"
+  ],
+  "note": "Certificate fingerprints and scheme presence, not full apksigner verification."
+}

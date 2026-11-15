@@ -59,7 +59,8 @@ internal class CloudDecodeClient(context: Context) {
     enum class TransferPhase { SENDING, PROCESSING, DOWNLOADING_RESULTS }
 
     class Failure(val code: String, val httpStatus: Int,
-        val passwordSubmitted:Boolean=false,val hwidSubmitted:Boolean=false) :
+        val passwordSubmitted:Boolean=false,val hwidSubmitted:Boolean=false,
+        val retryAfterMillis:Long=0L) :
         IOException("SP-DECODE CLOUD: $code")
 
     fun clearSession() = CloudNativeTransport.clearCachedSession()
@@ -73,7 +74,8 @@ internal class CloudDecodeClient(context: Context) {
         if (reply.status !in 200..299) {
             val code = reply.body.optJSONObject("error")?.optString("code")
                 ?.takeIf { it.matches(Regex("[A-Z_]{3,50}")) } ?: "SERVICE_UNAVAILABLE"
-            throw Failure(code, reply.status)
+            val retryAfter=reply.body.optJSONObject("error")?.optLong("retryAfterMillis",0L)?.coerceIn(0L,60_000L)?:0L
+            throw Failure(code, reply.status,retryAfterMillis=retryAfter)
         }
         return reply.body
     }
@@ -272,7 +274,9 @@ internal class CloudDecodeClient(context: Context) {
     private fun decodedResponse(operation:Int,payload:JSONObject,response:JSONObject):Decoded {
         if (response.optString("status") != "success" ||
             (response.optBoolean("isPartial",true) &&
-             !allowsMkkHyperPartial(operation,payload,response)))
+             !allowsMkkHyperPartial(operation,payload,response) &&
+             !(operation==CloudOperation.FILE && payload.optString("format")=="hc" &&
+               CloudHcPartialResult.allows(response))))
             throw IOException("CLOUD_PARTIAL_RESULT_REJECTED")
         if (!response.has("rawText") || response.isNull("rawText"))
             throw IOException("CLOUD_MISSING_RESULT")
@@ -487,12 +491,44 @@ internal class CloudDecodeClient(context: Context) {
     }
 
     /** Public presentation metadata only; never contains provider operations. */
-    suspend fun serverVpnCatalog(knownVersion:Int): JSONObject =
+    suspend fun catalogChunksSupported():Boolean = withContext(Dispatchers.IO) {
+        requireLegalConsent()
+        extract(CloudNativeTransport.post(CloudOperation.WATCH,
+            JSONObject().put("knownVersion",0),session()))
+            .optString("catalogTransferProtocol")=="catalog-chunks-v1"
+    }
+
+    suspend fun catalogManifest(knownVersion:Int,snapshotId:String?):JSONObject = withContext(Dispatchers.IO) {
+        requireLegalConsent()
+        val input=JSONObject().put("knownVersion",knownVersion)
+        if(snapshotId!=null)input.put("snapshotId",snapshotId)
+        extract(CloudNativeTransport.post(CloudOperation.CATALOG_MANIFEST,input,session()))
+    }
+
+    suspend fun catalogChunk(input:JSONObject):JSONObject = withContext(Dispatchers.IO) {
+        requireLegalConsent()
+        var retries=0
+        while(true) {
+            try {return@withContext extract(CloudNativeTransport.post(CloudOperation.CATALOG_CHUNK,input,session()))}
+            catch(error:Failure) {
+                if(retries>=2 || error.httpStatus !in setOf(429,500,502,503,504) || error.code !in setOf("RATE_LIMITED","SERVICE_UNAVAILABLE"))throw error
+                val backoff=500L*(1L shl retries++)
+                kotlinx.coroutines.delay(maxOf(backoff,error.retryAfterMillis)+kotlin.random.Random.nextLong(250L))
+            }
+        }
+        @Suppress("UNREACHABLE_CODE") error("unreachable")
+    }
+
+    suspend fun serverVpnCatalog(knownVersion:Int,
+        onTransfer:((Long,Long)->Unit)?=null): JSONObject =
         withContext(Dispatchers.IO) {
             requireLegalConsent()
-            CatalogEnvelope().use { envelope ->
-            envelope.open(extract(CloudNativeTransport.post(CloudOperation.CATALOG,
-                JSONObject().put("knownVersion",knownVersion).put("catalogKey",envelope.publicKey),session())),"catalog")
+            CloudNativeTransport.withCatalogProgress(onTransfer) {
+                CatalogEnvelope().use { envelope ->
+                    envelope.open(extract(CloudNativeTransport.post(CloudOperation.CATALOG,
+                        JSONObject().put("knownVersion",knownVersion)
+                            .put("catalogKey",envelope.publicKey),session())),"catalog")
+                }
             }
         }
 
@@ -532,6 +568,27 @@ internal class CloudDecodeClient(context: Context) {
 
     /** Voluntary feedback uses the existing V2 HPKE, PoP and action Integrity path.
      * No imported VPN files, decoded JSON, device logs or private keys are sent. */
+    /**
+     * F7 APK QA: protected first-pass static analysis WITHOUT user accounts,
+     * billing or credits. Full V2 native HPKE, PoP, attestation and rate limits
+     * remain mandatory. Upload chunks are individually authenticated; start and
+     * finalize additionally receive Action Integrity when the VPS requires it.
+     */
+    suspend fun apkQaRequest(operation:Int,payload:JSONObject,
+                             attachment:ByteArray?=null):JSONObject {
+        if (operation !in setOf(CloudOperation.APK_QA_START,CloudOperation.APK_QA_CHUNK,
+                CloudOperation.APK_QA_FINISH,CloudOperation.APK_QA_RESULT))
+            throw IOException("APK_QA_OPERATION_DENIED")
+        requireLegalConsent()
+        return withContext(Dispatchers.IO) {
+            val bearer=session()
+            extract(if(operation==CloudOperation.APK_QA_START ||
+                       operation==CloudOperation.APK_QA_FINISH)
+                protectedPost(operation,payload,bearer,attachment)
+            else CloudNativeTransport.post(operation,payload,bearer,attachment=attachment))
+        }
+    }
+
     suspend fun submitFeedback(draft:FeedbackDraft):String {
         requireLegalConsent()
         require(draft.submissionId.matches(Regex("[0-9a-fA-F-]{36}")))
@@ -578,4 +635,3 @@ internal class CloudDecodeClient(context: Context) {
     }
 
 }
-
