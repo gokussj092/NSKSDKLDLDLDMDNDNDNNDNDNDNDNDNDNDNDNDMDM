@@ -21,13 +21,13 @@
     },
     {
       "kind": "display_bug_ehi_v2r",
-      "status": "FIXED_LOCAL_UNPUSHED",
-      "scope": "ResultPresentation.extractStandaloneJsonObject truncated the JSON copy of direct_v2r .ehi profiles to only the first inbound; fixed locally with insideField tracking plus an instrumented regression test. Kotlin not compiled here (no Android SDK); CI validation pending after push, which was not done."
+      "status": "PUSHED_CI_NOT_TRIGGERED",
+      "scope": "ResultPresentation.extractStandaloneJsonObject truncated the JSON copy of direct_v2r .ehi profiles to only the first inbound; fixed with insideField tracking plus an instrumented regression test; pushed 2026-11-15 as ff24e902 on feat/android-admin-ui-improvements. Kotlin not compiled here (no Android SDK); no CI run triggered (no workflow covers these paths on this branch); compile + instrumented test remain unvalidated by CI."
     },
     {
       "kind": "python_cloud_api_drift",
-      "status": "FIXED_LOCAL_UNPUSHED",
-      "scope": "HTTPINJECTOR_CLOUD.py (and HTTPINJECTOR_EMOJI.py) called ehi.decode_ehi/_format_ehi_document, which do not exist in HTTPINJECTOR.py; fixed to use EHIDecryptor.execute/run. Verified with --response on a saved real response; live-key download may still hit urllib IncompleteRead (curl + --response workaround)."
+      "status": "PUSHED_CI_NOT_TRIGGERED",
+      "scope": "HTTPINJECTOR_CLOUD.py (and HTTPINJECTOR_EMOJI.py) called ehi.decode_ehi/_format_ehi_document, which do not exist in HTTPINJECTOR.py; fixed to use EHIDecryptor.execute/run. Verified with --response on a saved real response; live-key download may still hit urllib IncompleteRead (curl + --response workaround). Pushed 2026-11-15 as ff24e902; no CI run triggered for these paths."
     }
   ],
   "connection_authentication": {
