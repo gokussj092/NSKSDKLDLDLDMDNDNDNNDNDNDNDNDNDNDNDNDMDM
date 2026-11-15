@@ -57,6 +57,10 @@ internal class AdminState(app: Application) : AndroidViewModel(app) {
     private set
   var supportSyncError by mutableStateOf<String?>(null)
     private set
+  /** True when the stored session could not be verified (no connection). Kept until it verifies. */
+  var sessionUnverified by mutableStateOf(false)
+    private set
+  private var lastVerifiedAt = 0L
   private val supportDrafts = mutableStateMapOf<String, String>()
 
   fun supportDraft(id: String): String = supportDrafts[id].orEmpty()
@@ -96,23 +100,64 @@ internal class AdminState(app: Application) : AndroidViewModel(app) {
 
   init {
     viewModelScope.launch {
-      try {
-        principal = api.call("access").getJSONObject("principal")
-        entered = true
-        if (mustChangePassword) page = Page.Security else loadCurrent()
-      } catch (e: Exception) {
-        if ((e as? AdminApi.Failure)?.http == 401) {
+      verifyAccess()
+      checking = false
+    }
+  }
+
+  /**
+   * Entry check: asks the server whether this account still exists and has access.
+   * Only an explicit server answer (account deleted / access revoked) or a generic
+   * 401 ends the local session. Network or other errors keep the session so the
+   * check can be retried later.
+   */
+  suspend fun verifyAccess() {
+    try {
+      principal = api.call("access").getJSONObject("principal")
+      entered = true
+      sessionUnverified = false
+      lastVerifiedAt = System.currentTimeMillis()
+      if (mustChangePassword) page = Page.Security else loadCurrent()
+    } catch (e: Exception) {
+      val failure = e as? AdminApi.Failure
+      when {
+        failure != null && isAccountGone(failure) -> {
           api.clear()
           entered = false
           principal = JSONObject()
           clearPrivateUiState()
+          error = errorText("ACCOUNT_DELETED")
         }
-        else error = errorText((e as? AdminApi.Failure)?.code ?: "NETWORK_ERROR")
-      } finally {
-        checking = false
+        failure?.http == 401 -> {
+          api.clear()
+          entered = false
+          principal = JSONObject()
+          clearPrivateUiState()
+          // Only explain the logout when the user had actually logged in before.
+          if (api.hadStoredSession) error = errorText(failure.code)
+        }
+        else -> {
+          if (api.hadStoredSession) {
+            // No network: keep the session and retry later instead of logging out.
+            entered = true
+            sessionUnverified = true
+          } else {
+            error = errorText(failure?.code ?: "NETWORK_ERROR")
+          }
+        }
       }
     }
   }
+
+  /** Re-checks the account when the app comes back to the foreground (at most every 5 minutes). */
+  fun verifySessionOnResume() {
+    if (!entered || checking) return
+    if (System.currentTimeMillis() - lastVerifiedAt < 5 * 60 * 1000L) return
+    viewModelScope.launch { verifyAccess() }
+  }
+
+  private fun isAccountGone(failure: AdminApi.Failure): Boolean =
+      failure.code in setOf("ACCOUNT_DELETED", "ACCOUNT_REVOKED", "USER_NOT_FOUND", "ACCESS_REVOKED")
 
   fun theme(value: Appearance) {
     appearance = value
@@ -185,6 +230,7 @@ internal class AdminState(app: Application) : AndroidViewModel(app) {
         "login", input = JSONObject().put("username", username.trim()).put("password", password))
     principal = api.call("access").getJSONObject("principal")
     entered = true
+    lastVerifiedAt = System.currentTimeMillis()
     page = if (mustChangePassword) Page.Security else Page.Dashboard
     loadCurrent()
   }
@@ -230,6 +276,10 @@ internal class AdminState(app: Application) : AndroidViewModel(app) {
   // Reads and writes have separate UI state. Navigation cancels obsolete reads.
   fun refresh() {
     if (busy || !entered) return
+    if (sessionUnverified) {
+      viewModelScope.launch { verifyAccess() }
+      return
+    }
     cancelLoad()
     taskRevision++
     val revision = taskRevision
@@ -433,6 +483,11 @@ internal fun errorText(code: String): String =
     when (code) {
       "INVALID_CREDENTIALS" -> "Usuario o contraseña incorrectos."
       "UNAUTHORIZED" -> "La sesión venció. Vuelve a iniciar sesión."
+      "SESSION_EXPIRED_90D" -> "Tu sesión de 90 días terminó. Vuelve a iniciar sesión."
+      "ACCOUNT_DELETED",
+      "ACCOUNT_REVOKED",
+      "USER_NOT_FOUND",
+      "ACCESS_REVOKED" -> "Tu cuenta fue eliminada o tu acceso fue revocado. Contacta con el administrador."
       "FORBIDDEN" -> "Tu cargo no tiene permiso para esta acción."
       "NETWORK_ERROR",
       "TIMEOUT" ->

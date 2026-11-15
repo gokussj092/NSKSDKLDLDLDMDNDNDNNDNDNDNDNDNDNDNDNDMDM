@@ -46,6 +46,17 @@ internal fun localDate(value: String?): String? {
       .withZone(ZoneId.systemDefault()).format(Instant.parse(value)) }.getOrElse { value }
 }
 
+/** Day label ("dd MMM yyyy") for grouping chat messages; null when the date is missing. */
+internal fun messageDay(value: String?): String? {
+  if (value.isNullOrBlank()) return null
+  return runCatching {
+        DateTimeFormatter.ofPattern("dd MMM yyyy")
+            .withZone(ZoneId.systemDefault())
+            .format(Instant.parse(value))
+      }
+      .getOrNull()
+}
+
 internal fun displayAmount(quote: JSONObject?): String? {
   if (quote == null) return null
   val count = quote.optString("total").toLongOrNull() ?: return null
@@ -398,12 +409,12 @@ internal fun ChatHeader(thread: JSONObject) {
 }
 
 @Composable
-internal fun MessageBubble(message: JSONObject, outgoing: Boolean) {
+internal fun MessageBubble(message: JSONObject, outgoing: Boolean, senderName: String? = null) {
   val shape = if (outgoing) RoundedCornerShape(18.dp, 18.dp, 4.dp, 18.dp)
       else RoundedCornerShape(18.dp, 18.dp, 18.dp, 4.dp)
   Column(Modifier.widthIn(max = 320.dp).background(if (outgoing) GreenPanel else Panel, shape)
       .padding(horizontal = 14.dp, vertical = 10.dp), verticalArrangement = Arrangement.spacedBy(5.dp)) {
-    message.optJSONObject("agent")?.let { agent -> recordValue(agent, "name")?.let { Small(it, color = Mint) } }
+    senderName?.takeIf { it.isNotBlank() }?.let { Small(it, color = Mint) }
     Text(message.optString("text"), color = Ink, fontSize = 15.sp)
     localDate(recordValue(message, "at"))?.let { Small(it, Modifier.align(Alignment.End)) }
   }

@@ -162,7 +162,7 @@ private val labelsByText = mapOf(
     "Acceso de este dispositivo" to R.string.admin_label_132,
     "Este dispositivo" to R.string.admin_label_133,
     "Sesión actual" to R.string.admin_label_134,
-    "La sesión tiene la vigencia y revocación establecidas por el servidor." to R.string.admin_label_135,
+    "La sesión dura 90 días desde el inicio de sesión. El servidor puede revocarla antes." to R.string.admin_label_135,
     "Mantenimiento del servicio" to R.string.admin_label_136,
     "Estas acciones modifican la disponibilidad del servicio para los clientes." to R.string.admin_label_137,
     "Activar mantenimiento para todos los clientes" to R.string.admin_label_138,
@@ -173,7 +173,6 @@ private val labelsByText = mapOf(
     "Solicitar limpieza de caché del servidor" to R.string.admin_label_143,
     "Solicitar limpieza" to R.string.admin_label_144,
     "Selecciona una sección en el menú." to R.string.admin_label_145,
-    "Datos recibidos de panel.spdecode.xyz" to R.string.admin_label_146,
     "La acción se aplicará en el servidor." to R.string.admin_label_147,
     "Confirmar" to R.string.admin_label_148,
     "Cancelar" to R.string.admin_label_149,
@@ -376,7 +375,15 @@ private val labelsByText = mapOf(
     "Precio base · %1\$s" to R.string.admin_label_346,
     "Precio base (%1\$s)" to R.string.admin_label_347,
     "No se pudo completar la operación (%1\$s)." to R.string.admin_label_348,
-    "Cambiar disponibilidad de %1\$s" to R.string.admin_label_349
+    "Cambiar disponibilidad de %1\$s" to R.string.admin_label_349,
+    "Aún no hay mensajes" to R.string.admin_label_350,
+    "Escribe la primera respuesta al usuario." to R.string.admin_label_351,
+    "Reintentar" to R.string.admin_label_352,
+    "Gift codes" to R.string.admin_label_353,
+    "El usuario ya no podrá responder hasta que reabras el ticket." to R.string.admin_label_354,
+    "El ticket volverá a estar abierto para el usuario." to R.string.admin_label_355,
+    "Escribe tu respuesta…" to R.string.admin_label_356,
+    "AMOLED" to R.string.admin_label_357
 )
 
 @Composable

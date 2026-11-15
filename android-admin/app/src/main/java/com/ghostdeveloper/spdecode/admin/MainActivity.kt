@@ -10,7 +10,9 @@ import androidx.compose.material.icons.automirrored.outlined.ReceiptLong
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.lifecycle.ViewModelProvider
@@ -30,20 +32,23 @@ internal val Border: Color
 internal val Amber: Color
   @Composable
   get() =
-      if (MaterialTheme.colorScheme.background == Color(0xFFF3F6F4)) Color(0xFF956300)
+      if (LocalAdminAppearance.current == Appearance.Light) Color(0xFF956300)
       else Color(0xFFF4C76A)
 internal val Red: Color
   @Composable get() = MaterialTheme.colorScheme.error
 internal val Blue: Color
   @Composable
   get() =
-      if (MaterialTheme.colorScheme.background == Color(0xFFF3F6F4)) Color(0xFF2468A8)
+      if (LocalAdminAppearance.current == Appearance.Light) Color(0xFF2468A8)
       else Color(0xFF60A5FA)
 internal val Purple: Color
   @Composable
   get() =
-      if (MaterialTheme.colorScheme.background == Color(0xFFF3F6F4)) Color(0xFF7552A5)
+      if (LocalAdminAppearance.current == Appearance.Light) Color(0xFF7552A5)
       else Color(0xFFC4A0FF)
+
+/** The selected appearance, so accent colors never guess the theme from a background value. */
+internal val LocalAdminAppearance = staticCompositionLocalOf { Appearance.Amoled }
 
 @Composable
 internal fun AdminTheme(appearance: Appearance, content: @Composable () -> Unit) {
@@ -78,7 +83,9 @@ internal fun AdminTheme(appearance: Appearance, content: @Composable () -> Unit)
               outlineVariant = Color(0xFF232C27),
               error = Color(0xFFF87171),
           )
-  MaterialTheme(colorScheme = colors, content = content)
+  CompositionLocalProvider(LocalAdminAppearance provides appearance) {
+    MaterialTheme(colorScheme = colors, content = content)
+  }
 }
 
 class MainActivity : ComponentActivity() {

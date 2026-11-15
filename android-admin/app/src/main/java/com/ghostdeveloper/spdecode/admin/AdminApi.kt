@@ -11,8 +11,15 @@ import org.json.JSONObject
 /** Networking and the fixed origin/route allowlist are implemented in C++. */
 internal class AdminApi(private val vault: SessionVault) {
   private val mutex = Mutex()
-  private val origin = "https://panel.spdecode.xyz".toHttpUrl()
-  private var session: Cookie? = vault.restore()?.let { Cookie.parse(origin, it) }
+  // Connection data (origin, cookie path, session cookie names) lives in native
+  // C++ and is exposed only through JNI. Kotlin never hardcodes it.
+  private val origin = NativeAdminRoutes.originNative().toHttpUrl()
+  private val cookiePath = NativeAdminRoutes.cookiePathNative()
+  private val initialSession = vault.restoreSession()
+  private var session: Cookie? = initialSession?.cookie?.let { Cookie.parse(origin, it) }
+
+  /** True when this device had a stored session at startup (the user had logged in). */
+  val hadStoredSession: Boolean = initialSession != null
 
   class Failure(val code: String, val http: Int = 0) : Exception(code)
 
@@ -30,6 +37,13 @@ internal class AdminApi(private val vault: SessionVault) {
   ): JSONObject =
       withContext(Dispatchers.IO) {
         mutex.withLock {
+          // Client-side session lifetime: 90 days from login. A specific code
+          // lets the UI explain it instead of showing a generic expiry.
+          if (operation != "login" && vault.isExpired90Days()) {
+            session = null
+            vault.clear()
+            throw Failure("SESSION_EXPIRED_90D", 401)
+          }
           val token = session?.takeIf { it.expiresAt > System.currentTimeMillis() }
           if (operation != "login" && token == null) {
             session = null
@@ -68,8 +82,8 @@ internal class AdminApi(private val vault: SessionVault) {
             }
             if (operation == "login") {
               val required =
-                  if (json.optBoolean("staff")) "spdecode_staff_session"
-                  else if (json.optString("role") == "owner") "spdecode_admin_session"
+                  if (json.optBoolean("staff")) NativeAdminRoutes.sessionCookieNameNative(true)
+                  else if (json.optString("role") == "owner") NativeAdminRoutes.sessionCookieNameNative(false)
                   else throw Failure("INVALID_RESPONSE")
               val valid =
                   response[2]
@@ -82,7 +96,7 @@ internal class AdminApi(private val vault: SessionVault) {
                             it.httpOnly &&
                             it.hostOnly &&
                             it.domain == origin.host &&
-                            it.path == "/api/admin" &&
+                            it.path == cookiePath &&
                             it.expiresAt > System.currentTimeMillis() &&
                             it.value.isNotEmpty()
                       }

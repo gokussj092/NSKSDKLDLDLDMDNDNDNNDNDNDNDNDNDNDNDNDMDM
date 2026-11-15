@@ -5,7 +5,6 @@
 #include <vector>
 
 namespace {
-constexpr const char* origin="https://panel.spdecode.xyz";
 std::string bytes(JNIEnv* e,jbyteArray a){
  if(!a)return {};
  auto n=e->GetArrayLength(a);std::string s(static_cast<size_t>(n),'\0');
@@ -18,7 +17,7 @@ bool cookie_ok(const std::string& s){
  const auto pos=s.find('=');
  if(pos==std::string::npos)return false;
  const auto name=s.substr(0,pos);
- if(name!="spdecode_admin_session"&&name!="spdecode_staff_session")return false;
+ if(name!=spdecode::admin::kAdminSessionCookie&&name!=spdecode::admin::kStaffSessionCookie)return false;
  if(pos+1==s.size())return false;
  for(size_t i=pos+1;i<s.size();++i){const auto c=s[i];
   if(!((c>='a'&&c<='z')||(c>='A'&&c<='Z')||(c>='0'&&c<='9')||c=='_'||c=='-'||c=='.'))return false;
@@ -61,7 +60,7 @@ Java_com_ghostdeveloper_spdecode_admin_NativeAdminRoutes_exchangeNative(JNIEnv* 
  auto urlClass=e->FindClass("java/net/URL");
  if(!urlClass)return failure("NETWORK_ERROR");
  auto ctor=e->GetMethodID(urlClass,"<init>","(Ljava/lang/String;)V");
- auto urlText=e->NewStringUTF((std::string(origin)+plan->path).c_str());
+ auto urlText=e->NewStringUTF((std::string(spdecode::admin::kAdminOrigin)+plan->path).c_str());
  auto url=e->NewObject(urlClass,ctor,urlText);
  if(e->ExceptionCheck()||!url)return failure("NETWORK_ERROR");
  auto open=e->GetMethodID(urlClass,"openConnection","()Ljava/net/URLConnection;");
@@ -80,7 +79,7 @@ Java_com_ghostdeveloper_spdecode_admin_NativeAdminRoutes_exchangeNative(JNIEnv* 
  header("Accept","application/json");header("Cache-Control","no-store");
  if(op!="login")header("Cookie",token);
  if(std::string(plan->method)=="POST"){
-  header("Origin",origin);header("X-SPDECODE-ADMIN-ACTION","1");header("Content-Type","application/json");
+  header("Origin",spdecode::admin::kAdminOrigin);header("X-SPDECODE-ADMIN-ACTION","1");header("Content-Type","application/json");
   callBool("setDoOutput",true);callInt("setFixedLengthStreamingMode",e->GetArrayLength(body));
   auto output=e->CallObjectMethod(conn,e->GetMethodID(cls,"getOutputStream","()Ljava/io/OutputStream;"));
   if(e->ExceptionCheck()||!output)return failure("NETWORK_ERROR");

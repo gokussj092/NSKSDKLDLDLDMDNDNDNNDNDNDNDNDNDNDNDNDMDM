@@ -20,3 +20,17 @@ Java_com_ghostdeveloper_spdecode_admin_NativeAdminRoutes_planNative(JNIEnv* env,
     for(int i=0;i<3;++i){auto v=env->NewStringUTF(values[i]);if(!v)return nullptr;env->SetObjectArrayElement(arr,i,v);env->DeleteLocalRef(v);if(env->ExceptionCheck())return nullptr;}
     return arr;
 }
+// Connection data exposed to Kotlin. Kotlin never hardcodes the origin,
+// the cookie path or the session cookie names; it reads them here.
+extern "C" JNIEXPORT jstring JNICALL
+Java_com_ghostdeveloper_spdecode_admin_NativeAdminRoutes_originNative(JNIEnv* env,jobject){
+    return env->NewStringUTF(spdecode::admin::kAdminOrigin);
+}
+extern "C" JNIEXPORT jstring JNICALL
+Java_com_ghostdeveloper_spdecode_admin_NativeAdminRoutes_cookiePathNative(JNIEnv* env,jobject){
+    return env->NewStringUTF(spdecode::admin::kAdminCookiePath);
+}
+extern "C" JNIEXPORT jstring JNICALL
+Java_com_ghostdeveloper_spdecode_admin_NativeAdminRoutes_sessionCookieNameNative(JNIEnv* env,jobject,jboolean staff){
+    return env->NewStringUTF(staff?spdecode::admin::kStaffSessionCookie:spdecode::admin::kAdminSessionCookie);
+}

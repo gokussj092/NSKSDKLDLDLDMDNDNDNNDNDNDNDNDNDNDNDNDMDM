@@ -134,7 +134,7 @@
     <string name="admin_label_132" formatted="false">Acceso de este dispositivo</string>
     <string name="admin_label_133" formatted="false">Este dispositivo</string>
     <string name="admin_label_134" formatted="false">Sesión actual</string>
-    <string name="admin_label_135" formatted="false">La sesión tiene la vigencia y revocación establecidas por el servidor.</string>
+    <string name="admin_label_135" formatted="false">La sesión dura 90 días desde el inicio de sesión. El servidor puede revocarla antes.</string>
     <string name="admin_label_136" formatted="false">Mantenimiento del servicio</string>
     <string name="admin_label_137" formatted="false">Estas acciones modifican la disponibilidad del servicio para los clientes.</string>
     <string name="admin_label_138" formatted="false">Activar mantenimiento para todos los clientes</string>
@@ -145,7 +145,6 @@
     <string name="admin_label_143" formatted="false">Solicitar limpieza de caché del servidor</string>
     <string name="admin_label_144" formatted="false">Solicitar limpieza</string>
     <string name="admin_label_145" formatted="false">Selecciona una sección en el menú.</string>
-    <string name="admin_label_146" formatted="false">Datos recibidos de panel.spdecode.xyz</string>
     <string name="admin_label_147" formatted="false">La acción se aplicará en el servidor.</string>
     <string name="admin_label_148" formatted="false">Confirmar</string>
     <string name="admin_label_149" formatted="false">Cancelar</string>
@@ -349,4 +348,12 @@
     <string name="admin_label_347" formatted="false">Precio base (%1$s)</string>
     <string name="admin_label_348" formatted="false">No se pudo completar la operación (%1$s).</string>
     <string name="admin_label_349" formatted="false">Cambiar disponibilidad de %1$s</string>
+    <string name="admin_label_350" formatted="false">Aún no hay mensajes</string>
+    <string name="admin_label_351" formatted="false">Escribe la primera respuesta al usuario.</string>
+    <string name="admin_label_352" formatted="false">Reintentar</string>
+    <string name="admin_label_353" formatted="false">Gift codes</string>
+    <string name="admin_label_354" formatted="false">El usuario ya no podrá responder hasta que reabras el ticket.</string>
+    <string name="admin_label_355" formatted="false">El ticket volverá a estar abierto para el usuario.</string>
+    <string name="admin_label_356" formatted="false">Escribe tu respuesta…</string>
+    <string name="admin_label_357" formatted="false">AMOLED</string>
 </resources>

@@ -22,6 +22,13 @@ internal object NativeAdminRoutes {
       bodySize: Int,
   ): Array<String>?
 
+  /** Panel origin, cookie path and session cookie names live in native C++ only. */
+  external fun originNative(): String
+
+  external fun cookiePathNative(): String
+
+  external fun sessionCookieNameNative(staff: Boolean): String
+
   fun plan(operation: String, query: String = "", page: Int = 0, bodySize: Int = 0): AdminPlan {
     if (operation == "users") require(query.length <= 80)
     val result =

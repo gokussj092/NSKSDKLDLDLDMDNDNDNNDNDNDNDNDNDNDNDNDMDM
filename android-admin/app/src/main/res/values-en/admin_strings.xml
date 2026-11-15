@@ -134,7 +134,7 @@
     <string name="admin_label_132" formatted="false">Access from this device</string>
     <string name="admin_label_133" formatted="false">This device</string>
     <string name="admin_label_134" formatted="false">Current session</string>
-    <string name="admin_label_135" formatted="false">Session duration and revocation are controlled by the server.</string>
+    <string name="admin_label_135" formatted="false">The session lasts 90 days from sign-in. The server can revoke it sooner.</string>
     <string name="admin_label_136" formatted="false">Service maintenance</string>
     <string name="admin_label_137" formatted="false">These actions change service availability for clients.</string>
     <string name="admin_label_138" formatted="false">Enable maintenance for all clients</string>
@@ -145,7 +145,6 @@
     <string name="admin_label_143" formatted="false">Request server cache cleanup</string>
     <string name="admin_label_144" formatted="false">Request cleanup</string>
     <string name="admin_label_145" formatted="false">Select a section from the menu.</string>
-    <string name="admin_label_146" formatted="false">Data retrieved from panel.spdecode.xyz</string>
     <string name="admin_label_147" formatted="false">The action will be applied on the server.</string>
     <string name="admin_label_148" formatted="false">Confirm</string>
     <string name="admin_label_149" formatted="false">Cancel</string>
@@ -349,4 +348,12 @@
     <string name="admin_label_347" formatted="false">Base price (%1$s)</string>
     <string name="admin_label_348" formatted="false">Could not complete the operation (%1$s).</string>
     <string name="admin_label_349" formatted="false">Change availability of %1$s</string>
+    <string name="admin_label_350" formatted="false">No messages yet</string>
+    <string name="admin_label_351" formatted="false">Write the first reply to the user.</string>
+    <string name="admin_label_352" formatted="false">Retry</string>
+    <string name="admin_label_353" formatted="false">Gift codes</string>
+    <string name="admin_label_354" formatted="false">The user will not be able to reply until you reopen the ticket.</string>
+    <string name="admin_label_355" formatted="false">The ticket will be open for the user again.</string>
+    <string name="admin_label_356" formatted="false">Write your reply…</string>
+    <string name="admin_label_357" formatted="false">AMOLED</string>
 </resources>
