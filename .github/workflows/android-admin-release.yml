@@ -9,6 +9,9 @@ on:
       - 'cloud/web/lib/commerce/mobile-admin.mjs'
       - 'cloud/web/app/api/admin/mobile/**'
       - 'cloud/web/tests/mobile-admin.test.mjs'
+      - 'cloud/web/lib/commerce/support.mjs'
+      - 'cloud/web/tests/staff-console.test.mjs'
+      - 'scripts/android_16kb_elf_audit.py'
 permissions:
   contents: read
 concurrency:
@@ -135,7 +138,7 @@ jobs:
           EXPECTED=$(cat "$RUNNER_TEMP/admin-signer-sha256")
           grep -F "Signer #1 certificate SHA-256 digest: $EXPECTED" "$RUNNER_TEMP/admin-certificate.txt"
           "$ANDROID_HOME/build-tools/35.0.0/zipalign" -c -P 16 -v 4 "$APK"
-          python3 scripts/android_16kb_elf_audit.py "$APK"
+          python3 scripts/android_16kb_elf_audit.py "$APK" --library libspdecode_admin.so
           test -s android-admin/app/build/outputs/mapping/release/mapping.txt
           "$ANDROID_HOME/build-tools/35.0.0/aapt" dump permissions "$APK" | grep -F android.permission.INTERNET
           "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$APK" | grep -F "package: name='com.ghostdeveloper.spdecode.admin'"

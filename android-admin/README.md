@@ -60,3 +60,13 @@ No crea una firma alternativa. El workflow verifica el certificado del APK contr
 Backend: desde `cloud/web`, `node --test tests/mobile-admin.test.mjs tests/staff-console.test.mjs tests/c6-admin.test.mjs`.
 
 Las pruebas de backend usan PostgreSQL embebido y cuentas sintéticas. No equivalen a una sesión real en producción. La comprobación autenticada contra el VPS y hardware físico se debe registrar por separado.
+
+## Actualización del VPS
+
+La comparación con `ci/unity-ads-online-qa` en `8824237191a4` confirmó que el backend de esta rama conserva su base actual; añade el endpoint móvil y la lista de agentes asignables de soporte. Antes de ejecutar, conserva cualquier cambio local de tu VPS como indica el actualizador.
+
+```bash
+spdecode update web feat/android-admin-panel
+```
+
+Después de actualizar, una consulta **sin sesión** a `https://panel.spdecode.xyz/api/admin/mobile?section=orders` debe responder 401, no 404. La comprobación final consiste en iniciar sesión en la APK con una cuenta administrativa existente y revisar los datos y permisos de su cargo.

@@ -105,6 +105,11 @@ test('assignment controls which support agent can see or answer customer',async(
  const listed=await listAdminSupport({db,env,principal:actor});
  assert.equal(listed.threads.length,1);
  assert.equal(listed.threads[0].assigned_name,'Agent QA');
+ assert.deepEqual(listed.agents,[]);
+ const assignable=await listAdminSupport({db,env,principal:{...owner,capabilities:['support.assign']}});
+ assert.equal(assignable.agents[0].id,actor.id);
+ assert.ok(!JSON.stringify(assignable.agents).includes('password'));
+ assert.ok(!JSON.stringify(assignable.agents).includes('email'));
  await replyAdminSupport({id:actor.id,name:actor.name,role:'support'},
   {threadId:thread.id,action:'reply',message:'We are checking your login.'},{db,env});
  const client=await listUserSupport(users[0],{db,env});

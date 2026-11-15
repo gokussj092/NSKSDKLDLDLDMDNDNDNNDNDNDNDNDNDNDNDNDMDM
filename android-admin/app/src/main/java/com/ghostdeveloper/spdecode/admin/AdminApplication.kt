@@ -1236,10 +1236,26 @@ private fun ChatScreen(state: AdminState) {
           title = { Text("Asignar agente") },
           text = {
             Column {
-              Small(
-                  "Identificador del agente disponible en Roles y permisos. Déjalo vacío para retirar la asignación.")
-              OutlinedTextField(
-                  assignedId, { assignedId = it }, label = { Text("Identificador de personal") })
+              Row(
+                  Modifier.fillMaxWidth().clickable { assignedId = "" },
+                  verticalAlignment = Alignment.CenterVertically) {
+                    RadioButton(assignedId.isEmpty(), { assignedId = "" })
+                    Text("Sin asignación", color = Ink)
+                  }
+              state.data.array("agents").forEach { agent ->
+                Row(
+                    Modifier.fillMaxWidth().clickable { assignedId = agent.getString("id") },
+                    verticalAlignment = Alignment.CenterVertically) {
+                      RadioButton(
+                          assignedId == agent.getString("id"),
+                          { assignedId = agent.getString("id") })
+                      Text(
+                          "${agent.optString("name")} · ${agent.optString("username")}",
+                          color = Ink)
+                    }
+              }
+              if (!state.data.has("agents"))
+                  Small("Actualiza el servidor para consultar los agentes disponibles.")
             }
           },
           confirmButton = {
@@ -1322,7 +1338,13 @@ private fun roleForm(
           "Consultar compras")
   open(
       if (row == null) "Crear cargo" else "Editar cargo",
-      listOf(FormField("name", "Nombre del cargo", row?.optString("name").orEmpty())) +
+      listOf(
+          FormField("name", "Nombre del cargo", row?.optString("name").orEmpty()),
+          FormField(
+              "enabled",
+              "Cargo habilitado",
+              (row?.optBoolean("enabled") ?: true).toString(),
+              listOf("true", "false"))) +
           perms.mapIndexed { i, p ->
             FormField(p, names[i], (p in selected).toString(), listOf("true", "false"))
           }) { v ->
@@ -1339,7 +1361,7 @@ private fun roleForm(
                             UUID.randomUUID().toString().replace("-", "").take(10).let { "r" + it })
                 .put("name", v["name"])
                 .put("permissions", JSONArray(ps.toList()))
-                .put("enabled", true))
+                .put("enabled", v["enabled"] == "true"))
       }
 }
 

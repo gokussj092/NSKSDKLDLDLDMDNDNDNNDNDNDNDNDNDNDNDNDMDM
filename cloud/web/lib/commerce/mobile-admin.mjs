@@ -6,7 +6,7 @@ import {adminSettings,validMutation} from '../c6-admin-auth.mjs';
 
 // The native panel uses the same sessions, capabilities and payment authority
 // as the web panel. This endpoint never accepts a price or a paid/refund status.
-const SECTIONS=new Set(['orders','entitlements','credits']);
+const SECTIONS=new Set(['orders','entitlements','licenses','api','credits']);
 const uuid=v=>typeof v==='string'&&/^[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}$/.test(v);
 export async function mobileRead(principal,section,page,{db=database(),live=process.env.SPDECODE_PAYMENTS_LIVE==='true'}={}){
  if(!principal.capabilities?.includes('billing.read')||principal.mustChangePassword)fail('FORBIDDEN',403);
@@ -27,9 +27,11 @@ export async function mobileRead(principal,section,page,{db=database(),live=proc
     FROM spdecode_shop.credit_ledger c LEFT JOIN shop_user u ON u.id=c.account_id
     WHERE c.payment_live=$1 ORDER BY c.created_at DESC,c.id DESC LIMIT 50 OFFSET $2`}
  };
- const source=sources[section];
- const [rows,count]=await Promise.all([db.query(source.sql,[live,offset]),
-   db.query(`SELECT COUNT(*)::integer AS count FROM spdecode_shop.${source.table} WHERE payment_live=$1`,[live])]);
+ const product=section==='licenses'?'offline-3':section==='api'?'api-ip':null;
+ const source=sources[product?'entitlements':section];
+ const sql=product?source.sql.replace('WHERE e.payment_live=$1',`WHERE e.payment_live=$1 AND e.product_id='${product}'`):source.sql;
+ const [rows,count]=await Promise.all([db.query(sql,[live,offset]),
+   db.query(`SELECT COUNT(*)::integer AS count FROM spdecode_shop.${source.table} WHERE payment_live=$1${product?` AND product_id='${product}'`:''}`,[live])]);
  // Totals cover all orders, not only the loaded page. Never mix currencies.
  const totals=section==='orders'?(await db.query(`SELECT quote->>'currency' AS currency,
    SUM((quote->>'total')::bigint)::text AS cents,COUNT(*)::integer AS orders
@@ -47,7 +49,7 @@ export async function mobileMutation(principal,input,{db=database(),live=process
     (Object.keys(input).sort().join(',')!=='action,allowedIp,id'||!publicIp(input.allowedIp)))fail('INVALID_PUBLIC_IP');
  return transaction(async client=>{
    const row=(await client.query(`SELECT e.*,o.status AS order_status FROM spdecode_shop.entitlements e
-    JOIN spdecode_shop.orders o ON o.id=e.order_id WHERE e.id=$1 AND e.payment_live=$2 FOR UPDATE OF e,o`,[input.id,live])).rows[0];
+    JOIN spdecode_shop.orders o ON o.id=e.order_id WHERE e.id=$1 AND e.payment_live=$2 AND o.payment_live=$2 FOR UPDATE OF e,o`,[input.id,live])).rows[0];
    if(!row)fail('ENTITLEMENT_NOT_FOUND',404);
    if(input.action==='api-ip'&&row.product_id!=='api-ip')fail('INVALID_REQUEST');
    if((input.action==='api-ip'||input.status==='active')&&

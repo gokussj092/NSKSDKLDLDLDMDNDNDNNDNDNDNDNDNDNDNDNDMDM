@@ -48,12 +48,14 @@ def verify_elf(binary: bytes) -> list[int]:
     return [align for _, _, align in segments]
 
 
-def audit_archive(path: Path) -> list[str]:
+def audit_archive(path: Path, required_library: str = "libv7q3.so") -> list[str]:
     verified: list[str] = []
     with zipfile.ZipFile(path) as archive:
         names = archive.namelist()
-        if not any(name.endswith("/libv7q3.so") for name in names):
-            raise ValueError(f"{path.name}: libv7q3.so missing")
+        if not required_library.startswith("lib") or not required_library.endswith(".so") or "/" in required_library:
+            raise ValueError("invalid required library name")
+        if not any(name.endswith("/" + required_library) for name in names):
+            raise ValueError(f"{path.name}: {required_library} missing")
         for name in sorted(names):
             if not name.endswith(".so") or not any(abi in "/" + name for abi in SUPPORTED_64):
                 continue
@@ -70,9 +72,10 @@ def audit_archive(path: Path) -> list[str]:
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("archives", type=Path, nargs="+")
+    parser.add_argument("--library", default="libv7q3.so", help="Required native library (default: libv7q3.so)")
     args = parser.parse_args()
     for path in args.archives:
-        for line in audit_archive(path):
+        for line in audit_archive(path, args.library):
             print(f"{path.name}: {line}")
 
 

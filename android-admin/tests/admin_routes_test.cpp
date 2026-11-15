@@ -6,6 +6,11 @@ int main(){
     for(auto id:{"access","session","staff","roles","audit","support","store","gifts","notifications","observability","reports"}){
         auto p=plan(id,"",0,0);assert(p&&std::string(p->method)=="GET"&&p->path.rfind("/api/admin/",0)==0);assert(!plan(id,"",0,1));assert(!plan(id,"bad",0,0));
     }
+    assert(plan("mobile","licenses",0,0));assert(plan("mobile","api",0,0));
+    assert(!plan("mobile","orders&url=https://example.com",0,0));
+    assert(!plan("mobile","orders",10001,0));
+    assert(plan("support_send","",0,100));assert(!plan("support_send","",0,6201));
+    assert(plan("catalog_publish","",0,0));assert(!plan("catalog_publish","",0,1));
     auto login=plan("login","",0,2048);assert(login&&std::string(login->method)=="POST");assert(!plan("login","",0,0));assert(!plan("login","",0,2049));
     assert(plan("logout","",0,2));assert(!plan("logout","",0,257));
     auto users=plan("users","a&x=#? /\xc3\xb1",3,0);assert(users&&users->path=="/api/admin/users?page=3&q=a%26x%3D%23%3F%20%2F%C3%B1");

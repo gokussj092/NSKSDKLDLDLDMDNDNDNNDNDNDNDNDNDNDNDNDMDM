@@ -47,7 +47,7 @@ std::optional<Plan> plan(std::string_view operation,std::string_view query,int p
         if(body_size>r.max_body || (r.max_body!=0&&body_size==0))return std::nullopt;
         std::string path(r.path);
         if(operation=="mobile"){
-            if(page<0||page>10000||(query!="orders"&&query!="entitlements"&&query!="credits"))return std::nullopt;
+            if(page<0||page>10000||(query!="orders"&&query!="entitlements"&&query!="licenses"&&query!="api"&&query!="credits"))return std::nullopt;
             path+="?section="+encode(query)+"&page="+std::to_string(page);
         }else if(operation=="users"){
             if(page<0||page>1000||query.size()>320)return std::nullopt;

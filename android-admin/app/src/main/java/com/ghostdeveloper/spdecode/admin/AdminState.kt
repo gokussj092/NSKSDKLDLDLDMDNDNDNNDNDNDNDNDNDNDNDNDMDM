@@ -176,8 +176,8 @@ internal class AdminState(app: Application) : AndroidViewModel(app) {
           Page.Gifts -> api.call("gifts")
           Page.Finance,
           Page.Purchases -> api.call("mobile", "orders", pageIndex)
-          Page.Licenses,
-          Page.Api -> api.call("mobile", "entitlements", pageIndex)
+          Page.Licenses -> api.call("mobile", "licenses", pageIndex)
+          Page.Api -> api.call("mobile", "api", pageIndex)
           Page.Credits -> api.call("mobile", "credits", pageIndex)
           Page.Catalog -> api.call("session")
           Page.Server -> api.call("observability")

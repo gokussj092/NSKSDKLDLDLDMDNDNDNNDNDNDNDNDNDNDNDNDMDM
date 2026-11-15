@@ -117,7 +117,14 @@ export async function listAdminSupport({db=database(),env=process.env,principal=
     WHERE ($1::boolean=false OR t.assigned_staff_id=$2::uuid)
     ORDER BY t.last_message_at DESC LIMIT 100`,
     [limited,limited?principal.id:null])).rows;
-  return {threads:await Promise.all(threads.map(async t=>{
+  const agents=principal?.capabilities?.includes('support.assign')?(await db.query(`
+    SELECT a.id,a.display_name AS name,a.username,a.role FROM spdecode_shop.staff_accounts a
+    LEFT JOIN spdecode_shop.staff_custom_roles c ON c.code=a.role
+    WHERE a.enabled=true AND a.must_change_password=false AND
+      (a.role IN ('admin','support','moderator') OR
+       (c.enabled=true AND c.permissions @> ARRAY['support.write']::text[]))
+    ORDER BY a.display_name,a.id LIMIT 200`)).rows:[];
+  return {agents,threads:await Promise.all(threads.map(async t=>{
     const rows=(await db.query(`SELECT id,thread_id,sender_kind,ciphertext,created_at,agent_name,agent_role
       FROM spdecode_shop.support_messages WHERE thread_id=$1
       ORDER BY created_at ASC,id ASC LIMIT 150`,[t.id])).rows;
