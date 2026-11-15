@@ -20,7 +20,11 @@ class _NoRedirect(HTTPRedirectHandler):
 
 
 def download() -> bytes:
-    request = Request(CATALOG_URL, headers={"User-Agent": "AC TUNNEL VPN/1.4", "Accept-Encoding": "identity"})
+    # La app usa Volley (HttpURLConnection): su UA es el Dalvik del
+    # teléfono. El servidor devuelve 403 al UA por defecto de
+    # Python-urllib, así que se envía el UA de Android (verificado
+    # en vivo 2026-11-14 por el script verificado).
+    request = Request(CATALOG_URL, headers={"User-Agent": "Dalvik/2.1.0 (Linux; U; Android 13; Pixel 7 Build/TQ3A.230901.001)", "Accept-Encoding": "identity"})
     try:
         with build_opener(_NoRedirect()).open(request, timeout=25) as response:
             if response.status != 200 or response.headers.get("Content-Encoding", "identity") != "identity":

@@ -1,0 +1,19 @@
+{
+  "lockfile_version": 1,
+  "package": "com.skphvpn.mm",
+  "version_code": 75,
+  "dependencies": [
+    {
+      "name": "Python",
+      "version": "3.12.3 (system)",
+      "status": "RECORDED",
+      "note": "stdlib only in operational scripts"
+    },
+    {
+      "name": "jadx",
+      "version": "1.5.3",
+      "status": "RECORDED",
+      "note": "decompilation (2nd pass -j 2 -Xmx3500m, OOM at 99%, 10212 .java, 30 minor errors)"
+    }
+  ]
+}

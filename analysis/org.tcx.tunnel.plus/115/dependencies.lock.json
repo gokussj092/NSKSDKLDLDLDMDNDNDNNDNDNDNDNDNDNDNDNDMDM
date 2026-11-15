@@ -1,0 +1,31 @@
+{
+  "lockfile_version": 1,
+  "package": "org.tcx.tunnel.plus",
+  "version_code": 115,
+  "dependencies": [
+    {
+      "name": "Python",
+      "version": "3.12.3 (system)",
+      "status": "RECORDED",
+      "note": "stdlib only in operational scripts"
+    },
+    {
+      "name": "jadx",
+      "version": "1.5.3",
+      "status": "RECORDED",
+      "note": "decompilation (2nd pass on classes3.dex only, 99%, 3 errors)"
+    },
+    {
+      "name": "paranoid-deobfuscator",
+      "version": "3.0.2",
+      "status": "RECORDED",
+      "note": "LSParanoid string resolution (1953/1953 strings)"
+    },
+    {
+      "name": "Unicorn",
+      "version": "UNKNOWN",
+      "status": "NEEDS_REVIEW",
+      "note": "emulation of renz_decrypt in libovpn3.so; PyCryptodome as AES oracle (UNKNOWN version)"
+    }
+  ]
+}

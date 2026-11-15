@@ -390,6 +390,36 @@
       "name": "XJ VPN",
       "suffix": "xj",
       "kind": "text"
+    },
+    {
+      "prefix": "SabDev://",
+      "name": "RH Tunnel Lite",
+      "suffix": "hs",
+      "kind": "text"
+    },
+    {
+      "prefix": "shanS://",
+      "name": "RH Tunnel Lite",
+      "suffix": "hs",
+      "kind": "text"
+    },
+    {
+      "prefix": "chntunnellite://",
+      "name": "CHN TUNNEL LITE",
+      "suffix": "chn-tunnel-lite",
+      "kind": "text"
+    },
+    {
+      "prefix": "tcxtunnelplus://",
+      "name": "TCx Tunnel Plus",
+      "suffix": "tcx",
+      "kind": "text"
+    },
+    {
+      "prefix": "eut-payload://",
+      "name": "EUT VPN",
+      "suffix": "eut",
+      "kind": "text"
     }
   ]
 }

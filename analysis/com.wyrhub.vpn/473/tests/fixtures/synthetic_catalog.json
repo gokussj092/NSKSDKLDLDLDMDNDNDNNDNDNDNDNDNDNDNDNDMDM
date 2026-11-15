@@ -1,0 +1,18 @@
+{
+  "Version": "9.9-sintetico",
+  "Servers": [
+    {
+      "Name": "Servidor sintetico 01",
+      "ServerIPHost": "203.0.113.10",
+      "OVPNUser": "usuario-sintetico",
+      "OVPNPass": "clave-sintetica"
+    }
+  ],
+  "Networks": [
+    {
+      "Name": "Red sintetica 01",
+      "SNI": "www.example.org",
+      "Payload": "GET / HTTP/1.1[crlf]Host: [host][crlf][crlf]"
+    }
+  ]
+}

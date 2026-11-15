@@ -135,6 +135,11 @@ _C8_FILE_ENGINES = {
     "xui": ("decoders/Python/apps/XUI_Tunnel/XUI_Tunnel_archivos.py", "XUI Tunnel VPN 6.0"),
     "sn": ("decoders/Python/apps/SN_VPN/SN_VPN_archivos.py", "SN VPN 5.0.7"),
     "vcv": ("decoders/Python/apps/VC_VPN/VC_VPN_archivos.py", "VC VPN 8.0"),
+    # C8 (2026-11-15 integration): new suffixes of the 20-app batch. The
+    # supplied FILE_ROUTES override these in load_runtime_file_engines();
+    # .hs is dispatched by content in supplied_bridge (JK vs RH, RH default).
+    "hs": ("decoders/Python/apps/RH_Tunnel_Lite/RH_Tunnel_Lite_archivos.py", "RH Tunnel Lite 39.0.1"),
+    "bbtun": ("decoders/Python/apps/Marvs_V2Ray/Marvs_V2Ray_archivos.py", "Marvs V2Ray RHV1"),
 }
 
 def load_runtime_file_engines() -> dict[str, dict[str, str]]:
@@ -160,7 +165,7 @@ def load_runtime_file_engines() -> dict[str, dict[str, str]]:
 # C8 overrides whose frozen C0 family engine stays as a fallback: if the
 # specific decoder fails with a plain decode error (never a credential,
 # version or protection error), decode_file retries once with the C0 engine.
-_C8_GENERIC_FALLBACK = frozenset({"osp", "hsome", "v2box", "ar", "t20", "ost"})
+_C8_GENERIC_FALLBACK = frozenset({"osp", "hsome", "v2box", "ar", "t20", "ost", "bee", "wyr", "tcx", "eut"})
 
 
 def _child_limits(cpu_budget: int = TIMEOUT_SECONDS, output_bytes: int = MAX_OUTPUT_BYTES) -> None:
@@ -308,6 +313,89 @@ def _is_shield_ost(contents: bytes) -> bool:
     return len(blob) >= 44
 
 
+def _compact_text(contents: bytes) -> str | None:
+    """UTF-8 text with all whitespace removed, or None if not UTF-8 text."""
+    try:
+        text = contents.decode("utf-8-sig")
+    except UnicodeError:
+        return None
+    return "".join(text.split())
+
+
+def _b64decode_strict(text: str) -> bytes | None:
+    """Strict standard-Base64 decode of one token, or None."""
+    if not text or len(text) % 4 == 1:
+        return None
+    if not re.fullmatch(r"[A-Za-z0-9+/]+={0,2}", text):
+        return None
+    try:
+        return base64.b64decode(text + "=" * (-len(text) % 4), validate=True)
+    except (ValueError, binascii.Error):
+        return None
+
+
+def _is_beevpn_bee(contents: bytes) -> bool:
+    """New BeeVPN export shape: Base64 text whose compact length is 1
+    (mod 4), whose char at index 3 is an ASCII letter, and which becomes
+    a valid >=44-byte envelope when that one letter is removed. The
+    exporter inserts one random ASCII letter at Base64 index 3; anything
+    else keeps the historic BEE TUNNEL (ultra.py) route. Known gap: a
+    marker-less new envelope is indistinguishable by bytes alone.
+    """
+    compact = _compact_text(contents)
+    if compact is None or len(compact) < 5 or len(compact) % 4 != 1:
+        return False
+    if compact[3] not in "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ":
+        return False
+    blob = _b64decode_strict(compact[:3] + compact[4:])
+    return blob is not None and len(blob) >= 44
+
+
+# Public format constant, transmitted in clear in the second field of every
+# new-format .eut blob. NOT a key: the key is a separate literal; this IV
+# alone decrypts nothing.
+EUT_SZA_IV = bytes(
+    [
+        0x59, 0x48, 0x4C, 0x56, 0x38, 0x56, 0x58, 0x2F,
+        0x2B, 0x54, 0x6D, 0x33, 0x40, 0x4E, 0x3C, 0x79,
+    ]
+)
+
+
+def _is_eut_payload(contents: bytes) -> bool:
+    """True for a new EUT eut-payload:// v1 link (any case)."""
+    try:
+        text = contents.decode("utf-8-sig").strip()
+    except UnicodeError:
+        return False
+    return text.lower().startswith("eut-payload://")
+
+
+def _is_eut_new_sza(contents: bytes) -> bool:
+    """True for a new EUT sza blob: optional eut:// or eut-settings://
+    prefix, then exactly one ':', both fields strict Base64, the
+    ciphertext a non-empty multiple of 16 bytes, and the second field
+    decoding to the fixed 16-byte format IV. Historic blobs carry a
+    per-file IV in the same field, so they do not match (a random
+    collision is 2**-128)."""
+    compact = _compact_text(contents)
+    if compact is None:
+        return False
+    lowered = compact.lower()
+    for prefix in ("eut-settings://", "eut://"):
+        if lowered.startswith(prefix):
+            compact = compact[len(prefix):]
+            break
+    if compact.count(":") != 1:
+        return False
+    ct_b64, iv_b64 = compact.split(":")
+    ct = _b64decode_strict(ct_b64)
+    iv = _b64decode_strict(iv_b64)
+    if ct is None or iv is None:
+        return False
+    return len(ct) >= 16 and len(ct) % 16 == 0 and iv == EUT_SZA_IV
+
+
 def _run_decoder_once(source: str, runtime: str, input_file: Path, output_file: Path, *, folder: str, credentials: dict | None, timeout: int) -> tuple[int, bytes]:
     """Run one decoder subprocess; returns (returncode, raw stdout).
 
@@ -413,8 +501,14 @@ def decode_file(suffix: str, contents: bytes, *, timeout: int = TIMEOUT_SECONDS,
     #   keeps the TunelGuard 12.8 route.
     # - .ost that is not a Shield envelope keeps the frozen OUSS route;
     #   the C8 entry already points at Shield Tunnel.
+    # - .bee with the export marker letter (len 1 mod 4, letter at index 3)
+    #   is BeeVPN 1.10.11.2; anything else keeps BEE TUNNEL (ultra.py).
+    # - .eut with the eut-payload:// prefix or the fixed format IV in the
+    #   second field is EUT VPN 2.4.1; anything else keeps EUT Tunnel.
     is_hex_custom = suffix == "hexcm" and _is_hex_custom_v3(contents)
     is_vc_tgv = suffix == "tgv" and _is_vc_tgv(contents)
+    is_beevpn_bee = suffix == "bee" and _is_beevpn_bee(contents)
+    is_eut_new = suffix == "eut" and (_is_eut_payload(contents) or _is_eut_new_sza(contents))
     if is_hex_custom:
         engine = {
             "source": str(Path(__file__).with_name("hex_custom_bridge.py")),
@@ -431,6 +525,10 @@ def decode_file(suffix: str, contents: bytes, *, timeout: int = TIMEOUT_SECONDS,
         }
     elif suffix == "ost" and not _is_shield_ost(contents):
         engine = load_file_engines()["ost"]
+    elif suffix == "bee" and not is_beevpn_bee:
+        engine = load_file_engines()["bee"]
+    elif suffix == "eut" and not is_eut_new:
+        engine = load_file_engines()["eut"]
     if credentials is not None:
         allowed = {"password", "hwid"} if suffix in ("hc", "sn") else {"password", "publicKey", "recipientKey"} if suffix == "npvs" else {"password"} if suffix in ("tut", "ua", "1ftnl", "v2box") or is_hex_custom else None
         if allowed is None or not isinstance(credentials, dict) or set(credentials) - allowed:
@@ -460,6 +558,14 @@ def decode_file(suffix: str, contents: bytes, *, timeout: int = TIMEOUT_SECONDS,
             supplied_file = isinstance(v2box_document, dict) and "version" in v2box_document
         except (ValueError, UnicodeError):
             supplied_file = False
+    if suffix == "bee":
+        # Marker-shaped files go to the supplied BeeVPN reader; everything
+        # else stays on the frozen ultra.py route selected above.
+        supplied_file = is_beevpn_bee
+    if suffix == "eut":
+        # New-format blobs go to the supplied EUT reader; everything else
+        # stays on the frozen eut.py route selected above.
+        supplied_file = is_eut_new
     credential_input = supplied_file or protected_hc or protected_tut or protected_ua or protected_onef or protected_npvs or protected_v2box or is_hex_custom
     source = engine["source"]
     if suffix == "dark":

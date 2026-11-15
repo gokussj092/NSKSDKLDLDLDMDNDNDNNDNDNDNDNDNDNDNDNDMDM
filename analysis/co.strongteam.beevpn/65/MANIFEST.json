@@ -1,0 +1,176 @@
+{
+  "schema_version": 1,
+  "package_name": "co.strongteam.beevpn",
+  "app_name": "Bee VPN",
+  "version_name": "1.10.11.2",
+  "version_code": 65,
+  "observed_at": "2026-11-15",
+  "source_category": "public_store_xapk",
+  "authorization_note": "XAPK publico de APKPure; muestras aportadas por el propietario (archivo real de Pedro solo en WyrVPN) o sinteticas selladas con el metodo real. Sin credenciales de usuario ni perfiles reales en el expediente.",
+  "status": "PARTIAL",
+  "targets": [
+    {
+      "kind": "files",
+      "status": "VERIFIED_SYNTHETIC",
+      "detail": ".bee: muestra sintetica sellada con el metodo real; falta uno REAL exportado"
+    },
+    {
+      "kind": "text",
+      "status": "VERIFIED_SYNTHETIC",
+      "detail": "sin esquema URI propio; solo v2rayng://install-config/install-sub genericos"
+    },
+    {
+      "kind": "catalog",
+      "status": "PARTIAL",
+      "detail": "Version 5.72 en vivo abre; 2 sobres de campo no abren con ninguna clave del APK (ver limitaciones)"
+    },
+    {
+      "kind": "export",
+      "status": "PENDING",
+      "detail": "sin compartir por codigo, registro de dispositivo ni creditos en 1.10.11.2"
+    }
+  ],
+  "inputs": [
+    {
+      "type": "xapk",
+      "name": "XAPK arm64-v8a de APKPure (SHA-1 coincide con APKPure; el SHA-256 que muestra APKPure en la pagina es de la variante armeabi-v7a)",
+      "size_bytes": 44632734,
+      "sha256": "a54984281dafd62689a95f759d6d2b9830e9296ab5ff89f82605d133d7314207",
+      "note": "Hash verificado contra APKPure segun README/TESTING de origen; el .xapk no se guarda en Git."
+    },
+    {
+      "type": "operational_script",
+      "name": "Bee_VPN.py",
+      "kind": "catalogo",
+      "sha256": "766e36c818e97e8993f2e4ceb642cf80b902eb94de386f06ca8e829bfc12ccdb",
+      "path": "~/workspace/catalogs/beevpn/Bee_VPN.py",
+      "note": "Script operativo (contiene las constantes de formato). No se copia a analysis/."
+    },
+    {
+      "type": "operational_script",
+      "name": "Bee_VPN_archivos.py",
+      "kind": "archivos",
+      "sha256": "7c247e179fe8bbc56e8a3e9cfdacc8a906c206f05e50c8cce4de1a33f1cc0d04",
+      "path": "~/workspace/catalogs/beevpn/Bee_VPN_archivos.py",
+      "note": "Script operativo (contiene las constantes de formato). No se copia a analysis/."
+    },
+    {
+      "type": "sample",
+      "name": "catalog_sample.b64",
+      "sha256": "fa2feed97043579f207b624341c2cacfc054b19a3f1e85b0e40bb7d41a075f7e",
+      "note": "cuerpo en vivo tal cual (Base64, 1.227.457 B)"
+    },
+    {
+      "type": "sample",
+      "name": "muestra.bee",
+      "sha256": "1387bd4dffc280dca3d12d0d1957d6814315cf6f2781de5f35de592d5b986858",
+      "note": "perfil .bee SINTETICO sellado con el metodo real (590 B)"
+    },
+    {
+      "type": "sample",
+      "name": "configfile.json",
+      "sha256": "29cd47ba80b527d0af7af55ea24e10822e9fc21a3bc1ce33186fa970b4349169",
+      "note": "asset integrado (sobre cifrado, v1.01, 67 servidores, 657 redes)"
+    }
+  ],
+  "tooling": [
+    {
+      "name": "Python",
+      "version": "3.12.3",
+      "origin": "sistema (verificado en este entorno)",
+      "purpose": "Ejecucion de scripts y tests"
+    },
+    {
+      "name": "pycryptodome",
+      "version": "4.4.0",
+      "origin": "PyPI, venv ~/workspace/http-custom-update/venv (verificado)",
+      "purpose": "Via rapida AES (opcional; los scripts traen fallback puro)"
+    },
+    {
+      "name": "argon2-cffi",
+      "version": "25.1.0",
+      "origin": "PyPI, venv ~/workspace/http-custom-update/venv (verificado)",
+      "purpose": "Via rapida Argon2id para sobres de campo (opcional)"
+    },
+    {
+      "name": "jadx",
+      "version": "UNKNOWN",
+      "origin": "UNKNOWN — version no registrada en los logs de origen de estas 7 apps",
+      "purpose": "Descompilacion de DEX a Java"
+    },
+    {
+      "name": "apktool / androguard",
+      "version": "UNKNOWN",
+      "origin": "UNKNOWN — version no registrada en los logs de origen",
+      "purpose": "Extraccion de APK y lectura de manifest/assets"
+    },
+    {
+      "name": "capstone",
+      "version": "UNKNOWN",
+      "origin": "UNKNOWN — version no registrada en los logs de origen",
+      "purpose": "Desensamblado AArch64 de libgojni.so en los scripts de tools/"
+    },
+    {
+      "name": "curl",
+      "version": "UNKNOWN",
+      "origin": "sistema — version no registrada",
+      "purpose": "Descarga alternativa cuando el cliente HTTP de Python trunca el cuerpo"
+    }
+  ],
+  "code_paths": [
+    "decoders/Python/apps/Bee_VPN/Bee_VPN.py",
+    "decoders/Python/apps/Bee_VPN/Bee_VPN_archivos.py",
+    "analysis/platform/supplied-integrations (registro; las APIs de descarga viven en el script operativo y en el registro, no en este expediente)"
+  ],
+  "code_paths_note": "Las rutas decoders/Python/apps/<Proveedor>/ son las rutas PREVISTAS de integracion (Fase 2 del parche); a 2026-11-15 aun no estan integradas ni subidas. No se afirma integracion.",
+  "evidence_refs": [
+    "~/workspace/catalogs/beevpn/README.md",
+    "~/workspace/catalogs/beevpn/TESTING.md",
+    "~/workspace/catalogs/beevpn/work/",
+    "analysis/co.strongteam.beevpn/65/RESULTS.md",
+    "analysis/co.strongteam.beevpn/65/tests/test_method.py"
+  ],
+  "limitations": [
+    "2 sobres de campo en vivo (BugDNS y CustomProxy de redes de Kazajistan 611-620) no abren con ninguna clave ni variante de este APK; 9 iguales en el asset. El script los deja codificados tal cual y los reporta.",
+    "Descifrar los 4.419 sobres tarda ~100 s con --workers 4 (~2 min con el reintento parcial; en serie ~20 min) y ~15-20 s por sobre en stdlib puro: por encima del tope de 20 s del worker de nube; hace falta la via rapida argon2-cffi o subir el tope.",
+    "Falta un .bee REAL exportado por la app en un telefono.",
+    "COLISION DE SUFIJO .bee: el sufijo .bee ya pertenece al metodo historico BEE TUNNEL (decoders/Python/ultra.py). NO resuelto en este expediente: la decision esta pendiente en la fase de discriminadores del parche. Este expediente documenta solo el formato Bee VPN 1.10.11.2."
+  ],
+  "network_requirements": [
+    "Descarga del catalogo en vivo: red HTTPS (el script operativo replica la peticion exacta de la app).",
+    "Los tests de este expediente NO necesitan red.",
+    "Regla SP-DECODE 2026-11-15: el JSON de resultado del catalogo lleva solo los datos del catalogo, todo descifrado; las APIs de descarga NO van en el resultado ni en este expediente (ver script operativo y supplied-integrations)."
+  ],
+  "manual_steps": [
+    "Obtener el XAPK publico de APKPure y verificar su SHA-256 contra lo publicado.",
+    "Ejecutar el --self-test del script operativo (ver REPRODUCE.md).",
+    "Para la confirmacion de extremo a extremo hace falta una muestra real exportada por la app en un telefono (ver unresolved_questions)."
+  ],
+  "unresolved_questions": [
+    "Los 2 sobres de campo de Kazajistan que no abren (misma clase de limite que MM Tunnel).",
+    "Discriminador .bee compartido con BEE TUNNEL historico (decision pendiente, fase de discriminadores).",
+    ".bee real exportado por la app."
+  ],
+  "connection_authentication": {
+    "file_catalog_integrity": {
+      "status": "NOT_OBSERVED",
+      "note": "Integridad por tags AES-256-GCM (AEAD), no por HMAC."
+    },
+    "cryptographic_derivation": {
+      "status": "NOT_OBSERVED",
+      "note": "Derivacion por Argon2id; sin HMAC en la derivacion."
+    },
+    "vpn_transport": {
+      "status": "NOT_OBSERVED",
+      "note": "No se reviso el transporte VPN de esta app."
+    },
+    "connection_authentication": {
+      "status": "NOT_OBSERVED",
+      "note": "No se observo HMAC de autenticacion de conexion."
+    }
+  },
+  "dependencies": {
+    "lockfile": "dependencies.lock.json",
+    "note": "Ver DEPENDENCIES.md. Versiones desconocidas marcadas UNKNOWN con motivo; nunca inventadas."
+  }
+}

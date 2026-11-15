@@ -3,9 +3,10 @@
   "name": "UT Loop Pro VPN",
   "package": "loop.uchetechs.vpn.pro",
   "compatibleVersions": [
-    "22.10.26"
+    "22.10.26",
+    "23.11.26"
   ],
-  "versionCode": 65,
+  "versionCode": 66,
   "engine": "python-rsa-pkcs1v15-sha256-aes256gcm",
   "engineVersion": 1,
   "catalog": {
@@ -13,18 +14,17 @@
     "providerId": "ut-loop-pro-vpn",
     "sources": {
       "ota": "https://api.utloop.xyz/v1/ota/config?package=loop.uchetechs.vpn.pro",
+      "locked": "https://api.utloop.xyz/v1/ota/locked?package=loop.uchetechs.vpn.pro",
       "premium": "https://api.utloop.xyz/v1/premium/config"
     },
-    "validatedOn": "2026-11-01",
+    "validatedOn": "2026-11-14",
     "remoteAuthorization": "Original fixed catalog GET revalidated with matching bundled API key; cached OTA access is optional in core.h. No accepted official session or signed remote catalog.",
     "remoteValidated": false,
     "remoteObservation": {
-      "httpStatus": 200,
-      "contentType": "text/html",
-      "bytes": 195,
-      "sha256": "5b131ca14aa96311d3432b0062c7443d3b0e6346ec279bd376a75f0a76bcd5d7",
-      "description": "Live original null-session branch and corrected CLI probe both returned Site Unavailable HTML; cause not established",
-      "diagnosticCode": "REMOTE_HTML_RESPONSE"
+      "httpStatus": 401,
+      "contentType": "application/json",
+      "description": "Live probes 2026-11-14: POST /v1/nonce 200; POST /v1/premium/config without entitlement 403 not_entitled; GET /v1/ota/config and /v1/ota/locked with X-Api-Key only 401 access_required. A real-device entitlement JWT or Play Integrity OTA token is required; none fabricated.",
+      "diagnosticCode": "REMOTE_AUTH_REJECTED"
     },
     "officialCredentialsRequired": {
       "otaAuthenticatedSession": [
@@ -40,7 +40,7 @@
     "embeddedVersion": "1.0",
     "embeddedBytes": 1544,
     "embeddedSha256": "23c3f897d17646bd610db2d253da8dcbe413ea29b7997123457ed175ed8bcb15",
-    "validation": "Entire real embedded JSON revalidated against independent JCA, CLI outside checkout and isolated worker. Production RSA key matches original. Remote remains unverified.",
+    "validation": "Entire real embedded JSON revalidated against independent JCA, CLI outside checkout and isolated worker. Production RSA key matches original. Remote remains unverified. Sincronizado 2026-11-14 con el script verificado: misma clave de formato (SHA-256 del esquema XOR máscara de 32 B) y misma clave pública RSA; el decodificador abre el blob de reserva binario (v1.0, 1 servidor + 1 tweak), la copia Base64 y el DATA de system.db. Catálogo en vivo BLOQUEADO (falta JWT de entitlement o token OTA de Play Integrity de dispositivo real.)",
     "publicCatalogVersion": 59,
     "publicCatalogCards": 57,
     "publicRemoteEnabled": false,

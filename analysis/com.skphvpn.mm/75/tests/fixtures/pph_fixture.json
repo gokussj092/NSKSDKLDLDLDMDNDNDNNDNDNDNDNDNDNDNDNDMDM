@@ -1,0 +1,14 @@
+{
+ "catalog_b64": "8NEQFEQHKo7fMc5Xw1IqY38nnDvQ4EZjCGeRi+Y9VrLgoqz/SFROYLha0sd5X7KTxS/TrMxQUkrOW9xCXBTBjokKL+IyV/rFr3FGNmhcgA4lkA1l3UgtFak+yNUA1jw6NgEiYhV+DYAg+AFr4zNJTRyp64efI0F9",
+ "parser_sample": "dGVzdC1wYXlsb2Fk",
+ "plaintext": {
+  "FileName": "pvpn_up-test",
+  "HTTPNetworks": [],
+  "Servers": [
+   {
+    "ServerIP": "example.org"
+   }
+  ],
+  "Version": "6.6-test"
+ }
+}

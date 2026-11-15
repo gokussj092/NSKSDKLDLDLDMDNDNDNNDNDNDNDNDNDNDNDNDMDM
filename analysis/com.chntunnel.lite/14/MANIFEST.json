@@ -1,0 +1,162 @@
+{
+  "schema_version": 1,
+  "package_name": "com.chntunnel.lite",
+  "app_name": "CHN TUNNEL LITE",
+  "version_name": "1.4",
+  "version_code": 14,
+  "observed_at": "2026-11-14/15",
+  "source_category": "APKPure XAPK (owner-supplied sample); live catalog download 2026-11-14",
+  "authorization_note": "Owner-supplied APK sample and live catalog download requested by the owner (Pedro) for SP-DECODE integration research. No service credentials, no attestation fabrication, no account access.",
+  "status": "VERIFIED",
+  "targets": [
+    {
+      "kind": "catalog",
+      "status": "VERIFIED",
+      "note": "VERIFIED_REAL: live download 2026-11-14, re-encryption reproduces the live body byte for byte, 100% of non-empty fields decrypt (0 failures)."
+    },
+    {
+      "kind": "files",
+      "status": "VERIFIED",
+      "note": "VERIFIED_SYNTHETIC for .js/.rj/custom_payload.json (DEX evidence complete; no real exported file yet). Live catalog blob opens as .js."
+    },
+    {
+      "kind": "text",
+      "status": "VERIFIED",
+      "note": "VERIFIED_SYNTHETIC: sample_link.txt is a link generated here from a real live network; no real link exported by the app yet."
+    },
+    {
+      "kind": "export",
+      "status": "PENDING",
+      "note": "PENDING: no real .js/.rj exported by the app and no real link with PIN (NetworkPinCode never appears in the live catalog)."
+    }
+  ],
+  "inputs": [
+    {
+      "type": "operational_script_catalog",
+      "path": "catalogs/chn/CHN_Tunnel_Lite.py",
+      "sha256": "ec31e74896f8c48fd2baeea5c31f7d37616743d02ceefa6701222210dd74c33b",
+      "note": "Operational catalog script (outside this repo until integration). Contains the format keys; never copied into this dossier."
+    },
+    {
+      "type": "operational_script_files",
+      "path": "catalogs/chn/CHN_Tunnel_Lite_archivos.py",
+      "sha256": "5016f2735151f43aad3d6acd21ed03cbda25fe90908b3f05959ac98b3a662c32",
+      "note": "Operational file/text script (outside this repo until integration). Contains the format keys; never copied into this dossier."
+    },
+    {
+      "type": "apk_base",
+      "path": "catalogs/chn/apk or xapk (base APK)",
+      "sha256": "f1ecc3a6fa6e54544f6adad4be8a9b36fa69f646ded373641a962b3c601f510b (base APK on disk)",
+      "note": "Base APK hash as computed on disk in the research workspace."
+    },
+    {
+      "type": "xapk",
+      "path": "catalogs/chn (XAPK)",
+      "sha256": "CHN-TUNNEL-LITE_1.4_arm64-v8a.xapk (57,684,825 B, SHA-256 21e3061f5be4467f046eba04ef81e8a09e704a19f65e0300bdb55c026364d5ef, matches APKPure)",
+      "note": "XAPK identity as recorded in the source TESTING.md."
+    },
+    {
+      "type": "sample",
+      "path": "catalogs/chn/catalog_sample.b64",
+      "sha256": "db762017e600b7c2302fa2fe43ff7d33cb5bdc4158d9595944681b857e2dc0c7",
+      "note": "Sample kept in the research workspace (not copied into this dossier)."
+    },
+    {
+      "type": "sample",
+      "path": "catalogs/chn/sample_catalog.js",
+      "sha256": "db762017e600b7c2302fa2fe43ff7d33cb5bdc4158d9595944681b857e2dc0c7",
+      "note": "Sample kept in the research workspace (not copied into this dossier)."
+    },
+    {
+      "type": "sample",
+      "path": "catalogs/chn/sample_link.txt",
+      "sha256": "728d38b7db78db530c12306929242f58d3be9f53190743b9002bdeb35228be51",
+      "note": "Sample kept in the research workspace (not copied into this dossier)."
+    }
+  ],
+  "tooling": [
+    {
+      "name": "Python",
+      "version": "3.12.3",
+      "purpose": "Runtime of all operational and dossier scripts (stdlib only)."
+    },
+    {
+      "name": "jadx",
+      "version": "1.5.3",
+      "purpose": "DEX decompilation (documented in the source TESTING.md files)."
+    },
+    {
+      "name": "androguard",
+      "version": "4.1.4",
+      "purpose": "DEX/APK inspection helpers in work/ research scripts."
+    },
+    {
+      "name": "OpenSSL",
+      "version": "3.0.13",
+      "purpose": "Independent oracle for AES-CBC vectors in dossier tests."
+    },
+    {
+      "name": "PyCryptodome",
+      "version": "4.4.0",
+      "purpose": "Verification oracle only, in the research venv; NOT used by the operational scripts or the dossier tests."
+    },
+    {
+      "name": "argon2-cffi",
+      "version": "25.1.0",
+      "purpose": "Verification oracle only, in the research venv; NOT used by the operational scripts or the dossier tests."
+    },
+    {
+      "name": "Unicorn",
+      "version": "2.1.4",
+      "purpose": "Native emulation oracle during research (Ac Tunnel KDF, HTTP Tweak WyrLib); NOT used by the operational scripts."
+    },
+    {
+      "name": "paranoid-deobfuscator",
+      "version": "3.0.2",
+      "purpose": "Reference LSParanoid string deobfuscator (Ac Tunnel: 1983/1983 strings)."
+    }
+  ],
+  "code_paths": [
+    "decoders/Python/apps/CHN_Tunnel_Lite/CHN_Tunnel_Lite.py (PENDING integration; operational script in ~/workspace/catalogs/chn/)",
+    "decoders/Python/apps/CHN_Tunnel_Lite/CHN_Tunnel_Lite_archivos.py (PENDING integration; operational script in ~/workspace/catalogs/chn/)"
+  ],
+  "evidence_refs": [
+    "Source research notes: ~/workspace/catalogs/NOTES.md (per-app section)",
+    "Source README: ~/workspace/catalogs/chn/README.md",
+    "Source TESTING.md: ~/workspace/catalogs/chn/TESTING.md",
+    "Dossier tests: tests/test_method.py (unittest, offline, synthetic vectors)",
+    "Dossier verifier: tools/verify.py (synthetic round-trip, no network, no secrets)"
+  ],
+  "limitations": [
+    "Real .js/.rj file exported by the app (or a real chntunnellite:// link) to confirm the file format end to end.",
+    "Real link with PIN (isPinEnabled + NetworkPinCode): unverified whether NetworkPinCode arrives in clear or mode-0 inside the link JSON; the script accepts both.",
+    "Exact Expiry format: no network with expiry exists in the live catalog; the script accepts ISO date, unix seconds and unix milliseconds and reports UNVERIFIED otherwise.",
+    "Re-verify when the catalog version rises above 1.49 or the app changes seed/salt in libovpn3.so."
+  ],
+  "network_requirements": "Live catalog verification needs network access to the vendor's catalog host (exact request lives in the operational script; no download endpoint is reproduced in this dossier). All dossier tests run offline.",
+  "manual_steps": [
+    "Real .js/.rj file exported by the app (or a real chntunnellite:// link) to confirm the file format end to end.",
+    "Real link with PIN (isPinEnabled + NetworkPinCode): unverified whether NetworkPinCode arrives in clear or mode-0 inside the link JSON; the script accepts both.",
+    "Exact Expiry format: no network with expiry exists in the live catalog; the script accepts ISO date, unix seconds and unix milliseconds and reports UNVERIFIED otherwise.",
+    "Re-verify when the catalog version rises above 1.49 or the app changes seed/salt in libovpn3.so."
+  ],
+  "unresolved_questions": [
+    "Real .js/.rj file exported by the app (or a real chntunnellite:// link) to confirm the file format end to end.",
+    "Real link with PIN (isPinEnabled + NetworkPinCode): unverified whether NetworkPinCode arrives in clear or mode-0 inside the link JSON; the script accepts both.",
+    "Exact Expiry format: no network with expiry exists in the live catalog; the script accepts ISO date, unix seconds and unix milliseconds and reports UNVERIFIED otherwise.",
+    "Re-verify when the catalog version rises above 1.49 or the app changes seed/salt in libovpn3.so."
+  ],
+  "connection_authentication": {
+    "files_integrity_hmac": "NOT_OBSERVED",
+    "catalog_integrity_hmac": "NOT_OBSERVED",
+    "key_derivation_hmac": "NOT_OBSERVED",
+    "vpn_transport_hmac": "UNCONFIRMED",
+    "connection_authentication_hmac": "UNCONFIRMED",
+    "note": "Catalog/file integrity rests on the XXTEA length word and AES PKCS#7 padding, not on an HMAC. No HMAC library call was traced to a connection-authentication purpose. VPN transport and connection authentication were not researched for this build.",
+    "rule": "The mere presence of an HMAC library or a Mac.init call confirms nothing. No key values and no hook inputs/outputs are stored in this dossier."
+  },
+  "dependencies": {
+    "lockfile": "dependencies.lock.json",
+    "note": "See DEPENDENCIES.md. Versions marked UNKNOWN were not recorded in the source research notes; they are not invented here."
+  }
+}

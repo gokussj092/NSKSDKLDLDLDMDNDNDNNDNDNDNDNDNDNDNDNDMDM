@@ -1,0 +1,4 @@
+{
+  "server": "{\"Name\": \"TEST SERVER\", \"ServerIPHost\": \"198.51.100.50\"}",
+  "network": "{\"Name\": \"TEST NETWORK\", \"TunnelType\": 3}"
+}

@@ -17,12 +17,12 @@
     "apiMethod": "POST",
     "apiUrl": "https://api.eutvpn.com/v5/android/client/get-all-resources",
     "authentication": "Official Bearer session and NativeKeys request parameters; CLI accepts supplied token/body, does not produce integrity tokens or sessions. Public broker not enabled.",
-    "checkedOn": "2026-10-22",
+    "checkedOn": "2026-11-14",
     "observedHttpStatus": 401,
     "sessionInitHttpStatus": 403,
     "sessionInitMessage": "unsupported_integrity_env",
     "realCatalogObtained": false,
-    "validation": "Three targeted Python smoke tests using independent JDK ciphertext; full resource/field equality, isolated worker, stdin CLI and invalid input. 13 targeted web catalog tests pass. No full regression suite or real-catalog parity."
+    "validation": "Three targeted Python smoke tests using independent JDK ciphertext; full resource/field equality, isolated worker, stdin CLI and invalid input. 13 targeted web catalog tests pass. No full regression suite or real-catalog parity. Sincronizado 2026-11-14 con el script verificado: el descifrado sza del repo abre el blob de ajustes de muestra y el catálogo sintético (1 recurso SERVER con 2 ítems, 1 recurso PAYLOAD con 2 ítems). Catálogo en vivo sigue BLOQUEADO por Play Integrity (falta access_token de dispositivo real con la app de Play); nada inventado."
   },
   "files": {
     "changed": false,

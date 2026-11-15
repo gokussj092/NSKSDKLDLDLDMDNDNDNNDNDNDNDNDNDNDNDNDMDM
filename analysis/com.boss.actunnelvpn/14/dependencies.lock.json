@@ -1,0 +1,79 @@
+{
+  "lockfile_version": 1,
+  "generated": "2026-11-14/15",
+  "note": "Versions actually used during the research. UNKNOWN means the value was not recorded and is not invented.",
+  "python": "3.12.3",
+  "dependencies": [
+    {
+      "name": "Python (stdlib)",
+      "version": "3.12.3",
+      "source": "system",
+      "hash": "UNKNOWN (system runtime, no distribution hash recorded)",
+      "license": "PSF-2.0"
+    },
+    {
+      "name": "jadx",
+      "version": "1.5.3",
+      "source": "github.com/skylot/jadx",
+      "hash": "UNKNOWN (distribution hash not recorded in the source notes)",
+      "license": "Apache-2.0"
+    },
+    {
+      "name": "androguard",
+      "version": "4.1.4",
+      "source": "PyPI (research venv pip list)",
+      "hash": "UNKNOWN (wheel hash not recorded)",
+      "license": "Apache-2.0"
+    },
+    {
+      "name": "OpenSSL",
+      "version": "3.0.13",
+      "source": "system",
+      "hash": "UNKNOWN (system package, no distribution hash recorded)",
+      "license": "Apache-2.0"
+    },
+    {
+      "name": "PyCryptodome",
+      "version": "4.4.0",
+      "source": "PyPI (research venv pip list; oracle only)",
+      "hash": "UNKNOWN (wheel hash not recorded)",
+      "license": "BSD-2-Clause"
+    },
+    {
+      "name": "argon2-cffi",
+      "version": "25.1.0",
+      "source": "PyPI (research venv pip list; oracle only)",
+      "hash": "UNKNOWN (wheel hash not recorded)",
+      "license": "MIT"
+    },
+    {
+      "name": "Unicorn",
+      "version": "2.1.4",
+      "source": "PyPI (research venv pip list; emulation oracle only)",
+      "hash": "UNKNOWN (wheel hash not recorded)",
+      "license": "GPL-2.0"
+    },
+    {
+      "name": "paranoid-deobfuscator",
+      "version": "3.0.2",
+      "source": "reference tool (Ac Tunnel research)",
+      "hash": "UNKNOWN (distribution hash not recorded)",
+      "license": "UNKNOWN (not recorded — NEEDS_REVIEW)"
+    },
+    {
+      "name": "loguru",
+      "version": "0.8.0",
+      "source": "PyPI (research venv pip list; used by some work/ scripts)",
+      "hash": "UNKNOWN (wheel hash not recorded)",
+      "license": "MIT"
+    },
+    {
+      "name": "lxml",
+      "version": "6.1.3",
+      "source": "PyPI (research venv pip list; used by the ZIVPN strings script)",
+      "hash": "UNKNOWN (wheel hash not recorded)",
+      "license": "BSD-3-Clause"
+    }
+  ],
+  "status": "NEEDS_REVIEW"
+}

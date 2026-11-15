@@ -224,6 +224,11 @@ def decode_catalog(data: bytes) -> dict:
             if any(not isinstance(item, dict) or not isinstance(item.get("Name"), str) for item in obj[section]):
                 raise DecodeError("Elemento de catálogo incompatible.")
         result = _fields(obj, ROOT_FIELDS, decrypt_cfb)
+        # Regla del JSON (2026-11-15): el resultado lleva solo datos del
+        # catálogo, nunca APIs de descarga. DefUpdateURL/updater se
+        # descifran arriba solo para identificarlas; no salen.
+        result.pop("DefUpdateURL", None)
+        result.pop("updater", None)
         result["Servers"] = [decode_server(item) for item in obj["Servers"]]
         result["Tweaks"] = [_fields(item, TWEAK_FIELDS, decrypt_tweak) for item in obj["Tweaks"]]
         _validate(result)

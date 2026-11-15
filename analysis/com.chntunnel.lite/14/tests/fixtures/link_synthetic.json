@@ -1,0 +1,7 @@
+{
+  "Name": "TEST NETWORK",
+  "ServerIPHost": "198.51.100.10",
+  "Lock": false,
+  "isSetExpiry": false,
+  "isPinEnabled": false
+}

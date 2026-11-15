@@ -88,7 +88,10 @@ PROVIDERS = {
 
 def decode(provider_id: str, payload: bytes) -> str:
     from cloud.workers.python.supplied_bridge import BY_ID, catalog as decode_supplied
-    if provider_id in BY_ID and provider_id not in {"catnet-vpn", "litron-vpn", "hx-tunnel"}:
+    # eut-vpn is supplied ONLY for its file route (new-format .eut); its
+    # catalog decoder stays on the C8 bridge below (server_catalog_decoder
+    # exposes run(), not decode()), so it must not be diverted here.
+    if provider_id in BY_ID and provider_id not in {"catnet-vpn", "litron-vpn", "hx-tunnel", "eut-vpn"}:
         return json.dumps(decode_supplied(provider_id, payload), ensure_ascii=False, indent=2)
     module_name = PROVIDERS.get(provider_id)
     if module_name is None:

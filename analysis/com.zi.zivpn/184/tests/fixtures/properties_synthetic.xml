@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- TEST SYNTHETIC FIXTURE -->
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties><entry key="tunnelType">4</entry><entry key="sshServer">198.51.100.40</entry><entry key="file.appVersionCode">184</entry></properties>

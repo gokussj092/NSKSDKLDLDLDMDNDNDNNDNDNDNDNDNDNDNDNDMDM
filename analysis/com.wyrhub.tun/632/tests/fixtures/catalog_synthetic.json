@@ -1,0 +1,12 @@
+{
+  "servers": [
+    {
+      "id": "test-global",
+      "country": "Global",
+      "name": "TEST Global [ws:80,ssl:443]",
+      "tunnel": "ssh",
+      "load": 10,
+      "online": true
+    }
+  ]
+}

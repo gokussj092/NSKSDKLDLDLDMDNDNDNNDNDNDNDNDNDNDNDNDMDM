@@ -1,0 +1,25 @@
+{
+  "lockfile_version": 1,
+  "package": "vpn.minapronet.com.eg",
+  "version_code": 88,
+  "dependencies": [
+    {
+      "name": "Python",
+      "version": "3.12.3 (system)",
+      "status": "RECORDED",
+      "note": "stdlib only in operational scripts"
+    },
+    {
+      "name": "jadx",
+      "version": "UNKNOWN",
+      "status": "NEEDS_REVIEW",
+      "note": "decompilation, full vpn.minapronet.com.eg sources"
+    },
+    {
+      "name": "Unicorn",
+      "version": "UNKNOWN",
+      "status": "NEEDS_REVIEW",
+      "note": "emulation of libminacore.so nativeGetConfigUrl"
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "v": 1,
+  "exported_at": "2026-11-14 00:00:00",
+  "expiration": "",
+  "locked": false,
+  "type": "custom_payload",
+  "config": {
+    "name": "TEST PAYLOAD",
+    "requestMethod": "GET",
+    "sniHost": "www.example.org",
+    "targetHost": "198.51.100.60",
+    "targetPort": 443
+  },
+  "show_advanced": false,
+  "country": "TEST",
+  "carrier": "TEST",
+  "device_id": "test-device",
+  "app_version_code": 370
+}

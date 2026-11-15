@@ -2,8 +2,8 @@
   "id": "mnr-tunnel-plus",
   "name": "MNR TUNNEL PLUS",
   "package": "com.hamo.vpn",
-  "versionName": "3.1",
-  "versionCode": 31,
+  "versionName": "3.6",
+  "versionCode": 36,
   "engine": "python",
   "entrypoint": "file_decoder.py",
   "extensions": ["stp"],
@@ -23,8 +23,8 @@
   "hwidCryptographicallyRequired": false,
   "catalog": {
     "status": "verified",
-    "embedded": {"version": "1.0", "servers": 9, "networks": 112, "encryptedFields": 537},
-    "remote": {"version": "14.4", "servers": 14, "networks": 119, "encryptedFields": 612}
+    "embedded": {"version": "13.9", "servers": 13, "networks": 94, "encryptedFields": 507},
+    "remote": {"version": "16.6", "servers": 30, "networks": 98, "encryptedFields": 702}
   },
   "realFileSampleVerified": false,
   "syntheticProfileDocumentsVerified": 2,

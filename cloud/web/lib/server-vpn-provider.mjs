@@ -175,6 +175,9 @@ const PROVIDERS = Object.freeze({
     url:"https://xkingvpn.xyz/api/files/app?json=beae113e6e46d674a068",
     agent:"Robust Tunnel VPN/isvsoft 16.4.7",
   },
+  // Live catalog validated 2026-11-14 (v5.43, 29 servers, 105 tweaks).
+  // URL and UA are exactly the verified script's CATALOG_URL / USER_AGENT.
+  "royal-tunnel": {url:"https://exoticfastvip.xyz/api/app?json=7e68cd3b41df962babe0", agent:"Dalvik/2.1.0 (Linux; U; Android 13; Pixel 7)"},
   "trv-tunnel": {
     url:"https://trmrelay.store/updater/b67b57c85f49c34ee09fd87f2d6915",
     agent:"TRV TUNNEL/2.4",

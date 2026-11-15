@@ -5,6 +5,7 @@ One child process loads one fixed codec. Original scripts stay unchanged.
 """
 from __future__ import annotations
 import base64
+import binascii
 from contextlib import contextmanager
 import importlib.util
 import inspect
@@ -23,6 +24,76 @@ FILE_ROUTES = {suffix: item["id"] for item in ITEMS if item["fileModule"]
 TEXT_ROUTES = sorted([(prefix.lower(), item["id"]) for item in ITEMS if item["fileModule"]
                      for prefix in item["textPrefixes"] if not prefix.startswith(("http://", "https://"))],
                     key=lambda pair: -len(pair[0]))
+
+
+# Content discriminators for suffixes shared by two formats (bytes only,
+# never decryption). Adapted from the design in
+# ~/workspace/repo-integration/discriminators/ (predicates.py).
+# .hs: JK is strict Base64 with a 40-byte Tink header and segment geometry;
+# RH is a SabDev:// / shanS:// share link (default: every other .hs form
+# the RH reader accepts — plain JSON, sab-blob, bare XXTEA — is RH).
+import re as _re
+
+
+def _compact_text(contents: bytes) -> str | None:
+    """UTF-8 text with all whitespace removed, or None if not UTF-8 text."""
+    try:
+        text = contents.decode("utf-8-sig")
+    except UnicodeError:
+        return None
+    return "".join(text.split())
+
+
+def _b64decode_strict(text: str) -> bytes | None:
+    """Strict standard-Base64 decode of one token, or None."""
+    if not text or len(text) % 4 == 1:
+        return None
+    if not _re.fullmatch(r"[A-Za-z0-9+/]+={0,2}", text):
+        return None
+    try:
+        return base64.b64decode(text + "=" * (-len(text) % 4), validate=True)
+    except (ValueError, binascii.Error):
+        return None
+
+
+_JK_HEADER_SIZE = 40
+_JK_FIRST_CT_SEGMENT = 4096 - _JK_HEADER_SIZE  # 4056
+_JK_CT_SEGMENT = 4096
+
+
+def _hs_segment_fit(body: bytes) -> bool:
+    """True iff `body` slices like a Tink Streaming AEAD body: first
+    segment <= 4056 bytes, then 4096-byte segments, last segment 17..4096."""
+    if len(body) < 17:
+        return False
+    rest = body[_JK_FIRST_CT_SEGMENT:]
+    while len(rest) > _JK_CT_SEGMENT:
+        rest = rest[_JK_CT_SEGMENT:]
+    return True if not rest else 17 <= len(rest) <= _JK_CT_SEGMENT
+
+
+def _is_jk_hs(contents: bytes) -> bool:
+    """True for a JK VPN .hs: strict Base64 text, length 0 (mod 4),
+    raw length >= 56, raw[0] == 40, and Tink segment geometry fits."""
+    compact = _compact_text(contents)
+    if compact is None:
+        return False
+    blob = _b64decode_strict(compact)
+    if blob is None or len(blob) < _JK_HEADER_SIZE + 16:
+        return False
+    if blob[0] != _JK_HEADER_SIZE:
+        return False
+    return _hs_segment_fit(blob[_JK_HEADER_SIZE:])
+
+
+def _is_rh_hs(contents: bytes) -> bool:
+    """True for an RH Tunnel Lite exported .hs: text starting with the
+    SabDev:// (server) or shanS:// (network) share-link prefix."""
+    try:
+        text = contents.decode("utf-8-sig").strip()
+    except UnicodeError:
+        return False
+    return text.startswith(("SabDev://", "shanS://"))
 
 
 class IntegrationError(ValueError):
@@ -100,9 +171,44 @@ def decode_one(item, raw):
         return document(module.decode_blob_text(raw.decode("utf-8")))
     if app == "CATNET_VPN":
         return document(module.run(raw))
+    # Catalog entry points of the 2026-11-15 batch: these verified scripts
+    # do not expose decode(), so dispatch to each script's real reader.
+    # Every branch returns the catalog with all fields decrypted and no
+    # download APIs in the result (owner rule 2026-11-15).
+    if app == "PPH_GOOD_VPN":
+        plain = module.decrypt_envelope(raw)
+        if plain is None:
+            raise IntegrationError("DECODE_FAILED")
+        return document(module.decrypt_catalog_fields(json.loads(plain.decode("utf-8"))))
+    if app == "CHN_Tunnel_Lite":
+        readable, _fails = module.readable_catalog(module.decrypt_catalog_body(raw.decode("utf-8-sig")))
+        return document(readable)
+    if app == "ZIVPN":
+        return document(module.decode_catalog(raw.decode("utf-8-sig")))
+    if app == "FMT_VPN":
+        return document(module.clean_catalog(module.decrypt_catalog_blob(raw.decode("utf-8-sig"))))
+    if app == "HTTP_Tweak":
+        # Public plain JSON (servers + tweaks); nothing to decrypt. The
+        # tweaks file is legitimately {} today, so parse directly instead
+        # of document(), which rejects empty documents.
+        return json.loads(raw.decode("utf-8-sig"))
+    if app == "RH_Tunnel_Lite":
+        return document(module.parse_catalog(raw.decode("utf-8-sig")))
+    if app == "JK_VPN":
+        return document(module.limpiar_catalogo(module.descifrar_hs_b64(raw)))
     result = module.decode(raw.decode("utf-8-sig"))
     if app == "MM_Tunnel":
         result,stats=module.decode_fields(result,workers=2,strict=False)
+        if stats["failed"]:
+            result["decryptionStatus"]={"complete":False,"unresolvedFields":stats["failed"],
+                                       "locations":stats["failed_fields"]}
+    elif app in {"Marvs_V2Ray", "Bee_VPN", "VLX_Tunnel_VPN"}:
+        # The catalog envelope opens with decode(); the protected field
+        # envelopes need decode_fields (same pattern as MM_Tunnel, but
+        # workers=4: 1,496 / 3,464 / 4,518 envelopes; workers=2 measured
+        # 85 s / 129 s / 154 s end-to-end on a 1.5-CPU sandbox, over the
+        # 120 s catalog budget — the 6-vCore worker has room for 4).
+        result,stats=module.decode_fields(result,workers=4,strict=False)
         if stats["failed"]:
             result["decryptionStatus"]={"complete":False,"unresolvedFields":stats["failed"],
                                        "locations":stats["failed_fields"]}
@@ -178,6 +284,67 @@ def file_decode(provider, raw, credentials=None):
                 raise IntegrationError(code)
             return document(result)
         return document(module.decode_file(raw, password=(credentials or {}).get("password")))
+    # File entry points of the 2026-11-15 batch: these verified scripts do
+    # not expose decode(), so dispatch to each script's real reader.
+    if app == "RH_Tunnel_Lite":
+        # .hs export is the SabDev:// / shanS:// share link (or plain JSON /
+        # sab-blob); decode_text returns (kind, obj).
+        _kind, obj = module.decode_text(raw.decode("utf-8-sig"))
+        return document(obj)
+    if app == "JK_VPN":
+        # .hs is a Base64 Tink Streaming AEAD byte string; the catalog
+        # module (imported by the file script) decrypts and cleans it.
+        return document(module.limpiar_catalogo(module.descifrar_hs_b64(raw)))
+    if app == "WyrVPN":
+        # No decode(): open_binary covers raw WVE1, raw v01 and wyrvpn:// text.
+        try:
+            profiles, _variant = module.open_binary(raw, password=(credentials or {}).get("password"))
+        except ValueError as exc:
+            code = getattr(exc, "code", None)
+            if code in {"PASSWORD_REQUIRED", "HWID_REQUIRED", "HWID_PASSWORD_REQUIRED",
+                        "WRONG_PASSWORD", "AUTH_FAILED"}:
+                raise IntegrationError(code)
+            # Plain decode failure: the historic C0 wyrvpn reader owns the
+            # old-key v01 envelopes (same _C8_GENERIC_FALLBACK semantics as
+            # .wyr files; this also keeps old wyrvpn:// text links working).
+            from decoders.Python import wyrvpn as _legacy_wyrvpn
+            legacy = _legacy_wyrvpn.run(raw)
+            if legacy is None:
+                raise IntegrationError("DECODE_FAILED")
+            return document(legacy)
+        return document(profiles)
+    if app == "TCx_Tunnel":
+        # No decode(): decrypt_text opens tcxtunnelplus:// text or a bare cipher.
+        try:
+            return document(module.decrypt_text(raw.decode("utf-8-sig")))
+        except ValueError:
+            # Plain failure: the historic RENZ reader owns the old-key
+            # tcxtunnelplus:// envelopes (same fallback semantics as .tcx files).
+            from decoders.Python import renz as _legacy_renz
+            legacy = _legacy_renz.decode_text(raw.decode("utf-8-sig"))
+            if legacy is None:
+                raise IntegrationError("DECODE_FAILED")
+            return document(legacy)
+    if app == "CHN_Tunnel_Lite":
+        # No decode(): a chntunnellite:// link opens with open_link, which
+        # returns (network, state, detail). PIN-protected networks report
+        # PASSWORD_REQUIRED; the engine/text password gates do not forward a
+        # PIN for this prefix yet (pending decision, see report).
+        network, state, _detail = module.open_link(
+            raw.decode("utf-8-sig").strip(), pin=(credentials or {}).get("password"))
+        if state == "OK":
+            return document(network)
+        if state == "PIN_REQUIRED":
+            raise IntegrationError("PASSWORD_REQUIRED")
+        raise IntegrationError("DECODE_FAILED")
+    if app == "EUT_VPN":
+        # No decode(): import_text returns (kind, obj); obj is None when the
+        # blob does not open with the new key. Historic blobs never reach
+        # this branch: engine.py routes them to the frozen C0 reader.
+        _kind, obj = module.import_text(raw.decode("utf-8-sig"))
+        if obj is None:
+            raise IntegrationError("DECODE_FAILED")
+        return document(obj)
     fn = module.decode
     allowed = inspect.signature(fn).parameters
     kwargs = {key: value for key, value in (credentials or {}).items() if key in allowed}
@@ -226,7 +393,24 @@ def main():
         if len(raw_credentials) > 8192:
             raise IntegrationError("INVALID_CREDENTIALS")
         credentials = json.loads(raw_credentials) if raw_credentials else {}
-        result = file_decode(provider, path.read_bytes(), credentials)
+        raw = path.read_bytes()
+        if path.suffix[1:] == "hs":
+            # Shared suffix: JK by content (40-byte Tink header + segment
+            # geometry), RH by default (links, plain JSON, sab-blob, bare
+            # XXTEA are all RH). On a plain DECODE_FAILED only, try the
+            # other provider once (covers the ~0.4% bare-XXTEA collision
+            # and undocumented RH wrappers); never retry credential,
+            # version or protection errors.
+            provider = "jk-vpn" if _is_jk_hs(raw) else "rh-tunnel-lite"
+            try:
+                result = file_decode(provider, raw, credentials)
+            except IntegrationError as exc:
+                if exc.code != "DECODE_FAILED":
+                    raise
+                other = "rh-tunnel-lite" if provider == "jk-vpn" else "jk-vpn"
+                result = file_decode(other, raw, credentials)
+        else:
+            result = file_decode(provider, raw, credentials)
         sys.stdout.write(json.dumps(result, ensure_ascii=False, indent=2))
         return 0
     except Exception as exc:

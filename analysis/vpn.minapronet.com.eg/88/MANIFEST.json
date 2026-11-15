@@ -1,0 +1,141 @@
+{
+  "schema_version": "1.0",
+  "package_name": "vpn.minapronet.com.eg",
+  "app_name": "MinaProNet",
+  "version_name": "88.0.0",
+  "version_code": 88,
+  "observed_at": "2026-11-14/15",
+  "source_category": "tienda (APKPure, version de Google Play) + descarga en vivo con el metodo del script operativo",
+  "authorization_note": "APK de espejo publico (APKPure) de la version publica de Play; muestras de catalogo descargadas en vivo con el metodo propio de la app; sin cuentas ni datos de usuarios. Sin APK ni perfiles reales en este expediente.",
+  "status": "PARTIAL",
+  "targets": [
+    {
+      "id": "catalog",
+      "kind": "catalog",
+      "status": "FAILED",
+      "detail": "Updater en vivo VACIADO por el vendedor (HTTP 200, 14 B, 'hello world..' el 2026-11-14; luego HTTP 404, archivo borrado; jsDelivr aun sirve copia en cache). Respaldo de emergencia 404. El endpoint del sitio responde update_required para v88/v89: hoy NO entrega config. El METODO esta verificado por control: k() abre en vivo slowdns_config.json (v4, 7 servidores, 54 redes). Servidores publicos (segunda fuente, JSON plano): 213 entradas / 33 paises (2026-11-14) -> 234 entradas / 35 paises (2026-11-15)."
+    },
+    {
+      "id": "files",
+      "kind": "files",
+      "status": "VERIFIED_SYNTHETIC",
+      "detail": ".mina (Manager.exportTest/importTest): muestra SINTETICA muestra.mina (3046 B) sellada y reabierta con JSON identico; sin .mina REAL exportado por la app. 68 campos; caducidad por t (ms); pw y HWID son campos del JSON, no parte de la clave AES."
+    },
+    {
+      "id": "text",
+      "kind": "text",
+      "status": "NOT_APPLICABLE",
+      "detail": "Sin esquema propio; enlaces V2Ray estandar pegados en la interfaz; Manager.dcx/dpt aplica ROT-1 internamente. Nada nuevo para SP-DECODE."
+    },
+    {
+      "id": "export",
+      "kind": "export",
+      "status": "PENDING",
+      "detail": "Nube por clave: Firebase Storage, <clave de 27 caracteres>.mina. Validado en vivo con clave inventada -> CLOUD_KEY_NOT_FOUND (HTTP 404); falta una clave real. Sincronizacion servidor->app (nativeFetchServerConfig): URL del canal no recuperada."
+    }
+  ],
+  "inputs": [
+    {
+      "name": "MinaProNet_88.0.0_arm64-v8a.xapk",
+      "type": "xapk",
+      "bytes": 75451816,
+      "sha1": "0049b0d0da114e244a27cf86c1b2ce16ffffb527",
+      "sha256": "74e50389c2680c6213f7e5ae054ae6c1aa3586eb63be508606160006d8b67680",
+      "source": "APKPure, version de Google Play 88.0.0"
+    },
+    {
+      "name": "muestra.mina (SINTETICA)",
+      "type": "file_sample",
+      "bytes": 3046,
+      "sha256": "b607d1dec2610eebed5835e1e02481b2aa75ccaa9c458773bde36f431093bb37",
+      "source": "Generada con el script de archivos; sellada y reabierta con JSON identico"
+    },
+    {
+      "name": "site_live_update_required.json",
+      "type": "probe",
+      "sha256": "f76e1681a46d240b2b6761f19332f28e6d8d555e25c55255862d26c3aad601ff",
+      "source": "Respuesta viva del endpoint del sitio (2026-11-15): update_required"
+    },
+    {
+      "name": "v2ray_verified_live.json",
+      "type": "catalog_public",
+      "bytes": 213,
+      "sha256": "8714397446cfb17fa4f20b3aa97d84996260735cf84370a9648a7d8cf25e5b81",
+      "source": "Servidores publicos en vivo (2026-11-14: 213 entradas; 2026-11-15: 234)"
+    }
+  ],
+  "tooling": [
+    {
+      "name": "Python",
+      "version": "3.12.3 (system)",
+      "purpose": "stdlib only in operational scripts"
+    },
+    {
+      "name": "jadx",
+      "version": "UNKNOWN (version not recorded; 74 errors)",
+      "purpose": "decompilation, full vpn.minapronet.com.eg sources"
+    },
+    {
+      "name": "Unicorn",
+      "version": "UNKNOWN (version not recorded)",
+      "purpose": "emulation of libminacore.so nativeGetConfigUrl"
+    }
+  ],
+  "dependencies": {
+    "lockfile": "dependencies.lock.json",
+    "inventory": "DEPENDENCIES.md"
+  },
+  "code_paths": {
+    "catalog_decoder": "decoders/Python/apps/MinaProNet/MinaProNet.py (pendiente de integracion en este parche; operativo en ~/workspace/catalogs/minapronet/MinaProNet.py, SHA-256 6c663f5308f658d7615a70316f0538a56466b9eb78be115f61ef440014a9692d)",
+    "file_decoder": "decoders/Python/apps/MinaProNet/MinaProNet_archivos.py (pendiente de integracion; operativo en ~/workspace/catalogs/minapronet/MinaProNet_archivos.py, SHA-256 b4e671437432a612897054122a737fa3bb0cd3c7e64b8f1f74e27372d163536c)",
+    "work_notes": "~/workspace/catalogs/minapronet/work/"
+  },
+  "evidence_refs": [
+    "RESULTS.md (updater vacio/404, sitio update_required, control slowdns, negativas)",
+    "tests/test_method.py (k() sintetico: ofuscacion + PBKDF2 + AES-CBC, sin red)",
+    "tools/verify.py (verificador sintetico) + tools/emu_geturl.py (emulacion Unicorn de nativeGetConfigUrl)",
+    "~/workspace/catalogs/minapronet/site_live_update_required.json, updater_live.txt (14 B), emergency_live_404.json, v2ray_verified_live.json",
+    "~/workspace/catalogs/minapronet/muestra.mina + muestra_config.json (sinteticos)"
+  ],
+  "limitations": [
+    "El vendedor vacio y luego borro minapronet.updater: hoy la app no recibe ningun MinaConfig de la red.",
+    "El endpoint del sitio responde update_required para v88/v89 con cualquier HWID: hoy no entrega config.",
+    "Sin .mina REAL exportado por la app; sin clave real de nube (27 caracteres); URL del canal de sincronizacion nativo no recuperada.",
+    "DISTINTA de SLOW DNS (slowdns.minapronetvpn.com.eg, tanda 6): mismo desarrollador, distinto paquete y distinta app; el metodo k() se verifico de forma independiente en ESTE APK."
+  ],
+  "network_requirements": [
+    "Updater: GET simple sin cabeceras -> k(body, 'm') -> GettterConfig; luego GET del catalogo -> k(body, server_pass) -> MinaConfig. Servidores publicos: JSON plano sin cifrar. Sitio: POST con cabeceras x-hwid / x-timestamp / x-signature (HMAC-SHA256) / x-app-version / x-package, UA okhttp/4.12.0. (Las URLs completas viven solo en el script operativo; aqui no se reproducen.)"
+  ],
+  "manual_steps": [
+    "Para un .mina real: exportar desde la app en un telefono y pasarlo al script de archivos.",
+    "Re-verificar cuando el vendedor restaure minapronet.updater o el sitio vuelva a servir 'config'.",
+    "Para la nube: una clave real de 27 caracteres mostrada por la app al exportar."
+  ],
+  "unresolved_questions": [
+    "¿Cuando restaurara el vendedor el updater o servira el sitio 'config' (o una version nueva de la app)?",
+    "URL del canal de sincronizacion nativo (nativeFetchServerConfig / nativeSetServerUrl en libminacore.so)."
+  ],
+  "connection_authentication": {
+    "catalog_file_integrity": {
+      "status": "NOT_OBSERVED",
+      "detail": "k() no incluye MAC/HMAC: la integridad se comprueba por parseo JSON tras el descifrado."
+    },
+    "catalog_download_auth": {
+      "status": "NOT_OBSERVED",
+      "detail": "El updater es un GET simple sin firma. El endpoint del sitio SI usa HMAC (ver connection_auth), pero para autenticar la PETICION al sitio, no la descarga del updater."
+    },
+    "crypto_derivation": {
+      "status": "NOT_OBSERVED",
+      "detail": "PBKDF2-HmacSHA1 (10000 iter) deriva la clave AES; el HMAC aqui es parte de PBKDF2, no una firma de autenticacion observada."
+    },
+    "vpn_transport": {
+      "status": "NOT_OBSERVED",
+      "detail": "No se observo una conexion VPN en vivo ni MAC del transporte."
+    },
+    "connection_auth": {
+      "status": "CONFIRMED",
+      "algorithm": "HMAC-SHA256",
+      "detail": "Endpoint del sitio: x-signature = HMAC-SHA256 de 'hwid:ts:body'. Verificado en vivo 2026-11-15: firma mala -> conexion cerrada sin respuesta; sin x-signature -> HTTP 400; firma valida -> HTTP 200 update_required. Esto autentica la PETICION al endpoint del sitio; NO es autenticacion de conexion VPN (no se trazo el handshake VPN)."
+    }
+  }
+}

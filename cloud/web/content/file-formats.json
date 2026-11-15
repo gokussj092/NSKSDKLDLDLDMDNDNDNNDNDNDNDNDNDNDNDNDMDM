@@ -385,6 +385,14 @@
       "credentialFields": []
     },
     {
+      "suffix": "bbtun",
+      "name": "Marvs V2Ray RHV1",
+      "kind": "file",
+      "offlineSupported": false,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
       "suffix": "bdnet",
       "name": "BD NET VPN PrinceBuild111",
       "kind": "file",
@@ -972,7 +980,7 @@
     },
     {
       "suffix": "bee",
-      "name": "BEE TUNNEL",
+      "name": "Bee VPN 1.10.11.2",
       "kind": "file",
       "offlineSupported": true,
       "cloudSupported": true,
@@ -1145,7 +1153,7 @@
     },
     {
       "suffix": "eut",
-      "name": "EUT Tunnel",
+      "name": "EUT VPN 2.4.1",
       "kind": "file",
       "offlineSupported": true,
       "cloudSupported": true,
@@ -1750,7 +1758,7 @@
     },
     {
       "suffix": "tcx",
-      "name": "RENZ / TCXTUNNEL",
+      "name": "TCx Tunnel Plus 1.0.15",
       "kind": "file",
       "offlineSupported": true,
       "cloudSupported": true,
@@ -1920,7 +1928,7 @@
     },
     {
       "suffix": "wyr",
-      "name": "WyrVPN",
+      "name": "WyrVPN 2.6.9",
       "kind": "file",
       "offlineSupported": true,
       "cloudSupported": true,
@@ -2027,6 +2035,14 @@
       "name": "Generic AES-GCM / PBKDF2",
       "kind": "file",
       "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "hs",
+      "name": "RH Tunnel Lite 39.0.1",
+      "kind": "file",
+      "offlineSupported": false,
       "cloudSupported": true,
       "credentialFields": []
     },

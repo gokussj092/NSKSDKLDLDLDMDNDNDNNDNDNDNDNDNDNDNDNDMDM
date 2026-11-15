@@ -53,17 +53,17 @@ test("default-off catalogs support on/off, fresh-process reload, and deployment 
 });
 test("legacy disabled catalogs can be reenabled even while prerequisites are missing",async t=>{
   const opts=await fixture(t);
-  await writeFile(join(opts.root,"switches.json"),JSON.stringify({version:250000000,disabled:["royal-tunnel","jetroi","http-jireh"]}));
+  await writeFile(join(opts.root,"switches.json"),JSON.stringify({version:250000000,disabled:["creeb-vpn","jetroi","http-jireh"]}));
   const prior=await synchronizeCatalogVersion(env,opts);
-  assert.deepEqual(prior.disabled,["royal-tunnel","jetroi","http-jireh"]);
-  const on=await updateProvider("royal-tunnel",true,env,opts);
-  assert.equal(row(on,"royal-tunnel").administrativelyEnabled,true);
-  assert.equal(row(on,"royal-tunnel").configured,false);
-  assert.equal(row(on,"royal-tunnel").enabled,false);
-  assert.equal(catalog({availability:available(on)}).apps.find(p=>p.id==="royal-tunnel").decodeEnabled,false);
+  assert.deepEqual(prior.disabled,["creeb-vpn","jetroi","http-jireh"]);
+  const on=await updateProvider("creeb-vpn",true,env,opts);
+  assert.equal(row(on,"creeb-vpn").administrativelyEnabled,true);
+  assert.equal(row(on,"creeb-vpn").configured,false);
+  assert.equal(row(on,"creeb-vpn").enabled,false);
+  assert.equal(catalog({availability:available(on)}).apps.find(p=>p.id==="creeb-vpn").decodeEnabled,false);
   const state=await loadProviderState(opts.root);
   // The saved operator choice becomes effective when a legitimate broker is configured.
-  assert(state.enabled.includes("royal-tunnel"));
+  assert(state.enabled.includes("creeb-vpn"));
   assert.deepEqual(state.disabled,["http-jireh","jetroi"]);
   assert.equal(await providerAllowed("jetroi",env,opts),false);
   assert.equal(await providerAllowed("http-jireh",env,opts),false);

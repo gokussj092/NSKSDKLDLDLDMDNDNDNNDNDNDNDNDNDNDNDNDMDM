@@ -1,0 +1,169 @@
+{
+  "schema_version": 1,
+  "package_name": "com.wyrhub.vpn",
+  "app_name": "WyrVPN",
+  "version_name": "2.6.9",
+  "version_code": 473,
+  "observed_at": "2026-11-15",
+  "source_category": "public_store_xapk",
+  "authorization_note": "XAPK publico de APKPure; muestras aportadas por el propietario (archivo real de Pedro solo en WyrVPN) o sinteticas selladas con el metodo real. Sin credenciales de usuario ni perfiles reales en el expediente.",
+  "status": "PARTIAL",
+  "targets": [
+    {
+      "kind": "files",
+      "status": "VERIFIED",
+      "detail": ".wyr (texto wyrvpn:// + Base64 de sobre v01)"
+    },
+    {
+      "kind": "text",
+      "status": "VERIFIED",
+      "detail": "wyrvpn:// plano; WVE1 protegido solo sintetico (ver limitaciones)"
+    },
+    {
+      "kind": "catalog",
+      "status": "VERIFIED",
+      "detail": "sync POST, sobre v01, schema 21"
+    },
+    {
+      "kind": "export",
+      "status": "PENDING",
+      "detail": "sin endpoint de compartir por codigo en 2.6.9"
+    }
+  ],
+  "inputs": [
+    {
+      "type": "xapk",
+      "name": "XAPK arm64-v8a de APKPure (SHA-256 y SHA-1 verificados)",
+      "size_bytes": 51547199,
+      "sha256": "f0aab2198ff8c4c63dda0cd0e7867e08a04f1f4d30afdcd944e6516fdfff5dba",
+      "note": "Hash verificado contra APKPure segun README/TESTING de origen; el .xapk no se guarda en Git."
+    },
+    {
+      "type": "operational_script",
+      "name": "WyrVPN.py",
+      "kind": "catalogo",
+      "sha256": "49378c751d84bf7fdd7d7e04326ed06f14afe93bd44d786cd68942db06eb2836",
+      "path": "~/workspace/catalogs/wyrvpn/WyrVPN.py",
+      "note": "Script operativo (contiene las constantes de formato). No se copia a analysis/."
+    },
+    {
+      "type": "operational_script",
+      "name": "WyrVPN_archivos.py",
+      "kind": "archivos",
+      "sha256": "307c3d0daa10c46e11f166616db05b390eff998a79a65fb70f680329b2c1d231",
+      "path": "~/workspace/catalogs/wyrvpn/WyrVPN_archivos.py",
+      "note": "Script operativo (contiene las constantes de formato). No se copia a analysis/."
+    },
+    {
+      "type": "sample",
+      "name": "Tanzania_-_Vodacom_FR_2_26_0_8vue.wyr",
+      "sha256": "31874a397ddc0f9567dcd1ba95bf21423b58a9af24deb31c07ffe5e7b4932c44",
+      "note": "archivo .wyr REAL de Pedro (1.365 B)"
+    },
+    {
+      "type": "sample",
+      "name": "catalog_sample.json",
+      "sha256": "81c4a01990e186474661ac7c183c30bdb854780b93a00bae11f9555de44222c5",
+      "note": "respuesta viva 2026-11-14 23:53"
+    }
+  ],
+  "tooling": [
+    {
+      "name": "Python",
+      "version": "3.12.3",
+      "origin": "sistema (verificado en este entorno)",
+      "purpose": "Ejecucion de scripts y tests"
+    },
+    {
+      "name": "pycryptodome",
+      "version": "4.4.0",
+      "origin": "PyPI, venv ~/workspace/http-custom-update/venv (verificado)",
+      "purpose": "Via rapida AES (opcional; los scripts traen fallback puro)"
+    },
+    {
+      "name": "argon2-cffi",
+      "version": "25.1.0",
+      "origin": "PyPI, venv ~/workspace/http-custom-update/venv (verificado)",
+      "purpose": "Via rapida Argon2id para sobres de campo (opcional)"
+    },
+    {
+      "name": "jadx",
+      "version": "UNKNOWN",
+      "origin": "UNKNOWN — version no registrada en los logs de origen de estas 7 apps",
+      "purpose": "Descompilacion de DEX a Java"
+    },
+    {
+      "name": "apktool / androguard",
+      "version": "UNKNOWN",
+      "origin": "UNKNOWN — version no registrada en los logs de origen",
+      "purpose": "Extraccion de APK y lectura de manifest/assets"
+    },
+    {
+      "name": "capstone",
+      "version": "UNKNOWN",
+      "origin": "UNKNOWN — version no registrada en los logs de origen",
+      "purpose": "Desensamblado AArch64 de libgojni.so en los scripts de tools/"
+    },
+    {
+      "name": "curl",
+      "version": "UNKNOWN",
+      "origin": "sistema — version no registrada",
+      "purpose": "Descarga alternativa cuando el cliente HTTP de Python trunca el cuerpo"
+    }
+  ],
+  "code_paths": [
+    "decoders/Python/apps/WyrVPN/WyrVPN.py",
+    "decoders/Python/apps/WyrVPN/WyrVPN_archivos.py",
+    "analysis/platform/supplied-integrations (registro; las APIs de descarga viven en el script operativo y en el registro, no en este expediente)"
+  ],
+  "code_paths_note": "Las rutas decoders/Python/apps/<Proveedor>/ son las rutas PREVISTAS de integracion (Fase 2 del parche); a 2026-11-15 aun no estan integradas ni subidas. No se afirma integracion.",
+  "evidence_refs": [
+    "~/workspace/catalogs/wyrvpn/README.md",
+    "~/workspace/catalogs/wyrvpn/TESTING.md",
+    "~/workspace/catalogs/wyrvpn/work/",
+    "analysis/com.wyrhub.vpn/473/RESULTS.md",
+    "analysis/com.wyrhub.vpn/473/tests/test_method.py"
+  ],
+  "limitations": [
+    "WVE1 (contrasena/HWID) implementado segun ni1.java y verificado por round-trip contra la especificacion, pero SIN muestra real de la app: falta un .wyr protegido con contrasena y/o atado a dispositivo.",
+    "El paso nativo para credenciales OVPN _func(...) esta bloqueado y no se reintenta; el catalogo actual tiene 0 valores _func.",
+    "El servidor rechaza nonces reutilizados (HTTP 409) y a veces corta la respuesta chunked de ~1,7 MB a mitad con el cliente HTTP de Python (IncompleteRead); el script reintenta 3 veces con nonce nuevo y, si falla, se descarga con curl y se usa --raw.",
+    "No hay intent-filter para el esquema wyrvpn:// en el manifest: es solo texto para pegar/compartir."
+  ],
+  "network_requirements": [
+    "Descarga del catalogo en vivo: red HTTPS (el script operativo replica la peticion exacta de la app).",
+    "Los tests de este expediente NO necesitan red.",
+    "Regla SP-DECODE 2026-11-15: el JSON de resultado del catalogo lleva solo los datos del catalogo, todo descifrado; las APIs de descarga NO van en el resultado ni en este expediente (ver script operativo y supplied-integrations)."
+  ],
+  "manual_steps": [
+    "Obtener el XAPK publico de APKPure y verificar su SHA-256 contra lo publicado.",
+    "Ejecutar el --self-test del script operativo (ver REPRODUCE.md).",
+    "Para la confirmacion de extremo a extremo hace falta una muestra real exportada por la app en un telefono (ver unresolved_questions)."
+  ],
+  "unresolved_questions": [
+    "Confirmar WVE1 de extremo a extremo con un .wyr real protegido (contrasena y/o HWID).",
+    "Re-verificar cuando el servidor sirva una version nueva del catalogo (hoy SERVER 7.5.0.3 / PAYLOAD 2.4.3.0) o la app se actualice (hoy 2.6.9)."
+  ],
+  "connection_authentication": {
+    "file_catalog_integrity": {
+      "status": "NOT_OBSERVED",
+      "note": "Integridad por tags AES-GCM (AEAD), no por HMAC. No se observo HMAC en el formato de archivo .wyr ni en el catalogo."
+    },
+    "cryptographic_derivation": {
+      "status": "NOT_OBSERVED",
+      "note": "Derivacion de claves: constantes de formato (AES-GCM) y PBKDF1-HmacSHA256 para WVE1 (HMAC como PRF de PBKDF1, no como MAC de integridad). Sin muestra WVE1 real."
+    },
+    "vpn_transport": {
+      "status": "NOT_OBSERVED",
+      "note": "No se reviso el transporte VPN (OpenVPN/SSL) de esta app en esta investigacion."
+    },
+    "connection_authentication": {
+      "status": "NOT_OBSERVED",
+      "note": "No se observo ningun HMAC que un verificador del servicio use para autorizar el establecimiento de la conexion VPN."
+    }
+  },
+  "dependencies": {
+    "lockfile": "dependencies.lock.json",
+    "note": "Ver DEPENDENCIES.md. Versiones desconocidas marcadas UNKNOWN con motivo; nunca inventadas."
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "name": "TEST CONFIG",
+  "link": {
+    "config_prefix": "httptweak://"
+  },
+  "vpn": {
+    "tunnel": "ssh"
+  },
+  "features": [
+    "TEST"
+  ]
+}

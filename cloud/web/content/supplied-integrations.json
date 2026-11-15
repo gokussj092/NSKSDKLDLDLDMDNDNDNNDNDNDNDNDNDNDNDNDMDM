@@ -1451,6 +1451,394 @@
       "sourceIcon": "Zam_VIP_NET.png",
       "icon": "zam-vip-net.png",
       "catalogState": "CONNECTED"
+    },
+    {
+      "id": "tsc-vpn-proxy",
+      "appDir": "TSC_VPN_Proxy",
+      "name": "TSC VPN Proxy",
+      "package": "xyz.tscvpnproxy.app",
+      "versionCode": 6,
+      "versionName": "6.4.3",
+      "catalogModule": "TSC_VPN_Proxy.py",
+      "extensions": [],
+      "textPrefixes": [],
+      "fileModule": "TSC_VPN_Proxy_archivos.py",
+      "requests": [],
+      "sourceIcon": "TSC_VPN_Proxy.png",
+      "icon": "tsc-vpn-proxy.png",
+      "catalogState": "PROVIDER_SIGNATURE_REQUIRED"
+    },
+    {
+      "id": "minapronet-vpn",
+      "appDir": "MinaProNet",
+      "name": "MinaProNet",
+      "package": "vpn.minapronet.com.eg",
+      "versionCode": 88,
+      "versionName": "88.0.0",
+      "catalogModule": "MinaProNet.py",
+      "extensions": [],
+      "textPrefixes": [],
+      "fileModule": "MinaProNet_archivos.py",
+      "requests": [],
+      "sourceIcon": "MinaProNet.png",
+      "icon": "minapronet-vpn.png",
+      "catalogState": "FILE_ONLY"
+    },
+    {
+      "id": "pph-good-vpn",
+      "appDir": "PPH_GOOD_VPN",
+      "name": "PPH GOOD VPN",
+      "package": "com.skphvpn.mm",
+      "versionCode": 75,
+      "versionName": "1.7.2",
+      "catalogModule": "PPH_GOOD_VPN.py",
+      "extensions": [],
+      "textPrefixes": [],
+      "fileModule": "PPH_GOOD_VPN_archivos.py",
+      "requests": [
+        {
+          "name": "servers",
+          "url": "https://raw.githubusercontent.com/chitsuma/pvpn2022/refs/heads/main/pvpn_up.json",
+          "agent": "okhttp/4.12.0",
+          "method": "GET",
+          "headers": {}
+        }
+      ],
+      "sourceIcon": "PPH_GOOD_VPN.png",
+      "icon": "pph-good-vpn.png",
+      "catalogState": "CONNECTED"
+    },
+    {
+      "id": "chn-tunnel-lite",
+      "appDir": "CHN_Tunnel_Lite",
+      "name": "CHN TUNNEL LITE",
+      "package": "com.chntunnel.lite",
+      "versionCode": 14,
+      "versionName": "1.4",
+      "catalogModule": "CHN_Tunnel_Lite.py",
+      "extensions": [],
+      "textPrefixes": [
+        "chntunnellite://"
+      ],
+      "fileModule": "CHN_Tunnel_Lite_archivos.py",
+      "requests": [
+        {
+          "name": "servers",
+          "url": "https://choton.xyz/uploads/json/aa7b2249663bc6b01c68.json",
+          "agent": "Dalvik/2.1.0 (Linux; U; Android 14; Redmi 14C Build/UP1A.231005.007)",
+          "method": "GET",
+          "headers": {}
+        }
+      ],
+      "sourceIcon": "CHN_Tunnel_Lite.png",
+      "icon": "chn-tunnel-lite.png",
+      "catalogState": "CONNECTED"
+    },
+    {
+      "id": "tcx-tunnel-plus",
+      "appDir": "TCx_Tunnel",
+      "name": "TCx Tunnel Plus",
+      "package": "org.tcx.tunnel.plus",
+      "versionCode": 115,
+      "versionName": "1.0.15",
+      "catalogModule": "TCx_Tunnel.py",
+      "extensions": [
+        "tcx"
+      ],
+      "textPrefixes": [
+        "tcxtunnelplus://"
+      ],
+      "fileModule": "TCx_Tunnel_archivos.py",
+      "requests": [],
+      "sourceIcon": "TCx_Tunnel.png",
+      "icon": "tcx-tunnel-plus.png",
+      "catalogState": "FILE_ONLY"
+    },
+    {
+      "id": "zivpn-tunnel",
+      "appDir": "ZIVPN",
+      "name": "ZIVPN Tunnel",
+      "package": "com.zi.zivpn",
+      "versionCode": 184,
+      "versionName": "2.2.5",
+      "catalogModule": "ZIVPN.py",
+      "extensions": [],
+      "textPrefixes": [],
+      "fileModule": "ZIVPN_archivos.py",
+      "requests": [
+        {
+          "name": "servers",
+          "url": "https://zivpn-ssh.web.app/profiles.json",
+          "agent": "Dalvik/2.1.0 (Linux; U; Android 14)",
+          "method": "GET",
+          "headers": {}
+        }
+      ],
+      "sourceIcon": "ZIVPN.png",
+      "icon": "zivpn-tunnel.png",
+      "catalogState": "CONNECTED"
+    },
+    {
+      "id": "fmt-vpn",
+      "appDir": "FMT_VPN",
+      "name": "FMT VPN",
+      "package": "com.rsphvpnofficial.v2",
+      "versionCode": 65,
+      "versionName": "65-16kb-page-size",
+      "catalogModule": "FMT_VPN.py",
+      "extensions": [],
+      "textPrefixes": [],
+      "fileModule": "FMT_VPN_archivos.py",
+      "requests": [
+        {
+          "name": "servers",
+          "url": "https://api.github.com/repos/johnberic/Panel_files/contents/fmt-vpn.json",
+          "agent": "Alexis-VPN-App",
+          "method": "GET",
+          "headers": {
+            "Accept": "application/vnd.github.v3.raw"
+          },
+          "secretHeader": {
+            "header": "Authorization",
+            "env": "SPDECODE_FMT_VPN_GITHUB_TOKEN"
+          }
+        }
+      ],
+      "sourceIcon": "FMT_VPN.png",
+      "icon": "fmt-vpn.png",
+      "catalogState": "CONNECTED"
+    },
+    {
+      "id": "http-tweak",
+      "appDir": "HTTP_Tweak",
+      "name": "HTTP Tweak",
+      "package": "com.wyrhub.tun",
+      "versionCode": 632,
+      "versionName": "1.8.17",
+      "catalogModule": "HTTP_Tweak.py",
+      "extensions": [],
+      "textPrefixes": [],
+      "fileModule": "HTTP_Tweak_archivos.py",
+      "requests": [
+        {
+          "name": "servers",
+          "url": "https://raw.githubusercontent.com/Wyr-Hub/HTTPTweak/refs/heads/main/public_servers.json",
+          "agent": "Mozilla/5.0 (Linux; Android 14; Pixel 9) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Mobile Safari/537.36",
+          "method": "GET",
+          "headers": {
+            "Accept": "application/json,text/plain,*/*"
+          }
+        },
+        {
+          "name": "tweaks",
+          "url": "https://raw.githubusercontent.com/Wyr-Hub/HTTPTweak/refs/heads/main/public_tweaks.json",
+          "agent": "Mozilla/5.0 (Linux; Android 14; Pixel 9) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Mobile Safari/537.36",
+          "method": "GET",
+          "headers": {
+            "Accept": "application/json,text/plain,*/*"
+          }
+        }
+      ],
+      "sourceIcon": "HTTP_Tweak.png",
+      "icon": "http-tweak.png",
+      "catalogState": "CONNECTED"
+    },
+    {
+      "id": "wyrvpn",
+      "appDir": "WyrVPN",
+      "name": "WyrVPN",
+      "package": "com.wyrhub.vpn",
+      "versionCode": 473,
+      "versionName": "2.6.9",
+      "catalogModule": "WyrVPN.py",
+      "extensions": [
+        "wyr"
+      ],
+      "textPrefixes": [
+        "wyrvpn://"
+      ],
+      "fileModule": "WyrVPN_archivos.py",
+      "requests": [],
+      "sourceIcon": "WyrVPN.png",
+      "icon": "wyrvpn.png",
+      "catalogState": "PROVIDER_IDENTITY_REQUIRED"
+    },
+    {
+      "id": "mt-king-net",
+      "appDir": "MT_King_Net",
+      "name": "MT KING NET",
+      "package": "app.mtkingnet.buildd",
+      "versionCode": 25,
+      "versionName": "15.35.2",
+      "catalogModule": "MT_King_Net.py",
+      "extensions": [],
+      "textPrefixes": [],
+      "fileModule": "MT_King_Net_archivos.py",
+      "requests": [],
+      "sourceIcon": "MT_King_Net.png",
+      "icon": "mt-king-net.png",
+      "catalogState": "PROVIDER_SIGNATURE_REQUIRED"
+    },
+    {
+      "id": "marvs-v2ray",
+      "appDir": "Marvs_V2Ray",
+      "name": "Marvs V2Ray",
+      "package": "vpn.marvs.v2ray",
+      "versionCode": 22,
+      "versionName": "RHV1",
+      "catalogModule": "Marvs_V2Ray.py",
+      "extensions": [
+        "bbtun"
+      ],
+      "textPrefixes": [],
+      "fileModule": "Marvs_V2Ray_archivos.py",
+      "requests": [
+        {
+          "name": "servers",
+          "url": "https://strongteam.co/api/bbtunnel/bb1.txt",
+          "agent": "Go-http-client/1.1",
+          "method": "GET",
+          "headers": {}
+        }
+      ],
+      "sourceIcon": "Marvs_V2Ray.png",
+      "icon": "marvs-v2ray.png",
+      "catalogState": "CONNECTED"
+    },
+    {
+      "id": "bee-vpn",
+      "appDir": "Bee_VPN",
+      "name": "Bee VPN",
+      "package": "co.strongteam.beevpn",
+      "versionCode": 65,
+      "versionName": "1.10.11.2",
+      "catalogModule": "Bee_VPN.py",
+      "extensions": [
+        "bee"
+      ],
+      "textPrefixes": [],
+      "fileModule": "Bee_VPN_archivos.py",
+      "requests": [
+        {
+          "name": "servers",
+          "url": "https://strongteam.co/api/beevpn/",
+          "agent": "Go-http-client/1.1",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/x-www-form-urlencoded"
+          },
+          "body": "hash=xsandokUpdatex"
+        }
+      ],
+      "sourceIcon": "Bee_VPN.png",
+      "icon": "bee-vpn.png",
+      "catalogState": "CONNECTED"
+    },
+    {
+      "id": "vlx-tunnel-vpn",
+      "appDir": "VLX_Tunnel_VPN",
+      "name": "VLX Tunnel VPN",
+      "package": "dev.jx.clickconnect",
+      "versionCode": 18,
+      "versionName": "VLX v14",
+      "catalogModule": "VLX_Tunnel_VPN.py",
+      "extensions": [],
+      "textPrefixes": [],
+      "fileModule": "VLX_Tunnel_VPN_archivos.py",
+      "requests": [
+        {
+          "name": "servers",
+          "url": "https://strongteam.co/api/vlx/v1/",
+          "agent": "VLX Tunnel VPN",
+          "method": "GET",
+          "headers": {}
+        }
+      ],
+      "sourceIcon": "VLX_Tunnel_VPN.png",
+      "icon": "vlx-tunnel-vpn.png",
+      "catalogState": "CONNECTED"
+    },
+    {
+      "id": "jk-vpn",
+      "appDir": "JK_VPN",
+      "name": "JK VPN",
+      "package": "com.fastvpn.jk",
+      "versionCode": 15,
+      "versionName": "1.5",
+      "catalogModule": "JK_VPN_catalogo.py",
+      "extensions": [
+        "hs"
+      ],
+      "textPrefixes": [],
+      "fileModule": "JK_VPN_archivos.py",
+      "requests": [
+        {
+          "name": "servers",
+          "url": "https://raw.githubusercontent.com/Khinnainglin441/All-VPN/main/jkvpn.hs",
+          "agent": "okhttp/4.12.0",
+          "method": "GET",
+          "headers": {}
+        }
+      ],
+      "sourceIcon": "JK_VPN.png",
+      "icon": "jk-vpn.png",
+      "catalogState": "CONNECTED"
+    },
+    {
+      "id": "rh-tunnel-lite",
+      "appDir": "RH_Tunnel_Lite",
+      "name": "RH Tunnel Lite",
+      "package": "com.rhtunnelmax.app",
+      "versionCode": 52,
+      "versionName": "39.0.1",
+      "catalogModule": "RH_Tunnel_Lite.py",
+      "extensions": [
+        "hs"
+      ],
+      "textPrefixes": [
+        "SabDev://",
+        "shanS://"
+      ],
+      "fileModule": "RH_Tunnel_Lite_archivos.py",
+      "requests": [
+        {
+          "name": "servers",
+          "url": "https://api.github.com/repos/polashvpn/polashdevapi/contents/rhtunnel.json?ref=main",
+          "agent": "SabrinaPro-App",
+          "method": "GET",
+          "headers": {
+            "Cache-Control": "no-cache",
+            "Accept": "application/vnd.github.v3.raw"
+          },
+          "secretHeader": {
+            "header": "Authorization",
+            "env": "SPDECODE_RH_TUNNEL_GITHUB_TOKEN"
+          }
+        }
+      ],
+      "sourceIcon": "RH_Tunnel_Lite.png",
+      "icon": "rh-tunnel-lite.png",
+      "catalogState": "CONNECTED"
+    },
+    {
+      "id": "eut-vpn",
+      "appDir": "EUT_VPN",
+      "name": "EUT VPN",
+      "package": "xyz.eutvpn.app",
+      "versionCode": 370,
+      "versionName": "2.4.1",
+      "catalogModule": "server_catalog_decoder.py",
+      "extensions": [
+        "eut"
+      ],
+      "textPrefixes": [
+        "eut-payload://"
+      ],
+      "fileModule": "EUT_VPN_archivos.py",
+      "requests": [],
+      "sourceIcon": "EUT_VPN.png",
+      "icon": "eut-vpn.png",
+      "catalogState": "PROVIDER_IDENTITY_REQUIRED"
     }
   ]
 }

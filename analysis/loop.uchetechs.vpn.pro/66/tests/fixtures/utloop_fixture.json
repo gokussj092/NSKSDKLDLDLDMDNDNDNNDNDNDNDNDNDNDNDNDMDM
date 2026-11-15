@@ -1,0 +1,24 @@
+{
+ "envelope": {
+  "data": "AAECAwQFBgcICQoLPCCFfreTp2n+Y62r6pJaI+K74hbKW30ofTSxqE4sUuREQozQj+NByzzsEJ78pRIYzDwY7Demz78R+Fh+Op6owtAekg22sE0SPm6KNZStQIlV7+tYVkEHLa6ps5gvtfjG6YUEyoRjnn/sb1fdJlcbX5hWTJvOsUDpOd0qHWOpo9nHSW4qL35DGT9plw==",
+  "sig": "OzyH7eHfYuxHJvdfOAj1pEpXg4AgvN0Bk9nlcPm3Hxv8Xrw2bRhJ4mr1iR7u9VAg8Ft/bE3Mf4nEFQhxQ5MQkw=="
+ },
+ "plaintext": {
+  "Servers": [
+   {
+    "Name": "TEST-SERVER",
+    "SSHHost": "example.org"
+   }
+  ],
+  "Tweaks": [
+   {
+    "Name": "TEST-TWEAK"
+   }
+  ],
+  "Version": "1.0-test"
+ },
+ "rsa": {
+  "e": 65537,
+  "n_hex": "53bb5eff18e6442f816078caffe59097bdead48aef623d465b13e60f8ba8f45ba43c60a51963906eaf91fc05d3abb1ca44829ff2a4e66db1967be4b5354d0275"
+ }
+}

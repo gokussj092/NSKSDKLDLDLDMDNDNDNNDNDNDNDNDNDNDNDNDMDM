@@ -1,0 +1,17 @@
+{
+  "Version": "9.9-test",
+  "Servers": [
+    {
+      "Name": "TEST SERVER",
+      "ServerIP": "198.51.100.30",
+      "ServerPort": 443
+    }
+  ],
+  "Networks": [
+    {
+      "Name": "TEST NETWORK",
+      "Payload": "198.51.100.30;host;host#443",
+      "SNI": "example.org"
+    }
+  ]
+}

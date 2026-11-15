@@ -7,7 +7,7 @@ import {providerEnabled} from "./server-vpn-provider.mjs";
 import {SUPPLIED_CATALOG_ITEMS,suppliedProviderConfigured} from "./supplied-integrations.mjs";
 import {catalogDefaultEnabled} from "./catalog-provider-policy.mjs";
 
-export const CATALOG_VERSION = 84; // Pending catalogs default off; persistent panel overrides.
+export const CATALOG_VERSION = 85; // Pending catalogs default off; persistent panel overrides.
 export const RECHECK_SECONDS = 15 * 60; // Version-only recovery; full download occurs on version change.
 
 /** Monotonic deployment version. Bump this override for ANY metadata, icon
@@ -112,8 +112,8 @@ const BASE_ITEMS = [
   {id:"4u-tunnel-lite", name:"4U TUNNEL LITE", icon:"4u-tunnel-lite.png", remote:"4u-tunnel-lite"},
   // The supplied inventory connects this card to its authenticated updater.
   {id:"dtunnel-mod", name:"DTunnel Mod", icon:"dtunnel-mod.png", remote:null},
-  // Keep Royal's original icon visible while its live catalog remains unvalidated.
-  {id:"royal-tunnel", name:"Royal Tunnel VPN", icon:"royal-tunnel.png", remote:null},
+  // Live catalog validated 2026-11-14 (v5.43, 29 servers, 105 tweaks).
+  {id:"royal-tunnel", name:"Royal Tunnel VPN", icon:"royal-tunnel.png", remote:"royal-tunnel"},
 ];
 const suppliedById=new Map(SUPPLIED_CATALOG_ITEMS.map(item=>[item.id,item]));
 const ITEMS=Object.freeze([
