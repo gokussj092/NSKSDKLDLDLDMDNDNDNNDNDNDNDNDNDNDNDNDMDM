@@ -12,6 +12,9 @@ import sys
 import time
 from urllib.parse import urlsplit
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from spdecode_compose import compose_command
+
 ROOT=Path(os.environ.get("SPDECODE_HOME","/opt/spdecode"))
 CFG=Path(os.environ.get("SPDECODE_CONFIG_DIR","/etc/spdecode"))
 ENV=CFG/"cloud.env"
@@ -89,8 +92,7 @@ def run(*args,stdin=None,quiet=True):
     return subprocess.run(args,input=stdin,text=True,check=True,
         stdout=subprocess.PIPE if quiet else None,stderr=subprocess.PIPE if quiet else None)
 def compose(*args):
-    return run("docker","compose","--project-name","spdecode",
-               "--env-file",str(ENV),"-f",str(COMPOSE),*args)
+    return run(*compose_command(COMPOSE, ENV, *args))
 def rows():
     return ENV.read_text().splitlines()
 def value(lines,key):

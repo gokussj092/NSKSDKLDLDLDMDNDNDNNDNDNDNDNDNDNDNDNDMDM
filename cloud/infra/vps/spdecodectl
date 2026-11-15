@@ -23,7 +23,16 @@ case "$SPDECODE_REPO_URL" in
   *) die "Untrusted repo" ;;
 esac
 mkdir -p "$ROOT"; exec 9>"$ROOT/.operator.lock"; flock -x 9
-compose(){ docker compose --project-name spdecode --env-file "$ENVFILE" -f "$REPO/cloud/compose.yaml" "$@"; }
+compose(){
+  # Keep this wrapper self-contained: update/rollback can change the checkout.
+  local resources="$CFG/compose.resources.yaml"
+  local -a files=(-f "$REPO/cloud/compose.yaml")
+  if [[ -e "$resources" || -L "$resources" ]]; then
+    [[ -f "$resources" && -r "$resources" ]] || die "Resource override is not a readable file"
+    files+=(-f "$resources")
+  fi
+  docker compose --project-name spdecode --env-file "$ENVFILE" "${files[@]}" "$@"
+}
 preflight(){ command -v docker >/dev/null && docker compose version >/dev/null || die "Docker Compose v2 required"; }
 health(){
   for i in $(seq 1 20); do
@@ -660,6 +669,9 @@ case "${1:-help}" in
    mkdir -p "$ROOT/backups"; stamp=$(date -u +%Y%m%dT%H%M%SZ)
    cp -p "$ENVFILE" "$ROOT/backups/cloud-$stamp.env"
    cp -p "$CONF" "$ROOT/backups/source-$stamp.conf"
+   if [[ -f "$CFG/compose.resources.yaml" ]]; then
+     cp -p "$CFG/compose.resources.yaml" "$ROOT/backups/resources-$stamp.yaml"
+   fi
    git -C "$REPO" rev-parse HEAD > "$ROOT/backups/commit-$stamp.txt"
    chmod 600 "$ROOT/backups/"*"$stamp"*
    log "Sensitive backup saved at $ROOT/backups; copy off-VPS encrypted";;

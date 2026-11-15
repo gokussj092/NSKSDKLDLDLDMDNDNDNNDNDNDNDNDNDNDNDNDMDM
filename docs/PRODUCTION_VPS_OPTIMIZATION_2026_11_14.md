@@ -109,3 +109,7 @@ Separar plazos de CPU, reloj, cola, inactividad y proveedor. Revisar límites po
 7. Conservar servidor anterior como contingencia mientras se valida; nunca dos escritores simultáneos. Rollback tras nuevas escrituras requiere reconciliación/sincronización inversa.
 
 Este documento registra lo realizado y los requisitos futuros; no modifica por sí mismo el instalador, actualizador, motor, Android ni la VPS.
+
+## Actualización de persistencia — 2026-11-15
+
+El propietario confirmó con `docker inspect` los límites efectivos de 4 GiB/4 CPU/2048 shares del worker, 2 GiB de web, 1 GiB de PostgreSQL y 512 MiB de Redis/atestación. Se detectó que el CLI reinstalado ignoraba el override aunque su archivo permanecía. La rama `patch/20-apps` corrige la inclusión del archivo existente en CLI, instalador, recuperaciones y helpers Python que recrean servicios, además de respaldarlo con modo 0600. Véase [procedimiento y validación](cloud/PERSISTENT_VPS_RESOURCES_2026_11_15.md). El uso automático del override existente queda implementado; la generación de nuevos perfiles según capacidad y las ampliaciones de concurrencia/tiempos descritas arriba continúan pendientes. Esta nota no acredita una recreación posterior en la VPS: requiere ejecutar el procedimiento y comprobar los límites.
