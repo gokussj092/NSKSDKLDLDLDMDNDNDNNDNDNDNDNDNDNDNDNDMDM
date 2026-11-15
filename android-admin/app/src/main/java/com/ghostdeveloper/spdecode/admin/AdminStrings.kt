@@ -3,6 +3,7 @@ package com.ghostdeveloper.spdecode.admin
 import android.content.res.Configuration
 import android.content.res.Resources
 import androidx.compose.runtime.*
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import java.util.Locale
 
@@ -18,8 +19,9 @@ private val LocalAdminResources = staticCompositionLocalOf<Resources?> { null }
 @Composable
 internal fun AdminLocaleProvider(language: AdminLanguage, content: @Composable () -> Unit) {
   val context = LocalContext.current
-  val resources = remember(context, language) {
-    val configuration = Configuration(context.resources.configuration)
+  val baseConfiguration = LocalConfiguration.current
+  val resources = remember(context, language, baseConfiguration) {
+    val configuration = Configuration(baseConfiguration)
     configuration.setLocale(Locale.forLanguageTag(language.tag))
     context.createConfigurationContext(configuration).resources
   }
