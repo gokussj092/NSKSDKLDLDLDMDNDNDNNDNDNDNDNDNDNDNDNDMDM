@@ -2,14 +2,16 @@
 """HTTP Injector 6.5.0/244: importación cloud, independiente del lector .ehi.
 
 Necesita HTTPINJECTOR.py en este mismo directorio, pycryptodome y argon2-cffi.
-decode_cloud() devuelve JSON tipado; run(bytes) conserva la interfaz del bot.
-Los enlaces son referencias a servidor: la descarga requiere Internet.
+decode_cloud() devuelve el texto formateado del lector .ehi (EHIDecryptor.execute);
+run(bytes) conserva la interfaz del bot. Los enlaces son referencias a servidor:
+la descarga requiere Internet.
 """
 import argparse
 import base64
 import binascii
 import hashlib
 import hmac
+import http.client
 import json
 from pathlib import Path
 import re
@@ -115,6 +117,11 @@ def fetch_response(config_key, timeout=20):
         if exc.code == 401:
             raise CloudError("HTTP 401: firma o reloj rechazados; revisa la versión de la app.") from exc
         raise CloudError(f"El servidor cloud respondió HTTP {exc.code}.") from exc
+    except http.client.IncompleteRead as exc:
+        # urllib corta a veces la respuesta chunked (~45-53 KB leidos); no es
+        # un rechazo del servidor. Reintentar o descargar con curl y usar
+        # --response con el cuerpo guardado.
+        raise CloudError("Respuesta cloud truncada (IncompleteRead); reintenta o usa curl + --response.") from exc
     except (urllib.error.URLError, TimeoutError, OSError) as exc:
         raise CloudError("No se pudo contactar al servidor cloud; comprueba red y reloj.") from exc
     if len(raw) > MAX_RESPONSE_BYTES:
@@ -189,6 +196,9 @@ def decrypt_api_response(response, audit=None):
 
 
 def decode_response(response, audit=None):
+    """Descifra la respuesta cloud y devuelve el texto formateado del lector
+    .ehi (EHIDecryptor.execute). El lector actual no devuelve un dict: el
+    documento es el texto con el formato del bot."""
     if audit is not None:
         audit.clear()
     imported = decrypt_api_response(response, audit)
@@ -200,23 +210,25 @@ def decode_response(response, audit=None):
     # original ni un paso criptográfico. No modifica claves ni los seis perfiles.
     adapter = (b"\x00\x03ehi" + bytes(8) + b"\x00\x03" + APP_BUILD.encode("ascii")
                + bytes(8) + struct.pack(">I", len(payload)) + bytes(8) + payload)
-    payload_audit = {}
-    document = ehi.decode_ehi(adapter, payload_audit)
-    if document is None:
+    text = ehi.run(adapter)
+    if text is None:
         raise CloudError("config_data no pudo autenticarse/descifrarse con los perfiles EHI existentes.")
     if audit is not None:
         # No atribuir el SHA de la cabecera artificial a un archivo real.
-        payload_audit["adapter_sha256"] = payload_audit.pop("input_sha256")
         audit.update({
             "transport": "http-injector-cloud",
             "app_version": "6.5.0/244",
             "config_ciphertext_sha256": hashlib.sha256(payload).hexdigest(),
-            "ehi": payload_audit,
+            "ehi": {
+                "adapter_sha256": hashlib.sha256(adapter).hexdigest(),
+                "text_bytes": len(text.encode("utf-8")),
+                "reader": "EHIDecryptor.execute",
+            },
             "achilles_present": "achilles" in imported,
             "achilles_verified": False,
             "note": "achilles se conserva en la respuesta original; no se afirma verificarlo.",
         })
-    return document
+    return text
 
 
 def decode_cloud(reference, audit=None, *, timeout=20):
@@ -226,9 +238,12 @@ def decode_cloud(reference, audit=None, *, timeout=20):
 def run(file_bytes):
     """Interfaz del bot; usar decode_cloud para conocer el error preciso."""
     try:
-        return ehi._format_ehi_document(decode_cloud(file_bytes)).replace("(.ehi)", "(cloud)", 1)
+        text = decode_cloud(file_bytes)
     except CloudError:
         return None
+    if text is None:
+        return None
+    return text.replace("(.ehi)", "(cloud)", 1)
 
 
 def read_source(source):
@@ -251,6 +266,13 @@ def write_json(value, output=None):
         print(text, end="")
 
 
+def write_text(value, output=None):
+    if output:
+        Path(output).write_text(value, encoding="utf-8")
+    else:
+        sys.stdout.write(value if value.endswith("\n") else value + "\n")
+
+
 def validate_output_paths(source, response, output, audit):
     inputs = []
     if response:
@@ -270,8 +292,8 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("source", nargs="?", help="enlace, clave cloud o archivo .txt UTF-8")
     parser.add_argument("--response", type=Path, help="descifrar una respuesta HTTP guardada, sin red")
-    parser.add_argument("--json", action="store_true", help="JSON completo (salida predeterminada)")
-    parser.add_argument("-o", "--output", help="archivo JSON de salida")
+    parser.add_argument("--json", action="store_true", help="aceptado por compatibilidad; la salida es el texto formateado del lector .ehi")
+    parser.add_argument("-o", "--output", help="archivo de salida (texto formateado)")
     parser.add_argument("--audit", help="informe JSON de verificaciones y transformaciones")
     args = parser.parse_args()
     if args.source is None and args.response is None:
@@ -285,7 +307,7 @@ def main():
             document = decode_response(response, audit)
         else:
             document = decode_cloud(read_source(args.source), audit)
-        write_json(document, args.output)
+        write_text(document, args.output)
         if args.audit:
             write_json(audit, args.audit)
         return 0

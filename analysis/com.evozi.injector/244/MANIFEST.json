@@ -18,6 +18,16 @@
       "kind": "catalog",
       "status": "PENDING",
       "scope": "Selected server UI/model metadata recovered; no server-list request or response obtained; download authentication UNCONFIRMED."
+    },
+    {
+      "kind": "display_bug_ehi_v2r",
+      "status": "FIXED_LOCAL_UNPUSHED",
+      "scope": "ResultPresentation.extractStandaloneJsonObject truncated the JSON copy of direct_v2r .ehi profiles to only the first inbound; fixed locally with insideField tracking plus an instrumented regression test. Kotlin not compiled here (no Android SDK); CI validation pending after push, which was not done."
+    },
+    {
+      "kind": "python_cloud_api_drift",
+      "status": "FIXED_LOCAL_UNPUSHED",
+      "scope": "HTTPINJECTOR_CLOUD.py (and HTTPINJECTOR_EMOJI.py) called ehi.decode_ehi/_format_ehi_document, which do not exist in HTTPINJECTOR.py; fixed to use EHIDecryptor.execute/run. Verified with --response on a saved real response; live-key download may still hit urllib IncompleteRead (curl + --response workaround)."
     }
   ],
   "connection_authentication": {
@@ -158,7 +168,13 @@
     "analysis/_intake/http-injector-catalog-2026-11-09/tools/metadata_inventory.py",
     "analysis/_intake/http-injector-catalog-2026-11-09/tools/recovered_inventory.py",
     "analysis/com.evozi.injector/244/tools/scan_catalog.py",
-    "analysis/com.evozi.injector/244/tests/test_catalog_inventory.py"
+    "analysis/com.evozi.injector/244/tests/test_catalog_inventory.py",
+    "android/app/src/main/java/com/ghostdeveloper/spdecode/ResultPresentation.kt",
+    "android/app/src/androidTest/java/com/ghostdeveloper/spdecode/ResultPresentationInstrumentedTest.kt",
+    "decoders/Python/HTTPINJECTOR_CLOUD.py",
+    "decoders/Python/HTTPINJECTOR_EMOJI.py",
+    "analysis/com.evozi.injector/244/tools/check_display_extraction.py",
+    "analysis/com.evozi.injector/244/fixtures/synthetic_ehi_v2r_rawtext.txt"
   ],
   "evidence_refs": [
     "analysis/com.evozi.injector/244/generated/identity.json",
@@ -169,7 +185,9 @@
     "analysis/com.evozi.injector/244/generated/catalog-native-inventory.json",
     "analysis/com.evozi.injector/244/generated/catalog-research-summary.json",
     "analysis/com.evozi.injector/244/generated/catalog-source-inventory.json",
-    "analysis/com.evozi.injector/244/tests/test_catalog_inventory.py"
+    "analysis/com.evozi.injector/244/tests/test_catalog_inventory.py",
+    "analysis/com.evozi.injector/244/fixtures/synthetic_ehi_v2r_rawtext.txt",
+    "analysis/com.evozi.injector/244/tools/check_display_extraction.py"
   ],
   "limitations": [
     "Algorithm markers and Mac API references do not establish authentication purpose.",
@@ -177,7 +195,9 @@
     "APK certificate digest is not complete publisher-signature/provenance verification.",
     "No automatic F7 adapter or runtime authentication behavior changed.",
     "Catalog download remains PENDING; no valid request, HTTP status or server record count was obtained.",
-    "Partial metadata and container recovery do not constitute complete decompilation or prove download-authentication requirements."
+    "Partial metadata and container recovery do not constitute complete decompilation or prove download-authentication requirements.",
+    "The Kotlin display fix was not compiled on this VM (no Android SDK); real validation is by CI after push, which was not done.",
+    "Real EFvcmv34 profile values (.ehi bytes, cloud response, host, passwords) are kept outside the repo; the dossier uses only the synthetic fixture."
   ],
   "network_requirements": [
     "Original archive is user-provided; the catalog-source recipe is offline.",

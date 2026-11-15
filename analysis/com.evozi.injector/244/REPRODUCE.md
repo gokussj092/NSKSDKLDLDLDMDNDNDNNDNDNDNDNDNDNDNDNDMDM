@@ -31,3 +31,27 @@ Stages preserved under `analysis/_intake/http-injector-catalog-2026-11-09/tools/
 Expected private files: `catalog-inventory.json`, `frame-inventory.json`, `metadata-inventory.json`, `recovered-inventory.json`, `code-frame.bin`, `inputs/`, `unpacked/`. Only manually reviewed JSON summaries belong in `generated/`; never copy the input archive, decompressed frame, recovered binaries or arbitrary string pools to Git. Expected hashes and known failures are recorded in the reviewed summaries.
 
 The observed static output is **not** a server catalog. A working remote test still needs a reconstructed, authorized server-list request and complete response, without reusing third-party signing secrets or bypassing access controls.
+
+## Display bug .ehi direct_v2r — reproduce (2026-11-15)
+
+Synthetic fixture only (no real profile values):
+
+```bash
+python analysis/com.evozi.injector/244/tools/check_display_extraction.py
+```
+
+Expected: 7/7 PASS — buggy extraction returns only the first inbound, fixed extraction returns None, field parse delivers the complete `v2rRawJson` (2 inbounds, 4 outbounds).
+
+Kotlin regression test (instrumented, needs device/emulator or CI; not runnable on this VM without Android SDK):
+
+```bash
+./gradlew :app:connectedDebugAndroidTest --tests "com.ghostdeveloper.spdecode.ResultPresentationInstrumentedTest"
+```
+
+Python cloud script with a saved real response (response bytes live outside the repo; never commit them):
+
+```bash
+python decoders/Python/HTTPINJECTOR_CLOUD.py --response <respuesta_guardada.bin> -o /tmp/ehi_out.txt --audit /tmp/ehi_audit.json
+```
+
+Expected: exit 0, 51 `│[۞]` lines (49 fields + GROUP/CHANNEL), audit with `api_hmac_verified: true`. Live-key download (`python decoders/Python/HTTPINJECTOR_CLOUD.py <CLAVE>`) may fail with `IncompleteRead` (urllib truncates chunked responses ~45–53 KB); the script now reports it as a clean `CloudError`. Workaround: download the response with curl (same signed request built by `build_request`) and use `--response`.

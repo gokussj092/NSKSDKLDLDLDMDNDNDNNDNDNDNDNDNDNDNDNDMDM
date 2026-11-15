@@ -78,17 +78,20 @@ def decode_emoji(token, audit=None, *, timeout=20):
 
 def run(file_bytes):
     try:
-        return cloud.ehi._format_ehi_document(decode_emoji(file_bytes)).replace("(.ehi)", "(emoji)", 1)
+        text = decode_emoji(file_bytes)
     except cloud.CloudError:
         return None
+    if text is None:
+        return None
+    return text.replace("(.ehi)", "(emoji)", 1)
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("source", help="secuencia 💉…🚀 o archivo de texto UTF-8")
     parser.add_argument("--key-only", action="store_true", help="mostrar clave y URL, sin red")
-    parser.add_argument("--json", action="store_true", help="JSON completo (salida predeterminada)")
-    parser.add_argument("-o", "--output", help="archivo JSON de salida")
+    parser.add_argument("--json", action="store_true", help="aceptado por compatibilidad; la salida es el texto formateado del lector .ehi")
+    parser.add_argument("-o", "--output", help="archivo de salida (texto formateado, o JSON con --key-only)")
     parser.add_argument("--audit", help="informe JSON de verificaciones y transformaciones")
     args = parser.parse_args()
     try:
@@ -99,9 +102,10 @@ def main():
             key = decode_emoji_key(token)
             document = {"config_key": key, "url": "https://ehi.link/" + key}
             audit = {"transport": "http-injector-emoji", "downloaded": False}
+            cloud.write_json(document, args.output)
         else:
             document = decode_emoji(token, audit)
-        cloud.write_json(document, args.output)
+            cloud.write_text(document, args.output)
         if args.audit:
             cloud.write_json(audit, args.audit)
         return 0

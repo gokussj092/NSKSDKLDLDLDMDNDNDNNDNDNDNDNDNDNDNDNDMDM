@@ -1,0 +1,90 @@
+┌───────────────
+│𝗦𝗣 - 𝗗𝗘𝗖𝗢𝗗𝗘 (.ehi)
+│𝗗𝗘𝗩𝗘𝗟𝗢𝗣𝗘𝗥 : https://bit.ly/3TOrZEu
+├───────────────
+│[۞] tunnelType: direct_v2r
+│[۞] v2rProtocol: vmess
+│[۞] v2rCoreType: xray
+│[۞] v2rRawJson: { 
+"log": {
+    "loglevel": "warning"
+  },
+  "inbounds": [
+    {
+      "listen": "0.0.0.0",
+      "port": "1080",
+      "protocol": "dokodemo-door",
+      "settings": {
+        "network": "tcp,udp",
+        "followRedirect": true
+      },
+      "tag": "tun-inbound"
+    },
+    {
+      "listen": "127.0.0.1",
+      "port": "10808",
+      "protocol": "socks",
+      "settings": {
+        "auth": "noauth",
+        "udp": true
+      },
+      "tag": "socks-inbound"
+    }
+  ],
+  "outbounds": [
+    {
+      "protocol": "trojan",
+      "settings": {
+        "servers": [
+          {
+            "address": "203.0.113.10",
+            "port": 8443,
+            "password": "Ficticia123"
+          }
+        ]
+      },
+      "streamSettings": {
+        "network": "ws",
+        "security": "tls",
+        "tlsSettings": {
+          "allowInsecure": true,
+          "serverName": "ejemplo.invalid"
+        },
+        "wsSettings": {
+          "path": "/ficticio",
+          "headers": {
+            "Host": "ejemplo.invalid"
+          }
+        }
+      },
+      "tag": "sintetico-trojan"
+    },
+    {
+      "protocol": "http",
+      "settings": {
+        "servers": [
+          {
+            "address": "198.51.100.20",
+            "port": 8080
+          }
+        ]
+      },
+      "tag": "sintetico-http"
+    },
+    {
+      "protocol": "freedom",
+      "tag": "direct"
+    },
+    {
+      "protocol": "blackhole",
+      "tag": "block"
+    }
+  ]
+}
+│[۞] configMessage: Mensaje sintetico de prueba
+│[۞] isConfigLock: false
+
+├───────────────
+│[۞] 𝗚𝗥𝗢𝗨𝗣 : @CodeBreakersHub
+│[۞] 𝗖𝗛𝗔𝗡𝗡𝗘𝗟 : @GhostDeve
+└───────────────

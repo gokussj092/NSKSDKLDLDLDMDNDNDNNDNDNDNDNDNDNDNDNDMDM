@@ -102,8 +102,18 @@ object ResultPresentation {
     /** Start only on a standalone JSON opening line, not a nested "Config: {}". */
     private fun extractStandaloneJsonObject(text:String):JsonObject? {
         var offset=0
+        var insideField=false
         for(line in text.lineSequence()){
-            if(line.trim()=="{"){
+            val trimmed=line.trim()
+            // A "{" line inside a multi-line field value (e.g. the v2rRawJson
+            // V2Ray document of a direct_v2r .ehi profile) is content, not a
+            // standalone document: its first inbound object would otherwise
+            // be returned alone and the rest of the result discarded. A field
+            // line opens a value; a decorative line closes the field section.
+            if(sourceLine.matchEntire(line)!=null)insideField=true
+            else if(decorativeLine.matches(trimmed)||
+                decoratedHeading.containsMatchIn(trimmed))insideField=false
+            if(trimmed=="{"&&!insideField){
                 val pos=offset+line.indexOf('{')
                 val json=balancedObject(text,pos)
                 if(json!=null)try{
