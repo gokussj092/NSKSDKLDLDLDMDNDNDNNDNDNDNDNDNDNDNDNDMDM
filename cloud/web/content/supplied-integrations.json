@@ -1600,7 +1600,8 @@
           },
           "secretHeader": {
             "header": "Authorization",
-            "env": "SPDECODE_FMT_VPN_GITHUB_TOKEN"
+            "env": "SPDECODE_FMT_VPN_GITHUB_TOKEN",
+            "prefix": "Bearer "
           }
         }
       ],
@@ -1812,7 +1813,8 @@
           },
           "secretHeader": {
             "header": "Authorization",
-            "env": "SPDECODE_RH_TUNNEL_GITHUB_TOKEN"
+            "env": "SPDECODE_RH_TUNNEL_GITHUB_TOKEN",
+            "prefix": "Bearer "
           }
         }
       ],

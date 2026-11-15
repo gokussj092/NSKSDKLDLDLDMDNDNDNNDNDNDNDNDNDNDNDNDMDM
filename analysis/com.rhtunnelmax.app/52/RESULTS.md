@@ -55,3 +55,7 @@ NO prueba compatibilidad con una version real ni conectividad remota.
 - Si la descarga devuelve 401, el desarrollador roto el token: hay que extraer el nuevo de la APK actualizada.
 - No se probo en un telefono real con la app instalada.
 - COLISION DE SUFIJO .hs: el sufijo .hs lo comparte JK VPN (com.fastvpn.jk), con un formato distinto (Tink Streaming AEAD). NO resuelto en este expediente: la decision del discriminador esta pendiente en la fase de discriminadores del parche. Este expediente documenta solo el formato RH.
+
+## Revisión de conexión VPS — 2026-11-15
+
+En `patch/20-apps` se corrigió el envío del token al servicio `web` por Docker Compose y el esquema `Authorization: Bearer <token>` del broker. El operador guarda el token sin prefijo en el entorno protegido del VPS. Prueba del broker con credenciales ficticias y red simulada: encabezado correcto hacia la fuente fija, rechazo sin red para token ausente/vacío/inyección y sin exposición en el catálogo público. No se aportó un token real en esta sesión; no se repitió la descarga remota y el estado de la evidencia histórica anterior no cambia. No se modificó el script original ni la compatibilidad del método. Véase `docs/cloud/PATCH_20_APPS_ICONS_AND_DEPLOY_2026_11_15.md`.

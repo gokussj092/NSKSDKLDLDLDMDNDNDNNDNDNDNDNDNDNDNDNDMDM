@@ -31,7 +31,7 @@ export function suppliedRequests(id,env=process.env){
  if(!suppliedProviderConfigured(id,env))throw Error("REMOTE_NOT_CONFIGURED");
  return item.requests.map(r=>{
   const headers={...r.headers};
-  if(r.secretHeader)headers[r.secretHeader.header]=credential(id,r,env);
+  if(r.secretHeader)headers[r.secretHeader.header]=(r.secretHeader.prefix??"")+credential(id,r,env);
   if(r.sessionHeaders)Object.assign(headers,{"X-App-Device":randomUUID().replaceAll("-",""),
    "X-App-Ts":String(Math.floor(Date.now()/1000)),"X-App-Nonce":randomBytes(8).toString("hex")});
   return {name:r.name,url:r.url,agent:r.agent,headers,method:r.method,body:r.body?Buffer.from(r.body):null};

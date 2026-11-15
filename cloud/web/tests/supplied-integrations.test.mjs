@@ -54,6 +54,26 @@ test("all supplied catalog methods reach pinned fixed sources and operator contr
  assert(!JSON.stringify(catalog()).includes("synthetic-authorized-account"));
  assert(!JSON.stringify(catalog()).includes("catalogModule"));
 });
+test("FMT and RH tokens reach only their pinned sources with Bearer authorization",async t=>{
+ const tokens={SPDECODE_FMT_VPN_GITHUB_TOKEN:"synthetic-fmt-github-token",
+  SPDECODE_RH_TUNNEL_GITHUB_TOKEN:"synthetic-rh-github-token"};
+ environment(t,tokens);const calls=network(t);
+ for(const [id,key] of [["fmt-vpn","SPDECODE_FMT_VPN_GITHUB_TOKEN"],
+                       ["rh-tunnel-lite","SPDECODE_RH_TUNNEL_GITHUB_TOKEN"]]){
+  const before=calls.length;await downloadVpnCatalog(id);
+  assert.equal(calls.length,before+1);
+  assert.equal(calls[before].url.hostname,"api.github.com");
+  assert.equal(calls[before].options.headers.Authorization,"Bearer "+tokens[key]);
+  assert(!JSON.stringify(catalog()).includes(tokens[key]));
+  for(const invalid of [undefined,"","bad\r\nInjected: yes"]){
+   if(invalid===undefined)delete process.env[key];else process.env[key]=invalid;
+   assert.equal(providerEnabled(id),false);
+   await assert.rejects(()=>downloadVpnCatalog(id),{code:"REMOTE_NOT_CONFIGURED"});
+   assert.equal(calls.length,before+1);
+  }
+  process.env[key]=tokens[key];
+ }
+});
 test("DTunnel uses the authorized script default; invalid explicit IDs never trigger downloads",async t=>{
  environment(t,{SPDECODE_DTUNNEL_REQUEST_ID:""});const calls=network(t);
  assert(providerIds().includes("dtunnel-mod"));assert.equal(providerEnabled("dtunnel-mod"),true);

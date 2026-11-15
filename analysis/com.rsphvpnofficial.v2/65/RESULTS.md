@@ -66,3 +66,7 @@ and `TEST ...` names).
 - Re-verify when the server serves a new catalog version (today 2026.181) or the app is updated (today 65).
 - Full SHA-256 of the XAPK file was recorded only partially (38ead7c6...) in TESTING.md.
 - NOTE ON IDENTITY: the dossier folder follows the real Android applicationId com.rsphvpnofficial.v2 (base APK com.rsphvpnofficial.v2.apk, versionName 65-16kb-page-size, versionCode 65). com.tknetwork.tunnel is the RENZ family namespace used inside the app (fork of v2rayNG, 'TK Network Tunnel'), not the applicationId.
+
+## Revisión de conexión VPS — 2026-11-15
+
+En `patch/20-apps` se corrigió el envío del token al servicio `web` por Docker Compose y el esquema `Authorization: Bearer <token>` del broker. El operador guarda el token sin prefijo en el entorno protegido del VPS. Prueba del broker con credenciales ficticias y red simulada: encabezado correcto hacia la fuente fija, rechazo sin red para token ausente/vacío/inyección y sin exposición en el catálogo público. No se aportó un token real en esta sesión; no se repitió la descarga remota y el estado de la evidencia histórica anterior no cambia. No se modificó el script original ni la compatibilidad del método. Véase `docs/cloud/PATCH_20_APPS_ICONS_AND_DEPLOY_2026_11_15.md`.

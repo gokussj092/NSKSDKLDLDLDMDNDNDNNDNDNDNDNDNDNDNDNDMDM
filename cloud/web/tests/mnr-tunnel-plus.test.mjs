@@ -47,8 +47,8 @@ test("MNR catalog publishes the original icon, Cloud-only STP and persistent ava
   assert(current.apps.length>=61, 'catalog must retain existing apps');
   const card=current.apps.find(x=>x.id==="mnr-tunnel-plus");
   assert.equal(card.name,"MNR TUNNEL PLUS");assert.equal(card.decodeEnabled,true);
-  assert.equal(card.iconSha256,"ed99d8abdfbbcdd58c0a016d54299440d64c39608dd225674c0291f85d219b1a");
-  assert.equal(iconFor(card.id).bytes.length,72125);
+  assert.equal(card.iconSha256,"dc8116de257a2213a8d03302305a16d5889d35e3af78f1afb05fa79f6c5db030");
+  assert.equal(iconFor(card.id).bytes.length,297447);
   assert.deepEqual(current.formats.find(x=>x.suffix==="stp"),{suffix:"stp",name:"MNR TUNNEL PLUS 3.1",kind:"file",offlineSupported:false,cloudSupported:true,credentialFields:[]});
   const root=await mkdtemp(join(tmpdir(),"spdecode-mnr-"));t.after(()=>rm(root,{recursive:true,force:true}));
   const env={CLOUD_API_ENABLED:"true",CLOUD_SERVER_VPN_ENABLED:"true"};
