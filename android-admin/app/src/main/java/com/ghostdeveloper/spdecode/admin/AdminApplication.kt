@@ -202,6 +202,7 @@ internal fun AdminApplication(state: AdminState) {
                         .filter { state.allowed(it) }
                         .forEach { p ->
                           NavigationBarItem(
+                              modifier = Modifier.testTag("nav-${p.name}"),
                               selected = state.page == p,
                               onClick = { state.navigate(p) },
                               icon = { Icon(p.icon, null) },

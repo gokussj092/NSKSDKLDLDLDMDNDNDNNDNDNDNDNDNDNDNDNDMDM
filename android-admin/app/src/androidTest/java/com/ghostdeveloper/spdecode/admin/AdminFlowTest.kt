@@ -14,6 +14,39 @@ class AdminFlowTest {
   @get:Rule val compose = createAndroidComposeRule<MainActivity>()
 
   @Test
+  fun authenticatedNativeFlowDisplaysServerUserAndLogsOut() {
+    AdminHttpsFixture.install()
+    val context = InstrumentationRegistry.getInstrumentation().targetContext
+    try {
+      compose.waitUntil(10000) {
+        compose.onAllNodesWithTag("login-username").fetchSemanticsNodes().isNotEmpty()
+      }
+      compose.onNodeWithTag("login-username").performTextInput("fixture.owner")
+      compose.onNodeWithTag("login-password").performTextInput("fixture-only-password")
+      compose.onNodeWithTag("login-submit").performScrollTo().performClick()
+      compose.waitUntil(10000) {
+        compose.onAllNodesWithTag("nav-Users").fetchSemanticsNodes().isNotEmpty()
+      }
+      compose.onNodeWithTag("nav-Users").performClick()
+      compose.waitUntil(10000) {
+        compose.onAllNodesWithText("Usuario recibido por HTTPS").fetchSemanticsNodes().isNotEmpty()
+      }
+      compose.onNodeWithText("Usuario recibido por HTTPS").assertIsDisplayed()
+      assertTrue(AdminHttpsFixture.paths.contains("/api/admin/login"))
+      assertTrue(AdminHttpsFixture.paths.contains("/api/admin/users"))
+      compose.onNodeWithTag("nav-Settings").performClick()
+      compose.onNodeWithText("Cerrar sesión").performClick()
+      compose.waitUntil(10000) {
+        compose.onAllNodesWithTag("login-username").fetchSemanticsNodes().isNotEmpty()
+      }
+      assertTrue(AdminHttpsFixture.paths.contains("/api/admin/logout"))
+      assertNull(SessionVault(context).restore())
+    } finally {
+      SessionVault(context).clear()
+    }
+  }
+
+  @Test
   fun credentialsAreEditableAndLoginRequiresInput() {
     compose.waitUntil(10000) {
       compose.onAllNodesWithTag("login-username").fetchSemanticsNodes().isNotEmpty()
