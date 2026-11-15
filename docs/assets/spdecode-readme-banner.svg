@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 340" role="img" aria-labelledby="title desc">
+  <title id="title">SP-DECODE</title>
+  <desc id="desc">Advanced configuration processing platform by Ghost Developer</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#060a09"/><stop offset="1" stop-color="#0e201a"/>
+    </linearGradient>
+    <radialGradient id="halo">
+      <stop stop-color="#32dfaa" stop-opacity=".18"/><stop offset="1" stop-color="#32dfaa" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="grid" width="36" height="36" patternUnits="userSpaceOnUse">
+      <path d="M36 0H0V36" fill="none" stroke="#32dfaa" stroke-opacity=".075"/>
+    </pattern>
+  </defs>
+  <rect width="1200" height="340" rx="20" fill="url(#bg)"/>
+  <rect x="1" y="1" width="1198" height="338" rx="19" fill="url(#grid)" stroke="#235244" stroke-width="2"/>
+  <ellipse cx="600" cy="115" rx="400" ry="150" fill="url(#halo)"/>
+  <g fill="none" stroke="#32dfaa" stroke-opacity=".26" stroke-width="1.5">
+    <path d="M40 76h174l50 50h116M40 263h168l36-36h92M1160 76H986l-50 50H820M1160 263H992l-36-36h-92"/>
+    <circle cx="40" cy="76" r="4"/><circle cx="1160" cy="76" r="4"/><circle cx="40" cy="263" r="4"/><circle cx="1160" cy="263" r="4"/>
+  </g>
+  <path d="M600 25 651 45v47c0 35-20 56-51 75-31-19-51-40-51-75V45Z" fill="#102d23" stroke="#36dfab" stroke-width="2.5" stroke-linejoin="round"/>
+  <path d="m582 67-19 18 19 18m36-36 19 18-19 18m-9-42-18 49" stroke="#65f1c5" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <g text-anchor="middle" font-family="system-ui, -apple-system, Segoe UI, sans-serif">
+    <text x="600" y="230" font-size="59" letter-spacing="9" font-weight="800" fill="#f1fff9">SP-DECODE</text>
+    <text x="600" y="270" font-size="23" font-weight="500" fill="#56dcb1">Advanced Configuration Processing Platform</text>
+    <text x="600" y="307" font-size="16" letter-spacing="3" fill="#a2b6ad">DEVELOPED BY GHOST DEVELOPER</text>
+  </g>
+</svg>
