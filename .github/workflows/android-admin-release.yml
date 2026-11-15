@@ -2,7 +2,7 @@ name: SP-DECODE Admin Signed Release
 on:
   workflow_dispatch:
   push:
-    branches: [feat/android-admin-panel]
+    branches: [feat/android-admin-panel, ci/unity-ads-online-qa]
     paths:
       - 'android-admin/**'
       - '.github/workflows/android-admin-release.yml'
