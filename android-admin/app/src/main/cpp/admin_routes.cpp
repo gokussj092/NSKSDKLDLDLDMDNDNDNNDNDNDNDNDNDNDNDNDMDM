@@ -19,6 +19,20 @@ constexpr std::array routes{
     Route{"notifications", "/api/admin/notifications", "GET", 0},
     Route{"observability", "/api/admin/observability", "GET", 0},
     Route{"reports", "/api/admin/reports", "GET", 0}
+    ,Route{"mobile", "/api/admin/mobile", "GET", 0}
+    ,Route{"mobile_action", "/api/admin/mobile", "POST", 2048}
+    ,Route{"staff_save", "/api/admin/staff", "POST", 2048}
+    ,Route{"roles_save", "/api/admin/staff-roles", "POST", 1400}
+    ,Route{"password", "/api/admin/staff-password", "POST", 1200}
+    ,Route{"support_send", "/api/admin/support", "POST", 6200}
+    ,Route{"store_save", "/api/admin/store", "POST", 16384}
+    ,Route{"gifts_save", "/api/admin/gifts", "POST", 2048}
+    ,Route{"notice_send", "/api/admin/notifications", "POST", 4096}
+    ,Route{"maintenance", "/api/admin/maintenance", "POST", 256}
+    ,Route{"providers", "/api/admin/providers", "POST", 2048}
+    ,Route{"catalog_status", "/api/admin/catalog-push", "GET", 0}
+    ,Route{"catalog_publish", "/api/admin/catalog-push", "POST", 0}
+    ,Route{"cleanup", "/api/admin/cleanup", "POST", 2048}
 };
 constexpr bool ascii_alnum(unsigned char c) {return (c>='a'&&c<='z')||(c>='A'&&c<='Z')||(c>='0'&&c<='9');}
 std::string encode(std::string_view s) {
@@ -32,7 +46,10 @@ std::optional<Plan> plan(std::string_view operation,std::string_view query,int p
         if(r.id!=operation)continue;
         if(body_size>r.max_body || (r.max_body!=0&&body_size==0))return std::nullopt;
         std::string path(r.path);
-        if(operation=="users"){
+        if(operation=="mobile"){
+            if(page<0||page>10000||(query!="orders"&&query!="entitlements"&&query!="credits"))return std::nullopt;
+            path+="?section="+encode(query)+"&page="+std::to_string(page);
+        }else if(operation=="users"){
             if(page<0||page>1000||query.size()>320)return std::nullopt;
             for(unsigned char c:query)if(c<32||c==127)return std::nullopt;
             path+="?page="+std::to_string(page)+"&q="+encode(query);

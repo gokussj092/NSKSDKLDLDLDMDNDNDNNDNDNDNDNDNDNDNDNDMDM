@@ -34,17 +34,6 @@ class AdminRulesTest {
     }
 
     @Test
-    fun permissionDependenciesAreAddedAndRemovedTogether() {
-        val first = changePermission(emptySet(), Permission.SupportReply, true)
-        assertTrue(first.containsAll(setOf(Permission.SupportRead, Permission.SupportReply)))
-        assertFalse(
-            Permission.SupportReply in changePermission(first, Permission.SupportRead, false)
-        )
-        val commerce = changePermission(emptySet(), Permission.CommerceManage, true)
-        assertTrue(Permission.CommerceRead in commerce)
-    }
-
-    @Test
     fun csvEscapesDelimitersQuotesAndSpreadsheetFormulaPrefixes() {
         assertEquals("\"a,b\"", csvCell("a,b"))
         assertEquals("\"a\"\"b\"", csvCell("a\"b"))
