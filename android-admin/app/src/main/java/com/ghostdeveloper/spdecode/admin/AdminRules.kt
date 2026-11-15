@@ -42,3 +42,6 @@ internal enum class Appearance {
   Dark,
   Light
 }
+
+internal fun shouldFollowNewMessages(previousCount: Int, lastVisible: Int): Boolean =
+    previousCount == 0 || (lastVisible >= 0 && lastVisible >= previousCount - 2)

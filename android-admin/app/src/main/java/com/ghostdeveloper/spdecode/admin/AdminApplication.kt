@@ -82,6 +82,8 @@ internal fun AdminApplication(state: AdminState) {
   }
   var form by remember { mutableStateOf<RemoteForm?>(null) }
   var confirm by remember { mutableStateOf<Pair<String, suspend () -> Unit>?>(null) }
+  var directoryFilter by rememberSaveable { mutableStateOf("Todos") }
+  var ticketFilter by rememberSaveable { mutableStateOf("Todos") }
   val drawer = rememberDrawerState(DrawerValue.Closed)
   val scope = rememberCoroutineScope()
   val lifecycle = LocalLifecycleOwner.current
@@ -239,7 +241,20 @@ internal fun AdminApplication(state: AdminState) {
                       Page.Chat -> ChatScreen(state)
                       Page.Settings, Page.AppearanceSettings, Page.AboutSettings -> SettingsScreen(state)
                       else ->
-                          ScreenList {
+                          ScreenList(state.page) {
+                             moduleSubtitle(state.page)?.let { summary ->
+                               item {
+                                 Tile(Modifier.fillMaxWidth(), GreenPanel) {
+                                   Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(13.dp)) {
+                                     Avatar(state.page.icon, Mint, 48)
+                                     Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                                       Text(state.page.title, color = Ink, fontSize = 21.sp, fontWeight = FontWeight.SemiBold)
+                                       Small(summary)
+                                     }
+                                   }
+                                 }
+                               }
+                             }
                             if (state.data.has("live"))
                                 item {
                                   Small(
@@ -263,7 +278,22 @@ internal fun AdminApplication(state: AdminState) {
                                 state.data.optJSONObject("metrics")?.let { metrics ->
                                   item {
                                     SectionHeading("Actividad del servicio", "Métricas reportadas por el servidor")
-                                    Tile(Modifier.fillMaxWidth()) { Fields(metrics) }
+                                    val counters = listOf(
+                                        Triple("successfulDecodes", "Procesados", Icons.Outlined.CheckCircle),
+                                        Triple("failedDecodes", "Fallidos", Icons.Outlined.ErrorOutline),
+                                        Triple("warnings", "Advertencias", Icons.Outlined.WarningAmber))
+                                    counters.filter { metrics.has(it.first) }.chunked(2).forEach { group ->
+                                      Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                        group.forEach { (key, label, icon) ->
+                                          Metric(label, metrics.opt(key).toString(), icon,
+                                              if (key == "failedDecodes") Red else if (key == "warnings") Amber else Mint,
+                                              Modifier.weight(1f))
+                                        }
+                                        if (group.size == 1) Spacer(Modifier.weight(1f))
+                                      }
+                                      Spacer(Modifier.height(8.dp))
+                                    }
+                                    Tile(Modifier.fillMaxWidth()) { Fields(metrics, skip = counters.map { it.first }.toSet()) }
                                   }
                                 }
                                 state.data.optJSONObject("services")?.let { services ->
@@ -291,11 +321,22 @@ internal fun AdminApplication(state: AdminState) {
                                     state.refresh()
                                   }) { Text("Buscar en el servidor") }
                                   if (state.data.has("count")) Small("${state.data.optInt("count")} usuarios registrados")
+                                  FilterRow(listOf("Todos", "Verificados", "Con compras", "Con créditos", "Sin anuncios"), directoryFilter) { directoryFilter = it }
+                                  if (directoryFilter != "Todos") Small("Filtro aplicado a la página actual")
                                 }
-                                items(state.data.array("users"), key = { it.getString("id") }) { row ->
+                                val rows = state.data.array("users").filter { row ->
+                                  when (directoryFilter) {
+                                    "Verificados" -> row.optBoolean("email_verified")
+                                    "Con compras" -> row.optInt("orders_count") > 0
+                                    "Con créditos" -> row.optInt("credits") > 0
+                                    "Sin anuncios" -> row.optBoolean("ad_free")
+                                    else -> true
+                                  }
+                                }
+                                items(rows, key = { it.getString("id") }) { row ->
                                   UserCard(row) { state.navigate(Page.UserDetail, row.getString("id")) }
                                 }
-                                if (!state.busy && state.data.has("users") && state.data.array("users").isEmpty())
+                                if (!state.busy && state.data.has("users") && rows.isEmpty())
                                     item { EmptyState("Sin resultados", "Prueba otra búsqueda.") }
                               }
                               Page.UserDetail -> {
@@ -372,8 +413,19 @@ internal fun AdminApplication(state: AdminState) {
                                     }
                               }
                               Page.Support -> {
-                                val threads = state.data.array("threads")
-                                item { SectionHeading("Bandeja de soporte", "Conversaciones y estado del servidor") }
+                                val threads = state.data.array("threads").filter { row ->
+                                  when (ticketFilter) {
+                                    "Abiertos" -> row.optString("status") == "open"
+                                    "Respondidos" -> row.optString("status") == "answered"
+                                    "Cerrados" -> row.optString("status") == "closed"
+                                    "Sin asignar" -> row.isNull("assigned_staff_id") || row.optString("assigned_staff_id").isBlank()
+                                    else -> true
+                                  }
+                                }
+                                item {
+                                  SectionHeading("Bandeja de soporte", "Conversaciones y estado del servidor")
+                                  FilterRow(listOf("Todos", "Abiertos", "Respondidos", "Cerrados", "Sin asignar"), ticketFilter) { ticketFilter = it }
+                                }
                                 if (threads.isEmpty() && !state.busy)
                                     item { EmptyState("Sin conversaciones", "No hay tickets disponibles para tu cargo.", Icons.Outlined.Forum) }
                                 items(threads, key = { it.getString("id") }) { row ->
@@ -847,7 +899,9 @@ private fun LoginScreen(state: AdminState) {
         Avatar(Icons.Outlined.VerifiedUser, Mint, 88)
         Spacer(Modifier.height(22.dp))
         Text("SP-DECODE", color = Ink, fontSize = 30.sp, fontWeight = FontWeight.Bold)
-        Text("ADMINISTRATION", color = Mint)
+        Text("ADMINISTRATION", color = Mint, fontWeight = FontWeight.SemiBold, letterSpacing = 2.sp)
+        Spacer(Modifier.height(10.dp))
+        Small("Acceso administrativo seguro")
         Spacer(Modifier.height(30.dp))
         OutlinedTextField(
             username,
@@ -1184,7 +1238,7 @@ private fun SecretDialog(value: JSONObject, dismiss: () -> Unit) {
 
 @Composable
 private fun SettingsScreen(state: AdminState) {
-  ScreenList {
+  ScreenList(state.page) {
     when (state.page) {
       Page.AppearanceSettings -> {
         item { SectionHeading("Apariencia", "Los cambios se guardan en este dispositivo") }
@@ -1263,7 +1317,7 @@ private fun ChatScreen(state: AdminState) {
   var previousCount by remember(state.selectedId) { mutableIntStateOf(0) }
   LaunchedEffect(state.selectedId, messages.size) {
     val lastVisible = list.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: -1
-    val wasNearEnd = previousCount == 0 || lastVisible >= previousCount - 2
+    val wasNearEnd = shouldFollowNewMessages(previousCount, lastVisible)
     if (messages.isNotEmpty() && wasNearEnd) list.scrollToItem(messages.lastIndex)
     previousCount = messages.size
   }
@@ -1297,7 +1351,10 @@ private fun ChatScreen(state: AdminState) {
                 Text(if (thread.optString("status") == "closed") "Reabrir" else "Cerrar ticket")
               }
       if (state.can("support.assign"))
-          TextButton(onClick = { assignment = true }) { Text("Asignar agente") }
+          TextButton(enabled = !state.busy, onClick = {
+            assignedId = thread.optString("assigned_staff_id").takeUnless { it == "null" }.orEmpty()
+            assignment = true
+          }) { Text("Asignar agente") }
     }
     LazyColumn(
         Modifier.weight(1f).fillMaxWidth(),
@@ -1594,4 +1651,23 @@ private fun noticeForm(
                 .put("importance", v["importance"])
                 .put("ttlHours", v.getValue("ttl").toInt()))
       }
+}
+
+private fun moduleSubtitle(page: Page): String? = when (page) {
+  Page.Roles -> "Personal autorizado y cargos administrativos"
+  Page.Products -> "Configuración de la tienda y disponibilidad"
+  Page.Finance -> "Resumen de ingresos y operaciones pagadas"
+  Page.Purchases -> "Historial de pedidos y sus estados"
+  Page.Licenses -> "Administración de accesos Offline"
+  Page.Api -> "Accesos comerciales e IP autorizada"
+  Page.Credits -> "Registro de movimientos de créditos"
+  Page.Gifts -> "Emisión, disponibilidad y canjes"
+  Page.Catalog -> "Versiones y disponibilidad de proveedores"
+  Page.Server -> "Diagnóstico y salud de la plataforma"
+  Page.Notices -> "Publicación e historial de avisos"
+  Page.Logs -> "Registro de acciones administrativas"
+  Page.Security -> "Credenciales y protección de la cuenta"
+  Page.Sessions -> "Acceso desde este dispositivo"
+  Page.Maintenance -> "Operaciones de mantenimiento controladas"
+  else -> null
 }

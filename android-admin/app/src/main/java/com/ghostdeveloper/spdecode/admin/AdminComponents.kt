@@ -17,6 +17,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import coil.compose.AsyncImage
+import coil.request.ImageRequest
+import coil.request.CachePolicy
+import androidx.compose.ui.platform.LocalContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.json.JSONObject
@@ -70,14 +73,14 @@ internal fun statusColor(status: String): Color =
     }
 
 @Composable
-internal fun ScreenList(content: androidx.compose.foundation.lazy.LazyListScope.() -> Unit) {
+internal fun ScreenList(screenKey: Any = Unit, content: androidx.compose.foundation.lazy.LazyListScope.() -> Unit) {
   Box(Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
-    LazyColumn(
+    key(screenKey) { LazyColumn(
         Modifier.widthIn(max = 840.dp).fillMaxSize().testTag("screen-list"),
         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 18.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
         content = content,
-    )
+    ) }
   }
 }
 
@@ -387,6 +390,7 @@ internal fun StatusPill(value: String, tint: Color = Mint) {
 internal fun ProfileAvatar(row: JSONObject, size: Int = 48) {
   val raw = row.optString("avatar").takeUnless { it.isBlank() || it == "null" } ?: row.optString("image")
   val model by produceState<Any?>(null, raw) {
+    value = null
     value = withContext(Dispatchers.Default) {
       if (raw.length <= 2_800_000 && raw.matches(Regex("^data:image/(png|jpeg|webp);base64,[A-Za-z0-9+/=\\r\\n]+$"))) {
         runCatching { android.util.Base64.decode(raw.substringAfter(','), android.util.Base64.DEFAULT) }.getOrNull()
@@ -398,10 +402,14 @@ internal fun ProfileAvatar(row: JSONObject, size: Int = 48) {
       } else null
     }
   }
+  val context = LocalContext.current
+  val request = remember(context, model) {
+    model?.let { ImageRequest.Builder(context).data(it).diskCachePolicy(CachePolicy.DISABLED).build() }
+  }
   val initials = displayName(row).trim().split(Regex("\\s+")).take(2).mapNotNull { it.firstOrNull()?.uppercase() }.joinToString("")
   Box(Modifier.size(size.dp).clip(CircleShape).background(GreenPanel).border(1.dp, Border, CircleShape),
       contentAlignment = Alignment.Center) {
     Text(initials, color = Mint, fontWeight = FontWeight.SemiBold, fontSize = (size / 3).sp)
-    if (model != null) AsyncImage(model = model, contentDescription = null, modifier = Modifier.fillMaxSize(), contentScale = ContentScale.Crop)
+    if (request != null) AsyncImage(model = request, contentDescription = null, modifier = Modifier.fillMaxSize(), contentScale = ContentScale.Crop)
   }
 }

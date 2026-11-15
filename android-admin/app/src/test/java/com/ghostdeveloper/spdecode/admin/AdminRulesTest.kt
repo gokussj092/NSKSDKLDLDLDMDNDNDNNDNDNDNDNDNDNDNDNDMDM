@@ -5,6 +5,15 @@ import org.junit.Test
 
 class AdminRulesTest {
     @Test
+    fun chatOnlyFollowsNewMessagesWhenInitiallyOpenedOrNearBottom() {
+        assertTrue(shouldFollowNewMessages(0, -1))
+        assertTrue(shouldFollowNewMessages(10, 8))
+        assertTrue(shouldFollowNewMessages(10, 9))
+        assertFalse(shouldFollowNewMessages(10, 2))
+        assertFalse(shouldFollowNewMessages(10, -1))
+    }
+
+    @Test
     fun moneyUsesExactCentsAndRejectsRoundingAndOutOfRangeInput() {
         assertEquals(499L, parsePrice("4.99"))
         assertEquals(499L, parsePrice("4,99"))
