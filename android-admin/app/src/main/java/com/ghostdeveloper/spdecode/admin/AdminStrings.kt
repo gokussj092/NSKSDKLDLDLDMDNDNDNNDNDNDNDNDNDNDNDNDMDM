@@ -385,7 +385,14 @@ private val labelsByText = mapOf(
     "El usuario ya no podrá responder hasta que reabras el ticket." to R.string.admin_label_354,
     "El ticket volverá a estar abierto para el usuario." to R.string.admin_label_355,
     "Escribe tu respuesta…" to R.string.admin_label_356,
-    "AMOLED" to R.string.admin_label_357
+    "AMOLED" to R.string.admin_label_357,
+    "Ventana" to R.string.admin_label_358,
+    "Hoy (UTC)" to R.string.admin_label_359,
+    "Esta semana (UTC)" to R.string.admin_label_360,
+    "Este mes (UTC)" to R.string.admin_label_361,
+    "Este año (UTC)" to R.string.admin_label_362,
+    "Todo el historial" to R.string.admin_label_363,
+    "Inactivo" to R.string.admin_label_364
 )
 
 @Composable

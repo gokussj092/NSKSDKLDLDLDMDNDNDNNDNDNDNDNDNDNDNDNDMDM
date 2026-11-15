@@ -356,4 +356,11 @@
     <string name="admin_label_355" formatted="false">The ticket will be open for the user again.</string>
     <string name="admin_label_356" formatted="false">Write your reply…</string>
     <string name="admin_label_357" formatted="false">AMOLED</string>
+    <string name="admin_label_358" formatted="false">Window</string>
+    <string name="admin_label_359" formatted="false">Today (UTC)</string>
+    <string name="admin_label_360" formatted="false">This week (UTC)</string>
+    <string name="admin_label_361" formatted="false">This month (UTC)</string>
+    <string name="admin_label_362" formatted="false">This year (UTC)</string>
+    <string name="admin_label_363" formatted="false">All time</string>
+    <string name="admin_label_364" formatted="false">Inactive</string>
 </resources>

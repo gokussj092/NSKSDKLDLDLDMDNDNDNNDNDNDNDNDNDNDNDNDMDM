@@ -74,10 +74,10 @@ internal fun toneFor(status: String): Color = when(status) {
 
 @Composable
 private fun RecordHeader(title: String, subtitle: String?, icon: ImageVector, status: String? = null, tint: Color = Mint) {
-  Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-    Avatar(icon, tint, 44)
-    Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-      Text(title.ifBlank { "Sin nombre" }, color = Ink, fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
+  Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+    Avatar(icon, tint, 40)
+    Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(3.dp)) {
+      Text(title.ifBlank { "Sin nombre" }, color = Ink, fontSize = 15.sp, fontWeight = FontWeight.SemiBold)
       subtitle?.takeIf { it.isNotBlank() }?.let { Text(it, color = Muted, fontSize = 12.sp, maxLines = 2, overflow = TextOverflow.Ellipsis) }
     }
     status?.takeIf { it.isNotBlank() }?.let { StatusPill(translated(it), toneFor(it)) }
@@ -109,7 +109,7 @@ internal fun DashboardOverview(state: AdminState) {
   val orders = overview.optJSONObject("orders")
   val licenses = if (overview.has("licenses")) overview.optInt("licenses").toString() else null
   if (!listOf(Page.Users, Page.Support, Page.Purchases).any { state.allowed(it) }) return
-  Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+  Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
     SectionHeading("Resumen administrativo", "Datos consultados según tus permisos")
     val stats = buildList<Triple<String, String, ImageVector>> {
       users?.let { add(Triple("Usuarios registrados", it, Icons.Outlined.People)) }
@@ -118,7 +118,7 @@ internal fun DashboardOverview(state: AdminState) {
       licenses?.let { add(Triple("Licencias registradas", it, Icons.Outlined.VpnKey)) }
     }
     stats.chunked(2).forEach { row ->
-      Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+      Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         row.forEach { (label, value, icon) -> Metric(label, value, icon, Mint, Modifier.weight(1f)) }
         if (row.size == 1) Spacer(Modifier.weight(1f))
       }
@@ -145,7 +145,7 @@ internal fun TicketSummary(threads: List<JSONObject>) {
   Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
     listOf("open" to "Abiertos", "answered" to "Respondidos", "closed" to "Cerrados").forEach { (key, label) ->
       Tile(Modifier.weight(1f)) {
-        Text(threads.count { it.optString("status") == key }.toString(), color = toneFor(key), fontWeight = FontWeight.Bold, fontSize = 20.sp)
+        Text(threads.count { it.optString("status") == key }.toString(), color = toneFor(key), fontWeight = FontWeight.Bold, fontSize = 18.sp)
         Small(L(label))
       }
     }
@@ -205,7 +205,7 @@ internal fun ProductCard(title: String, row: JSONObject, onClick: () -> Unit) {
 internal fun OrderCard(title: String, row: JSONObject, onClick: () -> Unit) {
   Tile(Modifier.fillMaxWidth().clickable(onClick = onClick)) {
     RecordHeader(L(title), displayName(row), Icons.Outlined.ShoppingBag, recordValue(row, "status"))
-    displayAmount(row.optJSONObject("quote"))?.let { Text(it, color = Ink, fontWeight = FontWeight.Bold, fontSize = 24.sp) }
+    displayAmount(row.optJSONObject("quote"))?.let { Text(it, color = Ink, fontWeight = FontWeight.Bold, fontSize = 20.sp) }
     Fact("Método de pago", recordValue(row, "provider"))
     Fact("Fecha", localDate(recordValue(row, "created_at")))
     userHandle(row)?.let { Small(it, color = Mint) }
@@ -232,7 +232,7 @@ internal fun CreditCard(row: JSONObject, onClick: () -> Unit) {
     RecordHeader(displayName(row), recordValue(row, "email"), Icons.Outlined.Payments)
     amount?.let {
       Text(LF("%1\$s créditos", (if (it > 0) "+" else "") + it.toString()), color = if (it < 0) Amber else Mint,
-          fontSize = 23.sp, fontWeight = FontWeight.Bold)
+          fontSize = 20.sp, fontWeight = FontWeight.Bold)
     }
     Fact("Movimiento", recordValue(row, "movement_kind")?.let(::translated))
     Fact("Fecha", localDate(recordValue(row, "created_at")))
@@ -343,7 +343,7 @@ internal fun ProfileSummary(data: JSONObject) {
     listOf("orders" to "Pedidos", "entitlements" to "Accesos", "tickets" to "Tickets").forEach { (key, label) ->
       val values = data.optJSONArray(key)
       if (values != null) Tile(Modifier.weight(1f)) {
-        Text(values.length().toString(), color = Mint, fontWeight = FontWeight.Bold, fontSize = 21.sp)
+        Text(values.length().toString(), color = Mint, fontWeight = FontWeight.Bold, fontSize = 19.sp)
         Small(L(label))
       }
     }
@@ -380,8 +380,8 @@ internal fun DetailScreen(page: Page, row: JSONObject, onClose: () -> Unit, cont
         topBar = { TopAppBar(title = { Text(LF("Detalle · %1\$s", L(page.title))) }, navigationIcon = {
           IconButton(onClick = onClose) { Icon(Icons.AutoMirrored.Outlined.ArrowBack, L("Volver")) }
         }) }) { padding ->
-      Column(Modifier.fillMaxSize().padding(padding).verticalScroll(rememberScrollState()).padding(16.dp),
-          verticalArrangement = Arrangement.spacedBy(14.dp)) {
+      Column(Modifier.fillMaxSize().padding(padding).verticalScroll(rememberScrollState()).padding(12.dp),
+          verticalArrangement = Arrangement.spacedBy(10.dp)) {
         Tile(Modifier.fillMaxWidth(), GreenPanel) {
           RecordHeader(recordValue(row, "title") ?: recordValue(row, "name") ?: recordValue(row, "product_id")?.let(::productName) ?: page.title,
               userHandle(row), page.icon, recordValue(row, "status"))
@@ -409,13 +409,28 @@ internal fun ChatHeader(thread: JSONObject) {
 }
 
 @Composable
-internal fun MessageBubble(message: JSONObject, outgoing: Boolean, senderName: String? = null) {
+internal fun MessageBubble(message: JSONObject, outgoing: Boolean, senderName: String? = null, thread: JSONObject? = null) {
   val shape = if (outgoing) RoundedCornerShape(18.dp, 18.dp, 4.dp, 18.dp)
       else RoundedCornerShape(18.dp, 18.dp, 18.dp, 4.dp)
-  Column(Modifier.widthIn(max = 320.dp).background(if (outgoing) GreenPanel else Panel, shape)
-      .padding(horizontal = 14.dp, vertical = 10.dp), verticalArrangement = Arrangement.spacedBy(5.dp)) {
+  val bubbleModifier = Modifier.widthIn(max = 320.dp).background(if (outgoing) GreenPanel else Panel, shape)
+      .padding(horizontal = 14.dp, vertical = 10.dp)
+  // Contenido de la burbuja, compartido por ambas ramas para no duplicarlo.
+  val content: @Composable ColumnScope.() -> Unit = {
     senderName?.takeIf { it.isNotBlank() }?.let { Small(it, color = Mint) }
     Text(message.optString("text"), color = Ink, fontSize = 15.sp)
     localDate(recordValue(message, "at"))?.let { Small(it, Modifier.align(Alignment.End)) }
+  }
+  if (!outgoing && thread != null) {
+    // Entrante: avatar real del hilo (la misma foto que la bandeja y el
+    // encabezado del chat). ProfileAvatar ya muestra las iniciales del
+    // nombre sobre fondo de color cuando el hilo no trae avatar, así que
+    // aquí nunca aparece el icono genérico de persona.
+    Row(verticalAlignment = Alignment.Bottom, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+      ProfileAvatar(thread, 32)
+      Column(bubbleModifier, verticalArrangement = Arrangement.spacedBy(5.dp), content = content)
+    }
+  } else {
+    // Saliente (admin): sin avatar, como antes.
+    Column(bubbleModifier, verticalArrangement = Arrangement.spacedBy(5.dp), content = content)
   }
 }

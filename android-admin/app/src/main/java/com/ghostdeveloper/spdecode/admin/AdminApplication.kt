@@ -18,6 +18,7 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.platform.testTag
@@ -170,26 +171,26 @@ internal fun AdminApplication(state: AdminState) {
                 item {
                   Row(
                       verticalAlignment = Alignment.CenterVertically,
-                      horizontalArrangement = Arrangement.spacedBy(12.dp),
-                      modifier = Modifier.padding(vertical = 16.dp)) {
-                        Avatar(Icons.Outlined.Person, Mint, 52)
+                      horizontalArrangement = Arrangement.spacedBy(10.dp),
+                      modifier = Modifier.padding(vertical = 12.dp)) {
+                        Avatar(Icons.Outlined.Person, Mint, 44)
                         Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
                           Text(
                               "SP-DECODE",
                               color = Mint,
-                              fontSize = 20.sp,
+                              fontSize = 18.sp,
                               fontWeight = FontWeight.Bold)
                           Text(
                               state.principal.optString("name").ifBlank { "Administrador" },
                               color = Ink,
-                              fontSize = 15.sp,
+                              fontSize = 14.sp,
                               fontWeight = FontWeight.SemiBold)
                           Small(state.principal.optString("role"))
                         }
                       }
                 }
                 menuGroups.forEach { (title, pages) ->
-                  item { Small(L(title), Modifier.padding(top = 22.dp, bottom = 8.dp)) }
+                  item { Small(L(title), Modifier.padding(top = 16.dp, bottom = 6.dp)) }
                   items(pages.filter { state.allowed(it) }) { p ->
                     NavigationDrawerItem(
                         label = { Text(L(p.title)) },
@@ -301,10 +302,10 @@ internal fun AdminApplication(state: AdminState) {
                              moduleSubtitle(state.page)?.let { summary ->
                                item {
                                  Tile(Modifier.fillMaxWidth(), GreenPanel) {
-                                   Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(13.dp)) {
-                                     Avatar(state.page.icon, Mint, 48)
-                                     Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                                       Text(L(state.page.title), color = Ink, fontSize = 21.sp, fontWeight = FontWeight.SemiBold)
+                                   Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                                     Avatar(state.page.icon, Mint, 40)
+                                     Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                                       Text(L(state.page.title), color = Ink, fontSize = 18.sp, fontWeight = FontWeight.SemiBold)
                                        Small(L(summary))
                                      }
                                    }
@@ -328,7 +329,7 @@ internal fun AdminApplication(state: AdminState) {
                                   Tile(Modifier.fillMaxWidth(), GreenPanel) {
                                     Small("SP-DECODE · ADMIN", color = Mint)
                                     Text(state.principal.optString("name").ifBlank { "Administrador" },
-                                        color = Ink, fontSize = 29.sp, fontWeight = FontWeight.Bold)
+                                        color = Ink, fontSize = 24.sp, fontWeight = FontWeight.Bold)
                                     Small(state.principal.optString("role"))
                                     if (state.data.has("maintenance")) StatusPill(
                                         if (state.data.optBoolean("maintenance")) "En mantenimiento" else "Panel conectado",
@@ -352,7 +353,7 @@ internal fun AdminApplication(state: AdminState) {
                                         }
                                         if (group.size == 1) Spacer(Modifier.weight(1f))
                                       }
-                                      Spacer(Modifier.height(8.dp))
+                                      Spacer(Modifier.height(6.dp))
                                     }
                                     val extraKeys = metrics.keys().asSequence().filter { it !in counters.map { entry -> entry.first } }.toList()
                                     if (extraKeys.isNotEmpty()) Tile(Modifier.fillMaxWidth()) { Fields(metrics, skip = counters.map { it.first }.toSet()) }
@@ -406,10 +407,10 @@ internal fun AdminApplication(state: AdminState) {
                                 if (user != null) {
                                   item {
                                     Tile(Modifier.fillMaxWidth(), GreenPanel) {
-                                      Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(14.dp)) {
-                                        ProfileAvatar(user, 68)
-                                        Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                                          Text(displayName(user), color = Ink, fontSize = 22.sp, fontWeight = FontWeight.Bold)
+                                      Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                                        ProfileAvatar(user, 56)
+                                        Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(3.dp)) {
+                                          Text(displayName(user), color = Ink, fontSize = 19.sp, fontWeight = FontWeight.Bold)
                                           userHandle(user)?.let { Small(it, color = Mint) }
                                           Small(user.optString("email"))
                                           if (user.optBoolean("email_verified")) StatusPill("Correo verificado")
@@ -534,7 +535,7 @@ internal fun AdminApplication(state: AdminState) {
                                         Text(
                                             "${money(amount)} ${t.optString("currency")}",
                                             color = Mint,
-                                            fontSize = 24.sp)
+                                            fontSize = 20.sp)
                                       }
                                       Small(LF("%1\$s pedidos pagados", t.optInt("orders")))
                                     }
@@ -769,7 +770,7 @@ internal fun AdminApplication(state: AdminState) {
                                     Text(
                                         state.principal.optString("name"),
                                         color = Ink,
-                                        fontSize = 22.sp)
+                                        fontSize = 19.sp)
                                     Small(L("Conexión HTTPS autenticada"))
                                     Small(
                                         "${state.principal.optString("username")} · ${state.principal.optString("role")}")
@@ -820,8 +821,8 @@ internal fun AdminApplication(state: AdminState) {
                               Page.Sessions -> {
                                 item {
                                   Tile(Modifier.fillMaxWidth()) {
-                                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                                      Avatar(Icons.Outlined.Devices, Mint, 48)
+                                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                                      Avatar(Icons.Outlined.Devices, Mint, 40)
                                       Column(Modifier.weight(1f)) {
                                         Text(L("Este dispositivo"), color = Ink, fontWeight = FontWeight.Bold)
                                         Small("Android · ${android.os.Build.MANUFACTURER} ${android.os.Build.MODEL}")
@@ -840,50 +841,60 @@ internal fun AdminApplication(state: AdminState) {
                                 }
                               }
                               Page.Maintenance -> {
+                                // Estado actual según el servidor; el interruptor
+                                // solo pide confirmación y ejecuta la misma acción
+                                // "maintenance" que los botones anteriores.
+                                val maintenanceOn = state.data.optBoolean("maintenance")
                                 item {
                                   Tile(Modifier.fillMaxWidth()) {
-                                    Text(
-                                        L("Mantenimiento del servicio"),
-                                        color = Ink,
-                                        fontWeight = FontWeight.Bold)
-                                    Small(L("Estas acciones modifican la disponibilidad del servicio para los clientes."))
-                                    TextButton(
-                                        onClick = {
-                                          mutate(
-                                              "Activar mantenimiento para todos los clientes",
-                                              "maintenance",
-                                              JSONObject().put("enabled", true))
-                                        }) {
-                                          Text(L("Activar mantenimiento"), color = Amber)
-                                        }
-                                    TextButton(
-                                        onClick = {
-                                          mutate(
-                                              "Desactivar mantenimiento",
-                                              "maintenance",
-                                              JSONObject().put("enabled", false))
-                                        }) {
-                                          Text(L("Desactivar mantenimiento"))
-                                        }
+                                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                                      Avatar(Icons.Outlined.Build, if (maintenanceOn) Amber else Mint, 40)
+                                      Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                                        Text(L("Mantenimiento del servicio"), color = Ink, fontWeight = FontWeight.SemiBold, fontSize = 15.sp)
+                                        Small(L("Estas acciones modifican la disponibilidad del servicio para los clientes."))
+                                      }
+                                      Column(horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                                        Switch(
+                                            checked = maintenanceOn,
+                                            enabled = !state.busy,
+                                            onCheckedChange = { checked ->
+                                              mutate(
+                                                  if (checked) "Activar mantenimiento para todos los clientes"
+                                                  else "Desactivar mantenimiento",
+                                                  "maintenance",
+                                                  JSONObject().put("enabled", checked))
+                                            },
+                                            colors = SwitchDefaults.colors(
+                                                checkedTrackColor = Amber,
+                                                checkedThumbColor = Ink,
+                                                uncheckedThumbColor = Muted,
+                                                uncheckedTrackColor = Border))
+                                        StatusPill(
+                                            if (maintenanceOn) "En mantenimiento" else "Inactivo",
+                                            if (maintenanceOn) Amber else Muted)
+                                      }
+                                    }
                                   }
                                 }
                                 item {
                                   Tile(Modifier.fillMaxWidth()) {
-                                    Text(
-                                        L("Caché de compilación del servidor"),
-                                        color = Ink,
-                                        fontWeight = FontWeight.Bold)
-                                    Small(
-                                        L("La limpieza la ejecuta el servicio de mantenimiento del VPS."))
-                                    TextButton(
-                                        onClick = {
-                                          mutate(
-                                              "Solicitar limpieza de caché del servidor",
-                                              "cleanup",
-                                              JSONObject().put("action", "request"))
-                                        }) {
-                                          Text(L("Solicitar limpieza"))
-                                        }
+                                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                                      Avatar(Icons.Outlined.CleaningServices, Mint, 40)
+                                      Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                                        Text(L("Caché de compilación del servidor"), color = Ink, fontWeight = FontWeight.SemiBold, fontSize = 15.sp)
+                                        Small(L("La limpieza la ejecuta el servicio de mantenimiento del VPS."))
+                                      }
+                                      TextButton(
+                                          enabled = !state.busy,
+                                          onClick = {
+                                            mutate(
+                                                "Solicitar limpieza de caché del servidor",
+                                                "cleanup",
+                                                JSONObject().put("action", "request"))
+                                          }) {
+                                            Text(L("Solicitar limpieza"))
+                                          }
+                                    }
                                   }
                                 }
                               }
@@ -956,13 +967,13 @@ private fun LoginScreen(state: AdminState) {
           .padding(28.dp),
       horizontalAlignment = Alignment.CenterHorizontally,
       verticalArrangement = Arrangement.Center) {
-        Avatar(Icons.Outlined.VerifiedUser, Mint, 88)
-        Spacer(Modifier.height(22.dp))
-        Text("SP-DECODE", color = Ink, fontSize = 30.sp, fontWeight = FontWeight.Bold)
+        Avatar(Icons.Outlined.VerifiedUser, Mint, 72)
+        Spacer(Modifier.height(16.dp))
+        Text("SP-DECODE", color = Ink, fontSize = 26.sp, fontWeight = FontWeight.Bold)
         Text("ADMINISTRACIÓN", color = Mint, fontWeight = FontWeight.SemiBold, letterSpacing = 2.sp)
-        Spacer(Modifier.height(10.dp))
+        Spacer(Modifier.height(8.dp))
         Small(L("Acceso administrativo seguro"))
-        Spacer(Modifier.height(30.dp))
+        Spacer(Modifier.height(22.dp))
         OutlinedTextField(
             username,
             { username = it.take(128) },
@@ -989,7 +1000,7 @@ private fun LoginScreen(state: AdminState) {
                     "Mostrar u ocultar contraseña")
               }
             })
-        Spacer(Modifier.height(20.dp))
+        Spacer(Modifier.height(16.dp))
         Button(
             enabled = !state.busy && username.isNotBlank() && password.isNotEmpty(),
             onClick = {
@@ -1001,7 +1012,7 @@ private fun LoginScreen(state: AdminState) {
               Text(L(if (state.busy) "Conectando…" else "Iniciar sesión"))
             }
         state.error?.let { Text(AdminErrorLabel(it), color = Red, modifier = Modifier.padding(top = 12.dp)) }
-        Spacer(Modifier.height(24.dp))
+        Spacer(Modifier.height(18.dp))
         Small("Ghost Nexora Studio")
       }
 }
@@ -1009,8 +1020,8 @@ private fun LoginScreen(state: AdminState) {
 @Composable
 private fun RecordCard(title: String, subtitle: String, onClick: () -> Unit) {
   Tile(Modifier.fillMaxWidth().clickable(onClick = onClick)) {
-    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-      Avatar(Icons.Outlined.Description, Mint, 40)
+    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+      Avatar(Icons.Outlined.Description, Mint, 36)
       Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(3.dp)) {
         Text(title.ifBlank { "Sin nombre" }, color = Ink, fontWeight = FontWeight.SemiBold)
         if (subtitle.isNotBlank()) Small(subtitle)
@@ -1023,16 +1034,16 @@ private fun RecordCard(title: String, subtitle: String, onClick: () -> Unit) {
 @Composable
 private fun UserCard(row: JSONObject, onClick: () -> Unit) {
   Tile(Modifier.fillMaxWidth().clickable(onClick = onClick)) {
-    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-      ProfileAvatar(row, 52)
-      Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(3.dp)) {
-        Text(displayName(row), color = Ink, fontWeight = FontWeight.SemiBold, fontSize = 16.sp)
+    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+      ProfileAvatar(row, 44)
+      Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+        Text(displayName(row), color = Ink, fontWeight = FontWeight.SemiBold, fontSize = 15.sp)
         userHandle(row)?.let { Small(it, color = Mint) }
         Small(row.optString("email"))
       }
       Icon(Icons.Outlined.ChevronRight, null, tint = Muted)
     }
-    Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(7.dp)) {
+    Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
       if (row.has("email_verified")) StatusPill(if (row.optBoolean("email_verified")) "Verificado" else "No verificado", if (row.optBoolean("email_verified")) Mint else Muted)
       if (row.optString("providers").contains("google", ignoreCase = true)) StatusPill("Google", Blue)
       if (row.optBoolean("password_enabled")) StatusPill("Contraseña", Muted)
@@ -1049,10 +1060,10 @@ private fun TicketCard(row: JSONObject, onClick: () -> Unit) {
   val status = row.optString("status")
   val last = row.array("messages").lastOrNull()
   Tile(Modifier.fillMaxWidth().clickable(onClick = onClick)) {
-    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-      ProfileAvatar(row, 48)
-      Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(3.dp)) {
-        Text(displayName(row), color = Ink, fontWeight = FontWeight.SemiBold, fontSize = 16.sp)
+    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+      ProfileAvatar(row, 40)
+      Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+        Text(displayName(row), color = Ink, fontWeight = FontWeight.SemiBold, fontSize = 15.sp)
         userHandle(row)?.let { Small(it, color = Mint) }
         Text(row.optString("subject"), color = Ink, fontSize = 13.sp, maxLines = 1)
       }
@@ -1119,6 +1130,7 @@ private val labels =
         "workerReady" to "Worker disponible",
         "redisReady" to "Redis disponible",
         "health" to "Salud del servicio",
+        "window" to "Ventana",
         "mustChangePassword" to "Debe cambiar contraseña")
 private val hidden =
     setOf(
@@ -1150,6 +1162,13 @@ internal fun translated(value: String): String =
       "true" -> "Sí"
       "false" -> "No"
       "web_container_only" -> "Solo contenedor web"
+      // Ventana de métricas del servidor: nunca se muestra el valor crudo.
+      // Valores no listados aquí siguen el camino actual (se muestran tal cual).
+      "utc_today" -> "Hoy (UTC)"
+      "utc_week" -> "Esta semana (UTC)"
+      "utc_month" -> "Este mes (UTC)"
+      "utc_year" -> "Este año (UTC)"
+      "all_time" -> "Todo el historial"
       else -> value
     }
 
@@ -1177,7 +1196,7 @@ private fun Fields(value: JSONObject, skip: Set<String> = emptySet(), depth: Int
                   L(labels[key] ?: key),
                   color = Mint,
                   fontWeight = FontWeight.Medium,
-                  modifier = Modifier.padding(top = 8.dp))
+                  modifier = Modifier.padding(top = 6.dp))
               if (depth < 4) Fields(item, depth = depth + 1)
             }
             is JSONArray -> {
@@ -1185,7 +1204,7 @@ private fun Fields(value: JSONObject, skip: Set<String> = emptySet(), depth: Int
                   L(labels[key] ?: key),
                   color = Mint,
                   fontWeight = FontWeight.Medium,
-                  modifier = Modifier.padding(top = 8.dp))
+                  modifier = Modifier.padding(top = 6.dp))
               for (i in 0 until item.length()) {
                 val row = item.optJSONObject(i)
                 if (row != null && depth < 4) {
@@ -1195,7 +1214,7 @@ private fun Fields(value: JSONObject, skip: Set<String> = emptySet(), depth: Int
               }
             }
             else -> {
-              Row(Modifier.fillMaxWidth().padding(vertical = 5.dp), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+              Row(Modifier.fillMaxWidth().padding(vertical = 4.dp), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                 Text(L(labels[key] ?: prettyKey(key)), color = Muted, fontSize = 12.sp, modifier = Modifier.weight(.44f))
                 val raw = item.toString()
                 val display = translated(raw)
@@ -1316,10 +1335,10 @@ private fun SettingsScreen(state: AdminState) {
         item { SectionHeading("Idioma", "Elige el idioma de la interfaz") }
         items(AdminLanguage.entries) { language ->
           Tile(Modifier.fillMaxWidth().testTag("language-${language.tag}").clickable { state.changeLanguage(language) }) {
-            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-              Avatar(Icons.Outlined.Language, if (state.language == language) Mint else Muted, 44)
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+              Avatar(Icons.Outlined.Language, if (state.language == language) Mint else Muted, 40)
               Column(Modifier.weight(1f)) {
-                Text(language.nativeName, color = Ink, fontWeight = FontWeight.SemiBold, fontSize = 16.sp)
+                Text(language.nativeName, color = Ink, fontWeight = FontWeight.SemiBold, fontSize = 15.sp)
                 if (state.language == language) Small(L("Idioma actual"), color = Mint)
               }
               RadioButton(state.language == language, { state.changeLanguage(language) })
@@ -1332,8 +1351,8 @@ private fun SettingsScreen(state: AdminState) {
         item { SectionHeading("Apariencia", "Los cambios se guardan en este dispositivo") }
         items(Appearance.entries) { value ->
           Tile(Modifier.fillMaxWidth().clickable { state.theme(value) }) {
-            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-              Avatar(Icons.Outlined.Palette, if (state.appearance == value) Mint else Muted, 44)
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+              Avatar(Icons.Outlined.Palette, if (state.appearance == value) Mint else Muted, 40)
               Column(Modifier.weight(1f)) {
                 Text(L(appearanceKey(value)), color = Ink, fontWeight = FontWeight.SemiBold)
                 Small(L(when(value) {
@@ -1349,8 +1368,8 @@ private fun SettingsScreen(state: AdminState) {
       }
       Page.AboutSettings -> item {
         Tile(Modifier.fillMaxWidth(), GreenPanel) {
-          Avatar(Icons.Outlined.VerifiedUser, Mint, 58)
-          Text("SP-DECODE Admin", color = Ink, fontSize = 23.sp, fontWeight = FontWeight.Bold)
+          Avatar(Icons.Outlined.VerifiedUser, Mint, 48)
+          Text("SP-DECODE Admin", color = Ink, fontSize = 20.sp, fontWeight = FontWeight.Bold)
           Small(LF("Versión %1\$s", BuildConfig.VERSION_NAME))
           Small("Ghost Nexora Studio")
         }
@@ -1358,7 +1377,7 @@ private fun SettingsScreen(state: AdminState) {
       else -> {
         item {
           Tile(Modifier.fillMaxWidth(), GreenPanel) {
-            Text(state.principal.optString("name"), color = Ink, fontSize = 20.sp, fontWeight = FontWeight.Bold)
+            Text(state.principal.optString("name"), color = Ink, fontSize = 18.sp, fontWeight = FontWeight.Bold)
             Small(state.principal.optString("role"))
           }
         }
@@ -1472,15 +1491,12 @@ private fun ChatScreen(state: AdminState) {
                       Modifier.fillMaxWidth(),
                       horizontalArrangement = if (outgoing) Arrangement.End else Arrangement.Start,
                       verticalAlignment = Alignment.Bottom) {
-                        if (!outgoing) {
-                          Avatar(Icons.Outlined.Person, Muted, 32)
-                          Spacer(Modifier.width(8.dp))
-                        }
                         MessageBubble(
                             m,
                             outgoing,
                             if (outgoing) m.optJSONObject("agent")?.optString("name")
-                            else displayName(thread).takeUnless { it == "Sin nombre" })
+                            else displayName(thread).takeUnless { it == "Sin nombre" },
+                            thread = thread)
                       }
                 }
               }
@@ -1496,9 +1512,21 @@ private fun ChatScreen(state: AdminState) {
                   .padding(horizontal = 10.dp),
               horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 quickReplies.forEach { reply ->
-                  AssistChip(
-                      onClick = { state.updateSupportDraft(state.selectedId, reply) },
-                      label = { Text(reply, maxLines = 1) })
+                  // Chip compacto (28 dp, texto 12 sp, ancho máx. 180 dp con
+                  // elipsis): antes era un AssistChip de Material 3 con el
+                  // texto completo en una línea y ocupaba casi todo el ancho.
+                  // Al tocarlo sigue rellenando solo el borrador con el texto
+                  // completo; solo la etiqueta visible se recorta.
+                  Box(
+                      Modifier.height(28.dp).widthIn(max = 180.dp).clip(CircleShape)
+                          .background(Panel).border(1.dp, Border, CircleShape)
+                          .clickable { state.updateSupportDraft(state.selectedId, reply) }
+                          .padding(horizontal = 10.dp),
+                      contentAlignment = Alignment.Center) {
+                        Text(reply, maxLines = 1,
+                            overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
+                            fontSize = 12.sp, color = Ink)
+                      }
                 }
               }
           Row(

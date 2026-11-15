@@ -44,8 +44,8 @@ internal fun Tile(
     content: @Composable ColumnScope.() -> Unit,
 ) {
   Column(
-      modifier.clip(Rounded).background(color).border(1.dp, Border.copy(alpha = .75f), Rounded).padding(15.dp),
-      verticalArrangement = Arrangement.spacedBy(9.dp),
+      modifier.clip(Rounded).background(color).border(1.dp, Border.copy(alpha = .75f), Rounded).padding(12.dp),
+      verticalArrangement = Arrangement.spacedBy(7.dp),
       content = content,
   )
 }
@@ -77,8 +77,8 @@ internal fun ScreenList(screenKey: Any = Unit, content: androidx.compose.foundat
   Box(Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
     key(screenKey) { LazyColumn(
         Modifier.widthIn(max = 840.dp).fillMaxSize().testTag("screen-list"),
-        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 18.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
+        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
         content = content,
     ) }
   }
@@ -93,9 +93,9 @@ internal fun Metric(
     modifier: Modifier = Modifier,
 ) {
   Tile(modifier) {
-    Icon(icon, null, Modifier.size(21.dp), tint)
-    Text(value, color = Ink, fontWeight = FontWeight.SemiBold, fontSize = 26.sp)
-    Text(L(label), color = Muted, fontSize = 13.sp)
+    Icon(icon, null, Modifier.size(18.dp), tint)
+    Text(value, color = Ink, fontWeight = FontWeight.SemiBold, fontSize = 22.sp)
+    Text(L(label), color = Muted, fontSize = 12.sp)
   }
 }
 
@@ -181,9 +181,9 @@ internal fun EmptyState(
     icon: ImageVector = Icons.Outlined.SearchOff,
 ) {
   Column(
-      Modifier.fillMaxWidth().padding(vertical = 36.dp),
+      Modifier.fillMaxWidth().padding(vertical = 24.dp),
       horizontalAlignment = Alignment.CenterHorizontally,
-      verticalArrangement = Arrangement.spacedBy(12.dp),
+      verticalArrangement = Arrangement.spacedBy(8.dp),
   ) {
     Avatar(icon, Muted, 60)
     Text(L(title), color = Ink, fontWeight = FontWeight.SemiBold)
@@ -200,11 +200,11 @@ internal fun ActionRow(
 ) {
   Column {
     Row(
-        Modifier.fillMaxWidth().clickable(onClick = onClick).padding(vertical = 15.dp),
+        Modifier.fillMaxWidth().clickable(onClick = onClick).padding(vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(13.dp),
+        horizontalArrangement = Arrangement.spacedBy(10.dp),
     ) {
-      Icon(icon, null, Modifier.size(21.dp), Mint)
+      Icon(icon, null, Modifier.size(19.dp), Mint)
       Column(Modifier.weight(1f)) {
         Text(L(label), color = Ink, fontSize = 15.sp)
         if (detail != null) Small(L(detail))
@@ -221,7 +221,7 @@ internal fun PrimaryAction(label: String, enabled: Boolean = true, onClick: () -
       onClick,
       enabled = enabled,
       shape = Rounded,
-      modifier = Modifier.fillMaxWidth().heightIn(min = 52.dp),
+      modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp),
   ) {
     Text(L(label), fontWeight = FontWeight.Medium)
   }
@@ -237,7 +237,7 @@ internal fun SecondaryAction(label: String, danger: Boolean = false, onClick: ()
               containerColor = if (danger) Red.copy(alpha = .13f) else GreenPanel,
               contentColor = if (danger) Red else Mint,
           ),
-      modifier = Modifier.fillMaxWidth().heightIn(min = 50.dp),
+      modifier = Modifier.fillMaxWidth().heightIn(min = 46.dp),
   ) {
     Text(L(label))
   }
@@ -374,8 +374,8 @@ internal fun userHandle(row: JSONObject): String? =
 
 @Composable
 internal fun SectionHeading(title: String, subtitle: String? = null) {
-  Column(Modifier.fillMaxWidth().padding(bottom = 8.dp), verticalArrangement = Arrangement.spacedBy(3.dp)) {
-    Text(L(title), color = Ink, fontSize = 19.sp, fontWeight = FontWeight.SemiBold)
+  Column(Modifier.fillMaxWidth().padding(bottom = 6.dp), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+    Text(L(title), color = Ink, fontSize = 17.sp, fontWeight = FontWeight.SemiBold)
     if (subtitle != null) Small(L(subtitle))
   }
 }
@@ -383,7 +383,7 @@ internal fun SectionHeading(title: String, subtitle: String? = null) {
 @Composable
 internal fun StatusPill(value: String, tint: Color = Mint) {
   Text(L(value), color = tint, fontSize = 11.sp, fontWeight = FontWeight.Medium,
-      modifier = Modifier.background(tint.copy(alpha = .10f), CircleShape).padding(horizontal = 9.dp, vertical = 5.dp))
+      modifier = Modifier.background(tint.copy(alpha = .10f), CircleShape).padding(horizontal = 8.dp, vertical = 4.dp))
 }
 
 @Composable
