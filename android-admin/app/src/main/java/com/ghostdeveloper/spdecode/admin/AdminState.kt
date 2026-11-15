@@ -26,7 +26,7 @@ internal class AdminState(app: Application) : AndroidViewModel(app) {
   var language by mutableStateOf(AdminLanguage.fromTag(preferences.getString("language", "es")))
     private set
 
-  fun setLanguage(value: AdminLanguage) {
+  fun changeLanguage(value: AdminLanguage) {
     language = value
     preferences.edit().putString("language", value.tag).apply()
   }
