@@ -1,0 +1,20 @@
+{
+  "python": "3.12.14",
+  "python_packages": {
+    "pycryptodome": "3.23.0",
+    "argon2-cffi": "25.1.0",
+    "argon2-cffi-bindings": "26.1.0",
+    "cffi": "2.1.1",
+    "pycparser": "3.12",
+    "unicorn": "2.1.4",
+    "capstone": "5.0.7",
+    "pyelftools": "0.32"
+  },
+  "java": "OpenJDK 21.0.13",
+  "jadx": {
+    "version": "1.5.3",
+    "url": "https://github.com/skylot/jadx/releases/download/v1.5.3/jadx-1.5.3.zip",
+    "sha256": "8280f3799c0273fe797a2bcd90258c943e451fd195f13d05400de5e6451d15ec"
+  },
+  "state": "RESEARCH_ONLY_NOT_F7_APPROVED"
+}

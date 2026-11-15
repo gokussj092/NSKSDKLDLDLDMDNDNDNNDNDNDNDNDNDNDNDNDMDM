@@ -1,5 +1,10 @@
 # HTTP Custom — archivos .hc
 
+**Investigación build 934 (8.0.22 Patch 2): PENDING.** Las nueve muestras
+aportadas autentican HCX4 exterior, pero **0/9 producen JSON interior
+completo**. No se habilitan HCCFG 12/n15/n16, 13/n18 ni el wrapper de ID de
+acceso. [Expediente reproducible](../../../../analysis/xyz.easypro.httpcustom/934/ANALYSIS.md).
+
 **Investigación 2026-11-01:** las dos muestras nuevas HCCFG 11/n13 con Extra
 Protection autentican HCX4, pero **0/2 están descifradas**. El motor sigue
 habilitado para HCCFG 10/n11/n12 y sus rutas históricas. No se anuncia soporte
