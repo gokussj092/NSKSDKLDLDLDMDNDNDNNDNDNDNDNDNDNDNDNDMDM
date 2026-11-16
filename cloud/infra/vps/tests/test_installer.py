@@ -248,6 +248,24 @@ class VPSInstallerTests(unittest.TestCase):
         worker=yml.split("\n  decoder-worker:",1)[1]
         for word in ("CLOUD_EHI_SIGN_KEY:","CLOUD_ADMIN_SESSION_KEY:"):
             self.assertNotIn(word,worker)
+    def test_app_analysis_env_reaches_the_web_container(self):
+        yml=(ROOT/"cloud/compose.yaml").read_text()
+        # The web service maps env explicitly; there is no env_file anywhere.
+        self.assertNotIn("env_file",yml)
+        web=yml.split("\n  web:",1)[1].split("\n  apk-qa:",1)[0]
+        # Every variable the analysis feature reads, with the code defaults.
+        for line in (
+            "SPDECODE_APP_ANALYSIS_ENABLED: ${SPDECODE_APP_ANALYSIS_ENABLED:-false}",
+            "SPDECODE_APP_ANALYSIS_ROOT: ${SPDECODE_APP_ANALYSIS_ROOT:-/var/lib/spdecode/app-analysis}",
+            "SPDECODE_APP_ANALYSIS_MAX_CONCURRENT: ${SPDECODE_APP_ANALYSIS_MAX_CONCURRENT:-1}",
+            "SPDECODE_APP_ANALYSIS_DOWNLOAD_SECRET: ${SPDECODE_APP_ANALYSIS_DOWNLOAD_SECRET:-}",
+            "SPDECODE_APP_ANALYSIS_BOT_TOKEN: ${SPDECODE_APP_ANALYSIS_BOT_TOKEN:-}",
+            "SPDECODE_APP_ANALYSIS_WEBHOOK_URL: ${SPDECODE_APP_ANALYSIS_WEBHOOK_URL:-}",
+            "SPDECODE_APP_ANALYSIS_WEBHOOK_SECRET: ${SPDECODE_APP_ANALYSIS_WEBHOOK_SECRET:-}",
+        ):
+            self.assertIn(line,web)
+        # The credits gate was already mapped; the analysis vars sit with it.
+        self.assertIn("SPDECODE_ANALYSIS_CREDITS_READY: ${SPDECODE_ANALYSIS_CREDITS_READY:-false}",web)
     def test_goku_private_repo_source_is_explicitly_allowed(self):
         cli=(VPS/"spdecodectl").read_text()
         installer=(VPS/"install.sh").read_text()
