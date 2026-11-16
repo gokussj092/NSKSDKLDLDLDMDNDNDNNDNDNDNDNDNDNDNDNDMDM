@@ -4,7 +4,9 @@ import { throttle } from "./c3-store.mjs";
 
 const scrypt=promisify(scryptCallback);
 const COOKIE="spdecode_admin_session";
-const TTL=1800;
+// Sesión de 90 días: iguala la sesión local de la app Admin (SessionVault 90 días).
+// Antes TTL=1800 (30 min) sin refresco; la cookie expiraba mucho antes que el cliente.
+const TTL=90*24*3600;
 const KEY_PREFIX="spc6:admin:session:";
 const USERNAME=/^[a-zA-Z][a-zA-Z0-9._-]{2,63}$/;
 const HASH=/^scrypt\$16384\$8\$1\$([a-f0-9]{32})\$([a-f0-9]{128})$/;

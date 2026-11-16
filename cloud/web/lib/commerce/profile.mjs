@@ -4,7 +4,7 @@ import {normalizeHandle,normalizeDisplayName} from '../f7-account-identity.mjs';
 import {fail} from './config.mjs';
 
 const NAME_MAX=80,BIO_MAX=180,IMAGE_MAX=85000;
-function avatarInput(value){
+export function avatarInput(value){
  if(value===undefined)return undefined;
  if(value===null)return null;
  if(typeof value!=='string'||value.length>115000)fail('INVALID_AVATAR');

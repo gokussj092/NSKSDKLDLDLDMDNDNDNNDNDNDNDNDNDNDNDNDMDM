@@ -35,7 +35,7 @@ before(async()=>{
  auth=makeAuth(db,env);
  await (await getMigrations(auth.options)).runMigrations();
  for(const name of ['002_shop.sql','003_ads_free.sql','004_gifts.sql',
-   '005_account_support_apk.sql','006_support_agent_identity.sql','007_staff_permissions.sql','008_account_notifications.sql','009_staff_custom_roles.sql']){
+   '005_account_support_apk.sql','006_support_agent_identity.sql','007_staff_permissions.sql','008_account_notifications.sql','009_staff_custom_roles.sql','010_support_reads_avatar.sql']){
   const sql=await readFile(new URL('../sql/'+name,import.meta.url),'utf8');
   await pg.exec(sql);
  }
@@ -73,6 +73,7 @@ test('login and first-password-change gate are mandatory; roles never grant VPS 
  const created=globalThis.staffTestCredentials;
  const result=await loginStaff(redis,created.staff.username,created.temporaryPassword,{db,config});
  assert.equal(result.mustChangePassword,true);
+ assert.equal(result.expiresIn,90*24*3600);
  const req=new Request('https://panel.spdecode.xyz/api/admin/access',{
   headers:{cookie:'spdecode_staff_session='+result.token}});
  const actor=await panelPrincipal(req,{db,redis,config});
@@ -131,6 +132,19 @@ test('owner can edit staff name username role, revoke sessions and reset passwor
  assert.ok(!JSON.stringify(await listStaff({db})).includes(reset.temporaryPassword));
  const audit=await recentStaffAudit({db});
  assert.ok(audit.events.some(x=>x.action==='staff_updated'));
+});
+test('owner can set staff avatar (data-URI JPEG) and clear it; invalid avatars rejected',async()=>{
+ const initial=globalThis.staffTestCredentials;
+ const bytes=Buffer.alloc(100);bytes[0]=0xff;bytes[1]=0xd8;bytes[98]=0xff;bytes[99]=0xd9;
+ const avatar='data:image/jpeg;base64,'+bytes.toString('base64');
+ const saved=await updateStaff(owner,{id:initial.staff.id,avatar},{db});
+ assert.equal(saved.staff.avatar,avatar);
+ const listed=await listStaff({db});
+ assert.equal(listed.staff.find(s=>s.id===initial.staff.id).avatar,avatar);
+ await assert.rejects(updateStaff(owner,{id:initial.staff.id,avatar:'data:image/png;base64,AAAA'},{db}),/INVALID_AVATAR/);
+ await assert.rejects(updateStaff(owner,{id:initial.staff.id,avatar:'data:image/jpeg;base64,AAAA'},{db}),/INVALID_AVATAR/);
+ const cleared=await updateStaff(owner,{id:initial.staff.id,avatar:null},{db});
+ assert.equal(cleared.staff.avatar,null);
 });
 test('registered customers directory is scoped, paginated and redacts secrets',async()=>{
  const list=await userDirectory({db,page:0});

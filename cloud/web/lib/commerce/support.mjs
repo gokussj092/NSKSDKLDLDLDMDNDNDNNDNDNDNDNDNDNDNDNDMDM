@@ -1,6 +1,7 @@
 import {randomBytes,randomUUID,createCipheriv,createDecipheriv} from 'node:crypto';
 import {database,transaction} from './db.mjs';
 import {recordAccountNotice,pushAccountNotice} from './account-notices.mjs';
+import {avatarInput} from './profile.mjs';
 import {fail} from './config.mjs';
 
 const UUID=/^[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}$/;
@@ -32,8 +33,32 @@ function messageRow(row,env){
   return {id:row.id,sender:row.sender_kind,text:decryptMessage(row,{env}),at:row.created_at,
     ...(row.sender_kind==='admin'?{agent:{
       name:row.agent_name||'SP-DECODE',
-      role:row.agent_role||'support'
+      role:row.agent_role||'support',
+      avatar:row.agent_avatar??null
     }}:{})};
+}
+// Last read position per actor (user account or staff id). Threads with no row
+// count every opposite-side message as unread.
+async function readTimes(db,readerKind,readerId){
+  const rows=(await db.query(`SELECT thread_id,read_at
+    FROM spdecode_shop.support_thread_reads
+    WHERE reader_kind=$1 AND reader_id=$2`,[readerKind,readerId])).rows;
+  return new Map(rows.map(r=>[r.thread_id,new Date(r.read_at).getTime()]));
+}
+export async function markSupportThreadRead(threadId,reader,{db=database()}={}){
+  if(!UUID.test(threadId)||!reader||!['user','staff'].includes(reader.kind)||
+     typeof reader.id!=='string'||!reader.id)fail('INVALID_REQUEST');
+  const row=(await db.query(`SELECT id,account_id,assigned_staff_id
+    FROM spdecode_shop.support_threads WHERE id=$1`,[threadId])).rows[0];
+  if(!row)fail('SUPPORT_NOT_FOUND',404);
+  if(reader.kind==='user'&&row.account_id!==reader.id)fail('SUPPORT_NOT_FOUND',404);
+  if(reader.kind==='staff'&&!reader.canSeeAll&&row.assigned_staff_id!==reader.id)
+    fail('SUPPORT_NOT_ASSIGNED',403);
+  await db.query(`INSERT INTO spdecode_shop.support_thread_reads
+    (thread_id,reader_kind,reader_id,read_at) VALUES($1,$2,$3,now())
+    ON CONFLICT(thread_id,reader_kind,reader_id) DO UPDATE SET read_at=now()`,
+    [threadId,reader.kind,reader.id]);
+  return {read:true};
 }
 async function rate(accountId,db){
   const n=(await db.query(`INSERT INTO spdecode_shop.support_limits(account_id,messages)
@@ -95,13 +120,18 @@ export async function listUserSupport(accountId,{db=database(),env=process.env}=
   const threads=(await db.query(`SELECT id,subject,category,status,last_message_at
     FROM spdecode_shop.support_threads WHERE account_id=$1
     ORDER BY last_message_at DESC LIMIT 50`,[accountId])).rows;
+  const reads=await readTimes(db,'user',accountId);
   const messages=await Promise.all(threads.map(async thread=>{
-    const rows=(await db.query(`SELECT id,thread_id,sender_kind,ciphertext,created_at,agent_name,agent_role
+    const rows=(await db.query(`SELECT id,thread_id,sender_kind,ciphertext,created_at,agent_name,agent_role,agent_avatar
       FROM spdecode_shop.support_messages WHERE thread_id=$1
       ORDER BY created_at ASC,id ASC LIMIT 150`,[thread.id])).rows;
-    return {...thread,messages:rows.map(x=>messageRow(x,env))};
+    const rendered=rows.map(x=>messageRow(x,env));
+    const since=reads.get(thread.id);
+    const unread=rendered.filter(m=>m.sender==='admin'&&
+      (since===undefined||new Date(m.at).getTime()>since)).length;
+    return {...thread,unread,messages:rendered};
   }));
-  return {threads:messages};
+  return {threads:messages,unreadTotal:messages.reduce((n,t)=>n+t.unread,0)};
 }
 export async function listAdminSupport({db=database(),env=process.env,principal=null}={}){
   secret(env);
@@ -124,12 +154,19 @@ export async function listAdminSupport({db=database(),env=process.env,principal=
       (a.role IN ('admin','support','moderator') OR
        (c.enabled=true AND c.permissions @> ARRAY['support.write']::text[]))
     ORDER BY a.display_name,a.id LIMIT 200`)).rows:[];
-  return {agents,threads:await Promise.all(threads.map(async t=>{
-    const rows=(await db.query(`SELECT id,thread_id,sender_kind,ciphertext,created_at,agent_name,agent_role
+  const reads=principal?await readTimes(db,'staff',principal.id):new Map();
+  const threadsWithMessages=await Promise.all(threads.map(async t=>{
+    const rows=(await db.query(`SELECT id,thread_id,sender_kind,ciphertext,created_at,agent_name,agent_role,agent_avatar
       FROM spdecode_shop.support_messages WHERE thread_id=$1
       ORDER BY created_at ASC,id ASC LIMIT 150`,[t.id])).rows;
-    return {...t,messages:rows.map(row=>messageRow(row,env))};
-  }))};
+    const rendered=rows.map(row=>messageRow(row,env));
+    const since=reads.get(t.id);
+    const unread=rendered.filter(m=>m.sender==='user'&&
+      (since===undefined||new Date(m.at).getTime()>since)).length;
+    return {...t,unread,messages:rendered};
+  }));
+  return {agents,threads:threadsWithMessages,
+    unreadTotal:threadsWithMessages.reduce((n,t)=>n+t.unread,0)};
 }
 export async function replyAdminSupport(actor,input,{db=database(),env=process.env}={}){
   secret(env);
@@ -141,6 +178,9 @@ export async function replyAdminSupport(actor,input,{db=database(),env=process.e
     Object.keys(input||{}).some(k=>!['threadId','action','message'].includes(k))||
     !['reply','close','reopen'].includes(input?.action))fail('INVALID_REQUEST');
   const text=input.action==='reply'?validateText(input.message):null;
+  // Avatar snapshot: same rule as user profile avatars (data-URI JPEG ≤ 85 KB).
+  // Undefined keeps the message without avatar; null clears it explicitly.
+  const avatar=avatarInput(operator.avatar);
   const result=await transaction(async client=>{
     const thread=(await client.query('SELECT id,status,account_id,assigned_staff_id FROM spdecode_shop.support_threads WHERE id=$1 FOR UPDATE',
       [input.threadId])).rows[0];
@@ -153,10 +193,10 @@ export async function replyAdminSupport(actor,input,{db=database(),env=process.e
       if(thread.status==='closed')fail('SUPPORT_THREAD_CLOSED',409);
       const id=randomUUID();
       await client.query(`INSERT INTO spdecode_shop.support_messages
-        (id,thread_id,sender_kind,ciphertext,agent_id,agent_name,agent_role)
-        VALUES($1,$2,'admin',$3,$4,$5,$6)`,
+        (id,thread_id,sender_kind,ciphertext,agent_id,agent_name,agent_role,agent_avatar)
+        VALUES($1,$2,'admin',$3,$4,$5,$6,$7)`,
         [id,thread.id,encryptMessage(thread.id,id,'admin',text,{env}),
-         operator.id,operator.name,operator.role]);
+         operator.id,operator.name,operator.role,avatar??null]);
       accountNoticeId=await recordAccountNotice(client,thread.account_id,
         'support:'+id,'support',thread.id);
     }

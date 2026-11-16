@@ -3,6 +3,7 @@ import {promisify} from 'node:util';
 import {database,transaction} from './db.mjs';
 import {customRoles,roleCapabilities,roleExists} from './staff-roles.mjs';
 import {fail} from './config.mjs';
+import {avatarInput} from './profile.mjs';
 import {adminSettings,authenticateAdmin,checkPassword} from '../c6-admin-auth.mjs';
 import {opsStore} from '../c6-ops-store.mjs';
 import {throttle} from '../c3-store.mjs';
@@ -10,7 +11,10 @@ import {throttle} from '../c3-store.mjs';
 const scrypt=promisify(scryptCb);
 const USER=/^[a-z][a-z0-9._-]{2,47}$/;
 const UUID=/^[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}$/;
-const COOKIE='spdecode_staff_session',PREFIX='spdecode:staff:session:',TTL=3600;
+const COOKIE='spdecode_staff_session',PREFIX='spdecode:staff:session:';
+// Sesión de 90 días: iguala la sesión local de la app Admin (SessionVault 90 días).
+// Antes TTL=3600 (1 h) sin refresco; la cookie expiraba mucho antes que el cliente.
+const TTL=90*24*3600;
 export const STAFF_ROLES=Object.freeze(['admin','support','moderator','billing']);
 export const STAFF_CAPABILITIES=Object.freeze({
  owner:['staff.read','staff.write','users.read','support.read','support.write','support.assign','audit.read','billing.read'],
@@ -26,6 +30,7 @@ export function can(principal,cap){
 }
 export function safeStaff(row){
  return {id:row.id,username:row.username,name:row.display_name,role:row.role,
+  avatar:row.avatar??null,
   enabled:row.enabled,mustChangePassword:row.must_change_password,
   lastLoginAt:row.last_login_at,createdAt:row.created_at,updatedAt:row.updated_at};
 }
@@ -63,7 +68,7 @@ async function getStaffAuth(request,{db=database(),redis,config=adminSettings()}
  const source=redis||await opsStore();
  if(await source.get(PREFIX+claim.jti)!==claim.sub+':'+claim.version)return null;
  const result=await db.query(`SELECT id,username,display_name,role,enabled,must_change_password,
-    session_version,last_login_at,created_at,updated_at
+    session_version,last_login_at,created_at,updated_at,avatar
     FROM spdecode_shop.staff_accounts WHERE id=$1`,[claim.sub]);
  const row=result.rows[0];
  if(!row||!row.enabled||row.session_version!==claim.version)return null;
@@ -71,6 +76,7 @@ async function getStaffAuth(request,{db=database(),redis,config=adminSettings()}
    await roleCapabilities(row.role,db):privileges(row.role);
  if(capabilities===null)return null;
  return {id:row.id,username:row.username,name:row.display_name,role:row.role,
+   avatar:row.avatar??null,
    mustChangePassword:row.must_change_password,sessionId:claim.jti,
    capabilities};
 }
@@ -80,7 +86,7 @@ export async function panelPrincipal(request,{db=database(),redis,config=adminSe
  if(owner){
   return {id:owner.sub,username:config.username,
    name:(process.env.SPDECODE_SUPPORT_AGENT_NAME||config.username).trim().slice(0,80),
-   role:'owner',mustChangePassword:false,capabilities:privileges('owner'),owner:true};
+   role:'owner',avatar:null,mustChangePassword:false,capabilities:privileges('owner'),owner:true};
  }
  return getStaffAuth(request,{db,redis:source,config});
 }
@@ -123,7 +129,7 @@ async function audit(client,principal,action,target,details={}){
 }
 export async function listStaff({db=database()}={}){
  const rows=(await db.query(`SELECT id,username,display_name,role,enabled,
-  must_change_password,last_login_at,created_at,updated_at
+  must_change_password,last_login_at,created_at,updated_at,avatar
   FROM spdecode_shop.staff_accounts ORDER BY created_at DESC LIMIT 200`)).rows;
  const extras=(await customRoles({db})).roles;
  return {staff:rows.map(safeStaff),
@@ -151,13 +157,16 @@ export async function createStaff(principal,input,{db=database()}={}){
 export async function updateStaff(principal,input,{db=database()}={}){
  if(principal.role!=='owner')fail('FORBIDDEN',403);
  if(!input||!UUID.test(input.id)||
-    Object.keys(input).some(k=>!['id','username','name','role','enabled','resetPassword'].includes(k))||
+    Object.keys(input).some(k=>!['id','username','name','role','enabled','resetPassword','avatar'].includes(k))||
     (input.username!==undefined&&!safeUser(input.username))||
     (input.name!==undefined&&!nameValid(input.name))||
     (input.role!==undefined&&
       !(STAFF_ROLES.includes(input.role)||await roleExists(input.role,db)))||
     (input.enabled!==undefined&&typeof input.enabled!=='boolean')||
     (input.resetPassword!==undefined&&input.resetPassword!==true))fail('INVALID_STAFF');
+ // Avatar: misma regla que el avatar de perfil de usuario (data-URI JPEG ≤ 85 KB).
+ // undefined conserva el actual, null lo borra, string válido lo sustituye.
+ const avatar=avatarInput(input.avatar);
  const temporary=input.resetPassword?generatedPassword():null;
  const digest=temporary?await digestPassword(temporary):null;
  let updated;
@@ -167,13 +176,14 @@ export async function updateStaff(principal,input,{db=database()}={}){
    if(!old)fail('STAFF_NOT_FOUND',404);
    updated=(await client.query(`UPDATE spdecode_shop.staff_accounts SET
      username=$2, display_name=$3,role=$4,enabled=$5,
-     password_hash=COALESCE($6,password_hash),
+     password_hash=COALESCE($6,password_hash),avatar=$7,
      must_change_password=CASE WHEN $6 IS NULL THEN must_change_password ELSE true END,
      session_version=session_version+1,updated_at=now()
      WHERE id=$1 RETURNING id,username,display_name,role,enabled,must_change_password,
-     last_login_at,created_at,updated_at`,
+     last_login_at,created_at,updated_at,avatar`,
     [input.id,input.username??old.username,input.name?.trim()??old.display_name,
-     input.role??old.role,input.enabled??old.enabled,digest])).rows[0];
+     input.role??old.role,input.enabled??old.enabled,digest,
+     avatar===undefined?old.avatar:avatar])).rows[0];
    await audit(client,principal,'staff_updated',input.id,{role:updated.role,
      enabled:updated.enabled,credentialsReset:!!temporary});
   },db);

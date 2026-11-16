@@ -6,7 +6,7 @@ import {PGlite} from '@electric-sql/pglite';
 import {getMigrations} from 'better-auth/db/migration';
 import {makeAuth} from '../lib/commerce/auth.mjs';
 import {createSupportThread,sendSupportMessage,listUserSupport,listAdminSupport,
- replyAdminSupport,encryptMessage,decryptMessage} from '../lib/commerce/support.mjs';
+ replyAdminSupport,markSupportThreadRead,encryptMessage,decryptMessage} from '../lib/commerce/support.mjs';
 import {registerDevice,makeDeletionChallenge,authorizeDeviceDeletion,
  deleteAccountData} from '../lib/commerce/account-device.mjs';
 let pg,db,auth;
@@ -27,7 +27,7 @@ before(async()=>{
  db={query,connect:async()=>({query,release(){}})};
  auth=makeAuth(db,env);
  await (await getMigrations(auth.options)).runMigrations();
- for(const name of ['002_shop.sql','003_ads_free.sql','004_gifts.sql','005_account_support_apk.sql','006_support_agent_identity.sql','007_staff_permissions.sql','008_account_notifications.sql','009_staff_custom_roles.sql']){
+ for(const name of ['002_shop.sql','003_ads_free.sql','004_gifts.sql','005_account_support_apk.sql','006_support_agent_identity.sql','007_staff_permissions.sql','008_account_notifications.sql','009_staff_custom_roles.sql','010_support_reads_avatar.sql']){
   const sql=await readFile(new URL('../sql/'+name,import.meta.url),'utf8');
   await pg.exec(sql);
  }
@@ -66,6 +66,48 @@ test('private inbox, reply, status and distinct-account ACL',async()=>{
  assert.equal(admin.threads[0].account_id,ids[0]);
  await replyAdminSupport('admin-test',{threadId:thread.id,action:'close'},{db,env});
  await assert.rejects(sendSupportMessage(ids[0],thread.id,{message:'More?'},{db,env}),/SUPPORT_THREAD_CLOSED/);
+});
+test('unread counters, mark-as-read and agent avatar snapshot',async()=>{
+ const bytes=Buffer.alloc(100);bytes[0]=0xff;bytes[1]=0xd8;bytes[98]=0xff;bytes[99]=0xd9;
+ const avatar='data:image/jpeg;base64,'+bytes.toString('base64');
+ const thread=await createSupportThread(ids[0],{subject:'Unread check',
+  category:'technical',message:'First message'},{db,env});
+ const unreadOf=(listing,id)=>listing.threads.find(t=>t.id===id)?.unread;
+ // Staff side: the new user message is unread; user side: nothing to read yet.
+ let admin=await listAdminSupport({db,env});
+ assert.equal(unreadOf(admin,thread.id),1);
+ assert.equal(admin.unreadTotal,admin.threads.reduce((n,t)=>n+t.unread,0));
+ let user=await listUserSupport(ids[0],{db,env});
+ assert.equal(unreadOf(user,thread.id),0);
+ // ACL on mark-as-read: another user sees nothing; unassigned staff is refused.
+ await assert.rejects(markSupportThreadRead(thread.id,{kind:'user',id:ids[1]},{db}),/SUPPORT_NOT_FOUND/);
+ await assert.rejects(markSupportThreadRead(thread.id,{kind:'staff',id:randomUUID()},{db}),/SUPPORT_NOT_ASSIGNED/);
+ await assert.rejects(markSupportThreadRead(randomUUID(),{kind:'user',id:ids[0]},{db}),/SUPPORT_NOT_FOUND/);
+ // Staff marks the thread read: only that thread clears, other threads keep theirs.
+ // (The read state is per actor, so the listing must run as that staff member.)
+ await markSupportThreadRead(thread.id,{kind:'staff',id:'f'.repeat(64),canSeeAll:true},{db});
+ admin=await listAdminSupport({db,env,principal:{id:'f'.repeat(64),
+   capabilities:['support.read','support.assign']}});
+ assert.equal(unreadOf(admin,thread.id),0);
+ // Admin reply with avatar: user sees 1 unread and the avatar snapshot on the message.
+ await replyAdminSupport({id:'f'.repeat(64),name:'Operator QA',role:'owner',avatar},
+   {threadId:thread.id,action:'reply',message:'Checking it.'},{db,env});
+ user=await listUserSupport(ids[0],{db,env});
+ assert.equal(unreadOf(user,thread.id),1);
+ assert.equal(user.unreadTotal,user.threads.reduce((n,t)=>n+t.unread,0));
+ assert.equal(user.threads.find(t=>t.id===thread.id).messages.at(-1).agent.avatar,avatar);
+ assert.equal(user.threads.find(t=>t.id===thread.id).messages.at(-1).agent.name,'Operator QA');
+ // User marks read: the thread clears; a reply without avatar emits null.
+ await markSupportThreadRead(thread.id,{kind:'user',id:ids[0]},{db});
+ user=await listUserSupport(ids[0],{db,env});
+ assert.equal(unreadOf(user,thread.id),0);
+ await replyAdminSupport({id:'f'.repeat(64),name:'Operator QA',role:'owner'},
+   {threadId:thread.id,action:'reply',message:'No avatar here.'},{db,env});
+ user=await listUserSupport(ids[0],{db,env});
+ assert.equal(user.threads.find(t=>t.id===thread.id).messages.at(-1).agent.avatar,null);
+ // Invalid avatars are rejected before any message is stored.
+ await assert.rejects(replyAdminSupport({id:'f'.repeat(64),name:'Operator QA',role:'owner',avatar:'data:image/png;base64,AAAA'},
+   {threadId:thread.id,action:'reply',message:'Bad avatar'},{db,env}),/INVALID_AVATAR/);
 });
 test('AndroidKeyStore-compatible P256 signatures require account binding and one-time challenge',async()=>{
  const {privateKey,publicKey}=generateKeyPairSync('ec',{namedCurve:'prime256v1'});

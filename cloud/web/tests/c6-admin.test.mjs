@@ -150,6 +150,17 @@ test("admin sessions and login do not depend on client IP or forwarded IP header
   const authBody=Buffer.from(cookie.split("=")[1].split(".")[0],"base64url").toString("utf8");
   assert.equal(authBody.includes('"ip"'),false,"session must not carry IP fingerprint");
 });
+test("owner session lasts 90 days (cookie Max-Age and expiresIn)",async()=>{
+  const redis=new RedisFake(),args=redisFactory(redis);
+  const logged=await loginRequest(request("/api/admin/login",{username,password}),args);
+  assert.equal(logged.status,200);
+  assert.equal((await logged.json()).expiresIn,90*24*3600);
+  assert.match(logged.headers.get("set-cookie"),/Max-Age=7776000/);
+  const claims=JSON.parse(Buffer.from(
+    logged.headers.get("set-cookie").split(";")[0].split("=")[1].split(".")[0],
+    "base64url").toString("utf8"));
+  assert.equal(claims.exp-claims.iat,90*24*3600);
+});
 test("admin reports status without content; maintenance is CSRF-protected and revocable",async()=>{
   const redis=new RedisFake(),args=redisFactory(redis);
   const logged=await loginRequest(request("/api/admin/login",{username,password}),args);
