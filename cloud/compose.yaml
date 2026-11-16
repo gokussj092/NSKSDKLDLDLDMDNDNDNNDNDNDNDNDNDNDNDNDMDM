@@ -134,6 +134,9 @@ services:
       - catalog-snapshots:/app/catalog-snapshots:rw
       - server-vpn-results:/app/server-vpn-results:rw
       - notice-feed:/app/notices:rw
+      # APK analysis jobs: completeJob writes result.zip per job UUID here.
+      # The web container is read_only, so results need this writable volume.
+      - app-analysis-jobs:/var/lib/spdecode/app-analysis:rw
       # Signed public APKs are host-published, atomic and read-only to Next.js.
       - ${SPDECODE_PUBLIC_APK_DIR:-/opt/spdecode/public-apks}:/app/public-apks:ro
     ports:
@@ -342,6 +345,7 @@ volumes:
   catalog-snapshots: {}
   server-vpn-results: {}
   notice-feed: {}
+  app-analysis-jobs: {}
   apk-qa-jobs: {}
   apk-tools-scratch: {}
 

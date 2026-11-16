@@ -266,6 +266,20 @@ class VPSInstallerTests(unittest.TestCase):
             self.assertIn(line,web)
         # The credits gate was already mapped; the analysis vars sit with it.
         self.assertIn("SPDECODE_ANALYSIS_CREDITS_READY: ${SPDECODE_ANALYSIS_CREDITS_READY:-false}",web)
+    def test_app_analysis_jobs_volume_is_writable_by_node(self):
+        yml=(ROOT/"cloud/compose.yaml").read_text()
+        web=yml.split("\n  web:",1)[1].split("\n  apk-qa:",1)[0]
+        # Only the web service mounts the jobs volume, at the code default root.
+        self.assertIn("- app-analysis-jobs:/var/lib/spdecode/app-analysis:rw",web)
+        self.assertEqual(yml.count("app-analysis-jobs:"),2)
+        rest=yml.split("\n  apk-qa:",1)[1]
+        self.assertNotIn("app-analysis-jobs:/var/lib/spdecode/app-analysis",rest)
+        self.assertIn("app-analysis-jobs: {}",yml)
+        # The image seeds the dir owned by node, so a fresh volume is writable.
+        docker=(ROOT/"cloud/web/Dockerfile").read_text()
+        for cmd in ("mkdir -p","chown node:node","chmod 0700"):
+            segment=docker.split(cmd,1)[1].split("USER node",1)[0]
+            self.assertIn("/var/lib/spdecode/app-analysis",segment)
     def test_goku_private_repo_source_is_explicitly_allowed(self):
         cli=(VPS/"spdecodectl").read_text()
         installer=(VPS/"install.sh").read_text()
