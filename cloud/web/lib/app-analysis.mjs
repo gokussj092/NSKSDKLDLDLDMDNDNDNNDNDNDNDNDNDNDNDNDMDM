@@ -649,6 +649,16 @@ export async function failJob(jobId,input,{db=database(),env=process.env,send}={
 // ---------------------------------------------------------------------------
 // Admin (panel) + sweeps
 // ---------------------------------------------------------------------------
+
+// Public queue signal for Yamada's instant watcher (hook): how many jobs are
+// waiting for analysis. Returns a bare count — never job ids, account ids
+// or package names. Used by GET /api/app-analysis/queue-status.
+export async function countQueuedJobs({db=database()}={}){
+ const rows=(await db.query(
+  `SELECT COUNT(*)::integer AS n FROM spdecode_shop.app_analysis_jobs
+   WHERE status='QUEUED_FOR_ANALYSIS'`)).rows;
+ return rows[0]?.n??0;
+}
 export async function listAdminJobs({db=database(),status=null,limit=100}={}){
  const rows=(await db.query(
    status&&STATUSES.has(status)

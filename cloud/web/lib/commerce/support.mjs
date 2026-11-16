@@ -108,6 +108,23 @@ export async function findAutoAssignStaffId(db,env=process.env){
     LIMIT 1`,[name])).rows[0];
   return row?.id||null;
 }
+// Public queue signal for Yamada's instant support watcher (hook): how many
+// threads assigned to Yamada are waiting for her reply, i.e. their latest
+// message is from the user and they are not closed. Returns a bare count —
+// never thread ids, account ids or names. Used by GET /api/support/queue-
+// status. Read-only: unlike the list endpoints it never closes threads.
+export async function countPendingSupport({db=database(),env=process.env}={}){
+ const staffId=await findAutoAssignStaffId(db,env);
+ if(!staffId)return 0;
+ const rows=(await db.query(`SELECT COUNT(*)::integer AS n
+   FROM spdecode_shop.support_threads t
+   JOIN (SELECT DISTINCT ON (thread_id) thread_id,sender_kind
+     FROM spdecode_shop.support_messages
+     ORDER BY thread_id,created_at DESC,id DESC) last ON last.thread_id=t.id
+   WHERE t.assigned_staff_id=$1 AND t.status<>'closed' AND last.sender_kind='user'`,
+   [staffId])).rows;
+ return rows[0]?.n??0;
+}
 // Single open ticket (D4): close every other non-closed thread of the account.
 async function closeOtherThreads(client,accountId){
   await client.query(`UPDATE spdecode_shop.support_threads SET status='closed'
