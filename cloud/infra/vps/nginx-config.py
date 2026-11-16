@@ -128,7 +128,15 @@ def generate(domain: str, api: str, panel: str, www: bool) -> str:
         try_files /__spdecode_unrouted_9f41b__ @spdecode_v1_unrouted;
     }}
     location @spdecode_v1_unrouted {{ return 404; }}
-    location ^~ /api/v2/ {{ return 404; }}
+    # Signed APK analysis download only: the client resolves the relative
+    # signed link against this origin, and the HMAC exp/sig in the URL is
+    # the credential. The plain /api/v2/ prefix below stays blocked, and
+    # regex locations are only evaluated when no ^~ prefix matched, so
+    # this regex is the only /api/v2/ route that reaches the app here.
+    location ~ ^/api/v2/app-analysis/[0-9a-fA-F]{{8}}-[0-9a-fA-F]{{4}}-[0-9a-fA-F]{{4}}-[0-9a-fA-F]{{4}}-[0-9a-fA-F]{{12}}/download$ {{
+{common_headers()}
+    }}
+    location /api/v2/ {{ return 404; }}
     location / {{
 {common_headers()}
     }}
@@ -159,6 +167,13 @@ def generate(domain: str, api: str, panel: str, www: bool) -> str:
     }}
     location = /api/v2/security-policy {{
 {common_headers()}
+    }}
+    # APK analysis bot routes (events/complete/fail/download). The bot token
+    # is checked by the app; nginx only routes the prefix through. The
+    # longer ^~ prefix wins over the /api/v2/ block below.
+    location ^~ /api/v2/app-analysis/ {{
+        client_max_body_size 12m;
+{common_headers().replace("proxy_read_timeout 35s;", "proxy_read_timeout 70s;")}
     }}
     location ^~ /api/v2/ {{ return 404; }}
     # A file may run decode + isolated export sequentially. The broker keeps

@@ -261,4 +261,46 @@ class VPSInstallerTests(unittest.TestCase):
         self.assertIn("REPO_URL=\"git@github-spdecode-goku:gokussj092/NSKSDKLDLDLDMDNDNDNNDNDNDNDNDNDNDNDNDMDM.git\"",installer)
         self.assertIn('*) die "Untrusted repo" ;;',cli)
 
+    def test_app_analysis_routes_reach_the_app_on_the_api_host(self):
+        output=subprocess.run(["python3",str(VPS/"nginx-config.py"),
+              "spdecode.xyz","--api-domain","api.spdecode.xyz",
+              "--panel-domain","panel.spdecode.xyz"],
+              capture_output=True,text=True,check=True).stdout
+        api=output.split("server_name api.spdecode.xyz;",1)[1].split("server_name panel.spdecode.xyz;",1)[0]
+        self.assertIn("location ^~ /api/v2/app-analysis/ {",api)
+        entry=api.split("location ^~ /api/v2/app-analysis/ {",1)[1].split("}",1)[0]
+        self.assertIn("proxy_pass http://127.0.0.1:3000;",entry)
+        self.assertIn("proxy_read_timeout 70s;",entry)
+        self.assertIn("client_max_body_size 12m;",entry)
+        self.assertIn("location ^~ /api/v2/ { return 404; }",api)
+        self.assertLess(api.index("location ^~ /api/v2/app-analysis/ {"),
+                        api.index("location ^~ /api/v2/ { return 404; }"))
+        # The exact transport and security-policy routes keep working.
+        self.assertIn("location = /api/v2/transport {",api)
+        self.assertIn("location = /api/v2/security-policy {",api)
+    def test_public_host_allows_only_the_signed_app_analysis_download(self):
+        import re
+        output=subprocess.run(["python3",str(VPS/"nginx-config.py"),
+              "spdecode.xyz","--api-domain","api.spdecode.xyz",
+              "--panel-domain","panel.spdecode.xyz"],
+              capture_output=True,text=True,check=True).stdout
+        public=output.split("server_name spdecode.xyz;",1)[1].split("server_name api.spdecode.xyz;",1)[0]
+        self.assertNotIn("location ^~ /api/v2/ { return 404; }",public)
+        self.assertIn("location /api/v2/ { return 404; }",public)
+        match=re.search(r"location ~ (\^/api/v2/app-analysis/\S+) \{",public)
+        self.assertIsNotNone(match)
+        pattern=match.group(1)
+        start=public.index("location ~ ^/api/v2/app-analysis/")
+        entry=public[start:public.index("\n    }\n",start)]
+        self.assertIn("proxy_pass http://127.0.0.1:3000;",entry)
+        job="123e4567-e89b-12d3-a456-426614174000"
+        self.assertIsNotNone(re.search(pattern,"/api/v2/app-analysis/"+job+"/download"))
+        for path in ("/api/v2/app-analysis/"+job+"/events",
+                     "/api/v2/app-analysis/"+job+"/complete",
+                     "/api/v2/app-analysis/"+job+"/fail",
+                     "/api/v2/transport",
+                     "/api/v2/app-analysis/not-a-uuid/download",
+                     "/api/v2/app-analysis/"+job+"/download/extra"):
+            self.assertIsNone(re.search(pattern,path),path)
+
 if __name__=="__main__":unittest.main()
