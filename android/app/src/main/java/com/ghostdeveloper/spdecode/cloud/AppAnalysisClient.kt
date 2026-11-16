@@ -567,7 +567,7 @@ internal class AppAnalysisClient(context: Context) {
                 .put("chunkBytes", step)
             val job = JobView(id, started.optString("status", "UPLOADING"), null, null,
                 0L, state.optLong("totalBytes"), state.optString("filename"), null, null,
-                "held", null, false, null, null, null, null, null)
+                "held", null, false, false, null, null, null, null, null, null)
             state = saveJob(state, job)
             writeState(state)
         }
