@@ -114,9 +114,14 @@ jobs:
           adb shell am start -W -n com.ghostdeveloper.spdecode.admin/.MainActivity
           sleep 3
           adb shell pidof com.ghostdeveloper.spdecode.admin
-          adb shell uiautomator dump /sdcard/admin-release.xml
-          adb pull /sdcard/admin-release.xml android-admin/app/build/review/release-ui.xml
-          grep -q 'Iniciar sesión' android-admin/app/build/review/release-ui.xml
+          found_login=0
+          for attempt in $(seq 1 30); do
+            adb shell uiautomator dump /sdcard/admin-release.xml
+            adb pull /sdcard/admin-release.xml android-admin/app/build/review/release-ui.xml
+            if grep -q 'Iniciar sesión' android-admin/app/build/review/release-ui.xml; then found_login=1; break; fi
+            sleep 2
+          done
+          if [ "$found_login" != 1 ]; then echo "Login screen did not show 'Iniciar sesión':"; cat android-admin/app/build/review/release-ui.xml; exit 1; fi
           adb logcat -d > android-admin/app/build/review/release-logcat.txt
           if grep -q 'FATAL EXCEPTION' android-admin/app/build/review/release-logcat.txt; then exit 1; fi
           adb shell screencap -p /sdcard/admin-release.png
