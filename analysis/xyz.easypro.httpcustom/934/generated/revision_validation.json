@@ -1,0 +1,130 @@
+{
+  "state": "PARTIAL_RESEARCH_ONLY",
+  "original_reader_sha256": "91a775ec1aedf0e896c6f52bc1483dee32ce8e3a59f373e7958bf9895c814be3",
+  "revised_reader_sha256": "fed211685566c261542193b0cf2a6b920fcdd786200dec2e39c4e472733e1eae",
+  "original_successes": 4,
+  "revised_successes": 6,
+  "sample_count": 9,
+  "production_reader_changed": false,
+  "independent_validation": {
+    "verified": 6,
+    "samples": [
+      {
+        "sample": "Test bloquear usuário y contraseña.hc",
+        "full_json_equal": true,
+        "independent_aead_layers": 7,
+        "tampered_outer_rejected": true,
+        "wrong_password_rejected": null
+      },
+      {
+        "sample": "Test bloqueo de operador.hc",
+        "full_json_equal": true,
+        "independent_aead_layers": 7,
+        "tampered_outer_rejected": true,
+        "wrong_password_rejected": true
+      },
+      {
+        "sample": "Test bloqueo de root.hc",
+        "full_json_equal": true,
+        "independent_aead_layers": 7,
+        "tampered_outer_rejected": true,
+        "wrong_password_rejected": true
+      },
+      {
+        "sample": "Test bloqueo de root2.hc",
+        "full_json_equal": true,
+        "independent_aead_layers": 7,
+        "tampered_outer_rejected": true,
+        "wrong_password_rejected": null
+      },
+      {
+        "sample": "Test bloqueo inicio de sesión con hwid.hc",
+        "full_json_equal": true,
+        "independent_aead_layers": 7,
+        "tampered_outer_rejected": true,
+        "wrong_password_rejected": null
+      },
+      {
+        "sample": "Test desbloqueo payload.hc",
+        "full_json_equal": true,
+        "independent_aead_layers": 7,
+        "tampered_outer_rejected": true,
+        "wrong_password_rejected": null
+      }
+    ]
+  },
+  "samples": [
+    {
+      "sample": "Test bloquear usuário y contraseña.hc",
+      "sha256": "8de37c01d4769fd159cccc8885b224b1297d1afe6d3abecb4210cd1a586a9003",
+      "schema": 12,
+      "schedule": "n15",
+      "status": "AUTHENTICATED",
+      "error": null
+    },
+    {
+      "sample": "Test bloqueo ID de acceso.hc",
+      "sha256": "8c9916bd53b2e38ac1f7b723054cd75ac3729697c0dd92763148f7f63fe44684",
+      "schema": 9,
+      "schedule": null,
+      "status": "PENDING",
+      "error": "ACCESS_ID_PRIVATE_KEY_REQUIRED: recipient wrapper"
+    },
+    {
+      "sample": "Test bloqueo de operador.hc",
+      "sha256": "0cbeb11e5fc6dce179bf796f1836f3bd5b427f9f719708258ccb5282d9c8f17d",
+      "schema": 12,
+      "schedule": "n15",
+      "status": "AUTHENTICATED",
+      "error": null
+    },
+    {
+      "sample": "Test bloqueo de root.hc",
+      "sha256": "34b53d7698381e39cf9ea001e74fe53a8f5bd036cb54a08b7bcb1d10d1886ba3",
+      "schema": 12,
+      "schedule": "n15",
+      "status": "AUTHENTICATED",
+      "error": null
+    },
+    {
+      "sample": "Test bloqueo de root2.hc",
+      "sha256": "f1a50cf72b92fcdd389b7a6fd912153c67ee15270d859789b79543eadb5be195",
+      "schema": 12,
+      "schedule": "n15",
+      "status": "AUTHENTICATED",
+      "error": null
+    },
+    {
+      "sample": "Test bloqueo inicio de sesión con hwid.hc",
+      "sha256": "4d8aa08d8be5d86e96af3c81d3db5a4b64e31ed2b5d67778149b4301959972e5",
+      "schema": 12,
+      "schedule": "n15",
+      "status": "AUTHENTICATED",
+      "error": null
+    },
+    {
+      "sample": "Test bloqueo password y hwid.hc",
+      "sha256": "5eb097e70c0d779742d226f19c2e6d9f0a24e443f76b59a15c439ec841eda849",
+      "schema": 12,
+      "schedule": "n16",
+      "status": "PENDING",
+      "error": "UNSUPPORTED_HWID_SCHEDULE_N16: supplied credentials are not disproved"
+    },
+    {
+      "sample": "Test desbloqueo payload.hc",
+      "sha256": "33cee484e9f2227e28fcf39a05091d20a4d1b160cd3a5945f3807aaccf10577e",
+      "schema": 12,
+      "schedule": "n15",
+      "status": "AUTHENTICATED",
+      "error": null
+    },
+    {
+      "sample": "Test hwid.hc",
+      "sha256": "caf11ca2623cd6d41c2860b6742b7f86f7d6aa3437492df5f5e0cceff2075b87",
+      "schema": 13,
+      "schedule": "n18",
+      "status": "PENDING",
+      "error": "V4 Extra Protection requires the original app's online activation + device-security check"
+    }
+  ]
+}

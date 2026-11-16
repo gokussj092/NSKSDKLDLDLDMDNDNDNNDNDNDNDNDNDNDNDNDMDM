@@ -1,9 +1,10 @@
 # HTTP Custom — archivos .hc
 
-**Investigación build 934 (8.0.22 Patch 2): PENDING.** Las nueve muestras
-aportadas autentican HCX4 exterior, pero **0/9 producen JSON interior
-completo**. No se habilitan HCCFG 12/n15/n16, 13/n18 ni el wrapper de ID de
-acceso. [Expediente reproducible](../../../../analysis/xyz.easypro.httpcustom/934/ANALYSIS.md).
+**Investigación build 934 (8.0.22 Patch 2): PARTIAL.** La revisión del script
+aportado autentica **6/9 JSON interiores completos**, los seis 12/n15.
+El lector operativo de este módulo no se modifica ni habilita formatos nuevos;
+n16, 13/n18 y el wrapper de ID de acceso siguen pendientes.
+[Expediente reproducible y límites](../../../../analysis/xyz.easypro.httpcustom/934/REVISION_2026_11_15.md).
 
 **Investigación 2026-11-01:** las dos muestras nuevas HCCFG 11/n13 con Extra
 Protection autentican HCX4, pero **0/2 están descifradas**. El motor sigue

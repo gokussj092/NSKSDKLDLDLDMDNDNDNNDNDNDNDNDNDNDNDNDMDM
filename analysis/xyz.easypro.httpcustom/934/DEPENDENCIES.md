@@ -1,5 +1,25 @@
 # Dependencias ejecutadas — build 934
 
+## Revisión 2026-11-15
+
+Se reutilizaron CPython 3.12.14, PyCryptodome 3.23.0, argon2-cffi 25.1.0 y
+sus dependencias del entorno privado; las versiones realmente observadas
+constan en `dependencies.lock.json.revision_actual_runtime`. Unicorn 2.1.4,
+Capstone 5.0.7 y pyelftools 0.32 se instalaron en un directorio aislado desde
+el índice de paquetes configurado para el inventario ELF sin red del original.
+JADX y Java de la tabla histórica no se ejecutaron en esta revisión.
+
+El script aportado por el propietario tiene créditos HABIBIxNULLPTRO,
+@HABIBI_1ST y @NullptrO, pero licencia **UNKNOWN / UNREVIEWED**. Solo se
+conservan su hash y la receta propia de revisión; no se publica su fuente
+completa en Git ni se aprueba como adaptador de producción.
+
+Las herramientas nuevas usan stdlib y las dependencias ya indicadas. El
+laboratorio de destinatarios usa RSA-OAEP-SHA256 y AES-GCM de PyCryptodome,
+sin contactar ni registrar una identidad ante un servicio externo.
+
+## Inventario histórico
+
 Estado: investigación manual; no se aprueban automáticamente adaptadores F7.
 
 | Componente | Versión | Función | Origen / licencia |

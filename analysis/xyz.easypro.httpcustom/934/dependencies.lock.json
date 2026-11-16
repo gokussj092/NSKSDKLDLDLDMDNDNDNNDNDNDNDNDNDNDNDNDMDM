@@ -3,7 +3,7 @@
   "python_packages": {
     "pycryptodome": "3.23.0",
     "argon2-cffi": "25.1.0",
-    "argon2-cffi-bindings": "26.1.0",
+    "argon2-cffi-bindings": "26.2.0",
     "cffi": "2.1.1",
     "pycparser": "3.12",
     "unicorn": "2.1.4",
@@ -16,5 +16,27 @@
     "url": "https://github.com/skylot/jadx/releases/download/v1.5.3/jadx-1.5.3.zip",
     "sha256": "8280f3799c0273fe797a2bcd90258c943e451fd195f13d05400de5e6451d15ec"
   },
-  "state": "RESEARCH_ONLY_NOT_F7_APPROVED"
+  "state": "RESEARCH_ONLY_NOT_F7_APPROVED",
+  "owner_supplied_reader": {
+    "sha256": "91a775ec1aedf0e896c6f52bc1483dee32ce8e3a59f373e7958bf9895c814be3",
+    "license": "UNKNOWN",
+    "vendored": false
+  },
+  "revision_actual_runtime": {
+    "python": "3.12.14",
+    "packages": {
+      "pycryptodome": "3.23.0",
+      "argon2-cffi": "25.1.0",
+      "argon2-cffi-bindings": "26.2.0",
+      "cffi": "2.1.1",
+      "pycparser": "3.12"
+    },
+    "isolated_tool_packages": {
+      "unicorn": "2.1.4",
+      "capstone": "5.0.7",
+      "pyelftools": "0.32"
+    },
+    "jadx_executed": false,
+    "java_executed": false
+  }
 }

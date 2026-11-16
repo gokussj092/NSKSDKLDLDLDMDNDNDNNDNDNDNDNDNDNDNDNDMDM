@@ -4,10 +4,10 @@
   "app_name": "HTTP Custom",
   "version_name": "8.0.22 - Patch 2",
   "version_code": 934,
-  "observed_at": "2026-11-12T01:24:00Z",
+  "observed_at": "2026-11-16T05:16:27.140875+00:00",
   "source_category": "owner_supplied_authorized_archive_and_samples",
   "authorization_note": "Owner requested analysis and supplied test profiles and credentials; original bytes and credentials are excluded from Git.",
-  "status": "PENDING",
+  "status": "PARTIAL",
   "targets": [
     {
       "kind": "files",
@@ -20,9 +20,18 @@
         "HCX4/HCCFG 13/n18",
         "HCCFG wrapper 9/access ID"
       ],
-      "status": "PENDING",
-      "real_full_json_successes": 0,
-      "real_samples": 9
+      "status": "PARTIAL",
+      "real_full_json_successes": 6,
+      "real_samples": 9,
+      "verified_research_variants": [
+        "HCCFG 12/n15"
+      ],
+      "pending_variants": [
+        "HCCFG 12/n16",
+        "HCCFG 13/n18",
+        "HCCFG wrapper 9/access ID"
+      ],
+      "production_reader_changed": false
     },
     {
       "kind": "text",
@@ -288,6 +297,13 @@
         "c"
       ],
       "access_wrapper": false
+    },
+    {
+      "name": "HttpCustomAllversion.py",
+      "sha256": "91a775ec1aedf0e896c6f52bc1483dee32ce8e3a59f373e7958bf9895c814be3",
+      "source_category": "owner attachment",
+      "redistribution_license": "UNKNOWN; source not committed",
+      "rights": "Owner supplied for private analysis and revision; original credits retained in returned copy"
     }
   ],
   "tooling": [
@@ -349,6 +365,51 @@
     {
       "path": "analysis/xyz.easypro.httpcustom/934/tools/static_probe.py",
       "version": "research snapshot"
+    },
+    {
+      "path": "analysis/xyz.easypro.httpcustom/934/tools/probe_user_script.py",
+      "version": "2026-11-15 research revision",
+      "sha256": "f6ffa9ce98365fa6953b09c86091a3b3551edc22a16c37a3a966fb335f34cc67"
+    },
+    {
+      "path": "analysis/xyz.easypro.httpcustom/934/tools/probe_password_schedule.py",
+      "version": "2026-11-15 research revision",
+      "sha256": "15e26e51edc0eb01df60903a45a4dc757f6bdba530972c81225ca477ddc82ba1"
+    },
+    {
+      "path": "analysis/xyz.easypro.httpcustom/934/tools/probe_hwid_schedule.py",
+      "version": "2026-11-15 research revision",
+      "sha256": "c89821b545edf6aac9af015f717241648f4aef478cac47dad3e5ca2ded1a1945"
+    },
+    {
+      "path": "analysis/xyz.easypro.httpcustom/934/tools/revise_supplied_reader.py",
+      "version": "2026-11-15 research revision",
+      "sha256": "7a728e0ce179b63a3cf6ad014e44635bd09bdc741012d0a88a22061262014e36"
+    },
+    {
+      "path": "analysis/xyz.easypro.httpcustom/934/tools/decode_batch.py",
+      "version": "2026-11-15 research revision",
+      "sha256": "bbf9814f7626c566967c441247a6a9e584d547590278a5e6e5beb4c01f683484"
+    },
+    {
+      "path": "analysis/xyz.easypro.httpcustom/934/tools/n15_content.py",
+      "version": "2026-11-15 research revision",
+      "sha256": "dfad4ec3a628fe21152b91c95edea54244e87f763b1d7a94a51fe05c4d9215a5"
+    },
+    {
+      "path": "analysis/xyz.easypro.httpcustom/934/tools/verify_revision_private.py",
+      "version": "2026-11-15 research revision",
+      "sha256": "f1a4d8593b9187ca2983f10d52e2c95de5a0907819b567ffe7cfa8456e436035"
+    },
+    {
+      "path": "analysis/xyz.easypro.httpcustom/934/tools/write_public_vectors.py",
+      "version": "2026-11-15 research revision",
+      "sha256": "5c2be0224522a8ea976917f9739a1df0a679c72ba2fda203ab69e80ae772be15"
+    },
+    {
+      "path": "analysis/xyz.easypro.httpcustom/934/tools/recipient_lab.py",
+      "version": "2026-11-15 research revision",
+      "sha256": "8f4c2d886750193f9e000e91f1f610fa92f8f72417f43142318509db9842f869"
     }
   ],
   "dependencies": [
@@ -368,10 +429,11 @@
     },
     {
       "id": "argon2-cffi-bindings",
-      "version": "26.1.0",
-      "source": "https://pypi.org/project/argon2-cffi-bindings/26.1.0/",
+      "version": "26.2.0",
+      "source": "https://pypi.org/project/argon2-cffi-bindings/26.2.0/",
       "lockfile": "analysis/xyz.easypro.httpcustom/934/dependencies.lock.json",
-      "review": "RESEARCH_ONLY"
+      "review": "RESEARCH_ONLY",
+      "historical_version": "26.1.0"
     },
     {
       "id": "cffi",
@@ -407,6 +469,14 @@
       "source": "https://pypi.org/project/pyelftools/0.32/",
       "lockfile": "analysis/xyz.easypro.httpcustom/934/dependencies.lock.json",
       "review": "RESEARCH_ONLY"
+    },
+    {
+      "id": "owner-supplied-reader",
+      "version": "SHA256 91a775ec1aedf0e896c6f52bc1483dee32ce8e3a59f373e7958bf9895c814be3",
+      "source": "owner attachment",
+      "review": "UNREVIEWED_LICENSE_RESEARCH_ONLY",
+      "license": "UNKNOWN",
+      "lockfile": "analysis/xyz.easypro.httpcustom/934/dependencies.lock.json"
     }
   ],
   "code_paths": [
@@ -419,7 +489,11 @@
     "analysis/xyz.easypro.httpcustom/934/generated/real_validation.json",
     "analysis/xyz.easypro.httpcustom/934/generated/access_wrapper.json",
     "analysis/xyz.easypro.httpcustom/934/tests/test_method.py",
-    "analysis/xyz.easypro.httpcustom/934/RESULTS.md"
+    "analysis/xyz.easypro.httpcustom/934/RESULTS.md",
+    "analysis/xyz.easypro.httpcustom/934/REVISION_2026_11_15.md",
+    "analysis/xyz.easypro.httpcustom/934/generated/revision_validation.json",
+    "analysis/xyz.easypro.httpcustom/934/generated/n15_public_vectors.json",
+    "analysis/xyz.easypro.httpcustom/934/tests/test_revision_research.py"
   ],
   "signer_certificate_sha256": "95dd433d7e4a0be02d55cc62553edcfc8f077fe780be5a7da7f861c2558dc181",
   "apk_signature_cryptographic_verification": "NOT_RUN",
@@ -431,7 +505,7 @@
     "verifier_observed": false
   },
   "limitations": [
-    "No new payload fully authenticated; reader not updated for these formats.",
+    "Six n15 payloads fully authenticated with research-only tools. Production reader unchanged; n16, n18 and access wrapper remain unsupported.",
     "Modeled JNI calls and offline initializer memory do not certify an Android import or a new KDF.",
     "Access ID is a public recipient identifier, not a private RSA key.",
     "Extra-protection activation has not been observed on the original recipient device.",
@@ -448,5 +522,6 @@
     "Original-device access-ID unwrap contract",
     "Extra-protection grant and local activation cache",
     "Actual eprdv.link configuration retrieval protocol"
-  ]
+  ],
+  "revision_local_date": "2026-11-15 America/Tijuana"
 }

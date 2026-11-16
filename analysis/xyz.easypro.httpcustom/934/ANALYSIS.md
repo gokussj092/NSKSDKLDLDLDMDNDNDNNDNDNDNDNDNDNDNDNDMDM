@@ -1,4 +1,8 @@
-# HTTP Custom 8.0.22 Patch 2 / 934 — investigación pendiente
+# HTTP Custom 8.0.22 Patch 2 / 934 — investigación parcial
+
+**Revisión posterior:** [seis de nueve muestras autenticadas con el script
+aportado y su corrección](REVISION_2026_11_15.md). El registro siguiente es el
+checkpoint previo: conserva hipótesis fallidas y límites de esa ejecución.
 
 ## Identidad e insumos
 

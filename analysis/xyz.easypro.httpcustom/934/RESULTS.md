@@ -1,4 +1,12 @@
-# Resultado: PENDING — ningún payload nuevo descifrado
+# Resultado actual: PARTIAL — 6/9 JSON completos autenticados
+
+La [revisión con el script aportado](REVISION_2026_11_15.md) autentica las seis
+muestras 12/n15, incluidas ambas con contraseña, con dos implementaciones
+SHA/AEAD y siete capas por muestra. n16, n18 y wrapper 9 siguen pendientes.
+El lector de producción permanece intacto. La matriz siguiente conserva el
+resultado histórico anterior a recibir y corregir el nuevo script.
+
+## Checkpoint histórico: PENDING — ningún payload nuevo descifrado
 
 | Prueba real | Cantidad | Resultado |
 | --- | ---: | --- |

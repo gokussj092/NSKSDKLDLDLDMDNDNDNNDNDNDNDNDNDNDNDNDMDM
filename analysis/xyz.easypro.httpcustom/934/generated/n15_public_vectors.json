@@ -1,0 +1,16 @@
+{
+  "source_script_sha256": "fed211685566c261542193b0cf2a6b920fcdd786200dec2e39c4e472733e1eae",
+  "description": "Public synthetic KDF vectors; never use as service keys.",
+  "seed_hex": "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f",
+  "aad_ascii": "HCCFG|12|synthetic-public-vector|n15|934",
+  "cases": [
+    {
+      "password_key_hex": "",
+      "expected_key_hex": "651b6ad94770e95566e0d21e032712a1f7421fc31f978de7cb2cd402c4b2bbc1"
+    },
+    {
+      "password_key_hex": "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f",
+      "expected_key_hex": "a12d051e8e1cab9ec0d30c1169d44529c470c29fcd15549b28e31ec6d93ac5f9"
+    }
+  ]
+}

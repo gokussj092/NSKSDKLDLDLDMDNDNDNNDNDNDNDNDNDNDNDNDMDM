@@ -1,5 +1,10 @@
 # Reproducción — desde la raíz del repositorio
 
+Para los resultados actuales **6/9**, consultar los comandos de la
+[revisión del script aportado](REVISION_2026_11_15.md#reproducción-de-esta-revisión).
+Las instrucciones siguientes conservan el checkpoint histórico 0/9 del lector
+operativo, que sigue sin cambios.
+
 Usar CPython 3.12.14 y versiones de `dependencies.lock.json` en un entorno
 aislado. Los pasos de inventario/pruebas no requieren red. Los probes JNI
 requieren Unicorn, Capstone y pyelftools. JADX 1.5.3 se obtiene de su release
