@@ -87,7 +87,7 @@ class MainActivity : ComponentActivity() {
             OnlineAdsFactory.create(this) else null
     }
     private val apkQaClient by lazy { CloudApkQaClient(this,cloudClient) }
-    private val appAnalysisClient by lazy { AppAnalysisClient(this) }
+    private val appAnalysisClient by lazy { AppAnalysisClient(this, cloudClient) }
     private var appAnalysisObserver:Job?=null
     private var appAnalysisRunning by mutableStateOf(false)
     private var appAnalysisJob by mutableStateOf<AppAnalysisClient.JobView?>(null)
@@ -616,6 +616,9 @@ class MainActivity : ComponentActivity() {
         if(appAnalysisRunning)return
         if(!BuildConfig.SPDECODE_CLOUD_ENABLED){
             appAnalysisError="APP_ANALYSIS_CLOUD_REQUIRED";return
+        }
+        if(!CloudLegalConsent.accepted(this)){
+            appAnalysisError="LEGAL_CONSENT_REQUIRED";showCloudLegal=true;return
         }
         try {
             // Persist job metadata before network I/O; WorkManager never stores

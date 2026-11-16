@@ -588,6 +588,23 @@ internal class CloudDecodeClient(context: Context) {
         }
     }
 
+    suspend fun appAnalysisRequest(operation:Int,payload:JSONObject,
+                             attachment:ByteArray?=null):JSONObject {
+        if (operation !in setOf(CloudOperation.APP_ANALYSIS_PREFLIGHT,
+                CloudOperation.APP_ANALYSIS_START,CloudOperation.APP_ANALYSIS_CHUNK,
+                CloudOperation.APP_ANALYSIS_FINISH,CloudOperation.APP_ANALYSIS_STATUS,
+                CloudOperation.APP_ANALYSIS_HISTORY))
+            throw IOException("APP_ANALYSIS_OPERATION_DENIED")
+        requireLegalConsent()
+        return withContext(Dispatchers.IO) {
+            val bearer=session()
+            extract(if(operation==CloudOperation.APP_ANALYSIS_START ||
+                       operation==CloudOperation.APP_ANALYSIS_FINISH)
+                protectedPost(operation,payload,bearer,attachment)
+            else CloudNativeTransport.post(operation,payload,bearer,attachment=attachment))
+        }
+    }
+
     /** Explicit user action only: never uploads the source file or a free-text note. */
     suspend fun reportFailure(details:Diagnostic):String {
         requireLegalConsent()

@@ -29,22 +29,27 @@ import javax.crypto.spec.GCMParameterSpec
 import kotlin.coroutines.coroutineContext
 
 /**
- * SP-DECODE Arnes: paid APK analysis over direct authenticated HTTPS
- * (NativeCommerceAuth Bearer session). One credit-backed job at a time.
+ * SP-DECODE Arnes: paid APK analysis over the V2 transport
+ * (CloudDecodeClient.appAnalysisRequest, ops 25-30, HPKE-encrypted like
+ * APK-QA). One credit-backed job at a time.
  *
- * Transport is chunk-JSON-base64 (2 MB), the same shape as APK-QA, but the
- * routes are the app-analysis ones (/api/v1/app-analysis/...) and the server —
- * never the client — decides price, balance and whether the button is
- * enabled. No consent checkbox exists in this flow, so start() never sends
- * one and the server never requires it.
+ * Transport is the same shape as APK-QA: the accountToken (fresh
+ * NativeCommerceAuth session token) travels inside the HPKE-encrypted
+ * request body, never in WorkManager and never as a plaintext Bearer.
+ * The server — never the client — decides price, balance and whether the
+ * button is enabled. No consent checkbox exists in this flow, so start()
+ * never sends one and the server never requires it. No deviceKeyHash is
+ * sent: the server derives it from the device key itself.
  *
- * The checkpoint (job id, upload token, SAF uri) and the device label are
- * encrypted with AndroidKeyStore AES-256-GCM. The finished result.zip is
- * saved under filesDir/app-analysis/ so the user can re-export it without
- * the server link. WorkManager (AppAnalysisWorker) drives executeQueued();
- * the Activity only observes the local snapshot.
+ * The checkpoint (job id, upload token, SAF uri) is encrypted with
+ * AndroidKeyStore AES-256-GCM. The finished result.zip is saved under
+ * filesDir/app-analysis/ so the user can re-export it without the server
+ * link. WorkManager (AppAnalysisWorker) drives executeQueued(); the
+ * Activity only observes the local snapshot. The result download uses the
+ * signed link the server returns (JobView.downloadUrl); ORIGIN is kept
+ * only for that download and its Bearer fallback.
  */
-internal class AppAnalysisClient(context: Context) {
+internal class AppAnalysisClient(context: Context, private val cloud: CloudDecodeClient = CloudDecodeClient(context)) {
     internal class Failure(val code: String, val status: Int = 0) : IOException(code)
 
     data class Preflight(
@@ -123,74 +128,35 @@ internal class AppAnalysisClient(context: Context) {
         prefs.edit().remove("checkpoint").apply()
     }
 
-    /** Opaque per-device label (SHA-256 of a random id). The Bearer session is
-     * the real authentication; this only binds the job to one device. */
-    fun deviceKeyHash(): String {
-        val stored = prefs.getString("device", null)
-        val id = if (stored != null) runCatching { decrypt(stored) }.getOrNull() else null
-        val value = id ?: ByteArray(32).also { SecureRandom().nextBytes(it) }
-            .joinToString("") { "%02x".format(it.toInt() and 0xff) }
-        if (id == null) prefs.edit().putString("device", encrypt(value)).apply()
-        return MessageDigest.getInstance("SHA-256").digest(value.toByteArray(Charsets.UTF_8))
-            .joinToString("") { "%02x".format(it.toInt() and 0xff) }
-    }
-
     private fun hex(bytes: ByteArray): String =
         bytes.joinToString("") { "%02x".format(it.toInt() and 0xff) }
 
     private fun token(): String =
         NativeCommerceAuth(app).sessionToken() ?: throw Failure("SIGN_IN_REQUIRED", 401)
 
-    // -- Direct HTTPS (mirrors NativeCommerceAuth.http, with a body cap that
-    // fits one 2 MB base64 chunk). Never sends tokens anywhere else. --
-    private fun httpJson(
-        method: String, path: String, body: JSONObject?, bodyCapBytes: Int = 256 * 1024,
-    ): JSONObject {
-        require(path.startsWith("/api/") && !path.contains("..") && !path.contains("://"))
-        val connection = URL(ORIGIN + path).openConnection() as HttpURLConnection
-        try {
-            connection.instanceFollowRedirects = false
-            connection.connectTimeout = 8000
-            connection.readTimeout = if (method == "POST" && bodyCapBytes > 256 * 1024) 60000 else 8000
-            connection.requestMethod = method
-            connection.setRequestProperty("Accept", "application/json")
-            connection.setRequestProperty("Cache-Control", "no-store")
-            connection.setRequestProperty("Authorization", "Bearer " + token())
-            if (method != "GET") {
-                connection.doOutput = true
-                connection.setRequestProperty("Origin", ORIGIN)
-                connection.setRequestProperty("Content-Type", "application/json")
-                val bytes = (body ?: JSONObject()).toString().toByteArray(Charsets.UTF_8)
-                require(bytes.size <= bodyCapBytes)
-                connection.outputStream.use { it.write(bytes) }
+    // Mirror of CloudApkQaClient.qaPost: a fresh accountToken on every
+    // attempt, bound into a copy of the payload, inside the V2
+    // HPKE-encrypted request. CloudDecodeClient.Failure is converted to
+    // this client's Failure preserving code and status: the UI and the
+    // worker match on those codes (e.g. INSUFFICIENT_CREDITS).
+    private suspend fun analysisPost(op: Int, payload: JSONObject, bytes: ByteArray? = null): JSONObject {
+        var attempts = 0
+        while (true) {
+            coroutineContext.ensureActive()
+            val accountToken = NativeCommerceAuth(app).sessionToken()
+                ?: throw Failure("SIGN_IN_REQUIRED", 401)
+            // The bearer travels ONLY within the V2 HPKE-encrypted request.
+            // It is never saved in WorkManager or sent anywhere else.
+            val bound = JSONObject(payload.toString()).put("accountToken", accountToken)
+            try {
+                return cloud.appAnalysisRequest(op, bound, bytes)
+            } catch (error: CloudDecodeClient.Failure) {
+                if (error.code !in setOf("RATE_LIMITED", "SERVICE_UNAVAILABLE",
+                        "APP_ANALYSIS_UNAVAILABLE") || attempts >= 5)
+                    throw Failure(error.code, error.httpStatus)
+                attempts++
+                delay(maxOf(error.retryAfterMillis, 15_000L).coerceAtMost(60_000L))
             }
-            val status = connection.responseCode
-            val stream = if (status in 200..299) connection.inputStream else connection.errorStream
-            val text = stream?.use { it.readBytes().decodeToString() }.orEmpty()
-            if (status !in 200..299) {
-                val code = runCatching { JSONObject(text).optJSONObject("error")?.optString("code") }
-                    .getOrNull()?.takeIf { it.matches(Regex("[A-Z][A-Z0-9_]{2,64}")) }
-                    ?: when (status) {
-                        400 -> "APP_ANALYSIS_BAD_REQUEST"
-                        401 -> "SIGN_IN_REQUIRED"
-                        402 -> "INSUFFICIENT_CREDITS"
-                        403 -> "APP_ANALYSIS_ACCESS_DENIED"
-                        404 -> "APP_ANALYSIS_JOB_NOT_FOUND"
-                        409 -> "APP_ANALYSIS_CONFLICT"
-                        413 -> "INPUT_TOO_LARGE"
-                        429 -> "APP_ANALYSIS_BUSY"
-                        503 -> "SERVICE_UNAVAILABLE"
-                        else -> "APP_ANALYSIS_HTTP_$status"
-                    }
-                throw Failure(code, status)
-            }
-            if (!connection.contentType.orEmpty().startsWith("application/json"))
-                throw Failure("INVALID_RESPONSE", status)
-            if (text.toByteArray(Charsets.UTF_8).size > 256 * 1024)
-                throw Failure("RESPONSE_TOO_LARGE", status)
-            return JSONObject(text)
-        } finally {
-            connection.disconnect()
         }
     }
 
@@ -220,7 +186,7 @@ internal class AppAnalysisClient(context: Context) {
 
     /** Server-authoritative preflight: credits + price. Never cached long. */
     suspend fun preflight(): Preflight = withContext(Dispatchers.IO) {
-        val raw = httpJson("POST", "/api/v1/app-analysis/preflight", JSONObject())
+        val raw = analysisPost(CloudOperation.APP_ANALYSIS_PREFLIGHT, JSONObject())
         val preflight = Preflight(
             creditsAvailable = raw.optInt("creditsAvailable"),
             balance = raw.optInt("balance"),
@@ -365,15 +331,16 @@ internal class AppAnalysisClient(context: Context) {
                     }
                     val piece = block.copyOf(count)
                     try {
+                        // The chunk bytes travel as the V2 binary tail (like
+                        // APK-QA op 22): the server synthesizes dataBase64
+                        // from them. A 2 MB chunk as Base64 inside the JSON
+                        // metadata would exceed the native 1 MB metadata cap.
                         val payload = JSONObject()
                             .put("jobId", job.jobId)
                             .put("uploadToken", current.optString("uploadToken"))
                             .put("index", next)
                             .put("chunkSha256", hex(MessageDigest.getInstance("SHA-256").digest(piece)))
-                            .put("dataBase64", android.util.Base64.encodeToString(piece, android.util.Base64.NO_WRAP))
-                            .put("deviceKeyHash", deviceKeyHash())
-                        val ack = httpJson("POST", "/api/v1/app-analysis/chunk", payload,
-                            bodyCapBytes = 4 * 1024 * 1024)
+                        val ack = analysisPost(CloudOperation.APP_ANALYSIS_CHUNK, payload, piece)
                         if (ack.optLong("receivedBytes", -1L) != sent + count ||
                             ack.optInt("nextChunk", -1) != next + 1)
                             throw IOException("APP_ANALYSIS_CHUNK_ACK_INVALID")
@@ -403,14 +370,27 @@ internal class AppAnalysisClient(context: Context) {
         val file = File(resultsDir, job.jobId + ".zip")
         if (file.exists() && file.length() == (job.resultBytes ?: -1L)) return@withContext true
         try {
-            val connection = URL(ORIGIN + "/api/v1/app-analysis/" + job.jobId + "/download")
-                .openConnection() as HttpURLConnection
+            // Signed download link from the JobView: direct HTTPS, no
+            // Authorization header (the HMAC exp/sig in the URL is the
+            // credential). Fallback, only when the server sent no link, is
+            // the Bearer download on the V2 route. Only https links are
+            // followed; anything else falls back.
+            val signed = job.downloadUrl?.takeIf {
+                it.isNotBlank() && (it.startsWith("https://") || it.startsWith("/"))
+            }
+            val url = when {
+                signed == null -> URL(ORIGIN + "/api/v2/app-analysis/" + job.jobId + "/download")
+                signed.startsWith("/") -> URL(ORIGIN + signed)
+                else -> URL(signed)
+            }
+            val connection = url.openConnection() as HttpURLConnection
             try {
                 connection.instanceFollowRedirects = false
                 connection.connectTimeout = 8000
                 connection.readTimeout = 60000
                 connection.setRequestProperty("Accept", "application/zip")
-                connection.setRequestProperty("Authorization", "Bearer " + token())
+                if (signed == null)
+                    connection.setRequestProperty("Authorization", "Bearer " + token())
                 if (connection.responseCode !in 200..299) return@withContext false
                 val digest = MessageDigest.getInstance("SHA-256")
                 val buffer = ByteArray(256 * 1024)
@@ -505,9 +485,10 @@ internal class AppAnalysisClient(context: Context) {
     }
 
     /**
-     * Download result.zip from the server (Bearer session, no signed link
-     * needed in-app) to a SAF document, verifying SHA-256. The file is also
-     * kept locally so the next export does not need the server.
+     * Download result.zip from the server (signed link from the JobView, or
+     * the Bearer fallback when the server sent no link) to a SAF document,
+     * verifying SHA-256. The file is also kept locally so the next export
+     * does not need the server.
      */
     suspend fun downloadResult(job: JobView, uri: Uri): Boolean = withContext(Dispatchers.IO) {
         if (job.resultSha256.isNullOrBlank()) return@withContext false
@@ -517,7 +498,7 @@ internal class AppAnalysisClient(context: Context) {
 
     /** Server history ("Aplicaciones"): the account's own jobs. */
     suspend fun refreshHistory(): List<JobView> = withContext(Dispatchers.IO) {
-        val raw = httpJson("GET", "/api/v1/app-analysis", null)
+        val raw = analysisPost(CloudOperation.APP_ANALYSIS_HISTORY, JSONObject())
         val array = raw.optJSONArray("jobs") ?: JSONArray()
         (0 until array.length()).mapNotNull { n ->
             array.optJSONObject(n)?.let { runCatching { jobViewOf(it) }.getOrNull() }
@@ -552,11 +533,10 @@ internal class AppAnalysisClient(context: Context) {
             writeState(state)
         }
         if (state.optString("jobId").isBlank()) {
-            val started = httpJson("POST", "/api/v1/app-analysis/start", JSONObject()
+            val started = analysisPost(CloudOperation.APP_ANALYSIS_START, JSONObject()
                 .put("filename", state.optString("filename"))
                 .put("totalBytes", state.optLong("totalBytes"))
-                .put("sha256", state.optString("sha256"))
-                .put("deviceKeyHash", deviceKeyHash()))
+                .put("sha256", state.optString("sha256")))
             val id = started.optString("jobId")
             val uploadToken = started.optString("uploadToken")
             val step = started.optInt("chunkBytes")
@@ -575,8 +555,8 @@ internal class AppAnalysisClient(context: Context) {
             coroutineContext.ensureActive()
             val current = readState() ?: return@withContext
             val job = current.optJSONObject("job")?.let { jobViewOf(it) } ?: return@withContext
-            val remote = jobViewOf(httpJson("GET",
-                "/api/v1/app-analysis/" + job.jobId, null))
+            val remote = jobViewOf(analysisPost(CloudOperation.APP_ANALYSIS_STATUS,
+                JSONObject().put("jobId", job.jobId)))
             state = saveJob(current, remote)
             writeState(state)
             when (remote.status) {
@@ -587,11 +567,10 @@ internal class AppAnalysisClient(context: Context) {
                 "FAILED", "REJECTED", "EXPIRED" -> return@withContext
                 "UPLOADING" -> {
                     state = sendRemaining(state)
-                    val finished = jobViewOf(httpJson("POST",
-                        "/api/v1/app-analysis/finish", JSONObject()
+                    val finished = jobViewOf(analysisPost(CloudOperation.APP_ANALYSIS_FINISH,
+                        JSONObject()
                             .put("jobId", job.jobId)
-                            .put("uploadToken", state.optString("uploadToken"))
-                            .put("deviceKeyHash", deviceKeyHash())))
+                            .put("uploadToken", state.optString("uploadToken"))))
                     state = saveJob(readState() ?: state, finished)
                     writeState(state)
                     if (finished.terminal) return@withContext

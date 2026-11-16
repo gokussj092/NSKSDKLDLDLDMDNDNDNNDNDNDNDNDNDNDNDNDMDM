@@ -46,6 +46,12 @@ async function readBytes(request,max) {
 }
 async function dispatch(operation,request) {
   if(operation===17)return notificationFeedRequest(request);
+  // App analysis (ops 25-30) is handled by its own gateway, like apk-qa:
+  // the V2 transport never proxies it to a V1 route (none exists anymore).
+  if(operation>=25&&operation<=30){
+    const {appAnalysisRequest}=await import("../lib/app-analysis-v2.mjs");
+    return appAnalysisRequest(request,operation);
+  }
   // Explicit imports let Next trace standalone dependencies.
   const handlers={
     4:()=>import("../app/api/v1/npvs/identity/route.js"),
@@ -85,7 +91,7 @@ async function jsonTransportCore(request,options={}) {
     deviceRevision:devicePolicy.revision};
   if(!cfg.configured)return fail("SERVICE_UNAVAILABLE",503);
   const url=new URL(request.url),header=request.headers.get("x-sp-operation")||"";
-  if(request.method!=="POST" || url.search || !/^(1|2|[4-9]|1[0-9]|2[0-4])$/.test(header))
+  if(request.method!=="POST" || url.search || !/^(1|2|[4-9]|1[0-9]|2[0-9]|30)$/.test(header))
     return fail("INVALID_REQUEST",400); // No QA/beta or arbitrary proxy.
   const op=Number(header);
   try {
@@ -305,7 +311,7 @@ export async function transportRequest(request,options={}) {
   }
   if(!isHpkeEnabled(env))return fail("SERVICE_UNAVAILABLE",503);
   const url=new URL(request.url),name=request.headers.get("x-sp-operation")||"";
-  if(request.method!=="POST"||url.search||!/^(1|2|[4-9]|1[0-9]|2[0-4])$/.test(name))
+  if(request.method!=="POST"||url.search||!/^(1|2|[4-9]|1[0-9]|2[0-9]|30)$/.test(name))
     return fail("INVALID_REQUEST",400);
   const op=Number(name);
   if(op>=4 && !(request.headers.get("authorization")||"").startsWith("Bearer "))

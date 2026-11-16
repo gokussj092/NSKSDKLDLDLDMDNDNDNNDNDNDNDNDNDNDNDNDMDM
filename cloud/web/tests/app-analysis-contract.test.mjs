@@ -49,18 +49,30 @@ test('no icon or catalog reference ever leaks into a job view or download',()=>{
  assert(server.includes('icon_ref'), 'candidate insert keeps icon_ref internal');
  const client=read('../../android/app/src/main/java/com/ghostdeveloper/spdecode/cloud/AppAnalysisClient.kt');
  assert(!client.includes('iconRef'),'client must never receive iconRef');
- const download=read('app/api/v1/app-analysis/[jobId]/download/route.js');
+ const download=read('app/api/v2/app-analysis/[jobId]/download/route.js');
  assert(!download.includes('icon'),'download must not serve icon refs');
 });
 
 test('every app-analysis route exists and the panel is wired into the nav',()=>{
- for(const route of ['preflight','start','chunk','finish']){
-  assert(existsSync(new URL('../app/api/v1/app-analysis/'+route+'/route.js',import.meta.url)),route);
- }
- for(const route of ['','[jobId]','[jobId]/download','[jobId]/events',
+ // Client operations travel over the V2 transport (ops 25-30), not over
+ // HTTP routes: preflight/start/chunk/finish/status/history.
+ const v2routes=read('lib/v2-routes.mjs');
+ for(const [op,route] of [[25,'app-analysis/preflight'],[26,'app-analysis/start'],
+   [27,'app-analysis/chunk'],[28,'app-analysis/finish'],[29,'app-analysis/status'],
+   [30,'app-analysis/history']])
+  assert(v2routes.includes(op+':"'+route+'"'),`op ${op} must map to ${route}`);
+ assert(existsSync(new URL('../lib/app-analysis-v2.mjs',import.meta.url)));
+ assert(read('lib/app-analysis-v2.mjs').includes('appAnalysisRequest'));
+ // Only the bot/download routes exist as HTTP routes, under /api/v2.
+ for(const route of ['[jobId]/download','[jobId]/events',
    '[jobId]/complete','[jobId]/fail']){
-  assert(existsSync(new URL('../app/api/v1/app-analysis/'+route+'/route.js',import.meta.url)),route||'list');
+  assert(existsSync(new URL('../app/api/v2/app-analysis/'+route+'/route.js',import.meta.url)),route);
  }
+ // The V1 routes are gone: the client must not be able to reach them.
+ assert(!existsSync(new URL('../app/api/v1/app-analysis',import.meta.url)),
+   '/api/v1/app-analysis must not exist anymore');
+ assert(read('lib/app-analysis.mjs').includes("'/api/v2/app-analysis/'+jobId"),
+   'signed download must point at the V2 route');
  assert(existsSync(new URL('../app/api/admin/app-analysis/route.js',import.meta.url)));
  assert(existsSync(new URL('../app/admin/app-analysis/page.jsx',import.meta.url)));
  assert(read('app/admin/app-analysis/page.jsx').includes('export const metadata='));

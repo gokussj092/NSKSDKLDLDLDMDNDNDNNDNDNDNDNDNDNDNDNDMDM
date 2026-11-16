@@ -210,7 +210,7 @@ void expireLocked(){
 
 PreparedEnvelope hpkePrepare(int operation,const Bytes& metadata,
     const Bytes& attachment,const std::array<unsigned char,40>& pin) {
-    if(operation<1||operation>24||operation==3 ||
+    if(operation<1||operation>30||operation==3 ||
        metadata.size()<2||metadata.size()>1024U*1024U ||
        !hpkeAttachmentAllowed(operation,attachment.size()))invalid();
     if(metadata.size()+attachment.size()+4+kHeader+16>kMaxWire)invalid();

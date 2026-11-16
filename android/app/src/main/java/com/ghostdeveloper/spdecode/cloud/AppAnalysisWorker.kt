@@ -20,7 +20,11 @@ import java.util.concurrent.TimeUnit
  * second credit (the server binds the reservation to the job id).
  *
  * There is no consent gate here: this flow has no checkbox (Pedro, P2), and
- * the server never requires consent for app analysis.
+ * the server never requires consent for app analysis. The LEGAL consent
+ * below is different: it is the app-wide terms acceptance
+ * (CloudLegalConsent), which the V2 transport path requires on every call
+ * (same pre-check as ApkQaWorker). A withdrawn legal consent pauses work
+ * as a failure instead of retrying forever.
  */
 internal class AppAnalysisWorker(context: Context, params: WorkerParameters) :
     CoroutineWorker(context, params) {
@@ -43,6 +47,11 @@ internal class AppAnalysisWorker(context: Context, params: WorkerParameters) :
 
     override suspend fun doWork(): Result {
         val client = AppAnalysisClient(applicationContext)
+        if(!CloudLegalConsent.accepted(applicationContext)) {
+            // Withdrawal pauses work without pretending the remote job ended.
+            client.noteRecoverableError("LEGAL_CONSENT_REQUIRED")
+            return Result.failure()
+        }
         return try {
             client.executeQueued()
             Result.success()
@@ -53,7 +62,8 @@ internal class AppAnalysisWorker(context: Context, params: WorkerParameters) :
                     "APP_ANALYSIS_ACCESS_DENIED", "APP_ANALYSIS_JOB_NOT_FOUND",
                     "APP_ANALYSIS_FORMAT_UNSUPPORTED", "APP_ANALYSIS_INPUT_TOO_LARGE",
                     "APP_ANALYSIS_EMPTY_FILE", "APP_ANALYSIS_INVALID_SESSION",
-                    "APP_ANALYSIS_SHA_MISMATCH")) {
+                    "APP_ANALYSIS_SHA_MISMATCH", "LEGAL_CONSENT_REQUIRED",
+                    "INTEGRITY_REJECTED")) {
                 client.noteTerminalError(error.code)
                 Result.failure()
             } else {

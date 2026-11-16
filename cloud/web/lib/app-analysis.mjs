@@ -1,7 +1,9 @@
 /**
  * App analysis (SP-DECODE Arnes, fase 1): server-side jobs for deep APK
- * analysis by Yamada. Own routes under /api/v1/app-analysis/* (D4: own
- * routes, per the plan recommendation — still pending Pedro's confirmation).
+ * analysis by Yamada. Client operations travel over the V2 transport
+ * (ops 25-30, lib/app-analysis-v2.mjs); bot/download routes live under
+ * /api/v2/app-analysis/*. The old /api/v1/app-analysis/* routes were
+ * removed with the V2 migration (2026-11-16).
  *
  * Rules enforced here (Pedro, 2026-11-15):
  * - 1 credit = 1 analysis, $4 USD (price always from the server, never
@@ -106,7 +108,7 @@ export function signDownload(jobId,accountId,env=process.env,nowSeconds=Math.flo
  const exp=nowSeconds+DOWNLOAD_TTL_SECONDS;
  const sig=createHmac('sha256',cfg.downloadSecret)
    .update(jobId+'|'+accountId+'|'+exp,'utf8').digest('hex');
- return {url:'/api/v1/app-analysis/'+jobId+'/download?exp='+exp+'&sig='+sig,exp};
+ return {url:'/api/v2/app-analysis/'+jobId+'/download?exp='+exp+'&sig='+sig,exp};
 }
 export function verifyDownloadSignature(jobId,accountId,exp,sig,env=process.env){
  const cfg=settings(env);

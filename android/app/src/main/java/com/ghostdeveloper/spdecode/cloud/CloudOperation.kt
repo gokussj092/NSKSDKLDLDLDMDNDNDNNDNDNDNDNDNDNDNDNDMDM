@@ -24,4 +24,10 @@ internal object CloudOperation {
     const val APK_QA_CHUNK = 22
     const val APK_QA_FINISH = 23
     const val APK_QA_RESULT = 24
+    const val APP_ANALYSIS_PREFLIGHT = 25
+    const val APP_ANALYSIS_START = 26
+    const val APP_ANALYSIS_CHUNK = 27
+    const val APP_ANALYSIS_FINISH = 28
+    const val APP_ANALYSIS_STATUS = 29
+    const val APP_ANALYSIS_HISTORY = 30
 }

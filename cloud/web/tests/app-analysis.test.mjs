@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {before,after} from 'node:test';
 import {readFile} from 'node:fs/promises';
+import {existsSync} from 'node:fs';
 import {mkdtemp,rm} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
@@ -16,6 +17,16 @@ import {parseAndroidManifest,verifyVpnGate,preflight,startJob,appendChunk,
  signDownload,verifyDownloadSignature,verifyBotToken,
  MAX_APK_BYTES} from '../lib/app-analysis.mjs';
 import {signWebhook,verifyWebhookSignature} from '../lib/app-analysis-webhook.mjs';
+import {appAnalysisRequest} from '../lib/app-analysis-v2.mjs';
+import {bindVerifiedRequest} from '../lib/v2-bound-request.mjs';
+import {routes,bodyLimit} from '../lib/v2-routes.mjs';
+import {protectedActions} from '../lib/action-integrity.mjs';
+import {ShopError} from '../lib/commerce/config.mjs';
+import {unpackHpkeBody} from '../lib/v2-hpke.mjs';
+import {GET as v2DownloadGet} from '../app/api/v2/app-analysis/[jobId]/download/route.js';
+import {POST as v2EventsPost} from '../app/api/v2/app-analysis/[jobId]/events/route.js';
+import {POST as v2CompletePost} from '../app/api/v2/app-analysis/[jobId]/complete/route.js';
+import {POST as v2FailPost} from '../app/api/v2/app-analysis/[jobId]/fail/route.js';
 
 let pg,db,auth,root;
 const env={...process.env,NODE_ENV:'test',
@@ -311,6 +322,9 @@ test('complete charges the credit, serves a signed 24 h download, hides icon_ref
  assert.equal(done.resultSha256,sha256(result));
  assert.equal((await creditBalance(account,{db})).available,4);
  assert.ok(done.downloadUrl?.includes('/download?exp='));
+ assert.ok(done.downloadUrl?.startsWith('/api/v2/app-analysis/'+job.jobId+'/download'),
+   'signed download must point at the V2 route, got '+done.downloadUrl);
+ assert.equal(done.downloadUrl?.includes('/api/v1/'),false);
  assert.equal(JSON.stringify(done).includes('icon_ref'),false);
  assert.equal(JSON.stringify(done).includes('iconRef'),false);
  const view=await getJob(account,job.jobId,{db,env});
@@ -393,10 +407,10 @@ test('sweep expires retained jobs past 30 days and deletes their files',async()=
 });
 
 test('bot token is required for bot routes; list shows only own jobs',async()=>{
- const req=new Request('https://spdecode.xyz/api/v1/app-analysis/x/events',
+ const req=new Request('https://spdecode.xyz/api/v2/app-analysis/x/events',
    {method:'POST',headers:{authorization:'Bearer wrong-token'}});
  assert.throws(()=>verifyBotToken(req,env),/APP_ANALYSIS_BOT_UNAUTHORIZED/);
- const ok=new Request('https://spdecode.xyz/api/v1/app-analysis/x/events',
+ const ok=new Request('https://spdecode.xyz/api/v2/app-analysis/x/events',
    {method:'POST',headers:{authorization:'Bearer '+env.SPDECODE_APP_ANALYSIS_BOT_TOKEN}});
  verifyBotToken(ok,env);
  const a=await newAccount(5),b=await newAccount(5);
@@ -404,4 +418,274 @@ test('bot token is required for bot routes; list shows only own jobs',async()=>{
  await finishUploaded(b,await uploadJob(b,apkBytes(vpnManifest())));
  assert.equal((await listJobs(a,{db,env})).jobs.length,1);
  assert.equal((await listJobs(b,{db,env})).jobs.length,1);
+});
+
+// ---------------------------------------------------------------------------
+// V2 transport (ops 25-30): the client operations moved off /api/v1/*.
+// Same auth model as apk-qa: bound V2 claims + accountToken in the body.
+// The stub below mirrors verifyApkAccount (token 'token-<accountId>').
+// ---------------------------------------------------------------------------
+const V2_DEVICE_KEY='device-p256-public-key-verifiable-app-analysis-test';
+async function stubAuthenticate(token){
+ if(typeof token!=='string'||!token.startsWith('token-'))
+  throw new ShopError('SIGN_IN_REQUIRED',401);
+ return token.slice(6);
+}
+function v2Request(body,op,{bound=true,key=V2_DEVICE_KEY,hpke=true}={}){
+ const req=new Request('https://spdecode.xyz/api/v2/transport',{method:'POST',
+  headers:{'content-type':'application/json'},body:JSON.stringify(body)});
+ if(bound)bindVerifiedRequest(req,{hpke,key,scope:'decode',versionCode:42});
+ return req;
+}
+async function v2(op,body,accountId,opts={}){
+ const req=v2Request({...body,accountToken:'token-'+accountId},op,opts);
+ return appAnalysisRequest(req,op,{env,authenticate:stubAuthenticate,db,root});
+}
+async function v2UploadJob(accountId,apk,{filename='sample.apk'}={}){
+ const started=await v2(26,{filename,totalBytes:apk.length,sha256:sha256(apk)},accountId);
+ assert.equal(started.status,201);
+ const {jobId,uploadToken}=await started.json();
+ const data=apk.toString('base64');
+ const chunk=await v2(27,{jobId,uploadToken,index:0,chunkSha256:sha256(apk),
+   dataBase64:data},accountId);
+ assert.equal(chunk.status,200);
+ return {jobId,uploadToken};
+}
+
+test('V2 routing: ops 25-30 map to app-analysis, limits and integrity mirror apk-qa',()=>{
+ for(const [op,route] of [[25,'app-analysis/preflight'],[26,'app-analysis/start'],
+   [27,'app-analysis/chunk'],[28,'app-analysis/finish'],[29,'app-analysis/status'],
+   [30,'app-analysis/history']])assert.equal(routes[op],route);
+ assert.equal(bodyLimit(27),3*1024*1024);
+ for(const op of [25,26,28,29,30])assert.equal(bodyLimit(op),4096);
+ assert.equal(protectedActions.has(26),true);
+ assert.equal(protectedActions.has(28),true);
+ for(const op of [25,27,29,30])assert.equal(protectedActions.has(op),false);
+ assert.equal(routes[5],'decode/file');
+});
+
+test('V2 preflight: 200 with credits, 402 without',async()=>{
+ const poor=await newAccount(0);
+ const denied=await v2(25,{},poor);
+ assert.equal(denied.status,402);
+ assert.deepEqual(await denied.json(),{error:{code:'INSUFFICIENT_CREDITS'}});
+ const rich=await newAccount(5);
+ const ok=await v2(25,{},rich);
+ assert.equal(ok.status,200);
+ const body=await ok.json();
+ assert.equal(body.creditsAvailable,5);
+ assert.equal(body.creditPriceCents,399);
+ assert.equal(body.currency,'USD');
+});
+
+test('V2 start reserves 1 credit and ignores a client-supplied deviceKeyHash',async()=>{
+ const account=await newAccount(5);
+ const res=await v2(26,{filename:'sample.apk',totalBytes:1000,sha256:'a'.repeat(64),
+   deviceKeyHash:'f'.repeat(64)},account);
+ assert.equal(res.status,201);
+ const started=await res.json();
+ assert.match(started.jobId,/^[0-9a-f-]{36}$/);
+ assert.equal(started.chunkBytes,2*1024*1024);
+ assert.equal(started.status,'UPLOADING');
+ assert.equal(started.uploadToken.length,43);
+ assert.equal((await creditBalance(account,{db})).available,4);
+ const row=(await db.query(
+   'SELECT device_key_hash FROM spdecode_shop.app_analysis_jobs WHERE job_id=$1',
+   [started.jobId])).rows[0];
+ assert.equal(row.device_key_hash,sha256(V2_DEVICE_KEY));
+ assert.notEqual(row.device_key_hash,'f'.repeat(64));
+});
+
+test('V2 chunk 2 MB + finish queues, status and history follow',async()=>{
+ const account=await newAccount(5);
+ const apk=buildZip([{name:'AndroidManifest.xml',data:vpnManifest()},
+   {name:'assets/pad.bin',data:Buffer.alloc(2*1024*1024)}]);
+ assert.ok(apk.length>2*1024*1024);
+ const started=await v2(26,{filename:'sample.apk',totalBytes:apk.length,
+   sha256:sha256(apk)},account);
+ assert.equal(started.status,201);
+ const {jobId,uploadToken}=await started.json();
+ const first=apk.subarray(0,2*1024*1024),rest=apk.subarray(2*1024*1024);
+ const c0=await v2(27,{jobId,uploadToken,index:0,chunkSha256:sha256(first),
+   dataBase64:first.toString('base64')},account);
+ assert.equal(c0.status,200);
+ assert.deepEqual(await c0.json(),{jobId,receivedBytes:2*1024*1024,nextChunk:1,
+   status:'UPLOADING'});
+ const c1=await v2(27,{jobId,uploadToken,index:1,chunkSha256:sha256(rest),
+   dataBase64:rest.toString('base64')},account);
+ assert.equal(c1.status,200);
+ assert.equal((await c1.json()).receivedBytes,apk.length);
+ const fin=await v2(28,{jobId,uploadToken},account);
+ assert.equal(fin.status,200);
+ const done=await fin.json();
+ assert.equal(done.status,'QUEUED_FOR_ANALYSIS');
+ assert.equal(done.packageName,'com.example.vpnapp');
+ const st=await v2(29,{jobId},account);
+ assert.equal(st.status,200);
+ assert.equal((await st.json()).status,'QUEUED_FOR_ANALYSIS');
+ const hist=await v2(30,{},account);
+ assert.equal(hist.status,200);
+ const jobs=(await hist.json()).jobs;
+ assert.equal(jobs.length,1);
+ assert.equal(jobs[0].jobId,jobId);
+});
+
+test('V2 rejects unbound callers, bad account tokens, non-POST and unknown ops',async()=>{
+ const account=await newAccount(5);
+ const unbound=await appAnalysisRequest(v2Request({accountToken:'token-'+account},25,
+   {bound:false}),25,{env,authenticate:stubAuthenticate,db,root});
+ assert.equal(unbound.status,401);
+ const noHpke=await appAnalysisRequest(v2Request({accountToken:'token-'+account},25,
+   {hpke:false}),25,{env,authenticate:stubAuthenticate,db,root});
+ assert.equal(noHpke.status,401);
+ const shortKey=await appAnalysisRequest(v2Request({accountToken:'token-'+account},25,
+   {key:'short'}),25,{env,authenticate:stubAuthenticate,db,root});
+ assert.equal(shortKey.status,401);
+ const badTokenReq=v2Request({accountToken:'bogus'},25);
+ const badToken=await appAnalysisRequest(badTokenReq,25,
+   {env,authenticate:stubAuthenticate,db,root});
+ assert.equal(badToken.status,401);
+ assert.deepEqual(await badToken.json(),{error:{code:'SIGN_IN_REQUIRED'}});
+ const noToken=await appAnalysisRequest(v2Request({},25),25,
+   {env,authenticate:stubAuthenticate,db,root});
+ assert.equal(noToken.status,401);
+ const unknown=await appAnalysisRequest(v2Request({},31),31,
+   {env,authenticate:stubAuthenticate,db,root});
+ assert.equal(unknown.status,400);
+ assert.deepEqual(await unknown.json(),{error:{code:'INVALID_REQUEST'}});
+ const getReq=new Request('https://spdecode.xyz/api/v2/transport',{method:'GET',
+  headers:{'content-type':'application/json'},body:null});
+ bindVerifiedRequest(getReq,{hpke:true,key:V2_DEVICE_KEY,scope:'decode',versionCode:42});
+ const get=await appAnalysisRequest(getReq,25,
+   {env,authenticate:stubAuthenticate,db,root});
+ assert.equal(get.status,405);
+ const other=await newAccount(5);
+ const started=await v2UploadJob(account,apkBytes(vpnManifest()));
+ const foreign=await v2(29,{jobId:started.jobId},other);
+ assert.equal(foreign.status,403);
+ assert.deepEqual(await foreign.json(),{error:{code:'APP_ANALYSIS_ACCESS_DENIED'}});
+});
+
+test('V2 full flow: signed download points at /api/v2 and verifies',async()=>{
+ const account=await newAccount(5);
+ const {jobId,uploadToken}=await v2UploadJob(account,apkBytes(vpnManifest()));
+ const done=await v2(28,{jobId,uploadToken},account);
+ assert.equal(done.status,200);
+ assert.equal((await done.json()).status,'QUEUED_FOR_ANALYSIS');
+ await recordEvent(jobId,{code:'ANALYSIS_STARTED',status:'RUNNING'},{db,env});
+ const result=Buffer.from('PK\x03\x04v2-fake-zip-scripts-only');
+ const completed=await completeJob(jobId,{resultBase64:result.toString('base64'),
+   resultSha256:sha256(result),verdict:'completed'},{db,env,root});
+ assert.equal(completed.status,'COMPLETED');
+ const view=await v2(29,{jobId},account);
+ assert.equal(view.status,200);
+ const job=await view.json();
+ assert.ok(job.downloadUrl.startsWith('/api/v2/app-analysis/'+jobId+'/download?exp='),
+   'download must be V2, got '+job.downloadUrl);
+ assert.equal(job.downloadUrl.includes('/api/v1/'),false);
+ const url=new URL('https://spdecode.xyz'+job.downloadUrl);
+ assert.equal(verifyDownloadSignature(jobId,account,
+   Number(url.searchParams.get('exp')),url.searchParams.get('sig'),env),true);
+});
+
+test('V2 bot routes reject a bad bot token and bad ids without touching the DB',async()=>{
+ const params=async jobId=>({jobId});
+ const bad={headers:{authorization:'Bearer wrong-token','content-type':'application/json'}};
+ const body=JSON.stringify({code:'ANALYSIS_HEARTBEAT',status:'RUNNING'});
+ for(const [handler,name] of [[v2EventsPost,'events'],[v2CompletePost,'complete'],
+   [v2FailPost,'fail']]){
+  const res=await handler(new Request('https://spdecode.xyz/api/v2/app-analysis/x/'+name,
+    {method:'POST',...bad,body}),{params:params('x')});
+  assert.equal(res.status,401,name);
+  assert.deepEqual(await res.json(),{error:{code:'APP_ANALYSIS_BOT_UNAUTHORIZED'}},name);
+ }
+ const good={headers:{authorization:'Bearer '+env.SPDECODE_APP_ANALYSIS_BOT_TOKEN,
+   'content-type':'application/json'}};
+ const badId=await v2EventsPost(new Request(
+   'https://spdecode.xyz/api/v2/app-analysis/not-a-uuid/events',
+   {method:'POST',...good,body}),{params:params('not-a-uuid')});
+ assert.equal(badId.status,400);
+ assert.deepEqual(await badId.json(),{error:{code:'INVALID_REQUEST'}});
+ const dl=await v2DownloadGet(new Request(
+   'https://spdecode.xyz/api/v2/app-analysis/not-a-uuid/download'),
+  {params:params('not-a-uuid')});
+ assert.equal(dl.status,400);
+ assert.deepEqual(await dl.json(),{error:{code:'INVALID_REQUEST'}});
+});
+
+test('V1 app-analysis routes no longer exist on disk',()=>{
+ assert.equal(existsSync(new URL('../app/api/v1/app-analysis',import.meta.url)),false);
+ for(const route of ['route.js','preflight/route.js','start/route.js','chunk/route.js',
+   'finish/route.js','[jobId]/route.js','[jobId]/download/route.js',
+   '[jobId]/events/route.js','[jobId]/complete/route.js','[jobId]/fail/route.js'])
+  assert.equal(existsSync(new URL('../app/api/v1/app-analysis/'+route,import.meta.url)),
+   false,route);
+ for(const route of ['[jobId]/download/route.js','[jobId]/events/route.js',
+   '[jobId]/complete/route.js','[jobId]/fail/route.js'])
+  assert.equal(existsSync(new URL('../app/api/v2/app-analysis/'+route,import.meta.url)),
+   true,route);
+});
+
+test('HPKE binary tail: op 27 synthesizes dataBase64 like op 22',()=>{
+ const meta={jobId:'x',uploadToken:'y',index:0,chunkSha256:'a'.repeat(64)};
+ const header=Buffer.from(JSON.stringify(meta));
+ const tail=Buffer.from([1,2,3,4,5]);
+ const pack=(head,body)=>{
+  const raw=Buffer.alloc(4+head.length+body.length);
+  raw.writeUInt32BE(head.length,0);head.copy(raw,4);body.copy(raw,4+head.length);
+  return raw;
+ };
+ const out=JSON.parse(unpackHpkeBody(pack(header,tail),27));
+ assert.equal(out.dataBase64,tail.toString('base64'));
+ assert.equal(out.jobId,'x');
+ assert.equal(out.index,0);
+ // A chunk with no bytes is not a chunk.
+ assert.throws(()=>unpackHpkeBody(pack(header,Buffer.alloc(0)),27),/HPKE_INVALID/);
+ // dataBase64 already present in the metadata: reject, never trust both.
+ const dup=Buffer.from(JSON.stringify({...meta,dataBase64:'AAAA'}));
+ assert.throws(()=>unpackHpkeBody(pack(dup,tail),27),/HPKE_INVALID/);
+ // Tail over the 2 MB chunk cap: reject.
+ assert.throws(()=>unpackHpkeBody(pack(header,Buffer.alloc(2*1024*1024+1)),27),
+   /HPKE_INVALID/);
+ // op 22 keeps its exact behaviour (regression guard).
+ assert.equal(JSON.parse(unpackHpkeBody(pack(header,tail),22)).dataBase64,
+   tail.toString('base64'));
+ // Any other op with a tail is still rejected.
+ assert.throws(()=>unpackHpkeBody(pack(header,tail),25),/HPKE_INVALID/);
+ assert.throws(()=>unpackHpkeBody(pack(header,tail),26),/HPKE_INVALID/);
+});
+
+test('V2 chunk 27 via HPKE binary tail reaches appendChunk as dataBase64',async()=>{
+ const account=await newAccount(5);
+ const apk=buildZip([{name:'AndroidManifest.xml',data:vpnManifest()},
+   {name:'assets/pad.bin',data:Buffer.alloc(2*1024*1024)}]);
+ const started=await v2(26,{filename:'sample.apk',totalBytes:apk.length,
+   sha256:sha256(apk)},account);
+ assert.equal(started.status,201);
+ const {jobId,uploadToken}=await started.json();
+ const first=apk.subarray(0,2*1024*1024);
+ // What the HPKE transport delivers after decryption: JSON metadata
+ // (with the accountToken inside, like the client sends it) + the raw
+ // 2 MB tail. unpackHpkeBody turns the tail into dataBase64.
+ const meta={jobId,uploadToken,index:0,chunkSha256:sha256(first),
+   accountToken:'token-'+account};
+ const header=Buffer.from(JSON.stringify(meta));
+ const raw=Buffer.alloc(4+header.length+first.length);
+ raw.writeUInt32BE(header.length,0);header.copy(raw,4);first.copy(raw,4+header.length);
+ const decoded=unpackHpkeBody(raw,27);
+ // The decoded JSON (metadata + ~2.8 MB of Base64) must fit the op-27
+ // body limit the transport enforces after decryption.
+ assert.ok(decoded.length<=bodyLimit(27),
+   'decoded chunk is '+decoded.length+' bytes, limit '+bodyLimit(27));
+ const req=new Request('https://spdecode.xyz/api/v2/transport',{method:'POST',
+  headers:{'content-type':'application/json'},body:decoded});
+ bindVerifiedRequest(req,{hpke:true,key:V2_DEVICE_KEY,scope:'decode',versionCode:42});
+ const res=await appAnalysisRequest(req,27,{env,authenticate:stubAuthenticate,db,root});
+ assert.equal(res.status,200);
+ assert.deepEqual(await res.json(),{jobId,receivedBytes:2*1024*1024,nextChunk:1,
+   status:'UPLOADING'});
+ const row=(await db.query(
+   'SELECT received_bytes FROM spdecode_shop.app_analysis_jobs WHERE job_id=$1',
+   [jobId])).rows[0];
+ assert.equal(Number(row.received_bytes),2*1024*1024);
 });
