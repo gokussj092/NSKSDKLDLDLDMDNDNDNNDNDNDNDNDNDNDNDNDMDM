@@ -576,7 +576,7 @@ internal fun CommerceSupportPage(language:String,auth:NativeCommerceAuth,
                     verticalArrangement=Arrangement.spacedBy(3.dp)){
                     Text(t("Yamada","Yamada"),color=supportText,fontSize=17.sp,
                         fontWeight=FontWeight.Bold,maxLines=1)
-                    Text(t("Asistente","Assistant")+" · "+t("En línea","Online"),
+                    Text(t("Asistente","Assistant")+" · "+if(active?.optBoolean("agentOnline")==true) t("En línea","Online") else t("Sin conexión","Offline"),
                         color=supportMuted,fontSize=11.sp,maxLines=1)
                 }
                 if(active!=null)StatusChip(active.optString("status"),language)

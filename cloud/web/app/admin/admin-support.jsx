@@ -301,6 +301,7 @@ export default function AdminSupport(){
      <span className={'sp-chat-status '+selected.status}>{STATUS[selected.status]}</span>
      <span className="sp-chat-chip">{CATEGORY[selected.category]||selected.category||'General'}</span>
      <span className={'sp-chat-chip priority-'+(selected.priority||'normal')}>{PRIORITY[selected.priority||'normal']||'Normal'}</span>
+     {selected.assigned_name&&<span className="sp-chat-chip">{selected.assigned_name} · {selected.assignedOnline?'En línea':'Sin conexión'}</span>}
      {selected.escalated_at&&<span className="sp-chat-chip">Escalado a Pedro</span>}
      {suspendedSelected&&<button type="button" className="sp-chat-suspended" title={suspensionDetail(selected.suspension)}
        aria-label={suspensionDetail(selected.suspension)} onClick={()=>setShowSuspDetail(v=>!v)}>{suspensionLabel(selected.suspension)}</button>}

@@ -1,6 +1,7 @@
 import {randomUUID} from 'node:crypto';
 import {adminSettings,authenticateAdmin,validMutation} from './c6-admin-auth.mjs';
 import {opsStore} from './c6-ops-store.mjs';
+import {panelPrincipal,can} from './commerce/staff.mjs';
 import {store,throttle} from './c3-store.mjs';
 import {boundRequestClaims} from './v2-bound-request.mjs';
 import {pushAccount,pushNotice} from './notice-push.mjs';
@@ -36,14 +37,22 @@ export async function notificationFeedRequest(request,{storeProvider=store,stora
     return reply({notices:feed,serverTime:Date.now()});
   }catch{return reply({error:{code:'SERVICE_UNAVAILABLE'}},503);}
 }
-export async function adminNotices(request,{storeProvider=opsStore,push=pushNotice,storageOptions={}}={}) {
+export async function adminNotices(request,{storeProvider=opsStore,push=pushNotice,storageOptions={},panelOptions={}}={}) {
   const cfg=adminSettings();if(!cfg.enabled)return reply({code:'ADMIN_DISABLED'},503);
   if(request.method==='POST'&&!validMutation(request,cfg))return reply({code:'CSRF_REJECTED'},403);
   let redis,lock;
   try {
     redis=await storeProvider();
+    if(request.method==='GET'){
+      // Lectura del feed: el owner (sesión admin C6) o el personal con
+      // support.read. Publicar sigue siendo solo del owner (se verifica abajo
+      // con authenticateAdmin, antes de cualquier POST).
+      const principal=await panelPrincipal(request,{redis,...panelOptions});
+      if(!principal)return reply({code:'UNAUTHORIZED'},401);
+      if(!can(principal,'support.read'))return reply({code:'FORBIDDEN'},403);
+      return reply({notices:await notices(redis,storageOptions),pushConfigured:!!pushAccount()});
+    }
     if(!await authenticateAdmin(redis,request,cfg))return reply({code:'UNAUTHORIZED'},401);
-    if(request.method==='GET')return reply({notices:await notices(redis,storageOptions),pushConfigured:!!pushAccount()});
     if(request.method!=='POST')return reply({code:'METHOD_NOT_ALLOWED'},405);
     // Bounded stream even when Content-Length is absent or dishonest.
     const reader=request.body?.getReader();if(!reader)return reply({code:'INVALID_REQUEST'},400);

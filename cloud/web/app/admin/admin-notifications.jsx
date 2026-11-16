@@ -30,6 +30,7 @@ export default function AdminNotifications(){
  const [busy,setBusy]=useState(false),[result,setResult]=useState("");
  const [list,setList]=useState([]),[loading,setLoading]=useState(true);
  const [pushConfigured,setPushConfigured]=useState(false);
+ const [isOwner,setIsOwner]=useState(false);
  const pending=useRef(null),router=useRouter();
  const refresh=useCallback(async()=>{
   try{
@@ -42,7 +43,13 @@ export default function AdminNotifications(){
   }catch(e){setResult(e.message||"No se pudo consultar el historial.");}
   finally{setLoading(false);}
  },[router]);
- useEffect(()=>{refresh();},[refresh]);
+ // Solo el propietario puede publicar avisos: el personal de soporte ve el
+ // historial en solo lectura (el POST sigue exigiendo la sesión del owner).
+ useEffect(()=>{refresh();
+  fetch("/api/admin/access",{credentials:"same-origin",cache:"no-store"})
+   .then(r=>r.ok?r.json():null)
+   .then(x=>setIsOwner(x?.principal?.role==="owner")).catch(()=>{});
+ },[refresh]);
  function editTitle(v){setTitle(v);pending.current=null;}
  function editBody(v){setBody(v);pending.current=null;}
  function useTemplate(i){
@@ -88,7 +95,8 @@ export default function AdminNotifications(){
   finally{setBusy(false);}
  }
  return <div className="sp-admin-notice-page">
-  <div className="admin-grid">
+  {!isOwner&&<p className="muted">Estás viendo los avisos como personal de soporte. Solo el propietario puede publicar avisos nuevos.</p>}
+  {isOwner&&<div className="admin-grid">
    <section className="admin-card">
     <h2>Redactar una notificación</h2>
     <p className="muted">Los avisos se muestran a quienes autorizaron notificaciones. No incluyas contraseñas, claves privadas ni información sensible.</p>
@@ -148,7 +156,7 @@ export default function AdminNotifications(){
     <button type="button" className="button subtle" onClick={verifyPush} disabled={busy}>Validar conexión FCM sin enviar</button>
     <p className="muted">FCM puede despertar la comprobación de avisos, pero no garantiza que todos los dispositivos reciban un aviso inmediatamente.</p>
    </section>
-  </div>
+  </div>}
   {result&&<p role="status" className="sp-admin-notice-result">{result}</p>}
   <section className="admin-card sp-admin-notice-history">
    <div className="sp-admin-section-heading"><div><h2>Notificaciones publicadas</h2>

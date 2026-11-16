@@ -12,6 +12,8 @@ import {createSupportThread,sendSupportMessage,listUserSupport,listAdminSupport,
  replyAdminSupport,markSupportThreadRead,encryptMessage,decryptMessage,
  liftSupportSuspension,escalateSupportThread,findAutoAssignStaffId,
  escalationNoticeId,newSupportMessageNoticeId} from '../lib/commerce/support.mjs';
+import {touchStaffPresence,staffPresenceOnline,staffPresenceKey,
+ STAFF_PRESENCE_TTL_SECONDS} from '../lib/commerce/staff-presence.mjs';
 import {registerDevice,makeDeletionChallenge,authorizeDeviceDeletion,
  deleteAccountData} from '../lib/commerce/account-device.mjs';
 let pg,db,auth;
@@ -352,4 +354,61 @@ test('notice store failure never blocks a user message',async()=>{
   assert.equal(listing.threads[0].messages.length,2);
   assert.equal(listing.threads[0].messages[1].text,'Second attempt');
  }finally{await rm(root,{recursive:true,force:true});}
+});
+// Redis falso con TTL para la presencia: expira como el real, pero el test
+// puede caducar la clave a mano en vez de esperar 20 minutos.
+class PresenceRedis{
+ data=new Map();
+ async set(k,v,o={}){this.data.set(k,{v,exp:o.EX?Date.now()+o.EX*1000:null});return 'OK';}
+ async get(k){const e=this.data.get(k);if(!e)return null;
+  if(e.exp&&e.exp<=Date.now()){this.data.delete(k);return null;}return e.v;}
+ async exists(k){return (await this.get(k))===null?0:1;}
+ async del(k){return this.data.delete(k);}
+ expireKey(k){const e=this.data.get(k);if(e)e.exp=Date.now()-1;}
+}
+test('staff presence: touch marks online, TTL expiry clears it, flags reach both payloads',async()=>{
+ const redis=new PresenceRedis();
+ const staffId=await mkStaff('presence','Presence QA');
+ const user=await mkUser();
+ const thread=await createSupportThread(user,{subject:'Presence check',
+  category:'technical',message:'Hello'},{db,env});
+ await db.query('UPDATE spdecode_shop.support_threads SET assigned_staff_id=$1 WHERE id=$2',
+  [staffId,thread.id]);
+ const principal={id:staffId,capabilities:['support.read','support.write']};
+ // Before any activity: offline on both sides, and the staff id is not leaked to the user.
+ let admin=await listAdminSupport({db,env,redis,principal});
+ assert.equal(admin.threads.find(t=>t.id===thread.id).assignedOnline,false);
+ let listing=await listUserSupport(user,{db,env,redis});
+ assert.equal(listing.threads.find(t=>t.id===thread.id).agentOnline,false);
+ assert.equal(listing.threads[0].assigned_staff_id,undefined);
+ // Unknown ids read offline; activity marks this agent online.
+ assert.equal((await staffPresenceOnline(redis,[randomUUID()])).size,1);
+ assert.equal([...(await staffPresenceOnline(redis,[randomUUID()])).values()][0],false);
+ assert.equal(await touchStaffPresence(redis,staffId),true);
+ assert.equal((await staffPresenceOnline(redis,[staffId])).get(staffId),true);
+ admin=await listAdminSupport({db,env,redis,principal});
+ assert.equal(admin.threads.find(t=>t.id===thread.id).assignedOnline,true);
+ listing=await listUserSupport(user,{db,env,redis});
+ assert.equal(listing.threads.find(t=>t.id===thread.id).agentOnline,true);
+ // TTL expiry: the key is gone, the agent reads offline again on both sides.
+ redis.expireKey(staffPresenceKey(staffId));
+ assert.equal((await staffPresenceOnline(redis,[staffId])).get(staffId),false);
+ admin=await listAdminSupport({db,env,redis,principal});
+ assert.equal(admin.threads.find(t=>t.id===thread.id).assignedOnline,false);
+ listing=await listUserSupport(user,{db,env,redis});
+ assert.equal(listing.threads.find(t=>t.id===thread.id).agentOnline,false);
+ // TTL is 20 minutes (15 min review + 5 min margin).
+ assert.equal(STAFF_PRESENCE_TTL_SECONDS,20*60);
+});
+test('staff presence: a Redis failure never breaks the inbox (offline)',async()=>{
+ const failing={async set(){throw Error('redis down');},
+  async exists(){throw Error('redis down');}};
+ assert.equal(await touchStaffPresence(failing,randomUUID()),false);
+ const user=await mkUser();
+ const thread=await createSupportThread(user,{subject:'Redis down check',
+  category:'technical',message:'Hello'},{db,env});
+ const listing=await listUserSupport(user,{db,env,redis:failing});
+ assert.equal(listing.threads.find(t=>t.id===thread.id).agentOnline,false);
+ const admin=await listAdminSupport({db,env,redis:failing});
+ assert.equal(admin.threads.find(t=>t.id===thread.id).assignedOnline,false);
 });

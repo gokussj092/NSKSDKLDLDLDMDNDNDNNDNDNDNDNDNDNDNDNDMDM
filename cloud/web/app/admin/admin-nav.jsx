@@ -37,6 +37,7 @@ export default function AdminNav({children}){
   [principal,setPrincipal]=useState(null),[unread,setUnread]=useState(0);
  const permissionForPath={
   '/admin/support':'support.read','/admin/app-analysis':'support.read',
+  '/admin/notifications':'support.read',
   '/admin/users':'users.read',
   '/admin/staff':'staff.read','/admin/staff-audit':'audit.read'
  };
@@ -76,6 +77,8 @@ export default function AdminNav({children}){
     aria-expanded={expanded} aria-label={expanded?"Cerrar menú lateral":"Abrir menú lateral"}
     onClick={()=>setExpanded(x=>!x)}><span/><span/><span/></button>
    <strong>{name}</strong><small>SP-DECODE · {principal?.role==='owner'?'Administración Cloud':principal?.name||'Equipo'}</small>
+   {typeof principal?.avatar==='string'&&principal.avatar.startsWith('data:image/jpeg;base64,')&&
+    <img className="sp-admin-toolbar-avatar" src={principal.avatar} alt=""/>}
   </div>
   {expanded&&<button className="sp-admin-menu-backdrop" type="button" aria-label="Cerrar menú" onClick={()=>setExpanded(false)}/>}
   <aside id="sp-admin-sidebar" className="sp-admin-sidebar" aria-label="Menú lateral de administración" aria-hidden={!expanded} inert={!expanded}>

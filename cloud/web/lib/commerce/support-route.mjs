@@ -5,6 +5,7 @@ import {createSupportThread,sendSupportMessage,listUserSupport,listAdminSupport,
   liftSupportSuspension} from './support.mjs';
 import {adminSettings,validMutation} from '../c6-admin-auth.mjs';
 import {requirePanel,can} from './staff.mjs';
+import {touchStaffPresence} from './staff-presence.mjs';
 
 export const supportUserRequest=request=>safe(async()=>{
  const session=await requireAccount(request);
@@ -26,6 +27,11 @@ export const supportAdminRequest=request=>safe(async()=>{
  // Permiso por acción (antes todo POST exigía support.write): leer y marcar leído
  // bastan con support.read; responder sigue exigiendo support.write.
  const principal=await requirePanel(request);
+ // Presencia real: cualquier actividad del personal en soporte (listar, leer,
+ // responder, asignar, escalar) refresca su clave 20 min. El owner no es
+ // personal (no tiene sessionId) y no marca presencia. Best-effort: un fallo
+ // de Redis jamás bloquea la petición.
+ if(principal.sessionId)await touchStaffPresence(null,principal.id);
  if(request.method==='GET'){
    if(!can(principal,'support.read'))fail('FORBIDDEN',403);
    return reply(await listAdminSupport({principal}));

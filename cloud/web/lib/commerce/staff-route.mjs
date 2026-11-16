@@ -2,13 +2,18 @@ import {requirePanel,createStaff,updateStaff,listStaff,changeStaffPassword,
  recentStaffAudit,STAFF_ROLES} from './staff.mjs';
 import {safe,reply,requireOrigin,jsonBody,fail} from './config.mjs';
 import {adminSettings,validMutation} from '../c6-admin-auth.mjs';
+// El guardado de personal lleva el avatar (data-URI JPEG de hasta 115000
+// caracteres, misma regla que avatarInput): el límite del body debe
+// superarlo con margen. Con 2048 el guardado con avatar fallaba siempre
+// con INPUT_TOO_LARGE (413) y el panel solo mostraba el mensaje genérico.
+export const STAFF_BODY_MAX=128*1024;
 const changeAllowed=request=>{
  if(!validMutation(request,adminSettings()))fail('CSRF_REJECTED',403);
 };
 export const panelAccessRequest=request=>safe(async()=>{
  const principal=await requirePanel(request,null);
  return reply({principal:{id:principal.id,username:principal.username,name:principal.name,
-  role:principal.role,mustChangePassword:principal.mustChangePassword,
+  role:principal.role,avatar:principal.avatar??null,mustChangePassword:principal.mustChangePassword,
   capabilities:principal.mustChangePassword?[]:principal.capabilities}});
 });
 export const panelStaffRequest=request=>safe(async()=>{
@@ -20,7 +25,7 @@ export const panelStaffRequest=request=>safe(async()=>{
  changeAllowed(request);
  const principal=await requirePanel(request,'staff.write');
  if(principal.role!=='owner')fail('FORBIDDEN',403);
- const body=await jsonBody(request,2048);
+ const body=await jsonBody(request,STAFF_BODY_MAX);
  if(!body||Array.isArray(body)||typeof body!=='object')fail('INVALID_REQUEST');
  const {action,...options}=body;
  if(action==='create')return reply(await createStaff(principal,options),201);

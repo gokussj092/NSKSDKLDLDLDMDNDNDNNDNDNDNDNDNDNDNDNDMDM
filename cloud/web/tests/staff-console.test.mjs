@@ -12,6 +12,8 @@ import {createSupportThread,assignSupportThread,replyAdminSupport,
   findAutoAssignStaffId} from '../lib/commerce/support.mjs';
 import {userDirectory,userDetail} from '../lib/commerce/users-admin.mjs';
 import {customRoles,writeCustomRole,roleCapabilities} from '../lib/commerce/staff-roles.mjs';
+import {STAFF_BODY_MAX} from '../lib/commerce/staff-route.mjs';
+import {jsonBody} from '../lib/commerce/config.mjs';
 let pg,db,auth,redis;
 const users=[randomUUID(),randomUUID()],owner={
  id:'f'.repeat(64),name:'SP-DECODE Owner',username:'rootadmin',
@@ -281,4 +283,65 @@ test('owner creates least-privilege custom role with no escalation to staff admi
    permissions:['users.read'],enabled:false},{db});
  assert.equal(await panelPrincipal(req2,{db,redis,config}),null);
  assert.equal(await roleCapabilities('x_careqa',db),null);
+});
+// JPEG válido del tamaño del avatar real de Yamada (31.725 B -> data-URI ~42 KB).
+function jpegDataUri(bytes){
+ const buf=Buffer.alloc(bytes);buf[0]=0xff;buf[1]=0xd8;
+ buf[bytes-2]=0xff;buf[bytes-1]=0xd9;
+ return 'data:image/jpeg;base64,'+buf.toString('base64');
+}
+test('staff avatar: updateStaff saves a valid JPEG, panelPrincipal loads it fresh, replies snapshot it',async()=>{
+ const avatar=jpegDataUri(31725);
+ assert.ok(avatar.length>40000&&avatar.length<115000);
+ const created=await createStaff(owner,{username:'avatar.qa',name:'Avatar QA',
+  role:'support'},{db});
+ const saved=await updateStaff(owner,{id:created.staff.id,avatar},{db});
+ assert.equal(saved.staff.avatar,avatar);
+ assert.equal((await listStaff({db})).staff.find(s=>s.id===created.staff.id).avatar,avatar);
+ // panelPrincipal lee el avatar fresco de la BD en cada petición: la sesión
+ // creada tras el guardado ya lo trae, y las respuestas nuevas lo capturan.
+ const login=await loginStaff(redis,created.staff.username,created.temporaryPassword,{db,config});
+ const req=new Request('https://panel.spdecode.xyz/api/admin/access',{headers:{
+  cookie:'spdecode_staff_session='+login.token}});
+ const principal=await panelPrincipal(req,{db,redis,config});
+ assert.equal(principal.avatar,avatar);
+ // Para poder asignarle hilos primero cambia la contraseña temporal.
+ await changeStaffPassword(principal,created.temporaryPassword,'AvatarPass#2026Secure',{db});
+ const active=await loginStaff(redis,created.staff.username,'AvatarPass#2026Secure',{db,config});
+ const req2=new Request('https://panel.spdecode.xyz/api/admin/access',{headers:{
+  cookie:'spdecode_staff_session='+active.token}});
+ const fresh=await panelPrincipal(req2,{db,redis,config});
+ assert.equal(fresh.avatar,avatar);
+ const thread=await createSupportThread(users[0],{subject:'Avatar in reply',
+  category:'technical',message:'Show my photo'},{db,env});
+ await assignSupportThread(owner,{threadId:thread.id,action:'assign',
+  assignedId:created.staff.id},{db});
+ await replyAdminSupport({id:fresh.id,name:fresh.name,role:fresh.role,
+  avatar:fresh.avatar},{threadId:thread.id,action:'reply',message:'Here I am.'},{db,env});
+ const user=(await listUserSupport(users[0],{db,env})).threads
+  .find(t=>t.id===thread.id);
+ assert.equal(user.messages.at(-1).agent.avatar,avatar);
+ // Un data-URI inválido (PNG) se rechaza antes de tocar la BD.
+ await assert.rejects(updateStaff(owner,{id:created.staff.id,
+  avatar:'data:image/png;base64,AAAA'},{db}),/INVALID_AVATAR/);
+ assert.equal((await listStaff({db})).staff.find(s=>s.id===created.staff.id).avatar,avatar);
+ // avatar:null lo borra explícitamente.
+ assert.equal((await updateStaff(owner,{id:created.staff.id,avatar:null},{db}))
+  .staff.avatar,null);
+});
+test('staff save body fits a real avatar: old 2048 cap rejects it, STAFF_BODY_MAX accepts it',async()=>{
+ assert.ok(STAFF_BODY_MAX>115000);
+ const avatar=jpegDataUri(31725);
+ const body=JSON.stringify({action:'update',id:randomUUID(),name:'Yamada',
+  username:'yamada',role:'support',enabled:true,avatar});
+ assert.ok(Buffer.byteLength(body)>40000);
+ const headers={'Content-Type':'application/json'};
+ const small=new Request('https://panel.spdecode.xyz/api/admin/staff',
+  {method:'POST',headers,body});
+ await assert.rejects(jsonBody(small,2048),/INPUT_TOO_LARGE/);
+ const big=new Request('https://panel.spdecode.xyz/api/admin/staff',
+  {method:'POST',headers,body});
+ const parsed=await jsonBody(big,STAFF_BODY_MAX);
+ assert.equal(parsed.avatar,avatar);
+ assert.equal(parsed.username,'yamada');
 });

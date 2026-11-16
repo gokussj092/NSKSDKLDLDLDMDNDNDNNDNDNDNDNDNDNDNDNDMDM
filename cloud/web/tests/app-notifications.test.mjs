@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {scryptSync,randomBytes,randomUUID} from 'node:crypto';
+import {scryptSync,randomBytes,randomUUID,createHmac} from 'node:crypto';
 import {adminNotices,notificationFeedRequest,validNotice} from '../lib/app-notifications.mjs';
 import {bindVerifiedRequest} from '../lib/v2-bound-request.mjs';
 import {loginRequest} from '../lib/c6-admin-api.mjs';
@@ -21,6 +21,50 @@ class Redis {
 }
 const req=(body,cookie='',action=true)=>new Request('https://panel.example.test/api/admin/notifications',{method:'POST',
  headers:{'Content-Type':'application/json',Origin:'https://panel.example.test',Cookie:cookie,...(action?{'X-SPDecode-Admin-Action':'1'}:{})},body:JSON.stringify(body)});
+const getReq=(cookie='')=>new Request('https://panel.example.test/api/admin/notifications',{method:'GET',
+ headers:{Cookie:cookie}});
+test('staff with support.read can read the feed; staff without it cannot; publishing stays owner-only',async()=>{
+ const redis=new Redis(),options={storeProvider:async()=>redis,push:async()=>{throw Error('offline');}};
+ const login=await loginRequest(req({username:'admin',password}),{...options,turnstileVerifier:async()=>({ok:true})});
+ assert.equal(login.status,200);const cookie=login.headers.get('set-cookie').split(';')[0];
+ const input={id:randomUUID(),title:'Aviso para soporte',body:'Hay un mensaje nuevo'};
+ assert.equal((await adminNotices(req(input,cookie),options)).status,201);
+ const mkStaff=async role=>{
+  const id=randomUUID(),jti=randomUUID(),now=Math.floor(Date.now()/1000);
+  const claim={aud:'spdecode-staff-v1',sub:id,jti,iat:now,exp:now+90*24*3600,version:1};
+  const body=Buffer.from(JSON.stringify(claim)).toString('base64url');
+  const token=body+'.'+createHmac('sha256','a'.repeat(64)).update(body).digest('base64url');
+  await redis.set('spdecode:staff:session:'+jti,id+':1');
+  const row={id,username:role+'-qa',display_name:role+' QA',role,enabled:true,
+   must_change_password:false,session_version:1,last_login_at:null,
+   created_at:new Date(),updated_at:new Date(),avatar:null};
+  const db={query:async sql=>{
+   if(String(sql).includes('FROM spdecode_shop.staff_accounts WHERE id='))return {rows:[row]};
+   return {rows:[]};
+  }};
+  return {cookie:'spdecode_staff_session='+token,db};
+ };
+ const support=await mkStaff('support');
+ const staffOptions={...options,panelOptions:{db:support.db}};
+ const read=await adminNotices(getReq(support.cookie),staffOptions);
+ assert.equal(read.status,200);
+ const feed=await read.json();
+ assert.equal(feed.notices.length,1);
+ assert.equal(feed.notices[0].title,'Aviso para soporte');
+ // The owner reads the same feed, unchanged.
+ const ownerRead=await adminNotices(getReq(cookie),options);
+ assert.equal(ownerRead.status,200);
+ assert.equal((await ownerRead.json()).notices.length,1);
+ // No session at all: 401.
+ assert.equal((await adminNotices(getReq(),options)).status,401);
+ // Staff without support.read: 403.
+ const billing=await mkStaff('billing');
+ assert.equal((await adminNotices(getReq(billing.cookie),
+  {...options,panelOptions:{db:billing.db}})).status,403);
+ // Publishing as staff stays owner-only: no admin cookie, so 401.
+ assert.equal((await adminNotices(req({id:randomUUID(),title:'X',body:'Y'},support.cookie),
+  staffOptions)).status,401);
+});
 test('publication requires admin and CSRF; replay cannot duplicate; expired notices omitted',async()=>{
  const redis=new Redis(),options={storeProvider:async()=>redis,push:async()=>{throw Error('offline');}};
  const input={id:randomUUID(),title:'Servicio',body:'Aviso de prueba'};

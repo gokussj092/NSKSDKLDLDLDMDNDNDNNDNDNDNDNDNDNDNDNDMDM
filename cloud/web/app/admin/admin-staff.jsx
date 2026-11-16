@@ -143,7 +143,7 @@ export default function StaffAdmin(){
     headers:{'Content-Type':'application/json','X-SPDecode-Admin-Action':'1'},body:JSON.stringify(body)});
    const data=await response.json();
    if(!response.ok)throw Error(data.error?.code==='STAFF_USERNAME_TAKEN'?'Ese usuario ya existe.':
-     'No se pudo guardar. Comprueba los permisos y los datos.');
+     'No se pudo guardar ('+(data.error?.code||'sin código')+'). Comprueba los permisos y los datos.');
    if(data.temporaryPassword)setSecret({username:data.staff.username,password:data.temporaryPassword});
    setNotice(body.action==='create'?'Cuenta creada. Entrega las credenciales de forma privada.':'Cambios guardados y sesiones anteriores revocadas.');
    if(body.action==='create')setForm(initial);

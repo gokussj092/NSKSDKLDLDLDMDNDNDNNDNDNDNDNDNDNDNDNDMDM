@@ -3,6 +3,7 @@ import {database,transaction} from './db.mjs';
 import {recordAccountNotice,pushAccountNotice} from './account-notices.mjs';
 import {transactStoredFeed} from '../notice-store.mjs';
 import {avatarInput} from './profile.mjs';
+import {staffPresenceOnline} from './staff-presence.mjs';
 import {fail} from './config.mjs';
 
 const UUID=/^[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}$/;
@@ -193,12 +194,14 @@ export async function sendSupportMessage(accountId,threadId,input,{db=database()
   await publishNewSupportMessageNotice(threadId,{env,root:noticeRoot}).catch(()=>{});
   return result;
 }
-export async function listUserSupport(accountId,{db=database(),env=process.env}={}){
+export async function listUserSupport(accountId,{db=database(),env=process.env,redis=null}={}){
   secret(env);
   await closeInactiveThreads(db);
-  const threads=(await db.query(`SELECT id,subject,category,status,last_message_at
+  const threads=(await db.query(`SELECT id,subject,category,status,last_message_at,assigned_staff_id
     FROM spdecode_shop.support_threads WHERE account_id=$1
     ORDER BY last_message_at DESC LIMIT 50`,[accountId])).rows;
+  // Presencia real del agente asignado (best-effort: sin Redis = offline).
+  const presence=await staffPresenceOnline(redis,threads.map(t=>t.assigned_staff_id));
   const reads=await readTimes(db,'user',accountId);
   const staffReads=new Map((await db.query(`SELECT r.thread_id,MAX(r.read_at) AS staff_read_at
     FROM spdecode_shop.support_thread_reads r
@@ -216,12 +219,14 @@ export async function listUserSupport(accountId,{db=database(),env=process.env}=
       (since===undefined||new Date(m.at).getTime()>since)).length;
     // D7: the client marks the user's messages as "read" up to this point.
     const staffReadAt=staffReads.get(thread.id)??null;
-    return {...thread,unread,staffReadAt,messages:rendered};
+    // El id del personal asignado no se expone al usuario; solo su presencia.
+    const {assigned_staff_id:assignedStaffId,...rest}=thread;
+    return {...rest,agentOnline:presence.get(assignedStaffId)??false,unread,staffReadAt,messages:rendered};
   }));
   return {threads:messages,unreadTotal:messages.reduce((n,t)=>n+t.unread,0),
     suspension:suspensionView(suspension)};
 }
-export async function listAdminSupport({db=database(),env=process.env,principal=null}={}){
+export async function listAdminSupport({db=database(),env=process.env,principal=null,redis=null}={}){
   secret(env);
   await closeInactiveThreads(db);
   const limited=!!principal&&!principal.capabilities?.includes('support.assign');
@@ -255,6 +260,8 @@ export async function listAdminSupport({db=database(),env=process.env,principal=
     AND s.account_id=ANY($1::text[])`,[accountIds])).rows:[];
   const suspensionByAccount=new Map(suspensions.map(s=>[s.account_id,
     {...suspensionView(s),priorCount:s.prior_count}]));
+  // Presencia real de cada agente asignado (best-effort: sin Redis = offline).
+  const presence=await staffPresenceOnline(redis,threads.map(t=>t.assigned_staff_id));
   const threadsWithMessages=await Promise.all(threads.map(async t=>{
     const rows=(await db.query(`SELECT id,thread_id,sender_kind,ciphertext,created_at,agent_name,agent_role,agent_avatar
       FROM spdecode_shop.support_messages WHERE thread_id=$1
@@ -263,7 +270,7 @@ export async function listAdminSupport({db=database(),env=process.env,principal=
     const since=reads.get(t.id);
     const unread=rendered.filter(m=>m.sender==='user'&&
       (since===undefined||new Date(m.at).getTime()>since)).length;
-    return {...t,unread,suspension:suspensionByAccount.get(t.account_id)??null,messages:rendered};
+    return {...t,assignedOnline:presence.get(t.assigned_staff_id)??false,unread,suspension:suspensionByAccount.get(t.account_id)??null,messages:rendered};
   }));
   return {agents,threads:threadsWithMessages,
     unreadTotal:threadsWithMessages.reduce((n,t)=>n+t.unread,0)};

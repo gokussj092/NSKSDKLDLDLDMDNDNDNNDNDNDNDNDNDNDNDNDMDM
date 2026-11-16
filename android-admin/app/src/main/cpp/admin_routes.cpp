@@ -21,7 +21,7 @@ constexpr std::array routes{
     Route{"reports", "/api/admin/reports", "GET", 0}
     ,Route{"mobile", "/api/admin/mobile", "GET", 0}
     ,Route{"mobile_action", "/api/admin/mobile", "POST", 2048}
-    ,Route{"staff_save", "/api/admin/staff", "POST", 2048}
+    ,Route{"staff_save", "/api/admin/staff", "POST", 131072}
     ,Route{"roles_save", "/api/admin/staff-roles", "POST", 1400}
     ,Route{"password", "/api/admin/staff-password", "POST", 1200}
     ,Route{"support_send", "/api/admin/support", "POST", 6200}

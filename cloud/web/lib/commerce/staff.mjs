@@ -53,7 +53,7 @@ function parseCookie(request){
  const found=raw.split(';').map(x=>x.trim()).filter(x=>x.startsWith(COOKIE+'='));
  return found.length===1?found[0].slice(COOKIE.length+1):null;
 }
-async function getStaffAuth(request,{db=database(),redis,config=adminSettings()}={}){
+async function getStaffAuth(request,{db,redis,config=adminSettings()}={}){
  if(!config.enabled)return null;
  const token=parseCookie(request);
  if(!token||token.length>1024||!/^[\w-]+\.[\w-]+$/.test(token))return null;
@@ -67,7 +67,9 @@ async function getStaffAuth(request,{db=database(),redis,config=adminSettings()}
    claim.iat>now+5||claim.exp-claim.iat>TTL||!Number.isInteger(claim.version))return null;
  const source=redis||await opsStore();
  if(await source.get(PREFIX+claim.jti)!==claim.sub+':'+claim.version)return null;
- const result=await db.query(`SELECT id,username,display_name,role,enabled,must_change_password,
+ // La BD solo se resuelve si hay un token de personal válido: la sesión del
+ // owner nunca la necesita y no debe fallar por falta de DATABASE_URL.
+ const result=await (db??database()).query(`SELECT id,username,display_name,role,enabled,must_change_password,
     session_version,last_login_at,created_at,updated_at,avatar
     FROM spdecode_shop.staff_accounts WHERE id=$1`,[claim.sub]);
  const row=result.rows[0];
@@ -80,7 +82,7 @@ async function getStaffAuth(request,{db=database(),redis,config=adminSettings()}
    mustChangePassword:row.must_change_password,sessionId:claim.jti,
    capabilities};
 }
-export async function panelPrincipal(request,{db=database(),redis,config=adminSettings()}={}){
+export async function panelPrincipal(request,{db,redis,config=adminSettings()}={}){
  const source=redis||await opsStore();
  const owner=await authenticateAdmin(source,request,config);
  if(owner){
