@@ -133,7 +133,9 @@ def generate(domain: str, api: str, panel: str, www: bool) -> str:
     # the credential. The plain /api/v2/ prefix below stays blocked, and
     # regex locations are only evaluated when no ^~ prefix matched, so
     # this regex is the only /api/v2/ route that reaches the app here.
-    location ~ ^/api/v2/app-analysis/[0-9a-fA-F]{{8}}-[0-9a-fA-F]{{4}}-[0-9a-fA-F]{{4}}-[0-9a-fA-F]{{4}}-[0-9a-fA-F]{{12}}/download$ {{
+    # The pattern is quoted: nginx requires quotes when a regex contains
+    # brace quantifiers, or it misreads the first brace as the block opener.
+    location ~ "^/api/v2/app-analysis/[0-9a-fA-F]{{8}}-[0-9a-fA-F]{{4}}-[0-9a-fA-F]{{4}}-[0-9a-fA-F]{{4}}-[0-9a-fA-F]{{12}}/download$" {{
 {common_headers()}
     }}
     location /api/v2/ {{ return 404; }}

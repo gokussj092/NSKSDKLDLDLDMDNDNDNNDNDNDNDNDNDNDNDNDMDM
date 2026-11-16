@@ -287,10 +287,12 @@ class VPSInstallerTests(unittest.TestCase):
         public=output.split("server_name spdecode.xyz;",1)[1].split("server_name api.spdecode.xyz;",1)[0]
         self.assertNotIn("location ^~ /api/v2/ { return 404; }",public)
         self.assertIn("location /api/v2/ { return 404; }",public)
-        match=re.search(r"location ~ (\^/api/v2/app-analysis/\S+) \{",public)
+        # The regex carries {n} quantifiers, so nginx only parses it quoted.
+        self.assertIn('location ~ "^/api/v2/app-analysis/',public)
+        match=re.search(r'location ~ "(\^/api/v2/app-analysis/[^"]+)" \{',public)
         self.assertIsNotNone(match)
         pattern=match.group(1)
-        start=public.index("location ~ ^/api/v2/app-analysis/")
+        start=public.index('location ~ "^/api/v2/app-analysis/')
         entry=public[start:public.index("\n    }\n",start)]
         self.assertIn("proxy_pass http://127.0.0.1:3000;",entry)
         job="123e4567-e89b-12d3-a456-426614174000"
