@@ -29,7 +29,7 @@ def decode(reader,raw,auth):
             except ValueError:options=options_text
             profile=dict(label=label,name=name,protocol=protocol,host=host,port=port,
                 username=username,password=password,payload=payload,options=options,
-                options_text=options_text,flags=flags,updated_at_ms=updated,mode=mode)
+                flags=flags,updated_at_ms=updated,mode=mode)
             if sidecar is not None:
                 try:profile['custom_payload_sidecar']=sidecar.decode()
                 except UnicodeError:profile['custom_payload_sidecar_base64']=base64.b64encode(sidecar).decode()
