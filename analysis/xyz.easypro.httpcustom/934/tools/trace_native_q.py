@@ -1,7 +1,7 @@
 """Trace original native format operation with public synthetic input only."""
 import argparse,json,sys,struct,os
 from pathlib import Path
-from collections import deque
+from collections import Counter,deque
 from jni_format_probe import Probe
 from native_memory_fs import MemoryFS,NAMES as FS_NAMES
 from unicorn import UC_HOOK_BLOCK,UC_HOOK_CODE
@@ -10,16 +10,27 @@ from unicorn.arm64_const import UC_ARM64_REG_PC,UC_ARM64_REG_X30,UC_ARM64_REG_X2
 def main():
     p=argparse.ArgumentParser();p.add_argument('library');p.add_argument('--family',type=int,default=1)
     p.add_argument('--skip-local-abort',action='store_true',help='Offline emulation only; no activation or OS state is changed')
-    p.add_argument('--model-local-risk-clean',action='store_true',help='Model only the offline risk callback as zero; does not issue any attestation/grant')
+    p.add_argument('--model-local-risk-clean',action='store_true',help='Model the local callback synthetically; its full semantics are not established and no attestation/grant is issued')
     p.add_argument('--risk-model-value',type=int,choices=(0,1),default=0)
     p.add_argument('--operation',type=int,choices=(1,2),default=1)
     p.add_argument('--family5-inputs',action='store_true')
     p.add_argument('--public-certificate',type=Path,help='Model public APK package/signature context; never a device key or grant')
+    p.add_argument('--diagnostics',action='store_true',help='Include bounded control-flow/import/filesystem metadata, never input buffers or keys')
     a=p.parse_args()
     e=Probe(a.library);e.call(e.image.names['JNI_OnLoad'][0],e.vm,0,limit=5000000)
-    imported=e.imported;fs=MemoryFS(e)
+    imported=e.imported;fs=MemoryFS(e);import_counts=Counter();fs_events=[]
     def native_import(name):
-        if name in FS_NAMES:return e.finish(fs.handle(name))
+        if a.diagnostics:import_counts[name]+=1
+        if name in FS_NAMES:
+            event={'call':name}
+            if a.diagnostics and name in ('openat','__openat_2'):
+                path=e.cstr(e.reg(1))
+                event.update(relative_path=not path.startswith('/'),basename_chars=len(path.rsplit('/',1)[-1]),flags=e.reg(2),caller=hex(e.reg(30)))
+            result=fs.handle(name)
+            if a.diagnostics:
+                event.update(result='errno-pointer' if name=='__errno' else result,file_count=len(fs.files))
+                if len(fs_events)<128:fs_events.append(event)
+            return e.finish(result)
         if name=='sysconf':
             value=e.reg(0)
             if value in (0x27,30):return e.finish(4096)
@@ -113,12 +124,12 @@ def main():
         e.observers[0x1d0f90]=lambda instance:instance.finish(0)
         e.uc.hook_add(UC_HOOK_CODE,e._step,begin=0x1d0f90,end=0x1d0f90)
     if a.model_local_risk_clean:
-        # The original q thunk supplies 0x76d24 as its local risk callback.
-        # This model is for inspecting pure format operations, never activation.
+        # The original q thunk supplies 0x76d24 as its local callback. Its full
+        # semantics are not established. This substitution is only diagnostic.
         e.observers[0x76d24]=lambda instance:instance.finish(a.risk_model_value)
         e.uc.hook_add(UC_HOOK_CODE,e._step,begin=0x76d24,end=0x76d24)
     ranges=[(s['p_vaddr'],s['p_vaddr']+s['p_memsz']) for s in e.image.elf.iter_segments() if s['p_type']=='PT_LOAD' and s['p_flags']&1]
-    history=deque(maxlen=40);abort_frames=[]
+    history=deque(maxlen=64);abort_frames=[];phase_diagnostics={}
     def block(u,address,size,data):
         history.append((hex(address),hex(u.reg_read(UC_ARM64_REG_X30))))
         if address==0x1d0f90:
@@ -133,14 +144,23 @@ def main():
     e.uc.hook_add(UC_HOOK_BLOCK,block)
     inputs=(('H'+'0'*31).encode(),bytes(range(32)),b'',bytes(range(32)),b'') if a.family5_inputs else (b'public-transcript',bytes(range(32)),b'public-info',b'',b'')
     arrays=e.obj([e.obj(x) for x in inputs])
+    def save_phase(name):
+        if a.diagnostics:
+            phase_diagnostics[name]={'last_blocks':list(history),'import_counts':dict(import_counts),'filesystem_events':list(fs_events)}
+        history.clear();import_counts.clear();fs_events.clear()
     try:
         if a.public_certificate:
+            history.clear()
             init=e.call(0x310f0,e.env,0,context,limit=2000000)
+            save_phase('public_context_initialization')
             print(json.dumps({'public_context_initialization_result':init,'genuine_device_attestation':False}),file=sys.stderr)
         result=e.call(0x78694,e.env,0,a.operation,0,a.family,arrays,limit=2000000)
         value=e.objects.get(result)
-        print(json.dumps({'returned_type':type(value).__name__,'returned_null':result==0,
-                          'byte_length':len(value) if isinstance(value,bytes) else None}))
+        output={'returned_type':type(value).__name__,'returned_null':result==0,
+                'byte_length':len(value) if isinstance(value,bytes) else None}
+        save_phase('format_operation')
+        if a.diagnostics:output['diagnostics']=phase_diagnostics
+        print(json.dumps(output))
     except Exception as error:
         print(json.dumps({'error':str(error),'pc':hex(e.uc.reg_read(UC_ARM64_REG_PC)),
                          'lr':hex(e.uc.reg_read(UC_ARM64_REG_X30)),'blocks':list(history),

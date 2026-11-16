@@ -8,10 +8,16 @@ from pathlib import Path
 ROOT=Path(__file__).resolve().parents[4];sys.path.insert(0,str(ROOT/'scripts/apk_analysis'))
 from arm64_function import Arm64Function
 from unicorn import UC_HOOK_CODE,UC_HOOK_INTR
-from unicorn.arm64_const import UC_ARM64_REG_X0,UC_ARM64_REG_X30,UC_ARM64_REG_PC,UC_ARM64_REG_X8
+from unicorn.arm64_const import UC_ARM64_REG_X0,UC_ARM64_REG_X29,UC_ARM64_REG_X30,UC_ARM64_REG_PC,UC_ARM64_REG_X8
 
 class Probe(Arm64Function):
     STACK=0x10000000;TLS=0x11000000;HEAP=0x12000000;STOP=0x14000000
+    def reg(self,index):
+        # Unicorn numbers FP/LR separately from the X0..X28 interval. This
+        # matters for diagnostics that read LR; X0+30 is another register.
+        if index==29:return self.uc.reg_read(UC_ARM64_REG_X29)
+        if index==30:return self.uc.reg_read(UC_ARM64_REG_X30)
+        return super().reg(index)
     def __init__(self,path):
         super().__init__(path)
         syms=self.image.elf.get_section_by_name('.dynsym');plt={n:a for a,n in self.image.plt.items()}

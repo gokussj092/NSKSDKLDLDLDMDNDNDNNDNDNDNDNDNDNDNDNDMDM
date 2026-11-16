@@ -329,8 +329,8 @@
     },
     {
       "path": "analysis/xyz.easypro.httpcustom/934/tools/jni_format_probe.py",
-      "version": "2026-11-15 research followup",
-      "sha256": "2ef6c9fdb53b7fe93090db79deab34afcec282523e5638f6eea2e071904aed76"
+      "version": "2026-11-15 research resumed diagnostics",
+      "sha256": "f545e8e8d631e5a022378dc63c232c5223f1e602cf619166b027690b5a951b95"
     },
     {
       "path": "analysis/xyz.easypro.httpcustom/934/tools/preambles.py",
@@ -459,8 +459,8 @@
     },
     {
       "path": "analysis/xyz.easypro.httpcustom/934/tools/trace_native_q.py",
-      "version": "2026-11-15 research followup",
-      "sha256": "7318e0e764322bc37a4999937932f6b99438303ec51175f6b079d984030db3ec"
+      "version": "2026-11-15 research resumed diagnostics",
+      "sha256": "118b8b665f8c6e6d60b105710fc094ebafe88b34cd2d0601395d29263320c215"
     },
     {
       "path": "analysis/xyz.easypro.httpcustom/934/tools/trace_oaep_init.py",
@@ -599,6 +599,7 @@
     "original_rsa_parameters_captured": true,
     "n16_native_operation_traced": true,
     "full_access_wrapper_verified": false,
-    "dossier_tests_passed": 14
+    "dossier_tests_passed": 16,
+    "resume_new_real_successes": 0
   }
 }

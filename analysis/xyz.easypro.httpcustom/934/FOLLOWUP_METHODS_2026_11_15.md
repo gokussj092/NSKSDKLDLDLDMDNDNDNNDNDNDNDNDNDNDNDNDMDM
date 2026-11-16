@@ -127,3 +127,36 @@ permanece **UNCONFIRMED**, sin extracción de secretos de servicios.
 - Sintaxis Python, JSON y `git diff --check`: correctos.
 - Gate F7 de estructura de evidencia: correcto; no aprueba el método pendiente
   ni habilita n16/n18/wrapper 9 en producción.
+
+## Reanudación tras la interrupción del chat
+
+El checkpoint `86d8be9c` quedó publicado y el checkout no tenía cambios sin
+guardar ni procesos pendientes. Se retomó únicamente el diagnóstico de n16.
+
+Se corrigió la lectura de FP/LR en `Probe.reg()`: Unicorn identifica X29 y
+X30 fuera del intervalo numérico X0–X28. La expresión anterior X0+30 leía
+otro registro e imprimía direcciones de retorno incorrectas en ciertos logs.
+No cambia la derivación ni convierte un resultado null en una clave. El
+emulador compartido y el lector operativo no se modifican.
+
+`trace_native_q.py --diagnostics` conserva ahora hasta 64 bloques recientes,
+conteos de imports modelados y hasta 128 eventos de filesystem por fase.
+No imprime buffers, HWID, contraseñas, claves ni nombres de archivos locales.
+La nueva ejecución, con los mismos **datos sintéticos**, observó:
+
+- Contexto público: el directorio virtual existe; `openat` intenta leer un
+  archivo relativo de cuatro caracteres y recibe ENOENT. El retorno de la
+  llamada original está en `0x134a74`. En una inspección privada se identificó
+  el nombre fijo del original `.s31`; no se leyó ni fabricó su contenido.
+- Operación 2/familia 5: devuelve null y no hace otras llamadas de filesystem.
+- La ausencia del archivo **no prueba por sí sola la causa** del null ni
+  determina su contenido. Tampoco prueba contraseña/HWID incorrectos.
+- El inicializador público de alto nivel se detiene además en
+  `Looper.getMainLooper()`, que el modelo no implementa. La llamada directa
+  al inicializador de runtime no reproduce el ciclo de vida completo de la app.
+
+Las 16 pruebas actuales del expediente pasan, incluidas dos nuevas que
+contrastan FP/LR y los registros de argumentos con Unicorn directamente.
+El resultado real permanece **6/9**, con los mismos tres métodos pendientes.
+La próxima comparación útil exige observar una importación autorizada en
+la instalación original, manteniendo su privada y activación en el dispositivo.

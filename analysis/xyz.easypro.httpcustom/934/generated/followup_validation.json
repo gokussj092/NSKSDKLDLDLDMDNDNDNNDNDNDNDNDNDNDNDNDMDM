@@ -137,5 +137,64 @@
     "d-n16-session.json": "ec99e34e4637eaf393402ae0f55be091b894c20e5da4e2224c0bad1feb5c992e",
     "provider5-session.json": "95f348b1397b501b4ceafe77b6c9d490083ab0b166311558ef823638a3dfa22b",
     "native-q2-memory-fs.json": "78971ab72792054cebef7386600e08c1799bdfa697228ad5257305759d52f89a"
+  },
+  "resume_after_chat_interruption": {
+    "previous_checkpoint": "86d8be9cda404245e5ee6a471871b750c83a6c27",
+    "previous_worktree_clean": true,
+    "previous_pending_processes": false,
+    "new_real_successes": 0,
+    "real_total_still": "6/9",
+    "unicorn_fp_lr_diagnostic_reads_fixed": true,
+    "tests": {
+      "run": 16,
+      "passed": 16,
+      "skipped": 0
+    },
+    "public_context_fs_events": [
+      {
+        "call": "__errno",
+        "result": "errno-pointer",
+        "file_count": 0
+      },
+      {
+        "call": "__open_2",
+        "result": 10,
+        "file_count": 0
+      },
+      {
+        "call": "fstat",
+        "result": 0,
+        "file_count": 0
+      },
+      {
+        "call": "__openat_2",
+        "relative_path": true,
+        "basename_chars": 4,
+        "flags": 557056,
+        "caller": "0x134a74",
+        "result": -1,
+        "file_count": 0
+      },
+      {
+        "call": "__errno",
+        "result": "errno-pointer",
+        "file_count": 0
+      },
+      {
+        "call": "close",
+        "result": 0,
+        "file_count": 0
+      }
+    ],
+    "native_operation": {
+      "returned_null": true,
+      "byte_length": null,
+      "filesystem_events": []
+    },
+    "high_level_public_initializer_stopped_at": "android.os.Looper.getMainLooper (unmodeled)",
+    "missing_file_is_proven_root_cause": false,
+    "credentials_proven_incorrect": false,
+    "no_device_keys_or_activation_material_read_or_created": true,
+    "private_trace_sha256": "e4849d7e998f1a3a90e63ae11d8ff7380e6c0f00b484ec581cc0b07bffd433a9"
   }
 }
