@@ -1261,14 +1261,14 @@ private fun SettingsScreen(state: AdminState) {
       Page.LanguageSettings -> {
         item { SectionHeading("Idioma", "Elige el idioma de la interfaz") }
         items(AdminLanguage.entries) { language ->
-          Tile(Modifier.fillMaxWidth().testTag("language-${language.tag}").clickable { state.setLanguage(language) }) {
+          Tile(Modifier.fillMaxWidth().testTag("language-${language.tag}").clickable { state.updateLanguage(language) }) {
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
               Avatar(Icons.Outlined.Language, if (state.language == language) Mint else Muted, 44)
               Column(Modifier.weight(1f)) {
                 Text(language.nativeName, color = Ink, fontWeight = FontWeight.SemiBold, fontSize = 16.sp)
                 if (state.language == language) Small(L("Idioma actual"), color = Mint)
               }
-              RadioButton(state.language == language, { state.setLanguage(language) })
+              RadioButton(state.language == language, { state.updateLanguage(language) })
             }
           }
         }
