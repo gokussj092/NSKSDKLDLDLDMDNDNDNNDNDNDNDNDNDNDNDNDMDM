@@ -7,7 +7,8 @@ import {getMigrations} from 'better-auth/db/migration';
 import {makeAuth} from '../lib/commerce/auth.mjs';
 import {createSupportThread,sendSupportMessage,listUserSupport,listAdminSupport,
  replyAdminSupport,markSupportThreadRead,encryptMessage,decryptMessage,
- liftSupportSuspension} from '../lib/commerce/support.mjs';
+ liftSupportSuspension,escalateSupportThread,findAutoAssignStaffId,
+ escalationNoticeId} from '../lib/commerce/support.mjs';
 import {registerDevice,makeDeletionChallenge,authorizeDeviceDeletion,
  deleteAccountData} from '../lib/commerce/account-device.mjs';
 let pg,db,auth;
@@ -28,7 +29,7 @@ before(async()=>{
  db={query,connect:async()=>({query,release(){}})};
  auth=makeAuth(db,env);
  await (await getMigrations(auth.options)).runMigrations();
- for(const name of ['002_shop.sql','003_ads_free.sql','004_gifts.sql','005_account_support_apk.sql','006_support_agent_identity.sql','007_staff_permissions.sql','008_account_notifications.sql','009_staff_custom_roles.sql','010_support_reads_avatar.sql','011_support_autoassign_reads_antispam.sql']){
+ for(const name of ['002_shop.sql','003_ads_free.sql','004_gifts.sql','005_account_support_apk.sql','006_support_agent_identity.sql','007_staff_permissions.sql','008_account_notifications.sql','009_staff_custom_roles.sql','010_support_reads_avatar.sql','011_support_autoassign_reads_antispam.sql','013_support_escalation.sql']){
   const sql=await readFile(new URL('../sql/'+name,import.meta.url),'utf8');
   await pg.exec(sql);
  }
@@ -205,4 +206,95 @@ test('confirmed deletion removes account and private messages',async()=>{
  assert.equal(user.rowCount,0);
  const inbox=await db.query('SELECT id FROM spdecode_shop.support_threads WHERE account_id=$1',[ids[1]]);
  assert.equal(inbox.rowCount,0);
+});
+let yamadaStaffId=null;
+async function mkStaff(username,displayName){
+ const id=randomUUID();
+ await db.query(`INSERT INTO spdecode_shop.staff_accounts
+  (id,username,display_name,role,password_hash,enabled,must_change_password)
+  VALUES($1,$2,$3,'support',$4,true,false)`,[id,username,displayName,'0'.repeat(64)]);
+ return id;
+}
+async function mkUser(){
+ const id=randomUUID();
+ await db.query(`INSERT INTO shop_user(id,name,email,"emailVerified","createdAt","updatedAt")
+  VALUES($1,$2,$3,true,now(),now())`,[id,'Escalation QA',id+'@example.invalid']);
+ return id;
+}
+test('auto-assignment finds Yamada case-insensitively',async()=>{
+ yamadaStaffId=await mkStaff('yamada','Yamada');
+ assert.equal(await findAutoAssignStaffId(db,env),yamadaStaffId);
+ assert.equal(await findAutoAssignStaffId(db,{...env,
+  SPDECODE_SUPPORT_AUTO_ASSIGN_NAME:'yamada'}),yamadaStaffId);
+ assert.equal(await findAutoAssignStaffId(db,{...env,
+  SPDECODE_SUPPORT_AUTO_ASSIGN_NAME:'YAMADA'}),yamadaStaffId);
+ assert.equal(await findAutoAssignStaffId(db,{...env,
+  SPDECODE_SUPPORT_AUTO_ASSIGN_NAME:'Pedro'}),null);
+ await db.query(`UPDATE spdecode_shop.staff_accounts SET enabled=false WHERE id=$1`,
+  [yamadaStaffId]);
+ assert.equal(await findAutoAssignStaffId(db,env),null);
+ await db.query(`UPDATE spdecode_shop.staff_accounts SET enabled=true WHERE id=$1`,
+  [yamadaStaffId]);
+ assert.equal(await findAutoAssignStaffId(db,env),yamadaStaffId);
+});
+test('escalation notice id is a stable v4 UUID per thread',()=>{
+ const id=randomUUID();
+ assert.match(escalationNoticeId(id),
+  /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/);
+ assert.equal(escalationNoticeId(id),escalationNoticeId(id));
+ assert.notEqual(escalationNoticeId(id),escalationNoticeId(randomUUID()));
+});
+test('escalation to Pedro: assigned agent escalates, owner sees the mark, idempotent',async()=>{
+ const otherId=await mkStaff('helper','Helper');
+ const yamada={id:yamadaStaffId,role:'support',capabilities:['support.read','support.write']};
+ const other={id:otherId,role:'support',capabilities:['support.read','support.write']};
+ const owner={id:'o'.repeat(64),role:'owner',
+  capabilities:['staff.read','staff.write','users.read','support.read','support.write',
+   'support.assign','audit.read','billing.read']};
+ const billing={id:randomUUID(),role:'billing',capabilities:['users.read','billing.read']};
+ const userA=await mkUser(),userB=await mkUser();
+ const thread=await createSupportThread(userA,{subject:'Escalation check',
+  category:'technical',message:'Please help'},{db,env});
+ assert.equal(thread.assignedStaffId,yamadaStaffId);
+ // Another support agent who is not assigned cannot escalate.
+ await assert.rejects(escalateSupportThread(other,{action:'escalate',threadId:thread.id},{db,env}),/SUPPORT_NOT_ASSIGNED/);
+ // Staff without any support capability is refused outright.
+ await assert.rejects(escalateSupportThread(billing,{action:'escalate',threadId:thread.id},{db,env}),/FORBIDDEN/);
+ // Unknown thread.
+ await assert.rejects(escalateSupportThread(yamada,{action:'escalate',threadId:randomUUID()},{db,env}),/SUPPORT_NOT_FOUND/);
+ // Malformed input.
+ await assert.rejects(escalateSupportThread(yamada,{action:'escalate',threadId:thread.id,extra:1},{db,env}),/INVALID_REQUEST/);
+ // Yamada escalates his own thread: high priority + mark + one audit row.
+ const first=await escalateSupportThread(yamada,{action:'escalate',threadId:thread.id},{db,env});
+ assert.equal(first.saved,true);
+ assert.equal(first.escalated,true);
+ assert.equal(first.alreadyEscalated,false);
+ assert.equal(first.thread.priority,'high');
+ assert.equal(first.thread.escalatedBy,yamadaStaffId);
+ assert.ok(Date.parse(first.thread.escalatedAt)<=Date.now());
+ const audit=(await db.query(`SELECT action,actor_id FROM spdecode_shop.staff_audit
+  WHERE target_id=$1 AND action='support_escalated'`,[thread.id])).rows;
+ assert.equal(audit.length,1);
+ assert.equal(audit[0].actor_id,yamadaStaffId);
+ // The owner sees the escalated thread with its mark (canSeeAll).
+ const listing=await listAdminSupport({db,env,principal:owner});
+ const row=listing.threads.find(t=>t.id===thread.id);
+ assert.equal(row.priority,'high');
+ assert.ok(row.escalated_at);
+ assert.equal(row.escalated_by,yamadaStaffId);
+ // Idempotent: a second escalation changes nothing and adds no audit row.
+ const second=await escalateSupportThread(yamada,{action:'escalate',threadId:thread.id},{db,env});
+ assert.equal(second.alreadyEscalated,true);
+ assert.equal(second.thread.priority,'high');
+ const audit2=(await db.query(`SELECT id FROM spdecode_shop.staff_audit
+  WHERE target_id=$1 AND action='support_escalated'`,[thread.id])).rows;
+ assert.equal(audit2.length,1);
+ // The owner can escalate a fresh thread even when it is not assigned to them.
+ const threadB=await createSupportThread(userB,{subject:'Owner escalation',
+  category:'payments',message:'Needs Pedro'},{db,env});
+ assert.equal(threadB.assignedStaffId,yamadaStaffId);
+ const third=await escalateSupportThread(owner,{action:'escalate',threadId:threadB.id},{db,env});
+ assert.equal(third.alreadyEscalated,false);
+ assert.equal(third.thread.priority,'high');
+ assert.equal(third.thread.escalatedBy,owner.id);
 });

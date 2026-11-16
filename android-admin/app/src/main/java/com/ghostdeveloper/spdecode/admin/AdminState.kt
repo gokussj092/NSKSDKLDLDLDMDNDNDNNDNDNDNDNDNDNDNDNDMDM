@@ -413,11 +413,20 @@ internal class AdminState(app: Application) : AndroidViewModel(app) {
         else "Guardado en el servidor."
     try {
       // Apply successful ticket status immediately; a failed reload must not misrepresent a closed ticket.
-      if (operation == "support_send" && result.has("status") && input != null) {
+      if (operation == "support_send" && input != null) {
         val next = JSONObject(data.toString())
-        next.array("threads").firstOrNull { it.optString("id") == input.optString("threadId") }
-            ?.put("status", result.optString("status"))
-        data = next
+        val row = next.array("threads").firstOrNull { it.optString("id") == input.optString("threadId") }
+        if (row != null) {
+          if (result.has("status")) row.put("status", result.optString("status"))
+          result.optJSONObject("thread")?.let { t ->
+            if (t.has("status")) row.put("status", t.optString("status"))
+            if (t.has("priority")) row.put("priority", t.optString("priority"))
+            if (t.has("escalatedAt")) row.put("escalated_at", t.optString("escalatedAt"))
+            if (t.has("escalatedBy")) row.put("escalated_by", t.optString("escalatedBy"))
+            if (!t.isNull("assignedStaffId")) row.put("assigned_staff_id", t.optString("assignedStaffId"))
+          }
+          data = next
+        }
       }
       loadCurrent()
     } catch (e: CancellationException) {

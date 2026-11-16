@@ -1,6 +1,7 @@
-import {randomBytes,randomUUID,createCipheriv,createDecipheriv} from 'node:crypto';
+import {randomBytes,randomUUID,createCipheriv,createDecipheriv,createHash} from 'node:crypto';
 import {database,transaction} from './db.mjs';
 import {recordAccountNotice,pushAccountNotice} from './account-notices.mjs';
+import {transactStoredFeed} from '../notice-store.mjs';
 import {avatarInput} from './profile.mjs';
 import {fail} from './config.mjs';
 
@@ -215,7 +216,7 @@ export async function listAdminSupport({db=database(),env=process.env,principal=
   await closeInactiveThreads(db);
   const limited=!!principal&&!principal.capabilities?.includes('support.assign');
   const threads=(await db.query(`SELECT t.id,t.subject,t.category,t.status,t.priority,
-    t.assigned_staff_id,t.last_message_at,t.account_id,u.name,p.username,
+    t.assigned_staff_id,t.escalated_at,t.escalated_by,t.last_message_at,t.account_id,u.name,p.username,
     COALESCE(p.avatar_data,u.image) AS avatar,
     assigned.display_name AS assigned_name,assigned.username AS assigned_username
     FROM spdecode_shop.support_threads t
@@ -350,6 +351,73 @@ export async function assignSupportThread(principal,input,{db=database()}={}){
        JSON.stringify({assignedStaffId:input.assignedId,priority:input.priority??thread.priority})]);
     return {saved:true,assignedId:input.assignedId,priority:input.priority??thread.priority};
   },db);
+}
+
+// Escalation to the owner (D5): when the assigned agent cannot solve the
+// user's problem, the thread is marked escalated, raised to high priority,
+// and the owner is notified through the admin notices feed. Who can escalate:
+// anyone with support.assign (owner/admin/moderator) on any thread, or the
+// assigned agent with support.write on their own thread. Idempotent:
+// escalating an already escalated thread changes nothing and publishes no
+// second notice or audit row.
+export function escalationNoticeId(threadId){
+  const chars=createHash('sha256').update('spdecode-support-escalation:'+threadId)
+    .digest('hex').slice(0,32).split('');
+  chars[12]='4';chars[16]='8';
+  return [chars.slice(0,8).join(''),chars.slice(8,12).join(''),chars.slice(12,16).join(''),
+    chars.slice(16,20).join(''),chars.slice(20,32).join('')].join('-');
+}
+async function publishEscalationNotice(threadId,{env=process.env}={}){
+  const now=Date.now();
+  await transactStoredFeed({id:escalationNoticeId(threadId),
+    title:'Soporte escalado a Pedro',
+    body:'Un hilo de soporte fue escalado y necesita tu intervención.',
+    type:'general',importance:'important',delivery:'poll',
+    createdAt:now,expiresAt:now+24*3600000},{env});
+}
+export async function escalateSupportThread(principal,input,{db=database(),env=process.env}={}){
+  const caps=Array.isArray(principal?.capabilities)?principal.capabilities:[];
+  const canAssign=['owner','admin','moderator'].includes(principal?.role)||
+    caps.includes('support.assign');
+  const canWrite=caps.includes('support.write')&&!principal?.mustChangePassword;
+  if(!principal||typeof principal.id!=='string'||!principal.id||
+     !UUID.test(input?.threadId)||
+     Object.keys(input||{}).some(k=>!['action','threadId'].includes(k))||
+     input.action!=='escalate')fail('INVALID_REQUEST');
+  if(!canAssign&&!canWrite)fail('FORBIDDEN',403);
+  const result=await transaction(async client=>{
+    const thread=(await client.query(`SELECT id,status,priority,assigned_staff_id,
+      escalated_at,escalated_by FROM spdecode_shop.support_threads WHERE id=$1 FOR UPDATE`,
+      [input.threadId])).rows[0];
+    if(!thread)fail('SUPPORT_NOT_FOUND',404);
+    if(!canAssign&&thread.assigned_staff_id!==principal.id)fail('SUPPORT_NOT_ASSIGNED',403);
+    if(thread.escalated_at){
+      return {saved:true,escalated:true,alreadyEscalated:true,thread:{
+        id:thread.id,status:thread.status,priority:thread.priority,
+        escalatedAt:new Date(thread.escalated_at).toISOString(),
+        escalatedBy:thread.escalated_by,assignedStaffId:thread.assigned_staff_id}};
+    }
+    const updated=(await client.query(`UPDATE spdecode_shop.support_threads
+      SET priority='high',escalated_at=now(),escalated_by=$2,updated_by=$2
+      WHERE id=$1 RETURNING status,priority,escalated_at,escalated_by,assigned_staff_id`,
+      [thread.id,principal.id])).rows[0];
+    await client.query(`INSERT INTO spdecode_shop.staff_audit
+      (id,actor_id,actor_role,action,target_id,details)
+      VALUES($1,$2,$3,'support_escalated',$4,$5)`,[
+      randomUUID(),principal.id,principal.role||'support',thread.id,
+      JSON.stringify({priority:'high'})]);
+    return {saved:true,escalated:true,alreadyEscalated:false,thread:{
+      id:thread.id,status:updated.status,priority:updated.priority,
+      escalatedAt:new Date(updated.escalated_at).toISOString(),
+      escalatedBy:updated.escalated_by,assignedStaffId:updated.assigned_staff_id}};
+  },db);
+  // Best-effort owner notice: the durable feed is the channel the owner
+  // reads in the panel and the Admin app (Notices). A missing or
+  // misconfigured notice store must never fail the escalation itself, and
+  // the deterministic id keeps a repeated escalation from duplicating it.
+  if(!result.alreadyEscalated)
+    await publishEscalationNotice(input.threadId,{env}).catch(()=>{});
+  return result;
 }
 
 // Manual lift of an anti-spam suspension (D11 subnote: both Yamada and Pedro).

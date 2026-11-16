@@ -1011,6 +1011,7 @@ private fun TicketCard(row: JSONObject, onClick: () -> Unit) {
         Text(row.optString("subject"), color = Ink, fontSize = 13.sp, maxLines = 1)
       }
       if (status.isNotBlank()) StatusPill(translated(status), if (status == "closed") Muted else Mint)
+      if (row.optString("escalated_at").isNotBlank()) StatusPill(L("Escalado a Pedro"), Amber)
     }
     last?.optString("text")?.takeIf { it.isNotBlank() }?.let {
       Text(it, color = Muted, maxLines = 2, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis, fontSize = 13.sp)
@@ -1376,6 +1377,21 @@ private fun ChatScreen(state: AdminState) {
               }) {
                 Text(L(if (thread.optString("status") == "closed") "Reabrir" else "Cerrar ticket"))
               }
+      // Escalación a Pedro (D5): solo el agente asignado o quien puede asignar.
+      if (state.can("support.write") && thread.optString("escalated_at").isBlank() &&
+          (thread.optString("assigned_staff_id") == state.principal.optString("id") ||
+              state.can("support.assign")))
+          TextButton(
+              enabled = !state.busy,
+              onClick = {
+                state.task {
+                  state.mutate(
+                      "support_send",
+                      JSONObject()
+                          .put("action", "escalate")
+                          .put("threadId", state.selectedId))
+                }
+              }) { Text(L("Escalar a Pedro")) }
       if (state.can("support.assign"))
           TextButton(enabled = !state.busy, onClick = {
             assignedId = thread.optString("assigned_staff_id").takeUnless { it == "null" }.orEmpty()

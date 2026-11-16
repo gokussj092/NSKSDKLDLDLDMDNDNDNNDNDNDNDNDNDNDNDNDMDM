@@ -198,6 +198,15 @@ export default function AdminSupport(){
   if(!window.confirm('¿Levantar la suspensión de soporte de esta cuenta?'))return;
   mutate({action:'liftSuspension',accountId:selected.account_id},{notice:'Suspensión levantada.'});
  };
+ // Escalación a Pedro (D5): solo el agente asignado o quien puede asignar
+ // (owner/admin). El hilo queda marcado y en prioridad alta.
+ const canEscalate=!!(selected&&canWrite&&!selected.escalated_at&&
+  (selected.assigned_staff_id===access?.id||access?.capabilities?.includes('support.assign')));
+ const escalate=()=>{
+  if(!selected||!canEscalate)return;
+  if(!window.confirm('¿Escalar esta conversación a Pedro? La verá marcada y en prioridad alta.'))return;
+  mutate({action:'escalate',threadId:selected.id},{notice:'Conversación escalada a Pedro.'});
+ };
  const openThread=id=>{setActive(id);};
  const backToInbox=()=>{setActive('');};
  const navigateThread=dir=>{
@@ -257,6 +266,7 @@ export default function AdminSupport(){
       <span className="sp-chat-ticket-footer"><span className={'sp-chat-status '+t.status}>{STATUS[t.status]}</span>
        <span className="sp-chat-chip">{CATEGORY[t.category]||t.category||'General'}</span>
        <span className={'sp-chat-chip priority-'+(t.priority||'normal')}>{PRIORITY[t.priority||'normal']||'Normal'}</span>
+       {t.escalated_at&&<span className="sp-chat-chip">Escalado a Pedro</span>}
        {susp&&<span className="sp-chat-suspended" title={suspensionDetail(t.suspension)}>{suspensionLabel(t.suspension)}</span>}
       </span>
      </span>
@@ -291,6 +301,7 @@ export default function AdminSupport(){
      <span className={'sp-chat-status '+selected.status}>{STATUS[selected.status]}</span>
      <span className="sp-chat-chip">{CATEGORY[selected.category]||selected.category||'General'}</span>
      <span className={'sp-chat-chip priority-'+(selected.priority||'normal')}>{PRIORITY[selected.priority||'normal']||'Normal'}</span>
+     {selected.escalated_at&&<span className="sp-chat-chip">Escalado a Pedro</span>}
      {suspendedSelected&&<button type="button" className="sp-chat-suspended" title={suspensionDetail(selected.suspension)}
        aria-label={suspensionDetail(selected.suspension)} onClick={()=>setShowSuspDetail(v=>!v)}>{suspensionLabel(selected.suspension)}</button>}
      {suspendedSelected&&canWrite&&<button type="button" className="button" disabled={busy} onClick={liftSuspension}>Levantar suspensión</button>}
@@ -328,6 +339,9 @@ export default function AdminSupport(){
      <button className="button" type="button" disabled={busy} onClick={()=>toggleClose(false)}>
       {selected.status==='closed'?'Reabrir conversación':'Cerrar conversación'}
      </button>
+     {canEscalate&&<button className="button" type="button" disabled={busy} onClick={escalate}>
+      Escalar a Pedro
+     </button>}
     </footer>}
    </section>
    <p className="muted sp-chat-shortcuts">Atajos: / buscar · j/k cambiar de hilo · Esc volver a la bandeja · C cerrar o reabrir</p>

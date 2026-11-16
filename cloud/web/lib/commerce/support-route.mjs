@@ -1,7 +1,7 @@
 import {requireAccount} from './auth.mjs';
 import {safe,reply,requireOrigin,jsonBody,fail} from './config.mjs';
 import {createSupportThread,sendSupportMessage,listUserSupport,listAdminSupport,
-  replyAdminSupport,assignSupportThread,markSupportThreadRead,
+  replyAdminSupport,assignSupportThread,escalateSupportThread,markSupportThreadRead,
   liftSupportSuspension} from './support.mjs';
 import {adminSettings,validMutation} from '../c6-admin-auth.mjs';
 import {requirePanel,can} from './staff.mjs';
@@ -48,6 +48,12 @@ export const supportAdminRequest=request=>safe(async()=>{
    if(!can(principal,'support.write'))fail('FORBIDDEN',403);
    if(Object.keys(body).some(k=>!['action','accountId'].includes(k)))fail('INVALID_REQUEST');
    return reply(await liftSupportSuspension(principal,body.accountId));
+ }
+ if(body.action==='escalate'){
+   // Permission lives inside escalateSupportThread: support.assign on any
+   // thread, or the assigned agent with support.write on their own thread.
+   if(Object.keys(body).some(k=>!['action','threadId'].includes(k)))fail('INVALID_REQUEST');
+   return reply(await escalateSupportThread(principal,body));
  }
  if(!can(principal,'support.write'))fail('FORBIDDEN',403);
  return reply(await replyAdminSupport({

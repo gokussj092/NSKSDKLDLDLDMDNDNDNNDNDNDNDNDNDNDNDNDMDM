@@ -392,6 +392,7 @@ internal fun ChatHeader(thread: JSONObject) {
         Small(thread.optString("subject"))
       }
       recordValue(thread, "status")?.let { StatusPill(translated(it), toneFor(it)) }
+      if (!thread.optString("escalated_at").isBlank()) StatusPill(L("Escalado a Pedro"), Amber)
     }
     recordValue(thread, "assigned_name")?.let { Small(LF("Agente: %1\$s", it)) }
   }
