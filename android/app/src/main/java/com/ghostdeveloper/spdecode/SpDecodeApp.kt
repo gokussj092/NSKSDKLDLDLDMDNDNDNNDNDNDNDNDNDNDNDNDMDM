@@ -144,6 +144,14 @@ internal fun SpDecodeApp(
     onApkQaPick:()->Unit={},
     onApkQaCancel:()->Unit={},
     onApkQaRetry:()->Unit={},
+    appAnalysisPreflight:com.ghostdeveloper.spdecode.cloud.AppAnalysisClient.Preflight?=null,
+    appAnalysisPreflightLoading:Boolean=false,
+    appAnalysisJob:com.ghostdeveloper.spdecode.cloud.AppAnalysisClient.JobView?=null,
+    appAnalysisRunning:Boolean=false,
+    appAnalysisError:String?=null,
+    appAnalysisHistory:List<com.ghostdeveloper.spdecode.cloud.AppAnalysisClient.JobView> = emptyList(),
+    onAppAnalysisPick:()->Unit={},
+    onAppAnalysisRefresh:()->Unit={},
 ){
     var dialog by remember{mutableStateOf<String?>(null)}
     var confirmCatalogPostpone by remember(pendingServerVpnCatalogVersion){mutableStateOf(false)}
@@ -174,7 +182,12 @@ internal fun SpDecodeApp(
                                 apkQaTotal,apkQaReport,apkQaError,onApkQaPick,onApkQaCancel,
                                 events=apkQaEvents,sourceFilename=apkQaFilename,
                                 onRetry=onApkQaRetry)
-                        else ApkAnalysisComingSoonScreen()
+                        else AppAnalysisScreen(
+                            preflight=appAnalysisPreflight,
+                            preflightLoading=appAnalysisPreflightLoading,
+                            job=appAnalysisJob,running=appAnalysisRunning,
+                            error=appAnalysisError,history=appAnalysisHistory,
+                            onPick=onAppAnalysisPick,onRefresh=onAppAnalysisRefresh)
                     3->ServerVpnScreen(busy,serverVpnApps,serverVpnLoading && catalogTransfer==null,serverVpnUnavailable,
                         onDecodeServerCatalog,onDecodeServerApp,onExternalLink,catalogProgress)
                     else->FunctionalSettingsPanel(language=selectedLanguage,

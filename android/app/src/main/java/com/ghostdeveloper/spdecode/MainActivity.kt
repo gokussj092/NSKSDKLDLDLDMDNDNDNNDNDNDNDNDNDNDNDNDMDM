@@ -29,6 +29,8 @@ import com.ghostdeveloper.spdecode.cloud.CloudWhatsNewRepository
 import com.ghostdeveloper.spdecode.cloud.CloudDecodeClient
 import com.ghostdeveloper.spdecode.cloud.CloudApkQaClient
 import com.ghostdeveloper.spdecode.cloud.ApkQaWorker
+import com.ghostdeveloper.spdecode.cloud.AppAnalysisClient
+import com.ghostdeveloper.spdecode.cloud.AppAnalysisWorker
 import com.ghostdeveloper.spdecode.cloud.CloudDiagnosticsPrivacy
 import com.ghostdeveloper.spdecode.cloud.CloudCredentialPolicy
 import com.ghostdeveloper.spdecode.cloud.CloudUserErrors
@@ -85,6 +87,14 @@ class MainActivity : ComponentActivity() {
             OnlineAdsFactory.create(this) else null
     }
     private val apkQaClient by lazy { CloudApkQaClient(this,cloudClient) }
+    private val appAnalysisClient by lazy { AppAnalysisClient(this) }
+    private var appAnalysisObserver:Job?=null
+    private var appAnalysisRunning by mutableStateOf(false)
+    private var appAnalysisJob by mutableStateOf<AppAnalysisClient.JobView?>(null)
+    private var appAnalysisPreflight by mutableStateOf<AppAnalysisClient.Preflight?>(null)
+    private var appAnalysisPreflightLoading by mutableStateOf(false)
+    private var appAnalysisHistory by mutableStateOf<List<AppAnalysisClient.JobView>>(emptyList())
+    private var appAnalysisError by mutableStateOf<String?>(null)
     private var apkQaObserver:Job?=null
     private var apkQaRunning by mutableStateOf(false)
     private var apkQaPhase by mutableStateOf("")
@@ -528,6 +538,105 @@ class MainActivity : ComponentActivity() {
     private val picker=registerForActivityResult(ActivityResultContracts.OpenDocument()){uri->
         if(uri!=null)prepareSingleImport(uri)
     }
+
+    // -- SP-DECODE Arnes (paid app analysis): same observer pattern as QA,
+    // but the screen replaces the "Próximamente" placeholder, not the QA
+    // screen, and it only runs in non-QA builds. --
+    private val appAnalysisPicker=registerForActivityResult(ActivityResultContracts.OpenDocument()){uri->
+        if(uri!=null)startAppAnalysis(uri)
+    }
+
+    private fun observeAppAnalysis() {
+        if(appAnalysisObserver?.isActive==true)return
+        appAnalysisObserver=scope.launch {
+            while(true) {
+                try {
+                    val latest=withContext(Dispatchers.IO){appAnalysisClient.snapshot()}
+                    if(latest!=null) {
+                        appAnalysisRunning=latest.active
+                        appAnalysisJob=latest.job
+                        appAnalysisError=latest.error
+                        latest.preflight?.let{appAnalysisPreflight=it}
+                    }else appAnalysisRunning=false
+                    if(!appAnalysisRunning && appAnalysisPreflight==null &&
+                        appAnalysisError==null && !appAnalysisPreflightLoading)
+                        refreshAppAnalysisPreflight()
+                }catch(_:IOException){
+                    // Never unlock a potentially active remote job when the
+                    // AndroidKeyStore ciphertext is damaged or unavailable.
+                    appAnalysisRunning=true
+                    appAnalysisError="APP_ANALYSIS_LOCAL_STATE_UNAVAILABLE"
+                }
+                delay(1200L)
+            }
+        }
+    }
+
+    private fun refreshAppAnalysisPreflight() {
+        if(appAnalysisPreflightLoading)return
+        appAnalysisPreflightLoading=true
+        scope.launch {
+            try {
+                appAnalysisPreflight=withContext(Dispatchers.IO){appAnalysisClient.preflight()}
+                appAnalysisError=null
+            }catch(error:AppAnalysisClient.Failure){
+                appAnalysisError=error.code
+            }catch(_:IOException){
+                appAnalysisError="APP_ANALYSIS_UNAVAILABLE"
+            }catch(_:Exception){
+                appAnalysisError="APP_ANALYSIS_UNAVAILABLE"
+            }finally{appAnalysisPreflightLoading=false}
+        }
+    }
+
+    private fun refreshAppAnalysis() {
+        appAnalysisError=null
+        refreshAppAnalysisPreflight()
+        scope.launch {
+            try {appAnalysisHistory=withContext(Dispatchers.IO){appAnalysisClient.refreshHistory()}}
+            catch(_:Exception){
+                // History is best-effort; the status card stays authoritative.
+            }
+        }
+    }
+
+    private fun reconnectAppAnalysis() {
+        try {
+            if(appAnalysisClient.hasActiveJob()){
+                AppAnalysisWorker.enqueue(this,replace=true)
+                observeAppAnalysis()
+            }
+        }catch(_:Exception){
+            appAnalysisRunning=true
+            appAnalysisError="APP_ANALYSIS_LOCAL_STATE_UNAVAILABLE"
+        }
+    }
+
+    private fun startAppAnalysis(uri:Uri) {
+        if(appAnalysisRunning)return
+        if(!BuildConfig.SPDECODE_CLOUD_ENABLED){
+            appAnalysisError="APP_ANALYSIS_CLOUD_REQUIRED";return
+        }
+        try {
+            // Persist job metadata before network I/O; WorkManager never stores
+            // the upload capability, URI or analysis result in its plaintext Data.
+            appAnalysisClient.queue(uri)
+            appAnalysisRunning=true
+            appAnalysisJob=null
+            appAnalysisError=null
+            AppAnalysisWorker.enqueue(this)
+            observeAppAnalysis()
+        }catch(error:IOException){
+            appAnalysisError=error.message?.takeIf{it.matches(Regex("[A-Z_]{3,80}"))}
+                ?: "APP_ANALYSIS_UNAVAILABLE"
+            try {appAnalysisRunning=appAnalysisClient.hasActiveJob()}
+            catch(_:Exception){appAnalysisRunning=true}
+        }catch(_:Exception){
+            appAnalysisError="APP_ANALYSIS_UNAVAILABLE"
+            try {appAnalysisRunning=appAnalysisClient.hasActiveJob()}
+            catch(_:Exception){appAnalysisRunning=true}
+        }
+    }
     private val multiPicker=registerForActivityResult(ActivityResultContracts.OpenMultipleDocuments()){uris->
         if(uris.isNotEmpty())importFiles(uris.take(BatchImportQueue.MAX_FILES))
     }
@@ -720,6 +829,14 @@ class MainActivity : ComponentActivity() {
                 onApkQaPick={apkQaPicker.launch(arrayOf("application/vnd.android.package-archive","application/octet-stream","*/*"))},
                 onApkQaCancel={},
                 onApkQaRetry={reconnectApkQa()},
+                appAnalysisPreflight=appAnalysisPreflight,
+                appAnalysisPreflightLoading=appAnalysisPreflightLoading,
+                appAnalysisJob=appAnalysisJob,
+                appAnalysisRunning=appAnalysisRunning,
+                appAnalysisError=appAnalysisError,
+                appAnalysisHistory=appAnalysisHistory,
+                onAppAnalysisPick={appAnalysisPicker.launch(arrayOf("application/vnd.android.package-archive","application/octet-stream","*/*"))},
+                onAppAnalysisRefresh={refreshAppAnalysis()},
                 onCancel={cancelImport()},
                 onReveal={reveal=it},
                 onCopy={format->result?.let { entry ->scope.launch {
@@ -982,6 +1099,8 @@ class MainActivity : ComponentActivity() {
             }
         }
         if(BuildConfig.SPDECODE_APK_QA_ENABLED)observeApkQa()
+        if(BuildConfig.SPDECODE_CLOUD_ENABLED && !BuildConfig.SPDECODE_APK_QA_ENABLED)
+            observeAppAnalysis()
         if(savedInstanceState==null && !showCloudLegal)handleExternalIntent(intent)
     }
 
@@ -1009,6 +1128,11 @@ class MainActivity : ComponentActivity() {
                 apkQaRunning=true
                 apkQaError="APK_QA_LOCAL_STATE_UNAVAILABLE"
             }
+        }
+        if(BuildConfig.SPDECODE_CLOUD_ENABLED && !BuildConfig.SPDECODE_APK_QA_ENABLED && !showCloudLegal){
+            observeAppAnalysis()
+            reconnectAppAnalysis()
+            refreshAppAnalysis()
         }
         if(settings.getBoolean("private-screen",false))
             window.addFlags(android.view.WindowManager.LayoutParams.FLAG_SECURE)

@@ -32,7 +32,7 @@ internal class CloudApkQaClient(context:Context,private val cloud:CloudDecodeCli
     private var cachedReportId=""
     private var cachedReport:String?=null
     companion object {
-        const val MAX_BYTES=100L*1000L*1000L
+        const val MAX_BYTES=150L*1000L*1000L // 150 MB cap (Pedro, 2026-11-15).
         private const val MAX_CHUNK=2*1024*1024
         // WorkManager regular workers have a limited execution window.
         // Return RETRY before that deadline; progress is durable.
