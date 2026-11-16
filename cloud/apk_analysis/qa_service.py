@@ -21,7 +21,7 @@ import time
 
 from .qa_static import inspect_static
 
-MAX_APK = 100 * 1000 * 1000  # Exact 100 MB QA cap; other decoders retain their limits.
+MAX_APK = 150 * 1000 * 1000  # 150 MB cap (Pedro, 2026-11-15); other decoders retain their limits.
 CHUNK = 2 * 1024 * 1024
 MAX_POST = 3 * 1024 * 1024
 MAX_ACTIVE = 1  # Private trial: only one APK/APKS from upload through terminal report
