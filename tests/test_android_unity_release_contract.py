@@ -522,7 +522,7 @@ class AndroidUnityReleaseContract(unittest.TestCase):
         self.assertIn("AdFreeSymbol(modifier=Modifier.size(65.dp))",account)
         self.assertIn("AdFreeSymbol(modifier=Modifier.size(29.dp))",store)
         self.assertIn("BasicTextField(",chat)
-        self.assertIn("itemsIndexed(messages",chat)
+        self.assertIn("itemsIndexed(displayItems",chat)
         self.assertIn("ChatDayDivider(",chat)
         self.assertIn("Modifier.size(40.dp)",chat)
 
@@ -594,7 +594,8 @@ class AndroidUnityReleaseContract(unittest.TestCase):
         self.assertIn("operator.name",support)
         self.assertIn("principal.name",route)
         self.assertIn("requirePanel",route)
-        self.assertIn('person+" · "+role',android)
+        self.assertIn('CommerceI18n.translate(language,"Yamada","Yamada")+" · "+',android)
+        self.assertIn('CommerceI18n.translate(language,"Asistente","Assistant")',android)
         self.assertIn("LazyColumn(",android)
         self.assertIn("IconButton(",android)
         self.assertNotIn("enabled=message.isNotBlank()&&!loading,modifier=Modifier.fillMaxWidth()",android)

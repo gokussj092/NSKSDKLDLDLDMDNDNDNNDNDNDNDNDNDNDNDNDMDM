@@ -14,18 +14,18 @@ class AndroidSupportChatDesignTests(unittest.TestCase):
         self.assertIn('if(!supportOwnHeader){',parent)
         self.assertIn('if(supportOwnHeader)',parent)
         self.assertIn('onExit={back()}',parent)
-        self.assertIn('BackHandler(enabled=active!=null||creating){navigateBack()}',chat)
-        self.assertIn('active!=null->{activeId="";text="";creating=false;error=null}',chat)
+        self.assertIn('BackHandler(enabled=active!=null||newChat){navigateBack()}',chat)
+        self.assertIn('activeId="";newChat=false;text="";error=null;pending=listOf()',chat)
         self.assertIn('IconButton(onClick=onExit',chat)
         self.assertIn('onExit:()->Unit',chat)
 
     def test_design_updates_preserve_messages_and_send_semantics(self):
         chat=content("android/app/src/main/java/com/ghostdeveloper/spdecode/CommerceSupportPage.kt")
-        for required in ['chatHeader=Color(0xFF0B1923)',
-            'chatOutgoing=Color(0xFF123B4B)',
-            'chatIncoming=Color(0xFF1C2934)',
+        for required in ['supportPanel=Color(0xFF242424)',
+            'supportOutgoing=Color(0xFF2A2A2A)',
+            'supportIncoming=Color(0xFF242424)',
             'RoundedCornerShape(topStart=20.dp',
-            'auth.sendSupportMessage(activeId,text.trim())',
+            'auth.sendSupportMessage(activeId,trimmed)',
             'auth.supportInbox()','"Conversation closed"',
             '"You can still read earlier messages."',
             'CommerceI18n.translate(language']:
