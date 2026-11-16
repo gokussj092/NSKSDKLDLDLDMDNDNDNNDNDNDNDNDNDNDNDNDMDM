@@ -30,3 +30,20 @@ Validación ejecutada con CPython 3.12.14 y dependencias fijadas:
 El método operativo permanece intacto. Este expediente es un checkpoint de
 investigación, no un cambio desplegable de compatibilidad. No se compiló APK,
 no se desplegó VPS ni se efectuó merge a main.
+
+## Actualización 2026-11-16 — HCCFG 12/n15 habilitado en el codec del servidor
+
+- Composición `fold-plus-password-before-content-hkdf` verificada con los
+  12 archivos reales: **8/12 abren completos** (5 sin contraseña, 3 con
+  contraseña; 16 perfiles). Detalle en REVISION_N15_2026_11_16.md.
+- El método se portó al codec del servidor
+  (`decoders/Python/apps/HTTP_Custom/codec.py` + `crypto.py`, estados
+  prestate n15): `codec.decrypt` abre los 8 con perfiles y sección
+  principal idénticos al lector de investigación. Las rutas n11/n12 no se
+  modificaron; n16/n17/n18/b=9 siguen rechazados (`UNSUPPORTED_SCHEMA`).
+- Regresión 2026-11-16: 33 pruebas del suite del codec + 32 del worker
+  Cloud + 3 del expediente, todas satisfactorias. El caso sintético n15 de
+  `tests/test_method.py` ahora espera `Bad inner key` (el codec intenta la
+  derivación n15 y rechaza la clave ficticia) en lugar de
+  `UNSUPPORTED_SCHEMA`; n16/n18 sintéticos siguen en `UNSUPPORTED_SCHEMA`.
+- No se compiló APK, no se desplegó VPS ni se efectuó merge a main.

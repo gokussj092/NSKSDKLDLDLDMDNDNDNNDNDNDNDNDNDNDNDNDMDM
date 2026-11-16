@@ -3,11 +3,12 @@
   "name": "HTTP Custom",
   "package": "xyz.easypro.httpcustom",
   "compatibleVersions": [
-    "7.11.28 - Patch 1"
+    "7.11.28 - Patch 1",
+    "8.0.22 Patch 2"
   ],
   "versionCode": 899,
-  "engine": "python-hcx4-hccfg10-n11-n12",
-  "engineVersion": 1,
+  "engine": "python-hcx4-hccfg10-n11-n12-n15",
+  "engineVersion": 2,
   "files": {
     "entrypoint": "file_decoder.py",
     "namedEntrypoint": "HTTP_Custom.py",
@@ -16,11 +17,13 @@
     ],
     "outer": "HCX4",
     "schemas": [
-      10
+      10,
+      12
     ],
     "schedules": [
       "n11",
-      "n12"
+      "n12",
+      "n15"
     ],
     "passwordSupported": true,
     "hwidSupported": true,
@@ -39,6 +42,21 @@
       "protectedPendingOriginalCredentials": 0,
       "completeCliApiWorkerParity": 6,
       "dualLockRealValidated": false
+    },
+    "realValidation934": {
+      "validationDate": "2026-11-16",
+      "build": "8.0.22 Patch 2 (934)",
+      "fullyDecodedTotal": 8,
+      "fullyDecodedWithoutCredentials": 5,
+      "fullyDecodedWithPassword": 3,
+      "profilesFullyDecoded": 16,
+      "pendingOffline": {
+        "n16PasswordHwid": 1,
+        "n17PasswordExtraProtection": 1,
+        "n18HwidExtraProtection": 1,
+        "b9AccessIdWrapper": 1
+      },
+      "note": "HCCFG 12/n15 via fold-plus-password-before-content-hkdf; n16/n17/n18/b9 need live capture or the original key (see analysis/xyz.easypro.httpcustom/934/REVISION_N15_2026_11_16.md)"
     },
     "nativeKdfSyntheticVectors": 4,
     "exporterCertified": false,

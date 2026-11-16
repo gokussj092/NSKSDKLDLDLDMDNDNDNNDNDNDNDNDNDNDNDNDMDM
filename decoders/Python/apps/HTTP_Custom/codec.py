@@ -15,11 +15,11 @@ if __package__:
         # without the surrounding decoders.Python package.
         sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
         import _hc_hccfg as historical
-    from .crypto import native_fold
+    from .crypto import native_fold, native_fold_n15
 else:
     sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
     import _hc_hccfg as historical
-    from crypto import native_fold
+    from crypto import native_fold, native_fold_n15
 
 HCError = historical.HCError
 MAX_FILE_BYTES = 16 * 1024 * 1024
@@ -61,7 +61,45 @@ def open_envelope(data: bytes) -> dict:
     raise UnrecognizedFormat("Not a valid HCX4 envelope")
 
 
+def _derive_n15(envelope: dict, password: str | None) -> tuple[bytes, bytes]:
+    """HCCFG 12/n15 content key (build 934).
+
+    Composition `fold-plus-password-before-content-hkdf`, verified against
+    real 934 exports: the n15 HMAC-prestate fold over the AAD, then the
+    Argon2id password key (when protected) concatenated BEFORE the content
+    HKDF with label hc-config-content-v12. No HWID slot exists in n15.
+    """
+    seed = historical._env_key(envelope)
+    features = historical._features(envelope)
+    build = historical._n_bytes(envelope)
+    if not build:
+        raise HCError("MISSING_BUILD")
+    protected = historical._h_flag(envelope)
+    if password is not None and (not isinstance(password, str) or not 0 < len(password) <= 4096):
+        raise HCError("INVALID_CREDENTIAL")
+    if protected and password is None:
+        raise HCError("PASSWORD_REQUIRED")
+    password_key = b""
+    protection_aad = b"|0"
+    if protected:
+        ops, memory = envelope.get("l"), envelope.get("m")
+        if (type(ops) is not int or not 1 <= ops <= 10 or type(memory) is not int
+                or not 8192 <= memory <= 256 * 1024 * 1024):
+            raise HCError("ARGON2_LIMIT")
+        password_key, protection_aad = historical._pw_kdf(envelope, password, seed)
+    aad = (b"HCCFG|12|XCHACHA20P1305|NATIVE-HKDF-SHA256|n15|" + PKG + b"|1|"
+           + features + protection_aad + b"|" + build)
+    content = native_fold_n15(aad)
+    key = historical._hkdf(content + password_key, seed, b"hc-config-content-v12")
+    return key, aad
+
+
 def derive(envelope: dict, password: str | None, hwid: str | None) -> tuple[bytes, bytes]:
+    # HCCFG 12/n15 (build 934) is enabled alongside the build-899 formats.
+    # Every other schema/schedule keeps its previous error exactly.
+    # (n15 has no HWID slot, so hwid is not part of this derivation.)
+    if type(envelope.get("b")) is int and envelope["b"] == 12 and envelope.get("e") == "n15":
+        return _derive_n15(envelope, password)
     # Only the format actually authenticated against build-899 exports is
     # enabled. Names present in a binary are not evidence of compatibility.
     if type(envelope.get("b")) is not int or envelope["b"] != 10:
@@ -157,22 +195,31 @@ def _content(raw: bytes) -> Any:
 def decrypt(data: bytes, password: str | None = None, hwid: str | None = None) -> dict:
     envelope = open_envelope(data)
     key, aad = derive(envelope, password, hwid)
+    is_n15 = envelope.get("b") == 12 and envelope.get("e") == "n15"
+
+    def _skey(label: str | None, extra: bytes = b"") -> bytes:
+        # HCCFG 12/n15 derives every section key from the contact key with
+        # the hc-config-part-v12 label; older schedules use the key directly.
+        if not is_n15 or not isinstance(label, str) or not label:
+            return key
+        return historical._hkdf(key, b"hc-config-part-v12", aad + b"\x00" + label.encode() + extra)
+
     try:
         main_section = envelope.get("i")
         if not isinstance(main_section, dict):
             raise HCError("INVALID_MAIN_SECTION")
-        main = _json(historical._dec_section(main_section, key, aad))
+        main = _json(historical._dec_section(main_section, _skey(main_section.get("a")), aad))
         profiles, others = [], []
         collection = envelope.get("j", [])
         for section in historical._sec_list(collection):
-            plain = historical._dec_section(section, key, aad)
+            plain = historical._dec_section(section, _skey(section.get("a")), aad)
             label = section["a"]
             if plain.startswith(b"HPR1"):
                 if len(plain) < 44:
                     raise HCError("INVALID_HPR1")
                 # Both AEAD layers must authenticate. No stream-only fallback.
-                plain = historical._xdec(key, plain[4:28], aad + b"\0" + label.encode() + b":r", plain[28:])
-            sidecar = historical._dec_sidecar(section, key, aad)
+                plain = historical._xdec(_skey(label, b":r"), plain[4:28], aad + b"\0" + label.encode() + b":r", plain[28:])
+            sidecar = historical._dec_sidecar(section, _skey(label, b":x"), aad)
             if plain.startswith(b"HPC1"):
                 profile = parse_profile(plain, label)
                 if sidecar is not None:
@@ -193,7 +240,9 @@ def decrypt(data: bytes, password: str | None = None, hwid: str | None = None) -
     except (ValueError, TypeError, KeyError, UnicodeError, RecursionError) as error:
         raise HCError("INVALID_SECTION") from error
     return {
-        "app_version": "7.11.28 - Patch 1 (899)" if envelope.get("n") == 899 else f"build-{envelope.get('n')}",
+        "app_version": ("7.11.28 - Patch 1 (899)" if envelope.get("n") == 899
+                        else "8.0.22 Patch 2 (934)" if envelope.get("n") == 934
+                        else f"build-{envelope.get('n')}"),
         "config": profiles, "main": main,
         "protections": historical._norm_prot(main.get("g", {})) if isinstance(main, dict) else {},
         "other_sections": others,

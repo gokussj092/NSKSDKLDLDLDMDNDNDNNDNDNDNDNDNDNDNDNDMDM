@@ -1,9 +1,11 @@
 # HTTP Custom — archivos .hc
 
-**Investigación build 934 (8.0.22 Patch 2): PENDING.** Las nueve muestras
-aportadas autentican HCX4 exterior, pero **0/9 producen JSON interior
-completo**. No se habilitan HCCFG 12/n15/n16, 13/n18 ni el wrapper de ID de
-acceso. [Expediente reproducible](../../../../analysis/xyz.easypro.httpcustom/934/ANALYSIS.md).
+**Build 934 (8.0.22 Patch 2): HCCFG 12/n15 habilitado 2026-11-16.** De las
+12 muestras aportadas, **8/12 producen JSON interior completo** (5 sin
+contraseña, 3 con contraseña). No se habilitan HCCFG 12/n16, 13/n17/n18 ni
+el wrapper de ID de acceso (b=9): la vía offline está agotada y solo queda
+la captura en vivo. [Expediente reproducible](../../../../analysis/xyz.easypro.httpcustom/934/ANALYSIS.md) y
+[revisión n15](../../../../analysis/xyz.easypro.httpcustom/934/REVISION_N15_2026_11_16.md).
 
 **Investigación 2026-11-01:** las dos muestras nuevas HCCFG 11/n13 con Extra
 Protection autentican HCX4, pero **0/2 están descifradas**. El motor sigue
@@ -15,7 +17,8 @@ de la versión nueva hasta verificar su JSON interior completo.
 
 APK analizado: **HTTP Custom 7.11.28 - Patch 1**, `xyz.easypro.httpcustom`,
 versionCode **899**. Este módulo añade **HCX4 / HCCFG 10, n11 y n12** al
-lector de archivos. El codec no hace peticiones de red. La importación online
+lector de archivos, y desde 2026-11-16 también **HCCFG 12, n15** (build 934,
+8.0.22 Patch 2). El codec no hace peticiones de red. La importación online
 se integra aparte en el broker API y reutiliza este mismo motor; ver
 [HTTP_CUSTOM_ONLINE.md](../../../../docs/cloud/HTTP_CUSTOM_ONLINE.md).
 

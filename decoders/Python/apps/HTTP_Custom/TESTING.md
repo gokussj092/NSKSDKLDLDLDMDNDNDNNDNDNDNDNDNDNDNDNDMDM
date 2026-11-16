@@ -37,6 +37,30 @@ Ninguna de las seis muestras combina contraseña y HWID a la vez: el doble
 bloqueo continúa cubierto por los vectores sintéticos nativos, no por una
 exportación real de doble bloqueo.
 
+## Verificación — HTTP Custom build 934 (n15)
+
+Fecha: 2026-11-16. Python 3.12, PyCryptodome 3.23.0 y argon2-cffi 25.1.0.
+El motor `codec.py` acepta HCCFG 12/n15 (build 934, 8.0.22 Patch 2) con la
+composición `fold-plus-password-before-content-hkdf`: el fold HMAC-prestate
+n15 (prefijo 0xf1) sobre el AAD, la clave Argon2id concatenada ANTES del
+HKDF de contenido (`hc-config-content-v12`) y la capa por sección
+(`hc-config-part-v12`). Las rutas n11/n12 no se modificaron.
+
+De las 12 exportaciones reales de build 934, **8 abren completas** (2
+perfiles cada una, 16 perfiles): 5 sin contraseña y 3 con la contraseña de
+prueba. Sus perfiles y secciones principales son idénticos a los del lector
+de investigación `HttpCustom_934_revisado.py` (salvo `options_text`, que el
+codec conserva como siempre). Las 4 restantes se rechazan como antes
+(`UNSUPPORTED_SCHEMA`): n16 (contraseña + HWID), n17/n18 (Protección Extra)
+y b=9 (wrapper de ID de acceso). No se publican contenidos, credenciales ni
+JSON reales descifrados.
+
+Regresión: `python -m unittest tests.test_http_custom_899
+tests.test_hc_sip_new_variants tests.test_cloud_c2_hc
+tests.test_cloud_c0_inventory` — 33 pruebas satisfactorias; worker
+`cloud/workers/python` — 32 pruebas satisfactorias; dossier 934
+`test_method.py` — 3 pruebas satisfactorias.
+
 ## Contraste con código nativo
 
 Se identificó el codec exterior en `U9085043933007906326`, el orden real

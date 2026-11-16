@@ -1,4 +1,9 @@
-"""Synthetic diagnostics, not a claim that build-934 payloads can be decrypted."""
+"""Synthetic diagnostics, not a claim about real build-934 payloads.
+
+Real 934 exports now decrypt through decoders/Python/apps/HTTP_Custom/codec.py
+(HCCFG 12/n15, 8/12 verified 2026-11-16); these synthetic envelopes must still
+never produce plaintext success.
+"""
 import importlib.util,json,sys,unittest
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[4];sys.path.insert(0,str(ROOT))
@@ -16,11 +21,19 @@ class DiagnosticsTests(unittest.TestCase):
                 'j':[{'c':'private-profile-placeholder'}]}
 
     def test_authenticated_metadata_is_not_plaintext_success(self):
-        for schema,schedule in [(12,'n15'),(12,'n16'),(13,'n18')]:
+        # n16/n18 remain unsupported schedules.
+        for schema,schedule in [(12,'n16'),(13,'n18')]:
             data=seal(self.envelope(schema,schedule));report=inventory.sample_report(data)
             self.assertTrue(report['outer_authenticated'])
             self.assertEqual(report['metadata']['b'],schema)
             with self.assertRaisesRegex(codec.HCError,'^UNSUPPORTED_SCHEMA$'):codec.decrypt(data)
+        # n15 is a supported schedule since 2026-11-16 (build 934): the codec
+        # attempts the derivation, and this synthetic envelope fails on its
+        # placeholder inner key, not on the schema.
+        data=seal(self.envelope(12,'n15'));report=inventory.sample_report(data)
+        self.assertTrue(report['outer_authenticated'])
+        self.assertEqual(report['metadata']['b'],12)
+        with self.assertRaisesRegex(codec.HCError,'^Bad inner key$'):codec.decrypt(data)
 
     def test_diagnostics_do_not_leak_encrypted_or_private_material(self):
         report=inventory.sample_report(seal(self.envelope()))

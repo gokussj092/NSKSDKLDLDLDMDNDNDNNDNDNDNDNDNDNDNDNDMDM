@@ -54,6 +54,14 @@ INNER_STATE = (0x82515a9a, 0xf6ec05fc, 0xf650b6cd, 0x523f8ce6,
                0xedf419ec, 0x1d6d6573, 0x66ff1b89, 0xf40a0181)
 OUTER_STATE = (0x82185b01, 0x35cb48be, 0xdb6c3846, 0xbd714ec5,
                0x627728af, 0xdbaae4db, 0x463fbf8d, 0x88a24381)
+# n15 content-key prestates (build 934): same HMAC-prestate construction as
+# above, but keyed by the n15 label, so the inner/outer states differ.
+# Recovered from the build-934 native engine; verified against real 934
+# exports (8/12 open). See analysis/xyz.easypro.httpcustom/934/REVISION_N15_2026_11_16.md.
+N15_INNER_STATE = (0xaabd3a1e, 0x3d63a211, 0xe615b378, 0x46a07517,
+                   0x11f5cab4, 0xa7aef829, 0x83c7543b, 0x2d971ab7)
+N15_OUTER_STATE = (0x423fcb79, 0xc4dd3dc8, 0x57d814ac, 0x1660ed59,
+                   0xdbb328b7, 0xcc389261, 0x06f1803e, 0xe3130c6b)
 CERT_SHA256 = bytes.fromhex(
     "95dd433d7e4a0be02d55cc62553edcfc8f077fe780be5a7da7f861c2558dc181"
 )
@@ -62,3 +70,12 @@ CERT_SHA256 = bytes.fromhex(
 def native_fold(data: bytes) -> bytes:
     """HMAC-prestate continuation over E9 || certificateSHA256 || data."""
     return sha256_from_state(OUTER_STATE, sha256_from_state(INNER_STATE, b"\xe9" + CERT_SHA256 + data))
+
+
+def native_fold_n15(data: bytes) -> bytes:
+    """HMAC-prestate continuation over F1 || certificateSHA256 || data.
+
+    n15 content-key fold (build 934): same construction as native_fold, but
+    with the n15 prestates and the 0xf1 prefix built by the native engine.
+    """
+    return sha256_from_state(N15_OUTER_STATE, sha256_from_state(N15_INNER_STATE, b"\xf1" + CERT_SHA256 + data))
