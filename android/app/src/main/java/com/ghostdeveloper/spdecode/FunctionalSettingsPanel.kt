@@ -11,7 +11,6 @@ import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.activity.compose.BackHandler
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -57,7 +56,6 @@ fun FunctionalSettingsPanel(
     supportedTextFormats:List<CloudTextRoute> = emptyList(),
     catalogLoading:Boolean=false,
     catalogProgress:Int?=null,
-    onFeedbackSubmit:suspend (FeedbackDraft)->String={throw IllegalStateException("FEEDBACK_UNAVAILABLE")},
 ){
     var clearDialog by remember { mutableStateOf(false) }
     var creditDraft by rememberSaveable(telegramCreditUsername) {
@@ -69,14 +67,11 @@ fun FunctionalSettingsPanel(
     val normalizedCredit=TelegramResultCopy.normalizeUsername(creditDraft)
     var languagePage by rememberSaveable { mutableStateOf(false) }
     var formatsPage by rememberSaveable { mutableStateOf(false) }
-    var feedbackPage by rememberSaveable { mutableStateOf(false) }
     var aboutPage by rememberSaveable { mutableStateOf(false) }
-    val pageState=rememberSaveableStateHolder()
     var retentionDialog by remember { mutableStateOf(false) }
     var withdrawDialog by remember { mutableStateOf(false) }
-    BackHandler(enabled=languagePage || formatsPage || feedbackPage || aboutPage) {
+    BackHandler(enabled=languagePage || formatsPage || aboutPage) {
         when { aboutPage -> aboutPage=false
-            feedbackPage -> feedbackPage=false
             formatsPage -> formatsPage=false
             else -> languagePage=false }
     }
@@ -91,12 +86,6 @@ fun FunctionalSettingsPanel(
     if(formatsPage) {
         FormatsScreen(supportedFormats,supportedTextFormats,catalogLoading,catalogProgress,
             onBack={formatsPage=false})
-        return
-    }
-    if(feedbackPage){
-        pageState.SaveableStateProvider("feedback-form") {
-            FeedbackScreen(onBack={feedbackPage=false},onSend=onFeedbackSubmit)
-        }
         return
     }
     if(aboutPage){
@@ -153,21 +142,6 @@ fun FunctionalSettingsPanel(
                 }
                 Icon(Icons.Outlined.ChevronRight,
                     stringResource(R.string.settings_formats_title),tint=MutedText)
-            }
-        }
-        if(BuildConfig.SPDECODE_CLOUD_ENABLED) SettingsCard {
-            Row(Modifier.fillMaxWidth().testTag("settings_feedback_entry")
-                    .clickable{feedbackPage=true}.padding(vertical=5.dp),
-                verticalAlignment=Alignment.CenterVertically){
-                Icon(Icons.Outlined.Feedback,null,tint=TitleText,modifier=Modifier.size(25.dp))
-                Spacer(Modifier.width(13.dp))
-                Column(Modifier.weight(1f)){
-                    Text(stringResource(R.string.feedback_title),color=TitleText,
-                        fontWeight=FontWeight.SemiBold,fontSize=16.sp)
-                    Text(stringResource(R.string.feedback_settings_detail),
-                        color=MutedText,fontSize=13.sp)
-                }
-                Icon(Icons.Outlined.ChevronRight,null,tint=MutedText)
             }
         }
         SettingsCard{

@@ -14,10 +14,4 @@
     <string name="apk_credits_subscriptions">الاشتراكات</string>
     <string name="apk_credits_button">الأرصدة: 1+</string>
     <string name="apk_credits_back">رجوع</string>
-    <string name="feedback_details_title">تفاصيل الطلب</string>
-    <string name="feedback_method_description">اطلب دعم ملفات جديدة أو كتالوجات VPN.</string>
-    <string name="feedback_bug_description">أبلغ عن مشاكل فك التشفير أو التوافق أو التطبيق.</string>
-    <string name="feedback_suggestion_description">اقترح ميزات جديدة أو تحسينات للتصميم.</string>
-    <string name="feedback_extra_title">معلومات إضافية (اختياري)</string>
-    <string name="feedback_extra_hint">الإصدار أو الصيغة أو تفاصيل أخرى</string>
 </resources>

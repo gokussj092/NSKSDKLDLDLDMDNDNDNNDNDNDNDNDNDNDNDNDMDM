@@ -6,12 +6,12 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
@@ -20,9 +20,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.LinkAnnotation
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.withLink
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.CancellationException
@@ -35,15 +41,24 @@ import java.time.Instant
 import java.util.Date
 import java.util.Locale
 import java.time.ZoneId
+import java.util.UUID
 
-private val chatWhite=Color(0xFFF0F6F9)
-private val chatMuted=Color(0xFF94AAB6)
-private val chatPanel=Color(0xFF101D27)
-private val chatHeader=Color(0xFF0B1923)
-private val chatGreen=Color(0xFF76D6E7)
-private val chatLine=Color(0xFF27404D)
-private val chatOutgoing=Color(0xFF123B4B)
-private val chatIncoming=Color(0xFF1C2934)
+// AMOLED exacto del tema global (SpDecodeAmoledTheme): nada de la paleta
+// azul petróleo/cian antigua. Verde solo para el chip "Respondido".
+private val supportText=Color(0xFFF7F7F7)
+private val supportMuted=Color(0xFFABABAB)
+private val supportPanel=Color(0xFF242424)
+private val supportElevated=Color(0xFF2A2A2A)
+private val supportBorder=Color(0xFF525252)
+private val supportGreen=Color(0xFF38A36D)
+private val supportAmber=Color(0xFFE0B563)
+private val supportError=Color(0xFFFF8585)
+private val supportOutgoing=Color(0xFF2A2A2A)
+private val supportIncoming=Color(0xFF242424)
+
+private fun parseIsoMs(input:String):Long? = runCatching{
+    Instant.parse(input).toEpochMilli()
+}.getOrNull()
 
 private fun chatTime(input:String,full:Boolean=false):String = runCatching{
     val date=Date.from(Instant.parse(input))
@@ -55,6 +70,38 @@ private fun chatDateKey(value:String):String=runCatching{
     Instant.parse(value).atZone(ZoneId.systemDefault()).toLocalDate().toString()
 }.getOrDefault("")
 
+private fun linkified(text:String):AnnotatedString{
+    val builder=AnnotatedString.Builder()
+    val regex=Regex("https?://[^\\s]+")
+    var last=0
+    regex.findAll(text).forEach{match->
+        if(match.range.first>last)
+            builder.append(text.substring(last,match.range.first))
+        builder.withLink(LinkAnnotation.Url(match.value)){
+            withStyle(SpanStyle(textDecoration=TextDecoration.Underline)){
+                append(match.value)
+            }
+        }
+        last=match.range.last+1
+    }
+    if(last<text.length)builder.append(text.substring(last))
+    return builder.toAnnotatedString()
+}
+
+private data class PendingMsg(val key:String,val text:String,val atMs:Long,
+    val failed:Boolean=false)
+
+@Composable
+private fun UnreadPill(count:Int){
+    if(count<=0)return
+    Box(Modifier.background(supportText,RoundedCornerShape(50))
+        .padding(horizontal=8.dp,vertical=3.dp),
+        contentAlignment=Alignment.Center){
+        Text(if(count>99)"99+" else count.toString(),color=Color.Black,
+            fontSize=11.sp,fontWeight=FontWeight.Bold,maxLines=1)
+    }
+}
+
 @Composable
 private fun ChatDayDivider(input:String,language:String){
     val label=runCatching{
@@ -65,25 +112,16 @@ private fun ChatDayDivider(input:String,language:String){
         Row(Modifier.fillMaxWidth().padding(horizontal=12.dp,vertical=16.dp),
             verticalAlignment=Alignment.CenterVertically,
             horizontalArrangement=Arrangement.spacedBy(12.dp)){
-            HorizontalDivider(modifier=Modifier.weight(1f),color=chatLine)
-            Text(label,color=chatMuted,fontSize=11.sp,
-                modifier=Modifier.background(chatHeader,RoundedCornerShape(50))
-                    .border(.6.dp,chatLine,RoundedCornerShape(50))
+            HorizontalDivider(modifier=Modifier.weight(1f),color=supportBorder)
+            Text(label,color=supportMuted,fontSize=11.sp,
+                modifier=Modifier.background(supportPanel,RoundedCornerShape(50))
+                    .border(.6.dp,supportBorder,RoundedCornerShape(50))
                     .padding(horizontal=13.dp,vertical=7.dp))
-            HorizontalDivider(modifier=Modifier.weight(1f),color=chatLine)
+            HorizontalDivider(modifier=Modifier.weight(1f),color=supportBorder)
         }
     }
 }
-@Composable
-private fun SupportAvatar(letters:String,fromTeam:Boolean=false){
-    Box(Modifier.size(44.dp)
-        .background(if(fromTeam)Color(0xFF194557) else Color(0xFF253644),CircleShape)
-        .border(1.dp,if(fromTeam)Color(0xFF39778A) else chatLine,CircleShape),
-        contentAlignment=Alignment.Center){
-        Text(letters.take(2).uppercase(),color=chatWhite,fontWeight=FontWeight.Bold,
-            fontSize=14.sp)
-    }
-}
+
 @Composable
 private fun StatusChip(status:String,language:String){
     val label=when(status){
@@ -92,12 +130,12 @@ private fun StatusChip(status:String,language:String){
         else->CommerceI18n.translate(language,"Pendiente","Pending")
     }
     val tint=when(status){
-        "answered"->Color(0xFF78E1C0)
-        "closed"->Color(0xFFB4C6D0)
-        else->Color(0xFFFFCF8F)
+        "answered"->supportGreen
+        "closed"->supportMuted
+        else->supportAmber
     }
     val shape=RoundedCornerShape(50)
-    Row(Modifier.background(chatPanel,shape).border(.8.dp,chatLine,shape)
+    Row(Modifier.background(supportPanel,shape).border(.8.dp,supportBorder,shape)
         .padding(horizontal=10.dp,vertical=7.dp),
         verticalAlignment=Alignment.CenterVertically,
         horizontalArrangement=Arrangement.spacedBy(6.dp)){
@@ -106,337 +144,775 @@ private fun StatusChip(status:String,language:String){
             maxLines=1)
     }
 }
+
+/** Burbuja de Yamada: avatar y nombre solo en la primera del grupo. */
 @Composable
-private fun SupportBubble(row:JSONObject,language:String){
-    val mine=row.optString("sender")=="user"
+private fun AgentBubble(row:JSONObject,language:String,showAvatar:Boolean,
+    showName:Boolean){
     val agent=row.optJSONObject("agent")
-    val person=agent?.optString("name")?.takeIf{it.isNotBlank()}?:"SP-DECODE"
-    val role=when(agent?.optString("role")){
-        "owner","admin"->CommerceI18n.translate(language,"Administración","Administrator")
-        "moderator"->CommerceI18n.translate(language,"Moderación","Moderation")
-        else->CommerceI18n.translate(language,"Soporte técnico","Technical support")
-    }
+    val avatar=agent?.optString("avatar")?.takeIf{it.isNotBlank()}
     val shape=RoundedCornerShape(topStart=20.dp,topEnd=20.dp,
-        bottomStart=if(mine)20.dp else 6.dp,bottomEnd=if(mine)6.dp else 20.dp)
+        bottomStart=6.dp,bottomEnd=20.dp)
     Row(Modifier.fillMaxWidth().padding(horizontal=10.dp,vertical=3.dp),
         verticalAlignment=Alignment.Bottom,
-        horizontalArrangement=if(mine)Arrangement.End else Arrangement.Start){
-        if(!mine)Box(Modifier.padding(end=8.dp,bottom=3.dp).size(29.dp)
-            .background(Color(0xFF194557),CircleShape)
-            .border(.8.dp,Color(0xFF39778A),CircleShape),
+        horizontalArrangement=Arrangement.Start){
+        Box(Modifier.width(40.dp).padding(end=8.dp,bottom=3.dp),
             contentAlignment=Alignment.Center){
-            Icon(Icons.Outlined.SupportAgent,null,tint=chatGreen,modifier=Modifier.size(16.dp))
+            if(showAvatar)CommerceAvatar(avatar,Modifier.size(32.dp))
         }
         Column(Modifier.widthIn(min=90.dp,max=292.dp)
-            .background(if(mine)chatOutgoing else chatIncoming,shape)
-            .border(.8.dp,if(mine)Color(0xFF266479) else chatLine,shape)
+            .background(supportIncoming,shape)
+            .border(.8.dp,supportBorder,shape)
             .padding(horizontal=14.dp,vertical=11.dp),
             verticalArrangement=Arrangement.spacedBy(7.dp)){
-            if(!mine)Text(person+" · "+role,color=chatGreen,
-                fontSize=11.sp,fontWeight=FontWeight.SemiBold,maxLines=2)
-            Text(row.optString("text"),color=chatWhite,fontSize=14.sp,lineHeight=21.sp)
-            Text(chatTime(row.optString("at")),
-                color=if(mine)Color(0xFFB3D7E3) else chatMuted,
+            if(showName)Text(
+                CommerceI18n.translate(language,"Yamada","Yamada")+" · "+
+                CommerceI18n.translate(language,"Asistente","Assistant"),
+                color=supportText,fontSize=11.sp,fontWeight=FontWeight.SemiBold,
+                maxLines=2)
+            SelectionContainer{
+                Text(linkified(row.optString("text")),color=supportText,
+                    fontSize=14.sp,lineHeight=21.sp)
+            }
+            Text(chatTime(row.optString("at")),color=supportMuted,
                 fontSize=10.sp,modifier=Modifier.align(Alignment.End))
         }
     }
 }
+
+@Composable
+private fun OwnBubble(row:JSONObject,language:String,read:Boolean){
+    val shape=RoundedCornerShape(topStart=20.dp,topEnd=20.dp,
+        bottomStart=20.dp,bottomEnd=6.dp)
+    Row(Modifier.fillMaxWidth().padding(horizontal=10.dp,vertical=3.dp),
+        verticalAlignment=Alignment.Bottom,
+        horizontalArrangement=Arrangement.End){
+        Column(Modifier.widthIn(min=90.dp,max=292.dp)
+            .background(supportOutgoing,shape)
+            .border(.8.dp,supportBorder,shape)
+            .padding(horizontal=14.dp,vertical=11.dp),
+            verticalArrangement=Arrangement.spacedBy(7.dp)){
+            SelectionContainer{
+                Text(linkified(row.optString("text")),color=supportText,
+                    fontSize=14.sp,lineHeight=21.sp)
+            }
+            Row(Modifier.align(Alignment.End),
+                verticalAlignment=Alignment.CenterVertically,
+                horizontalArrangement=Arrangement.spacedBy(4.dp)){
+                Text(chatTime(row.optString("at")),color=supportMuted,fontSize=10.sp)
+                if(read){
+                    Icon(Icons.Outlined.DoneAll,null,tint=supportText,
+                        modifier=Modifier.size(14.dp))
+                    Text(CommerceI18n.translate(language,"Leído","Read"),
+                        color=supportText,fontSize=10.sp)
+                }else{
+                    Icon(Icons.Outlined.Check,null,tint=supportMuted,
+                        modifier=Modifier.size(14.dp))
+                    Text(CommerceI18n.translate(language,"Enviado","Sent"),
+                        color=supportMuted,fontSize=10.sp)
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun PendingBubble(pending:PendingMsg,language:String,onRetry:()->Unit){
+    val shape=RoundedCornerShape(topStart=20.dp,topEnd=20.dp,
+        bottomStart=20.dp,bottomEnd=6.dp)
+    Row(Modifier.fillMaxWidth().padding(horizontal=10.dp,vertical=3.dp),
+        verticalAlignment=Alignment.Bottom,
+        horizontalArrangement=Arrangement.End){
+        Column(Modifier.widthIn(min=90.dp,max=292.dp)
+            .background(supportOutgoing,shape)
+            .border(.8.dp,
+                if(pending.failed)supportError else supportBorder,shape)
+            .clickable(enabled=pending.failed){onRetry()}
+            .padding(horizontal=14.dp,vertical=11.dp),
+            verticalArrangement=Arrangement.spacedBy(7.dp)){
+            Text(pending.text,color=supportText,fontSize=14.sp,lineHeight=21.sp)
+            Row(Modifier.align(Alignment.End),
+                verticalAlignment=Alignment.CenterVertically,
+                horizontalArrangement=Arrangement.spacedBy(4.dp)){
+                if(pending.failed){
+                    Text(CommerceI18n.translate(language,
+                        "No enviado — tocar para reintentar",
+                        "Not sent — tap to retry"),
+                        color=supportError,fontSize=10.sp)
+                }else{
+                    Icon(Icons.Outlined.Schedule,null,tint=supportMuted,
+                        modifier=Modifier.size(13.dp))
+                    Text(CommerceI18n.translate(language,"Enviando…","Sending…"),
+                        color=supportMuted,fontSize=10.sp)
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun WelcomeBubble(language:String){
+    val shape=RoundedCornerShape(topStart=20.dp,topEnd=20.dp,
+        bottomStart=6.dp,bottomEnd=20.dp)
+    Row(Modifier.fillMaxWidth().padding(horizontal=10.dp,vertical=3.dp),
+        verticalAlignment=Alignment.Bottom,
+        horizontalArrangement=Arrangement.Start){
+        Box(Modifier.width(40.dp).padding(end=8.dp,bottom=3.dp),
+            contentAlignment=Alignment.Center){
+            CommerceAvatar(null,Modifier.size(32.dp))
+        }
+        Column(Modifier.widthIn(min=90.dp,max=292.dp)
+            .background(supportIncoming,shape)
+            .border(.8.dp,supportBorder,shape)
+            .padding(horizontal=14.dp,vertical=11.dp),
+            verticalArrangement=Arrangement.spacedBy(7.dp)){
+            Text(CommerceI18n.translate(language,"Yamada","Yamada")+" · "+
+                CommerceI18n.translate(language,"Asistente","Assistant"),
+                color=supportText,fontSize=11.sp,fontWeight=FontWeight.SemiBold)
+            Text(CommerceI18n.translate(language,
+                "Hola, soy Yamada. Cuéntame qué problema tienes con la app y te ayudo.",
+                "Hello, I'm Yamada. Tell me what problem you have with the app and I'll help you."),
+                color=supportText,fontSize=14.sp,lineHeight=21.sp)
+        }
+    }
+}
+
+private sealed interface ChatItem{
+    data class Day(val at:String):ChatItem
+    data class Server(val row:JSONObject):ChatItem
+    data class Local(val pending:PendingMsg):ChatItem
+    data object Welcome:ChatItem
+}
+
 @Composable
 internal fun CommerceSupportPage(language:String,auth:NativeCommerceAuth,
     report:Boolean,onSignIn:()->Unit,onExit:()->Unit){
     val t:(String,String)->String={es,en->CommerceI18n.translate(language,es,en)}
     val scope=rememberCoroutineScope()
+    val category=if(report)"apk" else "technical"
     var inbox by remember{mutableStateOf<JSONObject?>(null)}
+    var loadError by remember{mutableStateOf(false)}
+    var loadTick by remember{mutableStateOf(0)}
     var activeId by remember{mutableStateOf("")}
-    var creating by remember{mutableStateOf(report)}
-    var title by remember{mutableStateOf("")}
-    var category by remember{mutableStateOf(if(report)"apk" else "technical")}
+    var newChat by remember{mutableStateOf(false)}
+    var autoRouted by remember{mutableStateOf(false)}
     var text by remember{mutableStateOf("")}
     var busy by remember{mutableStateOf(false)}
     var error by remember{mutableStateOf<String?>(null)}
-    var categoryExpanded by remember{mutableStateOf(false)}
+    var pending by remember{mutableStateOf(listOf<PendingMsg>())}
+    var locallyRead by remember{mutableStateOf(setOf<String>())}
+    var markedRead by remember{mutableStateOf(setOf<String>())}
+    var suspensionUntilMs by remember{mutableStateOf<Long?>(null)}
+    var suspensionUntilIso by remember{mutableStateOf<String?>(null)}
+    var search by remember{mutableStateOf("")}
+    var filter by remember{mutableStateOf("all")}
+    var nowMs by remember{mutableStateOf(System.currentTimeMillis())}
     val scroll=rememberLazyListState()
-    val categories=linkedMapOf(
-        "technical" to t("Asistencia técnica","Technical support"),
-        "apk" to t("Error de análisis","Analysis error"),
-        "payments" to t("Compras y pagos","Purchases and payments"),
-        "account" to t("Cuenta y acceso","Account and access"),
-        "other" to t("Otra consulta","Other inquiry"))
+
+    // Reloj para la cuenta atrás de la suspensión (se reactiva sola a cero).
     LaunchedEffect(Unit){
         while(isActive){
-            if(auth.sessionToken()!=null)runCatching{auth.supportInbox()}.onSuccess{inbox=it}
+            nowMs=System.currentTimeMillis()
+            delay(1_000)
+        }
+    }
+    val suspended=suspensionUntilMs!=null && suspensionUntilMs!!>nowMs
+    val suspendedUntilText=suspensionUntilIso?.let{chatTime(it)} ?: ""
+    val remainingMs=(suspensionUntilMs?:nowMs)-nowMs
+    val countdown="%02d:%02d".format((remainingMs/60_000).coerceAtLeast(0),
+        ((remainingMs/1_000)%60).coerceAtLeast(0))
+
+    suspend fun refreshInbox():JSONObject?{
+        val fresh=auth.supportInbox()
+        inbox=fresh
+        loadError=false
+        // El servidor es la autoridad del anti-spam: si el inbox trae el
+        // campo suspension, su valor manda; si no lo trae (servidor antiguo),
+        // se conserva el estado local fijado por el 429 SUPPORT_SUSPENDED.
+        if(fresh.has("suspension")){
+            val suspension=fresh.optJSONObject("suspension")
+            val until=suspension?.optString("suspendedUntil")?.takeIf{it.isNotBlank()}
+            suspensionUntilIso=until
+            suspensionUntilMs=until?.let{parseIsoMs(it)}
+        }
+        return fresh
+    }
+    fun applySuspension(untilIso:String?){
+        val until=untilIso?.takeIf{it.isNotBlank()}
+        suspensionUntilIso=until
+        suspensionUntilMs=until?.let{parseIsoMs(it)}
+            ?: (System.currentTimeMillis()+3_600_000)
+        if(until==null)suspensionUntilIso=
+            Instant.ofEpochMilli(suspensionUntilMs!!).toString()
+        scope.launch{runCatching{refreshInbox()}}
+    }
+    LaunchedEffect(loadTick){
+        while(isActive){
+            if(auth.sessionToken()!=null){
+                runCatching{refreshInbox()}.onFailure{
+                    if(inbox==null)loadError=true
+                }
+            }
             delay(12_000)
         }
     }
+
     val itemsJson=inbox?.optJSONArray("threads")
-    val threads=(0 until (itemsJson?.length()?:0))
+    val rawThreads=(0 until (itemsJson?.length()?:0))
         .mapNotNull{itemsJson?.optJSONObject(it)}
+    fun threadUnread(thread:JSONObject):Int =
+        if(thread.optString("id") in locallyRead)0
+        else thread.optInt("unread",0)
+    // Hilos con no leídos primero, luego por último mensaje.
+    val threads=rawThreads.sortedWith(
+        compareByDescending<JSONObject>{threadUnread(it)>0}
+            .thenByDescending{parseIsoMs(it.optString("last_message_at"))?:0L})
+    val unreadTotal=threads.sumOf{threadUnread(it)}
     val active=threads.firstOrNull{it.optString("id")==activeId}
     val entries=active?.optJSONArray("messages")
     val messages=(0 until(entries?.length()?:0)).mapNotNull{entries?.optJSONObject(it)}
-    LaunchedEffect(activeId,messages.size){
-        if(activeId.isNotEmpty()&&messages.isNotEmpty())
-            scroll.animateScrollToItem(messages.lastIndex)
+    val staffReadAtMs=active?.optString("staffReadAt")
+        ?.takeIf{it.isNotBlank()}?.let{parseIsoMs(it)}
+    // Aviso anti-spam: el servidor solo emite la suspensión; como heurística
+    // local se avisa también si hoy ya hay 3+ hilos con actividad.
+    val todayKey=Instant.ofEpochMilli(nowMs).atZone(ZoneId.systemDefault())
+        .toLocalDate().toString()
+    val threadsToday=threads.count{
+        chatDateKey(it.optString("last_message_at"))==todayKey
     }
-    fun cannotSend():Boolean = busy||text.trim().isEmpty()
+    val showSpamWarning=suspended || threadsToday>=3
+
+    // Entrada directa (D4, un solo ticket abierto): sin hilos -> chat nuevo
+    // limpio; con hilo abierto -> se retoma automáticamente.
+    LaunchedEffect(inbox,autoRouted){
+        if(autoRouted||inbox==null)return@LaunchedEffect
+        autoRouted=true
+        val open=threads.firstOrNull{it.optString("status")!="closed"}
+        if(open!=null)activeId=open.optString("id")
+        else if(threads.isEmpty())newChat=true
+    }
+    // Al abrir un hilo: marcar leído en el servidor y limpiar el badge local.
+    LaunchedEffect(activeId){
+        val id=activeId
+        if(id.isEmpty()||id in markedRead)return@LaunchedEffect
+        markedRead=markedRead+id
+        locallyRead=locallyRead+id
+        scope.launch{runCatching{auth.markSupportThreadRead(id)}}
+    }
+
+    val displayItems: List<ChatItem> = remember(messages,pending,active,newChat){
+        val out=mutableListOf<ChatItem>()
+        if((active!=null || newChat) && messages.isEmpty() && pending.isEmpty())
+            out += ChatItem.Welcome
+        var previous:JSONObject?=null
+        messages.forEach{message->
+            if(previous==null ||
+                chatDateKey(previous!!.optString("at"))!=
+                    chatDateKey(message.optString("at")))
+                out += ChatItem.Day(message.optString("at"))
+            out += ChatItem.Server(message)
+            previous=message
+        }
+        pending.forEach{out += ChatItem.Local(it)}
+        out
+    }
+    val inChat=active!=null || newChat
+    LaunchedEffect(activeId,newChat,displayItems.size){
+        if(inChat && displayItems.isNotEmpty())
+            scroll.animateScrollToItem(displayItems.lastIndex)
+    }
+
+    fun cannotSend():Boolean = busy||text.trim().isEmpty()||suspended
+    fun sendNow(){
+        val trimmed=text.trim()
+        if(trimmed.isEmpty()||busy)return
+        if(suspended){
+            error=t("Soporte suspendido temporalmente. Podrás escribir de nuevo en %s.",
+                "Support is temporarily suspended. You will be able to write again in %s.")
+                .format(countdown)
+            return
+        }
+        error=null
+        if(newChat){
+            // Sin formulario (D3): categoría fija y asunto provisional con los
+            // primeros ~60 caracteres; el título real lo pone Yamada.
+            busy=true
+            scope.launch{
+                try{
+                    val subject=trimmed.take(60).trim()
+                        .ifBlank{t("Soporte técnico","Technical support")}
+                    val result=auth.openSupportThread(subject,category,trimmed)
+                    val id=result.getString("id")
+                    text=""
+                    activeId=id
+                    newChat=false
+                    refreshInbox()
+                }catch(e:NativeCommerceAuth.AuthFailure){
+                    if(e.code=="SUPPORT_SUSPENDED")applySuspension(e.suspendedUntil)
+                    else error=t("No se pudo crear la conversación",
+                        "Could not create conversation")
+                }catch(e:CancellationException){throw e}
+                catch(_:Exception){
+                    error=t("No se pudo crear la conversación",
+                        "Could not create conversation")
+                }finally{busy=false}
+            }
+        }else{
+            val key=UUID.randomUUID().toString()
+            val item=PendingMsg(key,trimmed,System.currentTimeMillis())
+            pending=pending+item
+            text=""
+            scope.launch{
+                try{
+                    auth.sendSupportMessage(activeId,trimmed)
+                    pending=pending.filterNot{it.key==key}
+                    refreshInbox()
+                }catch(e:NativeCommerceAuth.AuthFailure){
+                    if(e.code=="SUPPORT_SUSPENDED"){
+                        pending=pending.filterNot{it.key==key}
+                        text=trimmed
+                        applySuspension(e.suspendedUntil)
+                    }else{
+                        pending=pending.map{
+                            if(it.key==key)it.copy(failed=true) else it
+                        }
+                    }
+                }catch(e:CancellationException){throw e}
+                catch(_:Exception){
+                    pending=pending.map{
+                        if(it.key==key)it.copy(failed=true) else it
+                    }
+                }
+            }
+        }
+    }
+    fun retryPending(item:PendingMsg){
+        if(suspended){
+            error=t("Soporte suspendido temporalmente. Podrás escribir de nuevo en %s.",
+                "Support is temporarily suspended. You will be able to write again in %s.")
+                .format(countdown)
+            return
+        }
+        pending=pending.map{if(it.key==item.key)it.copy(failed=false) else it}
+        scope.launch{
+            try{
+                auth.sendSupportMessage(activeId,item.text)
+                pending=pending.filterNot{it.key==item.key}
+                refreshInbox()
+            }catch(e:NativeCommerceAuth.AuthFailure){
+                if(e.code=="SUPPORT_SUSPENDED"){
+                    pending=pending.filterNot{it.key==item.key}
+                    text=item.text
+                    applySuspension(e.suspendedUntil)
+                }else{
+                    pending=pending.map{
+                        if(it.key==item.key)it.copy(failed=true) else it
+                    }
+                }
+            }catch(e:CancellationException){throw e}
+            catch(_:Exception){
+                pending=pending.map{
+                    if(it.key==item.key)it.copy(failed=true) else it
+                }
+            }
+        }
+    }
     fun navigateBack(){
         when{
-            active!=null->{activeId="";text="";creating=false;error=null}
-            creating && report -> onExit()
-            creating->{creating=false;text="";error=null}
+            active!=null || newChat -> {
+                if(newChat && threads.isEmpty()){onExit();return}
+                activeId="";newChat=false;text="";error=null;pending=listOf()
+            }
             else->onExit()
         }
     }
-    // The parent owns hardware Back at inbox level; a conversation consumes
-    // Back first so it returns to the inbox instead of leaving Support.
-    BackHandler(enabled=active!=null||creating){navigateBack()}
+    BackHandler(enabled=active!=null||newChat){navigateBack()}
+
     Column(Modifier.fillMaxSize().background(Color.Black),
         verticalArrangement=Arrangement.spacedBy(8.dp)){
         if(auth.sessionToken()==null){
-            Row(Modifier.fillMaxWidth().background(chatHeader)
+            Row(Modifier.fillMaxWidth().background(supportPanel)
                 .padding(horizontal=8.dp,vertical=8.dp),
                 verticalAlignment=Alignment.CenterVertically){
                 IconButton(onClick=onExit){
-                    Icon(Icons.Outlined.ArrowBack,t("Volver","Back"),tint=chatWhite)
+                    Icon(Icons.Outlined.ArrowBack,t("Volver","Back"),tint=supportText)
                 }
                 Text(t("Centro de asistencia","Support center"),
-                    color=chatWhite,fontSize=18.sp,fontWeight=FontWeight.SemiBold)
+                    color=supportText,fontSize=18.sp,fontWeight=FontWeight.SemiBold)
             }
             Column(Modifier.fillMaxWidth().padding(24.dp),
                 horizontalAlignment=Alignment.CenterHorizontally,
                 verticalArrangement=Arrangement.spacedBy(16.dp)){
-                Icon(Icons.Outlined.SupportAgent,null,tint=chatGreen,
+                Icon(Icons.Outlined.SupportAgent,null,tint=supportText,
                     modifier=Modifier.size(52.dp))
                 Text(t("Centro de asistencia","Support center"),
-                    color=chatWhite,fontSize=22.sp,fontWeight=FontWeight.Bold)
+                    color=supportText,fontSize=22.sp,fontWeight=FontWeight.Bold)
                 Button(onClick=onSignIn,
-                    colors=ButtonDefaults.buttonColors(containerColor=chatWhite,
+                    colors=ButtonDefaults.buttonColors(containerColor=supportText,
                         contentColor=Color.Black)){
                     Text(t("Iniciar sesión","Sign in"))
                 }
             }
-        }else if(active!=null){
-            Row(Modifier.fillMaxWidth().background(chatHeader)
-                .border(width=.6.dp,color=chatLine)
+        }else if(inChat){
+            val lastAgent=active?.let{thread->
+                val list=thread.optJSONArray("messages")
+                val rows=(0 until (list?.length()?:0))
+                    .mapNotNull{list?.optJSONObject(it)}
+                rows.lastOrNull{it.optString("sender")=="admin"}
+                    ?.optJSONObject("agent")
+            }
+            val agentAvatar=lastAgent?.optString("avatar")?.takeIf{it.isNotBlank()}
+            Row(Modifier.fillMaxWidth().background(supportPanel)
+                .border(width=.6.dp,color=supportBorder)
                 .padding(start=4.dp,end=12.dp,top=10.dp,bottom=10.dp),
                 verticalAlignment=Alignment.CenterVertically,
                 horizontalArrangement=Arrangement.spacedBy(9.dp)){
                 IconButton(onClick={navigateBack()},modifier=Modifier.size(43.dp)){
                     Icon(Icons.Outlined.ArrowBack,
-                        t("Conversaciones","Conversations"),tint=chatWhite)
+                        t("Conversaciones","Conversations"),tint=supportText)
                 }
-                SupportAvatar("SP",true)
+                CommerceAvatar(agentAvatar,Modifier.size(44.dp))
                 Column(Modifier.weight(1f),
                     verticalArrangement=Arrangement.spacedBy(3.dp)){
-                    Text(active.optString("subject"),color=chatWhite,fontSize=17.sp,
-                        fontWeight=FontWeight.Bold,maxLines=1,
-                        overflow=TextOverflow.Ellipsis)
-                    Text(t("Soporte privado de SP-DECODE","Private SP-DECODE support"),
-                        color=chatMuted,fontSize=11.sp,maxLines=1)
+                    Text(t("Yamada","Yamada"),color=supportText,fontSize=17.sp,
+                        fontWeight=FontWeight.Bold,maxLines=1)
+                    Text(t("Asistente","Assistant")+" · "+t("En línea","Online"),
+                        color=supportMuted,fontSize=11.sp,maxLines=1)
                 }
-                StatusChip(active.optString("status"),language)
+                if(active!=null)StatusChip(active.optString("status"),language)
+            }
+            if(showSpamWarning){
+                val shape=RoundedCornerShape(16.dp)
+                Row(Modifier.fillMaxWidth()
+                    .padding(horizontal=12.dp)
+                    .background(supportPanel,shape)
+                    .border(1.dp,supportAmber,shape)
+                    .padding(horizontal=14.dp,vertical=12.dp),
+                    verticalAlignment=Alignment.CenterVertically,
+                    horizontalArrangement=Arrangement.spacedBy(12.dp)){
+                    Icon(Icons.Outlined.WarningAmber,null,tint=supportAmber,
+                        modifier=Modifier.size(19.dp))
+                    Text(if(suspended)
+                        t("Tu acceso a soporte está suspendido temporalmente hasta las %s.",
+                            "Your access to support is temporarily suspended until %s.")
+                            .format(suspendedUntilText)
+                    else t("Has creado varios tickets de soporte hoy. Si sigues creando tickets nuevos, tu acceso a soporte se suspenderá temporalmente (1 hora) y tu cuenta podría correr riesgo de suspensión si continúas.",
+                        "You have created several support tickets today. If you keep creating new tickets, your access to support will be suspended temporarily (1 hour) and your account could be at risk of suspension if you continue."),
+                        color=supportText,fontSize=12.sp,lineHeight=18.sp)
+                }
             }
             LazyColumn(modifier=Modifier.weight(1f).fillMaxWidth(),
                 state=scroll,contentPadding=PaddingValues(horizontal=4.dp,vertical=14.dp),
                 verticalArrangement=Arrangement.spacedBy(5.dp)){
-                itemsIndexed(messages,key={_,item->item.optString("id")}){index,message->
-                    if(index==0||chatDateKey(messages[index-1].optString("at"))!=
-                        chatDateKey(message.optString("at")))
-                        ChatDayDivider(message.optString("at"),language)
-                    SupportBubble(message,language)
-                }
-            }
-            if(active.optString("status")!="closed"){
-                Row(Modifier.fillMaxWidth()
-                    .padding(horizontal=12.dp,vertical=8.dp)
-                    .background(chatPanel,RoundedCornerShape(28.dp))
-                    .border(1.dp,chatLine,RoundedCornerShape(28.dp))
-                    .padding(start=15.dp,end=6.dp,top=5.dp,bottom=5.dp),
-                    verticalAlignment=Alignment.Bottom,
-                    horizontalArrangement=Arrangement.spacedBy(8.dp)){
-                    BasicTextField(value=text,onValueChange={text=it.take(4000)},
-                        modifier=Modifier.weight(1f),enabled=!busy,maxLines=4,
-                        cursorBrush=SolidColor(chatGreen),
-                        textStyle=TextStyle(color=chatWhite,fontSize=14.sp,lineHeight=20.sp),
-                        decorationBox={inner->
-                            Box(Modifier.padding(vertical=12.dp)){
-                                if(text.isBlank())Text(t("Escribe un mensaje","Write a message"),
-                                    color=chatMuted,fontSize=14.sp)
-                                inner()
+                itemsIndexed(displayItems,key={index,item->when(item){
+                    is ChatItem.Day->"day-${item.at}-$index"
+                    is ChatItem.Server->item.row.optString("id").ifBlank{"srv-$index"}
+                    is ChatItem.Local->"pending-${item.pending.key}"
+                    ChatItem.Welcome->"welcome"
+                }}){index,item->
+                    when(item){
+                        is ChatItem.Day->ChatDayDivider(item.at,language)
+                        is ChatItem.Server->{
+                            val row=item.row
+                            if(row.optString("sender")=="user"){
+                                val atMs=parseIsoMs(row.optString("at"))?:Long.MAX_VALUE
+                                OwnBubble(row,language,
+                                    read=staffReadAtMs!=null && atMs<=staffReadAtMs)
+                            }else{
+                                val previous=(displayItems.getOrNull(index-1)
+                                    as? ChatItem.Server)?.row
+                                val groupStart=previous==null ||
+                                    previous.optString("sender")=="user"
+                                AgentBubble(row,language,
+                                    showAvatar=groupStart,showName=groupStart)
                             }
-                        })
-                    IconButton(
-                        onClick={
-                            scope.launch{
-                                busy=true;error=null
-                                try{
-                                    auth.sendSupportMessage(activeId,text.trim())
-                                    text="";inbox=auth.supportInbox()
-                                }catch(e:CancellationException){throw e}
-                                catch(_:Exception){error=t("No se pudo enviar el mensaje",
-                                    "Unable to send message")}
-                                finally{busy=false}
-                            }
-                        },
-                        enabled=!cannotSend(),
-                        modifier=Modifier.size(40.dp)
-                            .background(if(cannotSend())Color(0xFF444444) else chatGreen,
-                                CircleShape)){
-                        if(busy)CircularProgressIndicator(
-                            color=chatWhite,strokeWidth=2.dp,modifier=Modifier.size(18.dp))
-                        else Icon(Icons.Outlined.Send,t("Enviar","Send"),
-                            tint=if(cannotSend())chatMuted else Color.Black,
-                            modifier=Modifier.size(19.dp))
+                        }
+                        is ChatItem.Local->PendingBubble(item.pending,language){
+                            retryPending(item.pending)
+                        }
+                        ChatItem.Welcome->WelcomeBubble(language)
                     }
                 }
-            }else{
+            }
+            if(active?.optString("status")=="closed"){
                 val shape=RoundedCornerShape(16.dp)
                 Row(Modifier.fillMaxWidth()
                     .padding(horizontal=12.dp,vertical=12.dp)
-                    .background(chatHeader,shape)
-                    .border(1.dp,chatLine,shape)
+                    .background(supportPanel,shape)
+                    .border(1.dp,supportBorder,shape)
                     .padding(horizontal=14.dp,vertical=12.dp),
                     verticalAlignment=Alignment.CenterVertically,
                     horizontalArrangement=Arrangement.spacedBy(12.dp)){
-                    Icon(Icons.Outlined.Lock,null,tint=chatGreen,
+                    Icon(Icons.Outlined.Lock,null,tint=supportText,
                         modifier=Modifier.size(19.dp))
                     Column(verticalArrangement=Arrangement.spacedBy(3.dp)){
                         Text(t("Conversación cerrada","Conversation closed"),
-                            color=chatWhite,fontSize=13.sp,fontWeight=FontWeight.SemiBold)
+                            color=supportText,fontSize=13.sp,fontWeight=FontWeight.SemiBold)
                         Text(t("Puedes consultar los mensajes anteriores.",
                             "You can still read earlier messages."),
-                            color=chatMuted,fontSize=11.sp)
+                            color=supportMuted,fontSize=11.sp)
                     }
                 }
-            }
-        }else if(creating){
-            Row(Modifier.fillMaxWidth().background(chatHeader)
-                .padding(horizontal=7.dp,vertical=9.dp),
-                verticalAlignment=Alignment.CenterVertically){
-                IconButton(onClick={navigateBack()}){
-                    Icon(Icons.Outlined.ArrowBack,t("Volver","Back"),tint=chatWhite)
-                }
-                Text(t("Nueva conversación","New conversation"),color=chatWhite,
-                    fontSize=19.sp,fontWeight=FontWeight.Bold)
-            }
-            Column(Modifier.fillMaxWidth()
-                .background(chatPanel,RoundedCornerShape(22.dp)).padding(16.dp),
-                verticalArrangement=Arrangement.spacedBy(14.dp)){
-                Box{
-                    OutlinedButton(onClick={categoryExpanded=true},
-                        modifier=Modifier.fillMaxWidth()){
-                        Text(categories[category]?:category,
-                            modifier=Modifier.weight(1f),color=chatWhite)
-                        Icon(Icons.Outlined.ArrowDropDown,null,tint=chatWhite)
-                    }
-                    DropdownMenu(expanded=categoryExpanded,
-                        onDismissRequest={categoryExpanded=false}){
-                        categories.forEach{(id,name)->
-                            DropdownMenuItem(text={Text(name)},
-                                onClick={category=id;categoryExpanded=false})
+            }else{
+                Column(Modifier.fillMaxWidth().padding(horizontal=12.dp,vertical=8.dp),
+                    verticalArrangement=Arrangement.spacedBy(6.dp)){
+                    Row(Modifier.fillMaxWidth()
+                        .background(supportPanel,RoundedCornerShape(28.dp))
+                        .border(1.dp,supportBorder,RoundedCornerShape(28.dp))
+                        .padding(start=6.dp,end=6.dp,top=5.dp,bottom=5.dp),
+                        verticalAlignment=Alignment.Bottom,
+                        horizontalArrangement=Arrangement.spacedBy(8.dp)){
+                        IconButton(onClick={},enabled=false,
+                            modifier=Modifier.size(40.dp)){
+                            Icon(Icons.Outlined.AttachFile,
+                                t("Próximamente: enviar captura",
+                                    "Coming soon: send a screenshot"),
+                                tint=supportMuted,modifier=Modifier.size(20.dp))
+                        }
+                        BasicTextField(value=text,
+                            onValueChange={text=it.take(4000)},
+                            modifier=Modifier.weight(1f),enabled=!busy&&!suspended,
+                            maxLines=4,cursorBrush=SolidColor(supportText),
+                            textStyle=TextStyle(color=supportText,fontSize=14.sp,
+                                lineHeight=20.sp),
+                            decorationBox={inner->
+                                Box(Modifier.padding(vertical=12.dp)){
+                                    if(text.isBlank())Text(
+                                        t("Escribe un mensaje","Write a message"),
+                                        color=supportMuted,fontSize=14.sp)
+                                    inner()
+                                }
+                            })
+                        IconButton(onClick={sendNow()},
+                            enabled=!cannotSend(),
+                            modifier=Modifier.size(40.dp)
+                                .background(if(cannotSend())Color(0xFF444444)
+                                    else supportText,CircleShape)){
+                            if(busy)CircularProgressIndicator(
+                                color=Color.Black,strokeWidth=2.dp,
+                                modifier=Modifier.size(18.dp))
+                            else Icon(Icons.Outlined.Send,t("Enviar","Send"),
+                                tint=if(cannotSend())supportMuted else Color.Black,
+                                modifier=Modifier.size(19.dp))
                         }
                     }
-                }
-                OutlinedTextField(title,{title=it.take(100)},singleLine=true,
-                    modifier=Modifier.fillMaxWidth(),
-                    label={Text(t("Asunto","Subject"))})
-                OutlinedTextField(text,{text=it.take(4000)},
-                    modifier=Modifier.fillMaxWidth(),
-                    minLines=4,maxLines=7,
-                    label={Text(t("Describe tu consulta","Describe your issue"))})
-                Row(Modifier.fillMaxWidth(),
-                    horizontalArrangement=Arrangement.End){
-                    Button(onClick={
-                        scope.launch{
-                            busy=true;error=null
-                            try{
-                                val result=auth.openSupportThread(title.trim(),category,text.trim())
-                                activeId=result.getString("id")
-                                inbox=auth.supportInbox()
-                                title="";text="";creating=false
-                            }catch(e:CancellationException){throw e}
-                            catch(_:Exception){error=t("No se pudo crear la conversación",
-                                "Could not create conversation")}
-                            finally{busy=false}
-                        }
-                    },enabled=!busy&&title.trim().length>=4&&text.trim().isNotEmpty(),
-                        colors=ButtonDefaults.buttonColors(
-                            containerColor=chatWhite,contentColor=Color.Black)){
-                        Icon(Icons.Outlined.Send,null,
-                            modifier=Modifier.size(18.dp))
-                        Spacer(Modifier.width(7.dp))
-                        Text(t("Enviar","Send"))
+                    Row(Modifier.fillMaxWidth(),
+                        horizontalArrangement=Arrangement.SpaceBetween){
+                        Text(t("Próximamente: enviar captura",
+                            "Coming soon: send a screenshot"),
+                            color=supportMuted,fontSize=10.sp)
+                        if(text.length>3500)
+                            Text("${text.length} / 4.000",color=supportMuted,
+                                fontSize=10.sp)
+                    }
+                    if(suspended){
+                        Text(t("Soporte suspendido temporalmente. Podrás escribir de nuevo en %s.",
+                            "Support is temporarily suspended. You will be able to write again in %s.")
+                            .format(countdown),
+                            color=supportAmber,fontSize=12.sp)
                     }
                 }
             }
-            Spacer(Modifier.weight(1f))
         }else{
-            Row(Modifier.fillMaxWidth().background(chatHeader)
+            Row(Modifier.fillMaxWidth().background(supportPanel)
                 .padding(horizontal=5.dp,vertical=9.dp),
                 verticalAlignment=Alignment.CenterVertically,
                 horizontalArrangement=Arrangement.spacedBy(7.dp)){
                 IconButton(onClick=onExit,modifier=Modifier.size(42.dp)){
-                    Icon(Icons.Outlined.ArrowBack,t("Volver","Back"),tint=chatWhite)
+                    Icon(Icons.Outlined.ArrowBack,t("Volver","Back"),tint=supportText)
                 }
                 Column(Modifier.weight(1f)){
-                    Text(t("Mensajes","Messages"),color=chatWhite,
-                        fontSize=20.sp,fontWeight=FontWeight.Bold)
+                    Row(verticalAlignment=Alignment.CenterVertically,
+                        horizontalArrangement=Arrangement.spacedBy(8.dp)){
+                        Text(t("Mensajes","Messages"),color=supportText,
+                            fontSize=20.sp,fontWeight=FontWeight.Bold)
+                        UnreadPill(unreadTotal)
+                    }
                     Text(t("Asistencia privada de SP-DECODE",
-                        "Private SP-DECODE support"),color=chatMuted,
+                        "Private SP-DECODE support"),color=supportMuted,
                         fontSize=11.sp,maxLines=1)
                 }
-                FilledTonalButton(onClick={creating=true;text="";error=null},
+                Button(onClick={newChat=true;text="";error=null},
                     contentPadding=PaddingValues(horizontal=12.dp,vertical=8.dp),
-                    colors=ButtonDefaults.filledTonalButtonColors(
-                        containerColor=chatGreen,contentColor=chatHeader)){
+                    colors=ButtonDefaults.buttonColors(containerColor=supportText,
+                        contentColor=Color.Black)){
                     Icon(Icons.Outlined.Add,null,modifier=Modifier.size(17.dp))
                     Spacer(Modifier.width(3.dp))
                     Text(t("Nuevo","New"),fontSize=11.sp)
                 }
             }
-            LazyColumn(modifier=Modifier.weight(1f)
-                    .padding(horizontal=12.dp,vertical=6.dp),
-                verticalArrangement=Arrangement.spacedBy(9.dp)){
-                items(threads,key={it.optString("id")}){thread->
+            if(inbox==null && !loadError){
+                // Estado de carga real: skeleton de 3 filas, nunca el falso vacío.
+                Column(Modifier.fillMaxWidth().padding(horizontal=12.dp,vertical=6.dp),
+                    verticalArrangement=Arrangement.spacedBy(9.dp)){
+                    repeat(3){
+                        Row(Modifier.fillMaxWidth()
+                            .background(supportPanel,RoundedCornerShape(20.dp))
+                            .padding(horizontal=13.dp,vertical=15.dp),
+                            verticalAlignment=Alignment.CenterVertically,
+                            horizontalArrangement=Arrangement.spacedBy(13.dp)){
+                            Box(Modifier.size(44.dp)
+                                .background(supportElevated,CircleShape))
+                            Column(Modifier.weight(1f),
+                                verticalArrangement=Arrangement.spacedBy(8.dp)){
+                                Box(Modifier.fillMaxWidth(0.6f).height(14.dp)
+                                    .background(supportElevated,RoundedCornerShape(4.dp)))
+                                Box(Modifier.fillMaxWidth(0.85f).height(12.dp)
+                                    .background(supportElevated,RoundedCornerShape(4.dp)))
+                            }
+                        }
+                    }
+                }
+            }else if(inbox==null && loadError){
+                Column(Modifier.fillMaxWidth().padding(24.dp),
+                    horizontalAlignment=Alignment.CenterHorizontally,
+                    verticalArrangement=Arrangement.spacedBy(16.dp)){
+                    Text(t("No se pudieron cargar las conversaciones",
+                        "Could not load conversations"),
+                        color=supportError,fontSize=13.sp)
+                    Button(onClick={loadTick++},
+                        colors=ButtonDefaults.buttonColors(
+                            containerColor=supportText,contentColor=Color.Black)){
+                        Text(t("Reintentar","Retry"))
+                    }
+                }
+            }else{
+                Column(Modifier.fillMaxWidth().padding(horizontal=12.dp),
+                    verticalArrangement=Arrangement.spacedBy(9.dp)){
+                    Row(Modifier.fillMaxWidth()
+                        .background(supportPanel,RoundedCornerShape(20.dp))
+                        .border(1.dp,supportBorder,RoundedCornerShape(20.dp))
+                        .padding(horizontal=13.dp,vertical=4.dp),
+                        verticalAlignment=Alignment.CenterVertically,
+                        horizontalArrangement=Arrangement.spacedBy(8.dp)){
+                        Icon(Icons.Outlined.Search,null,tint=supportMuted,
+                            modifier=Modifier.size(19.dp))
+                        BasicTextField(value=search,
+                            onValueChange={search=it},
+                            modifier=Modifier.weight(1f),singleLine=true,
+                            cursorBrush=SolidColor(supportText),
+                            textStyle=TextStyle(color=supportText,fontSize=14.sp),
+                            decorationBox={inner->
+                                Box(Modifier.padding(vertical=11.dp)){
+                                    if(search.isBlank())Text(
+                                        t("Buscar conversaciones","Search conversations"),
+                                        color=supportMuted,fontSize=14.sp)
+                                    inner()
+                                }
+                            })
+                    }
+                    Row(horizontalArrangement=Arrangement.spacedBy(8.dp)){
+                        listOf("all" to t("Todos","All"),
+                            "open" to t("Abiertos","Open"),
+                            "answered" to t("Respondido","Answered"),
+                            "closed" to t("Cerrado","Closed")).forEach{(id,label)->
+                            val selected=filter==id
+                            Box(Modifier
+                                .background(if(selected)supportText else supportPanel,
+                                    RoundedCornerShape(50))
+                                .border(.8.dp,supportBorder,RoundedCornerShape(50))
+                                .clickable{filter=id}
+                                .padding(horizontal=13.dp,vertical=8.dp),
+                                contentAlignment=Alignment.Center){
+                                Text(label,
+                                    color=if(selected)Color.Black else supportText,
+                                    fontSize=12.sp,fontWeight=FontWeight.SemiBold)
+                            }
+                        }
+                    }
+                }
+                val visible=threads.filter{thread->
+                    val statusOk=when(filter){
+                        "open"->thread.optString("status")!="closed"
+                        "answered"->thread.optString("status")=="answered"
+                        "closed"->thread.optString("status")=="closed"
+                        else->true
+                    }
+                    if(!statusOk)return@filter false
+                    if(search.isBlank())return@filter true
+                    val query=search.trim().lowercase()
                     val all=thread.optJSONArray("messages")
                     val last=all?.optJSONObject((all.length()-1).coerceAtLeast(0))
-                    Row(Modifier.fillMaxWidth()
-                        .background(chatPanel,RoundedCornerShape(20.dp))
-                        .border(1.dp,chatLine,RoundedCornerShape(20.dp))
-                        .clickable{
-                            activeId=thread.optString("id");text="";error=null
-                        }
-                        .padding(horizontal=13.dp,vertical=15.dp),
-                        verticalAlignment=Alignment.CenterVertically,
-                        horizontalArrangement=Arrangement.spacedBy(13.dp)){
-                        SupportAvatar("SP",true)
-                        Column(Modifier.weight(1f),
-                            verticalArrangement=Arrangement.spacedBy(6.dp)){
-                            Row(verticalAlignment=Alignment.CenterVertically){
-                                Text(thread.optString("subject"),color=chatWhite,
-                                    fontSize=16.sp,fontWeight=FontWeight.SemiBold,
-                                    maxLines=1,overflow=TextOverflow.Ellipsis,
-                                    modifier=Modifier.weight(1f))
-                                Text(chatTime(thread.optString("last_message_at"),true),
-                                    color=chatMuted,fontSize=10.sp)
+                    thread.optString("subject").lowercase().contains(query) ||
+                        last?.optString("text").orEmpty().lowercase().contains(query)
+                }
+                if(visible.isEmpty()){
+                    Column(Modifier.fillMaxWidth().padding(24.dp),
+                        horizontalAlignment=Alignment.CenterHorizontally,
+                        verticalArrangement=Arrangement.spacedBy(16.dp)){
+                        Text(if(search.isNotBlank()||filter!="all")
+                            t("No hay conversaciones con ese filtro.",
+                                "No conversations match that filter.")
+                        else t("Todavía no tienes conversaciones.",
+                            "You have no conversations yet."),
+                            color=supportMuted,fontSize=13.sp)
+                        if(search.isBlank()&&filter=="all"){
+                            Button(onClick={newChat=true;text="";error=null},
+                                colors=ButtonDefaults.buttonColors(
+                                    containerColor=supportText,
+                                    contentColor=Color.Black)){
+                                Text(t("Escribir a soporte","Write to support"))
                             }
-                            Text(last?.optString("text")?:"",
-                                color=chatMuted,fontSize=13.sp,maxLines=1,
-                                overflow=TextOverflow.Ellipsis)
-                            StatusChip(thread.optString("status"),language)
                         }
-                        Icon(Icons.Outlined.ChevronRight,null,
-                            tint=Color(0xFF777777),modifier=Modifier.size(20.dp))
+                    }
+                }else{
+                    LazyColumn(modifier=Modifier.weight(1f)
+                            .padding(horizontal=12.dp,vertical=6.dp),
+                        verticalArrangement=Arrangement.spacedBy(9.dp)){
+                        itemsIndexed(visible,key={_,it->it.optString("id")}){_,thread->
+                            val unread=threadUnread(thread)
+                            val all=thread.optJSONArray("messages")
+                            val last=all?.optJSONObject((all.length()-1).coerceAtLeast(0))
+                            val lastFromAgent=last?.optString("sender")=="admin"
+                            val lastAvatar=last?.optJSONObject("agent")
+                                ?.optString("avatar")?.takeIf{it.isNotBlank()}
+                            val rowAvatar=if(lastFromAgent)lastAvatar
+                                else CommerceSession.user?.avatar
+                            Row(Modifier.fillMaxWidth()
+                                .background(supportPanel,RoundedCornerShape(20.dp))
+                                .border(1.dp,supportBorder,RoundedCornerShape(20.dp))
+                                .clickable{
+                                    activeId=thread.optString("id")
+                                    newChat=false;text="";error=null
+                                }
+                                .padding(horizontal=13.dp,vertical=15.dp),
+                                verticalAlignment=Alignment.CenterVertically,
+                                horizontalArrangement=Arrangement.spacedBy(13.dp)){
+                                CommerceAvatar(rowAvatar,Modifier.size(44.dp))
+                                Column(Modifier.weight(1f),
+                                    verticalArrangement=Arrangement.spacedBy(6.dp)){
+                                    Row(verticalAlignment=Alignment.CenterVertically){
+                                        Text(thread.optString("subject"),color=supportText,
+                                            fontSize=16.sp,
+                                            fontWeight=if(unread>0)FontWeight.Bold
+                                                else FontWeight.SemiBold,
+                                            maxLines=1,overflow=TextOverflow.Ellipsis,
+                                            modifier=Modifier.weight(1f))
+                                        Text(chatTime(thread.optString("last_message_at"),true),
+                                            color=supportMuted,fontSize=10.sp)
+                                    }
+                                    Text((if(lastFromAgent)
+                                        t("Yamada","Yamada")
+                                    else t("Tú","You"))+": " +
+                                        (last?.optString("text")?:""),
+                                        color=supportMuted,fontSize=13.sp,maxLines=1,
+                                        overflow=TextOverflow.Ellipsis)
+                                    Row(verticalAlignment=Alignment.CenterVertically,
+                                        horizontalArrangement=Arrangement.spacedBy(8.dp)){
+                                        StatusChip(thread.optString("status"),language)
+                                        UnreadPill(unread)
+                                    }
+                                }
+                                Icon(Icons.Outlined.ChevronRight,null,
+                                    tint=Color(0xFF777777),modifier=Modifier.size(20.dp))
+                            }
+                        }
                     }
                 }
             }
-            if(threads.isEmpty()){
-                Text(t("Todavía no tienes conversaciones.",
-                    "You have no conversations yet."),color=chatMuted,fontSize=13.sp,
-                    modifier=Modifier.fillMaxWidth().padding(18.dp))
-            }
         }
-        if(busy)LinearProgressIndicator(Modifier.fillMaxWidth(),color=chatGreen)
-        if(error!=null)Text(error.orEmpty(),color=Color(0xFFFF8585),fontSize=12.sp)
+        if(busy)LinearProgressIndicator(Modifier.fillMaxWidth(),color=supportText)
+        if(error!=null)Text(error.orEmpty(),color=supportError,fontSize=12.sp,
+            modifier=Modifier.padding(horizontal=16.dp))
     }
 }

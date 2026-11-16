@@ -18,7 +18,6 @@ internal object CloudOperation {
     const val TELEMETRY = 15
     const val ACTION_CHALLENGE = 16
     const val NOTIFICATIONS = 17
-    const val FEEDBACK = 18
     const val CATALOG_MANIFEST = 19
     const val CATALOG_CHUNK = 20
     const val APK_QA_START = 21

@@ -14,10 +14,4 @@
     <string name="apk_credits_subscriptions">サブスクリプション</string>
     <string name="apk_credits_button">クレジット: 1+</string>
     <string name="apk_credits_back">戻る</string>
-    <string name="feedback_details_title">リクエストの詳細</string>
-    <string name="feedback_method_description">新しいファイルや VPN サーバーカタログの対応を依頼します。</string>
-    <string name="feedback_bug_description">復号、互換性、アプリの問題を報告します。</string>
-    <string name="feedback_suggestion_description">新機能や画面改善を提案します。</string>
-    <string name="feedback_extra_title">追加情報（任意）</string>
-    <string name="feedback_extra_hint">バージョン、対象形式、その他の詳細</string>
 </resources>

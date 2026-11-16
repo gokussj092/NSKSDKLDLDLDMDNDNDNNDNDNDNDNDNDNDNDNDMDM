@@ -772,7 +772,6 @@ class MainActivity : ComponentActivity() {
                 onMaskCredentials={value->hideCredentials=value;settings.edit().putBoolean("mask_credentials",value).apply()},
                 onExternalLink={url->openExternal(url)},
                 onCheckoutUrl={url->openCheckout(url)},
-                onFeedbackSubmit={draft-> cloudClient.submitFeedback(draft)},
                 onSelect={selectResult(it)},
                 onClear={clearHistory()},
                 onClearResult={clearVisibleResult()},

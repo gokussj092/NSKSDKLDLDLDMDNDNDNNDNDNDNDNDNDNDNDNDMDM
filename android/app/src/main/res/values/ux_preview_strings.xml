@@ -14,10 +14,4 @@
     <string name="apk_credits_subscriptions">Subscriptions</string>
     <string name="apk_credits_button">Credits: 1+</string>
     <string name="apk_credits_back">Back</string>
-    <string name="feedback_details_title">Request details</string>
-    <string name="feedback_method_description">Request new supported files or VPN server catalogs.</string>
-    <string name="feedback_bug_description">Report a decoding, compatibility or app issue.</string>
-    <string name="feedback_suggestion_description">Suggest new features or visual improvements.</string>
-    <string name="feedback_extra_title">Additional information (optional)</string>
-    <string name="feedback_extra_hint">Version, affected format or other details</string>
 </resources>

@@ -3,7 +3,6 @@ package com.ghostdeveloper.spdecode
 internal object CommerceLanguageData {
     private val translations:Map<String,List<String>> = mapOf(
         "pt" to """
-Detalhes
 Voltar
 Minha conta
 Login seguro
@@ -55,6 +54,7 @@ Preços oficiais em USD do servidor. O pagamento exige sessão e cotação verif
 Explorar produtos
 Análise APK/APKS e resultados técnicos
 Sem preço em USD disponível
+Detalhes
 Arquivos, textos, métodos online e catálogos
 Um mês sem anúncios
 Suporte e cobrança
@@ -112,9 +112,28 @@ O perfil fica no SP-DECODE. O Google usa o fluxo seguro do Android, não um form
 Senha da conta
 Este recurso exige suporte seguro no servidor para adicionar, alterar e recuperar senhas sem perder o vínculo com Google. Nenhuma credencial foi alterada.
 OK
+Yamada
+Assistente
+Online
+A enviar…
+Enviado
+Lido
+Não enviado — toque para tentar novamente
+Tentar novamente
+Escrever ao suporte
+Em breve: enviar captura de tela
+Olá, sou a Yamada. Conte-me qual problema você tem com o aplicativo e eu ajudo você.
+Você criou vários tickets de suporte hoje. Se continuar criando novos tickets, seu acesso ao suporte será suspenso temporariamente (1 hora) e sua conta poderá correr risco de suspensão se continuar.
+Seu acesso ao suporte está temporariamente suspenso até %s.
+O suporte está temporariamente suspenso. Você poderá escrever novamente em %s.
+Pesquisar conversas
+Todas
+Abertas
+Não foi possível carregar as conversas
+Você
+Nenhuma conversa corresponde a esse filtro.
 """.trimIndent().lines(),
         "fr" to """
-Détails
 Retour
 Mon compte
 Connexion sécurisée
@@ -166,6 +185,7 @@ Prix officiels en USD du serveur. Paiement soumis à la vérification de la sess
 Explorer les produits
 Analyse APK/APKS et résultats techniques
 Aucun prix USD disponible
+Détails
 Fichiers, textes, méthodes en ligne et catalogues
 Un mois sans publicité
 Assistance et facturation
@@ -223,9 +243,28 @@ Le profil reste dans SP-DECODE. Google utilise le parcours sécurisé d'Android,
 Mot de passe du compte
 Cette fonction nécessite une prise en charge sécurisée pour ajouter, modifier ou récupérer un mot de passe sans perdre le lien Google. Aucun identifiant n'a changé.
 OK
+Yamada
+Assistante
+En ligne
+Envoi…
+Envoyé
+Lu
+Non envoyé — touchez pour réessayer
+Réessayer
+Écrire au support
+Bientôt : envoyer une capture d'écran
+Bonjour, je suis Yamada. Dites-moi quel problème vous avez avec l'application et je vous aiderai.
+Vous avez créé plusieurs tickets d'assistance aujourd'hui. Si vous continuez à créer de nouveaux tickets, votre accès à l'assistance sera suspendu temporairement (1 heure) et votre compte pourrait risquer une suspension si vous continuez.
+Votre accès à l'assistance est temporairement suspendu jusqu'à %s.
+L'assistance est temporairement suspendue. Vous pourrez écrire à nouveau dans %s.
+Rechercher des conversations
+Toutes
+Ouvertes
+Impossible de charger les conversations
+Vous
+Aucune conversation ne correspond à ce filtre.
 """.trimIndent().lines(),
         "de" to """
-Details
 Zurück
 Mein Konto
 Sichere Anmeldung
@@ -277,6 +316,7 @@ Offizielle USD-Preise vom Server. Zahlung erfordert geprüfte Sitzung und Preisb
 Produkte entdecken
 APK/APKS-Analyse und technische Ergebnisse
 Kein USD-Preis verfügbar
+Details
 Dateien, Texte, Online-Methoden und Kataloge
 Ein Monat ohne Werbung
 Support und Abrechnung
@@ -334,9 +374,28 @@ Das Profil bleibt in SP-DECODE. Google nutzt den sicheren Android-Ablauf, kein e
 Kontopasswort
 Diese Funktion benötigt sichere Serverunterstützung zum Hinzufügen, Ändern und Wiederherstellen von Passwörtern ohne Verlust der Google-Verknüpfung. Zugangsdaten wurden nicht geändert.
 OK
+Yamada
+Assistentin
+Online
+Wird gesendet…
+Gesendet
+Gelesen
+Nicht gesendet — zum Wiederholen tippen
+Erneut versuchen
+An den Support schreiben
+Demnächst: Screenshot senden
+Hallo, ich bin Yamada. Sag mir, welches Problem du mit der App hast, und ich helfe dir.
+Du hast heute mehrere Support-Tickets erstellt. Wenn du weiterhin neue Tickets erstellst, wird dein Support-Zugang vorübergehend gesperrt (1 Stunde) und dein Konto könnte bei Fortsetzung gesperrt werden.
+Dein Support-Zugang ist vorübergehend gesperrt bis %s.
+Der Support ist vorübergehend gesperrt. Du kannst in %s wieder schreiben.
+Unterhaltungen suchen
+Alle
+Offen
+Gespräche konnten nicht geladen werden
+Du
+Keine Unterhaltung passt zu diesem Filter.
 """.trimIndent().lines(),
         "it" to """
-Dettagli
 Indietro
 Il mio account
 Accesso sicuro
@@ -388,6 +447,7 @@ Prezzi ufficiali USD dal server. Pagamento soggetto a verifica di sessione e pre
 Esplora i prodotti
 Analisi APK/APKS e risultati tecnici
 Prezzo USD non disponibile
+Dettagli
 File, testi, metodi online e cataloghi
 Un mese senza pubblicità
 Assistenza e fatturazione
@@ -445,9 +505,28 @@ Il profilo resta in SP-DECODE. Google usa il flusso sicuro Android, non un modul
 Password dell'account
 Questa funzione richiede supporto sicuro del server per aggiungere, cambiare e recuperare password senza perdere il collegamento Google. Nessuna credenziale è stata modificata.
 OK
+Yamada
+Assistente
+Online
+Invio in corso…
+Inviato
+Letto
+Non inviato — tocca per riprovare
+Riprova
+Scrivi al supporto
+Prossimamente: invia uno screenshot
+Ciao, sono Yamada. Dimmi che problema hai con l'app e ti aiuto.
+Hai creato diversi ticket di supporto oggi. Se continui a creare nuovi ticket, il tuo accesso al supporto sarà sospeso temporaneamente (1 ora) e il tuo account potrebbe rischiare la sospensione se continui.
+Il tuo accesso al supporto è temporaneamente sospeso fino alle %s.
+Il supporto è temporaneamente sospeso. Potrai scrivere di nuovo tra %s.
+Cerca conversazioni
+Tutte
+Aperte
+Impossibile caricare le conversazioni
+Tu
+Nessuna conversazione corrisponde a questo filtro.
 """.trimIndent().lines(),
         "ru" to """
-Подробнее
 Назад
 Мой аккаунт
 Безопасный вход
@@ -499,6 +578,7 @@ OK
 Просмотреть товары
 Анализ APK/APKS и технические результаты
 Цена в USD недоступна
+Подробнее
 Файлы, тексты, онлайн-методы и каталоги
 Месяц без рекламы
 Поддержка и оплата
@@ -556,9 +636,28 @@ OK
 Пароль аккаунта
 Для добавления, смены и восстановления пароля без потери связи с Google нужна защищённая поддержка сервера. Данные входа не изменены.
 ОК
+Yamada
+Ассистент
+В сети
+Отправка…
+Отправлено
+Прочитано
+Не отправлено — нажмите, чтобы повторить
+Повторить
+Написать в поддержку
+Скоро: отправка скриншота
+Привет, я Yamada. Расскажи, какая у тебя проблема с приложением, и я помогу.
+Сегодня вы создали несколько обращений в поддержку. Если вы продолжите создавать новые обращения, доступ к поддержке будет временно приостановлен (1 час), а ваш аккаунт может оказаться под угрозой блокировки.
+Ваш доступ к поддержке временно приостановлен до %s.
+Поддержка временно приостановлена. Вы сможете написать снова через %s.
+Поиск по переписке
+Все
+Открытые
+Не удалось загрузить переписку
+Вы
+Нет переписки, подходящей под этот фильтр.
 """.trimIndent().lines(),
         "tr" to """
-Ayrıntılar
 Geri
 Hesabım
 Güvenli giriş
@@ -610,6 +709,7 @@ Sunucudan resmi USD fiyatları. Ödeme için oturum ve teklif doğrulaması gere
 Ürünleri keşfet
 APK/APKS analizi ve teknik sonuçlar
 USD fiyatı yok
+Ayrıntılar
 Dosyalar, metinler, çevrimiçi yöntemler ve kataloglar
 Bir ay reklamsız
 Destek ve faturalandırma
@@ -667,9 +767,28 @@ Profil SP-DECODE içinde kalır. Google sahte bir gömülü form yerine Android'
 Hesap parolası
 Google bağlantısını kaybetmeden parola eklemek, değiştirmek ve kurtarmak için güvenli sunucu desteği gerekir. Kimlik bilgileri değişmedi.
 Tamam
+Yamada
+Asistan
+Çevrimiçi
+Gönderiliyor…
+Gönderildi
+Okundu
+Gönderilemedi — yeniden denemek için dokunun
+Yeniden dene
+Desteğe yaz
+Yakında: ekran görüntüsü gönder
+Merhaba, ben Yamada. Uygulamayla ilgili sorunun ne, anlat, sana yardım edeyim.
+Bugün birkaç destek talebi oluşturdun. Yeni talepler oluşturmaya devam edersen destek erişimin geçici olarak askıya alınır (1 saat) ve devam edersen hesabın askıya alınma riskiyle karşılaşabilir.
+Destek erişimin %s saatine kadar geçici olarak askıya alındı.
+Destek geçici olarak askıya alındı. %s sonra tekrar yazabilirsin.
+Konuşmalarda ara
+Tümü
+Açık
+Konuşmalar yüklenemedi
+Sen
+Bu filtreye uyan konuşma yok.
 """.trimIndent().lines(),
         "ar" to """
-التفاصيل
 رجوع
 حسابي
 تسجيل دخول آمن
@@ -721,6 +840,7 @@ Tamam
 استعراض المنتجات
 تحليل APK/APKS والنتائج التقنية
 سعر الدولار غير متاح
+التفاصيل
 الملفات والنصوص والطرق عبر الإنترنت والكتالوجات
 شهر دون إعلانات
 الدعم والفوترة
@@ -778,9 +898,28 @@ Tamam
 كلمة مرور الحساب
 تحتاج هذه الميزة إلى دعم آمن بالخادم لإضافة كلمات المرور وتغييرها واستعادتها دون فقد ربط Google. لم تتغير بيانات الاعتماد.
 حسناً
+Yamada
+مساعدة
+متصلة
+جارٍ الإرسال…
+تم الإرسال
+مقروءة
+لم يتم الإرسال — انقر لإعادة المحاولة
+إعادة المحاولة
+الكتابة إلى الدعم
+قريبًا: إرسال لقطة شاشة
+مرحبًا، أنا Yamada. أخبرني ما المشكلة التي تواجهها في التطبيق وسأساعدك.
+لقد أنشأت عدة تذاكر دعم اليوم. إذا واصلت إنشاء تذاكر جديدة، فسيتم تعليق وصولك إلى الدعم مؤقتًا (ساعة واحدة) وقد يتعرض حسابك لخطر التعليق إذا واصلت.
+تم تعليق وصولك إلى الدعم مؤقتًا حتى %s.
+الدعم معلّق مؤقتًا. ستتمكن من الكتابة مجددًا بعد %s.
+البحث في المحادثات
+الكل
+المفتوحة
+تعذّر تحميل المحادثات
+أنت
+لا توجد محادثة تطابق هذا المرشح.
 """.trimIndent().lines(),
         "fa" to """
-جزئیات
 بازگشت
 حساب من
 ورود امن
@@ -832,6 +971,7 @@ IPv4 یا IPv6 عمومی
 مرور محصولات
 تحلیل APK/APKS و نتایج فنی
 قیمت دلاری در دسترس نیست
+جزئیات
 فایل، متن، روش‌های آنلاین و کاتالوگ
 یک ماه بدون تبلیغ
 پشتیبانی و صورتحساب
@@ -889,9 +1029,28 @@ API خریداری‌شده برای تنظیم یا تغییر IP عمومی د
 رمز عبور حساب
 این قابلیت برای افزودن، تغییر و بازیابی رمز عبور بدون قطع پیوند Google به پشتیبانی امن سرور نیاز دارد. اطلاعات ورود تغییر نکرده‌اند.
 باشه
+Yamada
+دستیار
+آنلاین
+در حال ارسال…
+ارسال شد
+خوانده شد
+ارسال نشد — برای تلاش دوباره ضربه بزنید
+تلاش دوباره
+نوشتن به پشتیبانی
+به‌زودی: ارسال تصویر صفحه
+سلام، من Yamada هستم. بگو با برنامه چه مشکلی داری تا کمکت کنم.
+امروز چند تیکت پشتیبانی ایجاد کرده‌اید. اگر به ایجاد تیکت‌های جدید ادامه دهید، دسترسی شما به پشتیبانی به‌طور موقت (۱ ساعت) معلق می‌شود و اگر ادامه دهید حساب شما ممکن است در معرض تعلیق قرار گیرد.
+دسترسی شما به پشتیبانی به‌طور موقت تا %s معلق شده است.
+پشتیبانی به‌طور موقت معلق است. پس از %s می‌توانید دوباره بنویسید.
+جستجو در گفتگوها
+همه
+باز
+گفتگوها بارگذاری نشدند
+شما
+هیچ گفتگویی با این فیلتر مطابقت ندارد.
 """.trimIndent().lines(),
         "hi" to """
-विवरण
 वापस
 मेरा खाता
 सुरक्षित साइन इन
@@ -943,6 +1102,7 @@ SP-DECODE सेवाएँ
 उत्पाद देखें
 APK/APKS विश्लेषण और तकनीकी परिणाम
 USD कीमत उपलब्ध नहीं
+विवरण
 फ़ाइलें, टेक्स्ट, ऑनलाइन विधियाँ और कैटलॉग
 एक महीना बिना विज्ञापन
 सहायता और बिलिंग
@@ -1000,9 +1160,28 @@ Google से जारी रखें
 खाता पासवर्ड
 Google लिंक खोए बिना पासवर्ड जोड़ने, बदलने और पुनः पाने के लिए सुरक्षित सर्वर सपोर्ट चाहिए। क्रेडेंशियल नहीं बदले गए।
 ठीक है
+Yamada
+सहायक
+ऑनलाइन
+भेजा जा रहा है…
+भेजा गया
+पढ़ा गया
+नहीं भेजा गया — पुनः प्रयास के लिए टैप करें
+पुनः प्रयास करें
+सहायता को लिखें
+जल्द आ रहा है: स्क्रीनशॉट भेजें
+नमस्ते, मैं Yamada हूँ। बताइए ऐप में आपको क्या समस्या है, मैं मदद करती हूँ।
+आपने आज कई सहायता टिकट बनाए हैं। यदि आप नए टिकट बनाते रहे, तो आपकी सहायता तक पहुँच अस्थायी रूप से (1 घंटा) निलंबित कर दी जाएगी और यदि आप जारी रखते हैं तो आपका खाता निलंबन के जोखिम में पड़ सकता है।
+सहायता तक आपकी पहुँच %s तक अस्थायी रूप से निलंबित है।
+सहायता अस्थायी रूप से निलंबित है। आप %s में फिर से लिख सकेंगे।
+बातचीत खोजें
+सभी
+खुले
+बातचीत लोड नहीं हो सकी
+आप
+इस फ़िल्टर से कोई बातचीत मेल नहीं खाती।
 """.trimIndent().lines(),
         "ja" to """
-詳細
 戻る
 マイアカウント
 安全なログイン
@@ -1054,6 +1233,7 @@ SP-DECODEサービス
 商品を見る
 APK/APKS解析と技術結果
 USD価格がありません
+詳細
 ファイル、テキスト、オンライン方式、カタログ
 1か月間広告なし
 サポートとお支払い
@@ -1111,9 +1291,28 @@ Googleで続行
 アカウントのパスワード
 Google連携を維持したままパスワードの追加・変更・回復を行うには、安全なサーバー機能が必要です。認証情報は変更されていません。
 OK
+Yamada
+アシスタント
+オンライン
+送信中…
+送信済み
+既読
+送信できませんでした — タップして再試行
+再試行
+サポートに連絡
+近日公開：スクリーンショットを送信
+こんにちは、Yamadaです。アプリでどんな問題があるか教えてください。お手伝いします。
+今日はサポートチケットをいくつも作成しました。新しいチケットを作成し続けると、サポートへのアクセスが一時的に停止され（1時間）、続けるとアカウントが停止される可能性があります。
+サポートへのアクセスは%sまで一時的に停止されています。
+サポートは一時的に停止されています。%s後にまた書き込むことができます。
+会話を検索
+すべて
+未対応
+会話を読み込めませんでした
+あなた
+この条件に合う会話はありません。
 """.trimIndent().lines(),
         "id" to """
-Detail
 Kembali
 Akun saya
 Masuk aman
@@ -1165,6 +1364,7 @@ Harga resmi USD dari server. Pembayaran memerlukan sesi dan penawaran yang terve
 Jelajahi produk
 Analisis APK/APKS dan hasil teknis
 Harga USD tidak tersedia
+Detail
 Berkas, teks, metode online, dan katalog
 Satu bulan tanpa iklan
 Bantuan dan penagihan
@@ -1222,9 +1422,28 @@ Profil tetap di SP-DECODE. Google menggunakan alur aman Android, bukan formulir 
 Kata sandi akun
 Fitur ini memerlukan dukungan server yang aman untuk menambah, mengubah, dan memulihkan kata sandi tanpa kehilangan tautan Google. Kredensial belum berubah.
 OK
+Yamada
+Asisten
+Online
+Mengirim…
+Terkirim
+Dibaca
+Tidak terkirim — ketuk untuk mencoba lagi
+Coba lagi
+Tulis ke dukungan
+Segera: kirim tangkapan layar
+Halo, saya Yamada. Ceritakan masalah apa yang kamu alami dengan aplikasi ini dan saya akan membantu.
+Kamu telah membuat beberapa tiket dukungan hari ini. Jika kamu terus membuat tiket baru, akses dukunganmu akan ditangguhkan sementara (1 jam) dan akunmu bisa berisiko ditangguhkan jika kamu melanjutkan.
+Akses dukunganmu ditangguhkan sementara hingga %s.
+Dukungan ditangguhkan sementara. Kamu dapat menulis lagi dalam %s.
+Cari percakapan
+Semua
+Terbuka
+Percakapan tidak dapat dimuat
+Kamu
+Tidak ada percakapan yang cocok dengan filter ini.
 """.trimIndent().lines(),
         "vi" to """
-Chi tiết
 Quay lại
 Tài khoản của tôi
 Đăng nhập an toàn
@@ -1276,6 +1495,7 @@ Giá chính thức bằng USD từ máy chủ. Thanh toán cần phiên và báo
 Khám phá sản phẩm
 Phân tích APK/APKS và kết quả kỹ thuật
 Không có giá USD
+Chi tiết
 Tệp, văn bản, phương pháp trực tuyến và danh mục
 Một tháng không quảng cáo
 Hỗ trợ và thanh toán
@@ -1333,6 +1553,26 @@ Hồ sơ nằm trong SP-DECODE. Google dùng quy trình an toàn Android, không
 Mật khẩu tài khoản
 Tính năng cần máy chủ bảo mật để thêm, đổi và khôi phục mật khẩu mà không mất liên kết Google. Thông tin xác thực chưa bị thay đổi.
 OK
+Yamada
+Trợ lý
+Trực tuyến
+Đang gửi…
+Đã gửi
+Đã đọc
+Chưa gửi — chạm để thử lại
+Thử lại
+Viết cho bộ phận hỗ trợ
+Sắp có: gửi ảnh chụp màn hình
+Xin chào, tôi là Yamada. Hãy cho tôi biết bạn gặp vấn đề gì với ứng dụng và tôi sẽ giúp bạn.
+Hôm nay bạn đã tạo nhiều phiếu hỗ trợ. Nếu bạn tiếp tục tạo phiếu mới, quyền truy cập hỗ trợ của bạn sẽ bị tạm ngưng (1 giờ) và tài khoản của bạn có thể có nguy cơ bị tạm ngưng nếu bạn tiếp tục.
+Quyền truy cập hỗ trợ của bạn tạm thời bị ngưng đến %s.
+Bộ phận hỗ trợ tạm thời bị ngưng. Bạn có thể viết lại sau %s.
+Tìm kiếm cuộc trò chuyện
+Tất cả
+Đang mở
+Không thể tải cuộc trò chuyện
+Bạn
+Không có cuộc trò chuyện nào khớp với bộ lọc này.
 """.trimIndent().lines(),
     )
     fun value(language:String,index:Int):String? {

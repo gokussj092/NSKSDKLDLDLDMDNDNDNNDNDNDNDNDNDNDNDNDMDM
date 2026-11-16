@@ -35,8 +35,11 @@ import javax.crypto.spec.GCMParameterSpec
  * No in-app WebView, no Google password interception and no API keys in prefs.
  */
 internal class NativeCommerceAuth(private val context:Context) {
-    /** A diagnostic identifier, never a bearer or Google ID token. */
-    internal class AuthFailure(val code:String):IllegalStateException(code)
+    /** A diagnostic identifier, never a bearer or Google ID token.
+     * suspendedUntil carries the server's SUPPORT_SUSPENDED deadline (ISO),
+     * when present; it is timing metadata, never a credential. */
+    internal class AuthFailure(val code:String,val suspendedUntil:String?=null)
+        :IllegalStateException(code)
     companion object {
         internal fun diagnostic(error:Throwable):String {
             val code=(error as? AuthFailure)?.code
@@ -146,14 +149,18 @@ internal class NativeCommerceAuth(private val context:Context) {
             if(status !in 200..299){
                 // Parse bounded, non-sensitive API error codes. Never expose tokens
                 // or arbitrary server response bodies in the user interface.
-                val returned=runCatching{
+                // SUPPORT_SUSPENDED also carries suspendedUntil (ISO deadline).
+                val errorObject=runCatching{
                     connection.errorStream?.use{stream->
-                        val buffer=ByteArray(2048)
+                        val buffer=ByteArray(4096)
                         val count=stream.read(buffer)
                         if(count>0)JSONObject(String(buffer,0,count,Charsets.UTF_8))
-                            .optJSONObject("error")?.optString("code") else null
+                            .optJSONObject("error") else null
                     }
                 }.getOrNull()
+                val returned=errorObject?.optString("code")
+                val suspendedUntil=errorObject?.optString("suspendedUntil")
+                    ?.takeIf{it.isNotBlank()}
                 val known=returned?.takeIf{it.matches(Regex("[A-Z][A-Z0-9_]{2,64}"))}
                 val error=known?:when(status){
                     400->"MOBILE_AUTH_BAD_REQUEST"
@@ -164,7 +171,7 @@ internal class NativeCommerceAuth(private val context:Context) {
                     503->"SERVICE_UNAVAILABLE"
                     else->"MOBILE_AUTH_HTTP_"+status
                 }
-                throw AuthFailure(error)
+                throw AuthFailure(error,suspendedUntil)
             }
             if(!connection.contentType.orEmpty().startsWith("application/json"))
                 throw IllegalStateException("INVALID_RESPONSE")
@@ -337,6 +344,9 @@ internal class NativeCommerceAuth(private val context:Context) {
             JSONObject().put("action","unregister").put("token",token),true).first
     suspend fun supportInbox():JSONObject =
         http("/api/support",authenticated=true).first
+    suspend fun markSupportThreadRead(threadId:String):JSONObject =
+        http("/api/support","POST",
+            JSONObject().put("action","read").put("threadId",threadId),true).first
     suspend fun openSupportThread(subject:String,category:String,message:String):JSONObject =
         http("/api/support","POST",JSONObject().put("action","new")
             .put("subject",subject).put("category",category).put("message",message),true).first

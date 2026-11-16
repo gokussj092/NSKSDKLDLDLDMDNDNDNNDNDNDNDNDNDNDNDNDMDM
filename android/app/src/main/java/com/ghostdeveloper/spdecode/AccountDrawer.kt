@@ -32,10 +32,21 @@ internal fun AccountDrawer(busy:Boolean,onExternalLink:(String)->Unit,
     val auth=remember(context){NativeCommerceAuth(context)}
     val user=CommerceSession.user
     var destination by remember {mutableStateOf<String?>(null)}
+    var supportUnread by remember {mutableStateOf(0)}
     LaunchedEffect(Unit) {
         auth.restoreCachedIdentity()
         if(auth.sessionToken()!=null&&runCatching{auth.account()}.getOrNull()!=null)
             CloudNoticePush.syncAccount(context)
+    }
+    // Contador de no leídos de soporte para el badge del menú lateral.
+    // Se actualiza al abrir el menú y al entrar a la pantalla.
+    suspend fun refreshSupportUnread(){
+        if(auth.sessionToken()==null){supportUnread=0;return}
+        supportUnread=runCatching{auth.supportInbox().optInt("unreadTotal",0)}
+            .getOrDefault(0)
+    }
+    LaunchedEffect(state.isOpen){
+        if(state.isOpen)scope.launch{refreshSupportUnread()}
     }
     BackHandler(state.isOpen && destination==null){scope.launch{state.close()}}
     fun navigate(route:String) {
@@ -95,7 +106,22 @@ internal fun AccountDrawer(busy:Boolean,onExternalLink:(String)->Unit,
                     icon={Icon(Icons.Outlined.History,null)},
                     onClick={navigate("activity")})
                 NavigationDrawerItem(selected=false,
-                    label={Text(local("Soporte técnico","Technical support"))},
+                    label={
+                        Row(verticalAlignment=Alignment.CenterVertically,
+                            horizontalArrangement=Arrangement.spacedBy(8.dp)){
+                            Text(local("Soporte técnico","Technical support"))
+                            if(supportUnread>0)Box(
+                                Modifier.background(Color(0xFFF7F7F7),
+                                    RoundedCornerShape(50))
+                                    .padding(horizontal=7.dp,vertical=2.dp),
+                                contentAlignment=Alignment.Center){
+                                Text(if(supportUnread>99)"99+"
+                                    else supportUnread.toString(),
+                                    color=Color.Black,fontSize=11.sp,
+                                    fontWeight=FontWeight.Bold,maxLines=1)
+                            }
+                        }
+                    },
                     icon={Icon(Icons.Outlined.SupportAgent,null)},
                     onClick={navigate("support")})
                 NavigationDrawerItem(selected=false,

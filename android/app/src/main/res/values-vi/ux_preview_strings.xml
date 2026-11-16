@@ -14,10 +14,4 @@
     <string name="apk_credits_subscriptions">Gói đăng ký</string>
     <string name="apk_credits_button">Tín dụng: 1+</string>
     <string name="apk_credits_back">Quay lại</string>
-    <string name="feedback_details_title">Chi tiết yêu cầu</string>
-    <string name="feedback_method_description">Đề xuất hỗ trợ tệp mới hoặc danh mục máy chủ VPN.</string>
-    <string name="feedback_bug_description">Báo lỗi giải mã, tương thích hoặc ứng dụng.</string>
-    <string name="feedback_suggestion_description">Đề xuất tính năng hoặc cải tiến giao diện.</string>
-    <string name="feedback_extra_title">Thông tin bổ sung (không bắt buộc)</string>
-    <string name="feedback_extra_hint">Phiên bản, định dạng bị ảnh hưởng hoặc chi tiết khác</string>
 </resources>

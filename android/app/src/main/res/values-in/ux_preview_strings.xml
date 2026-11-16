@@ -14,10 +14,4 @@
     <string name="apk_credits_subscriptions">Langganan</string>
     <string name="apk_credits_button">Kredit: 1+</string>
     <string name="apk_credits_back">Kembali</string>
-    <string name="feedback_details_title">Detail permintaan</string>
-    <string name="feedback_method_description">Minta dukungan file atau katalog server VPN baru.</string>
-    <string name="feedback_bug_description">Laporkan masalah dekripsi, kompatibilitas, atau aplikasi.</string>
-    <string name="feedback_suggestion_description">Sarankan fitur baru atau perbaikan tampilan.</string>
-    <string name="feedback_extra_title">Informasi tambahan (opsional)</string>
-    <string name="feedback_extra_hint">Versi, format terkait, atau detail lainnya</string>
 </resources>

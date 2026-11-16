@@ -14,10 +14,4 @@
     <string name="apk_credits_subscriptions">اشتراک‌ها</string>
     <string name="apk_credits_button">اعتبار: 1+</string>
     <string name="apk_credits_back">بازگشت</string>
-    <string name="feedback_details_title">جزئیات درخواست</string>
-    <string name="feedback_method_description">پشتیبانی از فایل‌ها یا فهرست سرور VPN جدید را درخواست کنید.</string>
-    <string name="feedback_bug_description">مشکلات رمزگشایی، سازگاری یا برنامه را گزارش کنید.</string>
-    <string name="feedback_suggestion_description">ویژگی‌ها یا بهبودهای ظاهری را پیشنهاد دهید.</string>
-    <string name="feedback_extra_title">اطلاعات بیشتر (اختیاری)</string>
-    <string name="feedback_extra_hint">نسخه، قالب یا جزئیات دیگر</string>
 </resources>

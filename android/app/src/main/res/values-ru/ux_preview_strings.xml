@@ -14,10 +14,4 @@
     <string name="apk_credits_subscriptions">Подписки</string>
     <string name="apk_credits_button">Кредиты: 1+</string>
     <string name="apk_credits_back">Назад</string>
-    <string name="feedback_details_title">Детали обращения</string>
-    <string name="feedback_method_description">Предложите поддержку новых файлов или каталогов VPN-серверов.</string>
-    <string name="feedback_bug_description">Сообщите об ошибках расшифровки, совместимости или приложения.</string>
-    <string name="feedback_suggestion_description">Предложите новые функции или улучшения интерфейса.</string>
-    <string name="feedback_extra_title">Дополнительная информация (необязательно)</string>
-    <string name="feedback_extra_hint">Версия, формат или другие сведения</string>
 </resources>

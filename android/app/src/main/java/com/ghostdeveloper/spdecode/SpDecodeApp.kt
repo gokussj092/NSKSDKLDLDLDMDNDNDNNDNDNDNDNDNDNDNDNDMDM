@@ -133,7 +133,6 @@ internal fun SpDecodeApp(
     onCatalogUpdates:(Boolean)->Unit={},
     usageAnalyticsEnabled:Boolean=false,
     onUsageAnalytics:(Boolean)->Unit={},
-    onFeedbackSubmit:suspend (FeedbackDraft)->String={throw IllegalStateException("FEEDBACK_UNAVAILABLE")},
     apkQaRunning:Boolean=false,
     apkQaPhase:String="",
     apkQaFilename:String="",
@@ -191,8 +190,7 @@ internal fun SpDecodeApp(
                         catalogUpdatesEnabled=catalogUpdatesEnabled,onCatalogUpdates=onCatalogUpdates,
                         usageAnalyticsEnabled=usageAnalyticsEnabled,onUsageAnalytics=onUsageAnalytics,
                          supportedFormats=cloudFormats,supportedTextFormats=cloudTextFormats,
-                         catalogLoading=serverVpnLoading && catalogTransfer==null,catalogProgress=catalogProgress,
-                         onFeedbackSubmit=onFeedbackSubmit)
+                         catalogLoading=serverVpnLoading && catalogTransfer==null,catalogProgress=catalogProgress)
                 }
                 if(guideStep!=null && !whatsNew && !busy && error==null && dialog==null) {
                     CenteredFirstRunGuide(guideStep,onGuideNext,onGuideSkip)
