@@ -2,6 +2,7 @@ package com.ghostdeveloper.spdecode
 
 import androidx.activity.compose.BackHandler
 import com.ghostdeveloper.spdecode.cloud.CloudNoticePush
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons

@@ -33,7 +33,7 @@ import kotlin.coroutines.coroutineContext
  * (NativeCommerceAuth Bearer session). One credit-backed job at a time.
  *
  * Transport is chunk-JSON-base64 (2 MB), the same shape as APK-QA, but the
- * routes are the app-analysis ones (/api/v1/app-analysis/*) and the server —
+ * routes are the app-analysis ones (/api/v1/app-analysis/...) and the server —
  * never the client — decides price, balance and whether the button is
  * enabled. No consent checkbox exists in this flow, so start() never sends
  * one and the server never requires it.
