@@ -1,5 +1,21 @@
 # Dependencias ejecutadas — build 934
 
+## Seguimiento de métodos pendientes
+
+Androguard **4.1.3** se instaló en otro directorio aislado para inspeccionar
+los cuatro DEX originales. El grafo completo de distribuciones instaladas,
+sus versiones, fuentes y metadatos de licencia está fijado en
+`dependencies.lock.json.followup_actual_runtime`. Esa instalación incluye
+Frida como dependencia transitiva: **no se utilizó, adjuntó ni ejecutó**.
+Los paquetes no se añaden al runtime del servidor ni se redistribuyen en Git;
+su revisión permanece limitada a investigación.
+
+OpenJDK **21.0.13** sí se ejecutó en este seguimiento, únicamente como
+oráculo JCE independiente para RSA-OAEP sobre datos sintéticos. Se reutilizó
+el entorno Python y el directorio aislado Unicorn/Capstone/pyelftools de la
+revisión anterior. No se ejecutó JADX otra vez. No hubo Android físico,
+activación remota, claves privadas originales ni atestaciones de dispositivo.
+
 ## Revisión 2026-11-15
 
 Se reutilizaron CPython 3.12.14, PyCryptodome 3.23.0, argon2-cffi 25.1.0 y

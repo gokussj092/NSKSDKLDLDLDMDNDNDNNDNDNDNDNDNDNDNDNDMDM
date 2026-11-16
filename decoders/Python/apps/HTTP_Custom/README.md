@@ -5,6 +5,10 @@ aportado autentica **6/9 JSON interiores completos**, los seis 12/n15.
 El lector operativo de este módulo no se modifica ni habilita formatos nuevos;
 n16, 13/n18 y el wrapper de ID de acceso siguen pendientes.
 [Expediente reproducible y límites](../../../../analysis/xyz.easypro.httpcustom/934/REVISION_2026_11_15.md).
+[Seguimiento HC2/RSA y n16](../../../../analysis/xyz.easypro.httpcustom/934/FOLLOWUP_METHODS_2026_11_15.md):
+cálculo del ID público confirmado y primitivas contrastadas; los tres archivos
+pendientes siguen sin JSON interior autenticado. Generar otra identidad no
+abre un archivo dirigido a la anterior ni registra el ID ante el emisor.
 
 **Investigación 2026-11-01:** las dos muestras nuevas HCCFG 11/n13 con Extra
 Protection autentican HCX4, pero **0/2 están descifradas**. El motor sigue

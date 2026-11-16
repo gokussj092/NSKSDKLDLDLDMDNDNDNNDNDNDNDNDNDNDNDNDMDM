@@ -51,6 +51,14 @@ class Probe(Arm64Function):
         raise ValueError('CString bound')
     def imported(self,name):
         a=[self.reg(i) for i in range(4)];v=0
+        if name=='lrand48':
+            # POSIX 48-bit LCG, used here by opaque native dispatch predicates.
+            # Returning zero for every call changes control flow and may enter
+            # deliberate abort blocks before any file-format operation runs.
+            state=getattr(self,'opaque_rng_state',0x1234abcd330e)
+            state=(0x5deece66d*state+0xb)&((1<<48)-1)
+            self.opaque_rng_state=state
+            return self.finish(state>>17)
         if name=='nanosleep':
             self.sleep_calls=getattr(self,'sleep_calls',0)+1
             if self.sleep_calls>3:raise ValueError('Local initialization remains unavailable; delay loop stopped')

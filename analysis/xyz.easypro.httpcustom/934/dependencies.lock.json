@@ -38,5 +38,444 @@
     },
     "jadx_executed": false,
     "java_executed": false
+  },
+  "followup_actual_runtime": {
+    "python": "3.12.14",
+    "java": "OpenJDK 21.0.13",
+    "java_executed": true,
+    "java_usage": "Independent synthetic RSA OAEP oracle; not JADX",
+    "dex_reader": "androguard 4.1.3",
+    "dex_isolated_installed_packages": [
+      {
+        "name": "alembic",
+        "version": "1.20.1",
+        "source": "https://pypi.org/project/alembic/1.20.1/",
+        "license_expression": "MIT",
+        "license_classifiers": [],
+        "review": "RESEARCH_ONLY_NOT_APPROVED_FOR_PRODUCTION"
+      },
+      {
+        "name": "androguard",
+        "version": "4.1.3",
+        "source": "https://pypi.org/project/androguard/4.1.3/",
+        "license_expression": null,
+        "license_classifiers": [
+          "License :: Other/Proprietary License"
+        ],
+        "review": "RESEARCH_ONLY_NOT_APPROVED_FOR_PRODUCTION"
+      },
+      {
+        "name": "apkInspector",
+        "version": "1.3.7",
+        "source": "https://pypi.org/project/apkInspector/1.3.7/",
+        "license_expression": null,
+        "license_classifiers": [
+          "License :: OSI Approved :: Apache Software License"
+        ],
+        "review": "RESEARCH_ONLY_NOT_APPROVED_FOR_PRODUCTION"
+      },
+      {
+        "name": "asn1crypto",
+        "version": "1.5.1",
+        "source": "https://pypi.org/project/asn1crypto/1.5.1/",
+        "license_expression": null,
+        "license_classifiers": [
+          "License :: OSI Approved :: MIT License"
+        ],
+        "review": "RESEARCH_ONLY_NOT_APPROVED_FOR_PRODUCTION"
+      },
+      {
+        "name": "asttokens",
+        "version": "3.0.2",
+        "source": "https://pypi.org/project/asttokens/3.0.2/",
+        "license_expression": null,
+        "license_classifiers": [],
+        "review": "RESEARCH_ONLY_NOT_APPROVED_FOR_PRODUCTION"
+      },
+      {
+        "name": "cffi",
+        "version": "2.1.1",
+        "source": "https://pypi.org/project/cffi/2.1.1/",
+        "license_expression": "MIT-0",
+        "license_classifiers": [],
+        "review": "RESEARCH_ONLY_NOT_APPROVED_FOR_PRODUCTION"
+      },
+      {
+        "name": "click",
+        "version": "8.5.1",
+        "source": "https://pypi.org/project/click/8.5.1/",
+        "license_expression": "BSD-3-Clause",
+        "license_classifiers": [],
+        "review": "RESEARCH_ONLY_NOT_APPROVED_FOR_PRODUCTION"
+      },
+      {
+        "name": "colorama",
+        "version": "0.4.6",
+        "source": "https://pypi.org/project/colorama/0.4.6/",
+        "license_expression": null,
+        "license_classifiers": [
+          "License :: OSI Approved :: BSD License"
+        ],
+        "review": "RESEARCH_ONLY_NOT_APPROVED_FOR_PRODUCTION"
+      },
+      {
+        "name": "contourpy",
+        "version": "1.4.0",
+        "source": "https://pypi.org/project/contourpy/1.4.0/",
+        "license_expression": "BSD-3-Clause",
+        "license_classifiers": [],
+        "review": "RESEARCH_ONLY_NOT_APPROVED_FOR_PRODUCTION"
+      },
+      {
+        "name": "cryptography",
+        "version": "50.0.2",
+        "source": "https://pypi.org/project/cryptography/50.0.2/",
+        "license_expression": "Apache-2.0 OR BSD-3-Clause",
+        "license_classifiers": [],
+        "review": "RESEARCH_ONLY_NOT_APPROVED_FOR_PRODUCTION"
+      },
+      {
+        "name": "cycler",
+        "version": "0.12.1",
+        "source": "https://pypi.org/project/cycler/0.12.1/",
+        "license_expression": null,
+        "license_classifiers": [
+          "License :: OSI Approved :: BSD License"
+        ],
+        "review": "RESEARCH_ONLY_NOT_APPROVED_FOR_PRODUCTION"
+      },
+      {
+        "name": "dataset",
+        "version": "2.0.0",
+        "source": "https://pypi.org/project/dataset/2.0.0/",
+        "license_expression": null,
+        "license_classifiers": [
+          "License :: OSI Approved :: MIT License"
+        ],
+        "review": "RESEARCH_ONLY_NOT_APPROVED_FOR_PRODUCTION"
+      },
+      {
+        "name": "executing",
+        "version": "2.3.0",
+        "source": "https://pypi.org/project/executing/2.3.0/",
+        "license_expression": null,
+        "license_classifiers": [
+          "License :: OSI Approved :: MIT License"
+        ],
+        "review": "RESEARCH_ONLY_NOT_APPROVED_FOR_PRODUCTION"
+      },
+      {
+        "name": "fonttools",
+        "version": "4.68.0",
+        "source": "https://pypi.org/project/fonttools/4.68.0/",
+        "license_expression": null,
+        "license_classifiers": [],
+        "review": "RESEARCH_ONLY_NOT_APPROVED_FOR_PRODUCTION"
+      },
+      {
+        "name": "frida",
+        "version": "17.26.3",
+        "source": "https://pypi.org/project/frida/17.26.3/",
+        "license_expression": null,
+        "license_classifiers": [
+          "License :: OSI Approved"
+        ],
+        "review": "RESEARCH_ONLY_NOT_APPROVED_FOR_PRODUCTION"
+      },
+      {
+        "name": "ipython",
+        "version": "9.18.1",
+        "source": "https://pypi.org/project/ipython/9.18.1/",
+        "license_expression": "BSD-3-Clause",
+        "license_classifiers": [],
+        "review": "RESEARCH_ONLY_NOT_APPROVED_FOR_PRODUCTION"
+      },
+      {
+        "name": "ipython_pygments_lexers",
+        "version": "1.1.1",
+        "source": "https://pypi.org/project/ipython_pygments_lexers/1.1.1/",
+        "license_expression": null,
+        "license_classifiers": [
+          "License :: OSI Approved :: BSD License"
+        ],
+        "review": "RESEARCH_ONLY_NOT_APPROVED_FOR_PRODUCTION"
+      },
+      {
+        "name": "jedi",
+        "version": "0.20.1",
+        "source": "https://pypi.org/project/jedi/0.20.1/",
+        "license_expression": null,
+        "license_classifiers": [
+          "License :: OSI Approved :: MIT License"
+        ],
+        "review": "RESEARCH_ONLY_NOT_APPROVED_FOR_PRODUCTION"
+      },
+      {
+        "name": "kiwisolver",
+        "version": "1.5.1",
+        "source": "https://pypi.org/project/kiwisolver/1.5.1/",
+        "license_expression": null,
+        "license_classifiers": [
+          "License :: OSI Approved :: BSD License"
+        ],
+        "review": "RESEARCH_ONLY_NOT_APPROVED_FOR_PRODUCTION"
+      },
+      {
+        "name": "loguru",
+        "version": "0.8.0",
+        "source": "https://pypi.org/project/loguru/0.8.0/",
+        "license_expression": null,
+        "license_classifiers": [
+          "License :: OSI Approved :: MIT License"
+        ],
+        "review": "RESEARCH_ONLY_NOT_APPROVED_FOR_PRODUCTION"
+      },
+      {
+        "name": "lxml",
+        "version": "6.1.3",
+        "source": "https://pypi.org/project/lxml/6.1.3/",
+        "license_expression": null,
+        "license_classifiers": [],
+        "review": "RESEARCH_ONLY_NOT_APPROVED_FOR_PRODUCTION"
+      },
+      {
+        "name": "Mako",
+        "version": "1.4.3",
+        "source": "https://pypi.org/project/Mako/1.4.3/",
+        "license_expression": "MIT",
+        "license_classifiers": [],
+        "review": "RESEARCH_ONLY_NOT_APPROVED_FOR_PRODUCTION"
+      },
+      {
+        "name": "MarkupSafe",
+        "version": "3.0.4",
+        "source": "https://pypi.org/project/MarkupSafe/3.0.4/",
+        "license_expression": "BSD-3-Clause",
+        "license_classifiers": [],
+        "review": "RESEARCH_ONLY_NOT_APPROVED_FOR_PRODUCTION"
+      },
+      {
+        "name": "matplotlib",
+        "version": "3.11.2",
+        "source": "https://pypi.org/project/matplotlib/3.11.2/",
+        "license_expression": null,
+        "license_classifiers": [
+          "License :: OSI Approved :: Python Software Foundation License"
+        ],
+        "review": "RESEARCH_ONLY_NOT_APPROVED_FOR_PRODUCTION"
+      },
+      {
+        "name": "matplotlib-inline",
+        "version": "0.2.2",
+        "source": "https://pypi.org/project/matplotlib-inline/0.2.2/",
+        "license_expression": "BSD-3-Clause",
+        "license_classifiers": [],
+        "review": "RESEARCH_ONLY_NOT_APPROVED_FOR_PRODUCTION"
+      },
+      {
+        "name": "mutf8",
+        "version": "1.1.0",
+        "source": "https://pypi.org/project/mutf8/1.1.0/",
+        "license_expression": "MIT",
+        "license_classifiers": [],
+        "review": "RESEARCH_ONLY_NOT_APPROVED_FOR_PRODUCTION"
+      },
+      {
+        "name": "networkx",
+        "version": "3.7",
+        "source": "https://pypi.org/project/networkx/3.7/",
+        "license_expression": "BSD-3-Clause",
+        "license_classifiers": [],
+        "review": "RESEARCH_ONLY_NOT_APPROVED_FOR_PRODUCTION"
+      },
+      {
+        "name": "numpy",
+        "version": "2.5.5",
+        "source": "https://pypi.org/project/numpy/2.5.5/",
+        "license_expression": "BSD-3-Clause AND 0BSD AND MIT AND Zlib AND CC0-1.0",
+        "license_classifiers": [],
+        "review": "RESEARCH_ONLY_NOT_APPROVED_FOR_PRODUCTION"
+      },
+      {
+        "name": "packaging",
+        "version": "26.3",
+        "source": "https://pypi.org/project/packaging/26.3/",
+        "license_expression": "Apache-2.0 OR BSD-2-Clause",
+        "license_classifiers": [],
+        "review": "RESEARCH_ONLY_NOT_APPROVED_FOR_PRODUCTION"
+      },
+      {
+        "name": "parso",
+        "version": "0.8.7",
+        "source": "https://pypi.org/project/parso/0.8.7/",
+        "license_expression": null,
+        "license_classifiers": [
+          "License :: OSI Approved :: MIT License"
+        ],
+        "review": "RESEARCH_ONLY_NOT_APPROVED_FOR_PRODUCTION"
+      },
+      {
+        "name": "pexpect",
+        "version": "4.9.0",
+        "source": "https://pypi.org/project/pexpect/4.9.0/",
+        "license_expression": null,
+        "license_classifiers": [
+          "License :: OSI Approved :: ISC License (ISCL)"
+        ],
+        "review": "RESEARCH_ONLY_NOT_APPROVED_FOR_PRODUCTION"
+      },
+      {
+        "name": "pillow",
+        "version": "13.0.0",
+        "source": "https://pypi.org/project/pillow/13.0.0/",
+        "license_expression": "MIT-CMU",
+        "license_classifiers": [],
+        "review": "RESEARCH_ONLY_NOT_APPROVED_FOR_PRODUCTION"
+      },
+      {
+        "name": "prompt_toolkit",
+        "version": "3.0.53",
+        "source": "https://pypi.org/project/prompt_toolkit/3.0.53/",
+        "license_expression": null,
+        "license_classifiers": [
+          "License :: OSI Approved :: BSD License"
+        ],
+        "review": "RESEARCH_ONLY_NOT_APPROVED_FOR_PRODUCTION"
+      },
+      {
+        "name": "psutil",
+        "version": "7.2.2",
+        "source": "https://pypi.org/project/psutil/7.2.2/",
+        "license_expression": null,
+        "license_classifiers": [],
+        "review": "RESEARCH_ONLY_NOT_APPROVED_FOR_PRODUCTION"
+      },
+      {
+        "name": "ptyprocess",
+        "version": "0.7.0",
+        "source": "https://pypi.org/project/ptyprocess/0.7.0/",
+        "license_expression": null,
+        "license_classifiers": [
+          "License :: OSI Approved :: ISC License (ISCL)"
+        ],
+        "review": "RESEARCH_ONLY_NOT_APPROVED_FOR_PRODUCTION"
+      },
+      {
+        "name": "pure_eval",
+        "version": "0.2.4",
+        "source": "https://pypi.org/project/pure_eval/0.2.4/",
+        "license_expression": null,
+        "license_classifiers": [
+          "License :: OSI Approved :: MIT License"
+        ],
+        "review": "RESEARCH_ONLY_NOT_APPROVED_FOR_PRODUCTION"
+      },
+      {
+        "name": "pycparser",
+        "version": "3.12",
+        "source": "https://pypi.org/project/pycparser/3.12/",
+        "license_expression": "BSD-3-Clause",
+        "license_classifiers": [],
+        "review": "RESEARCH_ONLY_NOT_APPROVED_FOR_PRODUCTION"
+      },
+      {
+        "name": "pydot",
+        "version": "4.0.1",
+        "source": "https://pypi.org/project/pydot/4.0.1/",
+        "license_expression": "MIT",
+        "license_classifiers": [],
+        "review": "RESEARCH_ONLY_NOT_APPROVED_FOR_PRODUCTION"
+      },
+      {
+        "name": "Pygments",
+        "version": "2.21.0",
+        "source": "https://pypi.org/project/Pygments/2.21.0/",
+        "license_expression": "BSD-2-Clause",
+        "license_classifiers": [],
+        "review": "RESEARCH_ONLY_NOT_APPROVED_FOR_PRODUCTION"
+      },
+      {
+        "name": "pyparsing",
+        "version": "3.3.3",
+        "source": "https://pypi.org/project/pyparsing/3.3.3/",
+        "license_expression": "MIT",
+        "license_classifiers": [],
+        "review": "RESEARCH_ONLY_NOT_APPROVED_FOR_PRODUCTION"
+      },
+      {
+        "name": "python-dateutil",
+        "version": "4.0.0",
+        "source": "https://pypi.org/project/python-dateutil/4.0.0/",
+        "license_expression": "BSD-3-Clause",
+        "license_classifiers": [],
+        "review": "RESEARCH_ONLY_NOT_APPROVED_FOR_PRODUCTION"
+      },
+      {
+        "name": "PyYAML",
+        "version": "6.0.3",
+        "source": "https://pypi.org/project/PyYAML/6.0.3/",
+        "license_expression": null,
+        "license_classifiers": [
+          "License :: OSI Approved :: MIT License"
+        ],
+        "review": "RESEARCH_ONLY_NOT_APPROVED_FOR_PRODUCTION"
+      },
+      {
+        "name": "SQLAlchemy",
+        "version": "2.1.8",
+        "source": "https://pypi.org/project/SQLAlchemy/2.1.8/",
+        "license_expression": "MIT",
+        "license_classifiers": [],
+        "review": "RESEARCH_ONLY_NOT_APPROVED_FOR_PRODUCTION"
+      },
+      {
+        "name": "stack-data",
+        "version": "0.6.3",
+        "source": "https://pypi.org/project/stack-data/0.6.3/",
+        "license_expression": null,
+        "license_classifiers": [
+          "License :: OSI Approved :: MIT License"
+        ],
+        "review": "RESEARCH_ONLY_NOT_APPROVED_FOR_PRODUCTION"
+      },
+      {
+        "name": "traitlets",
+        "version": "5.16.1",
+        "source": "https://pypi.org/project/traitlets/5.16.1/",
+        "license_expression": null,
+        "license_classifiers": [
+          "License :: OSI Approved :: BSD License"
+        ],
+        "review": "RESEARCH_ONLY_NOT_APPROVED_FOR_PRODUCTION"
+      },
+      {
+        "name": "typing_extensions",
+        "version": "4.16.0",
+        "source": "https://pypi.org/project/typing_extensions/4.16.0/",
+        "license_expression": "PSF-2.0",
+        "license_classifiers": [],
+        "review": "RESEARCH_ONLY_NOT_APPROVED_FOR_PRODUCTION"
+      },
+      {
+        "name": "tzdata",
+        "version": "2026.6",
+        "source": "https://pypi.org/project/tzdata/2026.6/",
+        "license_expression": null,
+        "license_classifiers": [],
+        "review": "RESEARCH_ONLY_NOT_APPROVED_FOR_PRODUCTION"
+      },
+      {
+        "name": "wcwidth",
+        "version": "0.9.4",
+        "source": "https://pypi.org/project/wcwidth/0.9.4/",
+        "license_expression": null,
+        "license_classifiers": [
+          "License :: OSI Approved :: MIT License"
+        ],
+        "review": "RESEARCH_ONLY_NOT_APPROVED_FOR_PRODUCTION"
+      }
+    ],
+    "frida_installed_transitively_but_not_used": true,
+    "no_android_device_or_network_activation": true
   }
 }

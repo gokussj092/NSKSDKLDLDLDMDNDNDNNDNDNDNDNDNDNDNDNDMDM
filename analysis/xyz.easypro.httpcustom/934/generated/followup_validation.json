@@ -1,0 +1,141 @@
+{
+  "status": "PARTIAL",
+  "real_full_json_successes": 6,
+  "real_samples": 9,
+  "new_real_successes": 0,
+  "production_reader_changed": false,
+  "hc2_id": {
+    "algorithm": "HC2- || BASE64URL_NOPAD(SHA256(SPKI_DER))",
+    "observed_public_certificate_matches": {
+      "spki": true,
+      "pkcs1": false
+    },
+    "generated_identity_registration_status": "UNREGISTERED"
+  },
+  "original_parameter_initializer": {
+    "class": "dev/epro/r0/E5538123785991428492",
+    "dispatcher": 0,
+    "index": 858,
+    "completed": true,
+    "constructed": [
+      {
+        "__cls__": "javax/crypto/spec/OAEPParameterSpec",
+        "constructor": [
+          "<init>",
+          "(Ljava/lang/String;Ljava/lang/String;Ljava/security/spec/AlgorithmParameterSpec;Ljavax/crypto/spec/PSource;)V"
+        ],
+        "arguments": [
+          "SHA-256",
+          "MGF1",
+          [
+            "java/security/spec/MGF1ParameterSpec",
+            [
+              "SHA1",
+              "Ljava/security/spec/MGF1ParameterSpec;"
+            ]
+          ],
+          [
+            "javax/crypto/spec/PSource$PSpecified",
+            [
+              "DEFAULT",
+              "Ljavax/crypto/spec/PSource$PSpecified;"
+            ]
+          ],
+          0
+        ]
+      },
+      {
+        "__cls__": "java/security/spec/PSSParameterSpec",
+        "constructor": [
+          "<init>",
+          "(Ljava/lang/String;Ljava/lang/String;Ljava/security/spec/AlgorithmParameterSpec;II)V"
+        ],
+        "arguments": [
+          "SHA-256",
+          "MGF1",
+          [
+            "java/security/spec/MGF1ParameterSpec",
+            [
+              "SHA256",
+              "Ljava/security/spec/MGF1ParameterSpec;"
+            ]
+          ],
+          32,
+          1
+        ]
+      }
+    ],
+    "scope": "Original parameter initialization; full wrapper-9 call path not authenticated with original private key"
+  },
+  "n16_synthetic_trace": {
+    "route": [
+      "N640...c",
+      "N640...d family 5",
+      "Z165...a",
+      "T111...q"
+    ],
+    "with_session": {
+      "operation": 2,
+      "family": 5
+    },
+    "without_session": {
+      "operation": 1,
+      "family": 5
+    },
+    "argument_shapes": [
+      "HWID bytes 32",
+      "seed bytes 32",
+      "empty info",
+      "password-key bytes 32",
+      "empty extra"
+    ],
+    "new_content_hypotheses": 2,
+    "new_wrap_hypotheses": 12,
+    "authenticated_candidates": 0,
+    "not_password_or_hwid_enumeration": true
+  },
+  "native_model_result": {
+    "returned_type": "NoneType",
+    "returned_null": true,
+    "byte_length": null
+  },
+  "native_model_limits": {
+    "public_package_certificate_only": true,
+    "fresh_virtual_directory_in_memory_only": true,
+    "synthetic_local_callback_0_or_1": true,
+    "genuine_attestation": false,
+    "activation_performed": false,
+    "original_private_key_present": false
+  },
+  "n18_extra_shape": {
+    "a_string_chars": 14,
+    "b_base64_decoded_bytes": 384,
+    "c_base64_decoded_bytes": 32,
+    "algorithm_determined_by_size": false,
+    "original_activation_material_available": false
+  },
+  "verification": {
+    "dossier_tests": {
+      "run": 14,
+      "passed": 14,
+      "skipped": 0
+    },
+    "independent_java_oaep_oracle": "PASS on generated matching keypair only",
+    "lrand48_libc_oracle": "PASS first six outputs; default POSIX seed",
+    "full_wrapper9_payload": "NOT_RUN_NO_RECIPIENT_PRIVATE_KEY",
+    "original_android_import": "NOT_RUN",
+    "existing_regression_tests": {
+      "run": 29,
+      "passed": 29
+    },
+    "f7_evidence_structure": "PASS (not production-method approval)"
+  },
+  "source_artifact_sha256": {
+    "access-followup.json": "9307102682bc6772edde6e402b3c10f1a7bf35dfa5c31fad3d24a88da1b18b56",
+    "oaep-native-init.json": "0fd53d94b6bc06cc1762c9f50fd9bed960cce4e985ecd0d87c4874c45a222d63",
+    "c-n16-session.json": "8b3b022f5f06a4209961a4f5e3b82e3cd46ac3807fdaed9cdfc16c977e9a02e8",
+    "d-n16-session.json": "ec99e34e4637eaf393402ae0f55be091b894c20e5da4e2224c0bad1feb5c992e",
+    "provider5-session.json": "95f348b1397b501b4ceafe77b6c9d490083ab0b166311558ef823638a3dfa22b",
+    "native-q2-memory-fs.json": "78971ab72792054cebef7386600e08c1799bdfa697228ad5257305759d52f89a"
+  }
+}

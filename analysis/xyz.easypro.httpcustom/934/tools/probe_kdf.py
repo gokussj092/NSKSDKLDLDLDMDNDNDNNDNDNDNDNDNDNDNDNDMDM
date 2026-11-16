@@ -30,7 +30,8 @@ def load(library,provider=False):
     return e
 
 def main():
-    p=argparse.ArgumentParser();p.add_argument('library');p.add_argument('output');p.add_argument('--entry',choices=['c','d','provider','envelope','native','context','init'],default='d');p.add_argument('--schedule',default='n15');p.add_argument('--session',action='store_true');p.add_argument('--family',type=int,default=1);a=p.parse_args()
+    p=argparse.ArgumentParser();p.add_argument('library');p.add_argument('output');p.add_argument('--entry',choices=['c','d','provider','envelope','native','context','init'],default='d');p.add_argument('--schedule',default='n15');p.add_argument('--session',action='store_true');p.add_argument('--family',type=int,default=1)
+    p.add_argument('--synthetic-hwid',action='store_true');p.add_argument('--synthetic-password-key',action='store_true');a=p.parse_args()
     e=Probe(a.library) if a.entry in ('native','context') else load(a.library,provider=a.entry=='provider')
     original=e.jni
     def jni(i):
@@ -116,9 +117,15 @@ def main():
     arguments=[e.obj(x) for x in (bytes(range(32)),b'ssh,profiles',b'934',b'n15',b'',b'')]
     fn=(0x78694 if a.entry=='native' else 0x310f0) if a.entry in ('native','context') else int(next(x[2] for x in e.registrations[-1][1] if x[0]==('a' if a.entry in ('provider','envelope') else 'p' if a.entry=='init' else a.entry)),16)
     callargs=[5,*arguments,0] if a.entry=='d' else [e.obj(bytes(range(32))),e.obj([e.obj('ssh'),e.obj('profiles')]),0,e.obj(934),e.obj(a.schedule),0,0,0,int(a.session)]
+    if a.entry=='c':
+        if a.synthetic_password_key:callargs[2]=e.obj(bytes(range(32)))
+        if a.synthetic_hwid:callargs[5]=e.obj('H'+'0'*31)
+    if a.entry=='d' and a.synthetic_hwid:
+        callargs=[5,e.obj(('H'+'0'*31).encode()),e.obj(bytes(range(32))),e.obj(b''),
+                  e.obj(bytes(range(32))) if a.synthetic_password_key else 0,0,0,int(a.session)]
     if a.entry=='provider':
         self=e.obj({'__cls__':'dev/epro/r0/Z16537246539122903131'})
-        callargs=[a.family,*[e.obj(x) for x in (b'public-transcript',bytes(range(32)),b'public-info',b'',b'')],0,e.obj({'__cls__':'dev/epro/r0/S13398029567429928805'})]
+        callargs=[a.family,*[e.obj(x) for x in (b'public-transcript',bytes(range(32)),b'public-info',b'',b'')],int(a.session),e.obj({'__cls__':'dev/epro/r0/S13398029567429928805'})]
     if a.entry=='envelope':
         self=e.obj({'__cls__':'dev/epro/r0/E11636605712876083652','a':e.obj({'__cls__':'dev/epro/r0/N6400668577528756650'})})
         envelope=e.obj({'__cls__':'dev/epro/r0/V6167873899234863698','a':e.obj([e.obj('ssh'),e.obj('profiles')]),'b':e.obj(bytes(range(32))),'e':e.obj(934),'f':0,'g':2,'h':67108864,'i':e.obj('n15'),'j':e.obj([]),'k':12,'l':0})

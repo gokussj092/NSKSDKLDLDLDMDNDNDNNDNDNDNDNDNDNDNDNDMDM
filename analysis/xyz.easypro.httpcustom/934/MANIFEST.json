@@ -135,7 +135,7 @@
       ]
     },
     {
-      "name": "Test bloquear usuário y contraseña.hc",
+      "name": "Test bloquear usu\u00e1rio y contrase\u00f1a.hc",
       "bytes": 6309,
       "sha256": "8de37c01d4769fd159cccc8885b224b1297d1afe6d3abecb4210cd1a586a9003",
       "outer_authenticated": true,
@@ -224,7 +224,7 @@
       "access_wrapper": false
     },
     {
-      "name": "Test bloqueo inicio de sesión con hwid.hc",
+      "name": "Test bloqueo inicio de sesi\u00f3n con hwid.hc",
       "bytes": 6353,
       "sha256": "4d8aa08d8be5d86e96af3c81d3db5a4b64e31ed2b5d67778149b4301959972e5",
       "outer_authenticated": true,
@@ -309,43 +309,53 @@
   "tooling": [
     {
       "path": "analysis/xyz.easypro.httpcustom/934/tools/decode_strings.py",
-      "version": "research snapshot"
+      "version": "2026-11-15 research followup",
+      "sha256": "40e98bfce306d22d6df7e2c2b892741a36457f987e34b2fade19975ddb109d42"
     },
     {
       "path": "analysis/xyz.easypro.httpcustom/934/tools/extract_apks.py",
-      "version": "research snapshot"
+      "version": "2026-11-15 research followup",
+      "sha256": "331f7034ee548c4a91cd932e8ff089950f131ab020a52a671aa9855bb87fa453"
     },
     {
       "path": "analysis/xyz.easypro.httpcustom/934/tools/inspect_access_wrapper.py",
-      "version": "research snapshot"
+      "version": "2026-11-15 research followup",
+      "sha256": "5a86621184837e7a91d4e0a9a12b04bd7a0c7345fe593f928b3766fd899768d7"
     },
     {
       "path": "analysis/xyz.easypro.httpcustom/934/tools/inventory.py",
-      "version": "research snapshot"
+      "version": "2026-11-15 research followup",
+      "sha256": "c2edb5ab1820821cee452b59f43c68de93731db5585766d374b6ed1df034b080"
     },
     {
       "path": "analysis/xyz.easypro.httpcustom/934/tools/jni_format_probe.py",
-      "version": "research snapshot"
+      "version": "2026-11-15 research followup",
+      "sha256": "2ef6c9fdb53b7fe93090db79deab34afcec282523e5638f6eea2e071904aed76"
     },
     {
       "path": "analysis/xyz.easypro.httpcustom/934/tools/preambles.py",
-      "version": "research snapshot"
+      "version": "2026-11-15 research followup",
+      "sha256": "601d445ac8afc6534560f618f9009ae1a0ba2ddbaa483e0e7ab5db086dc0c47d"
     },
     {
       "path": "analysis/xyz.easypro.httpcustom/934/tools/probe_existing_schedule.py",
-      "version": "research snapshot"
+      "version": "2026-11-15 research followup",
+      "sha256": "4d2083bd543a070127cf0905f065382dee249612893a93494ebf6bb5c3ddcf30"
     },
     {
       "path": "analysis/xyz.easypro.httpcustom/934/tools/probe_kdf.py",
-      "version": "research snapshot"
+      "version": "2026-11-15 research followup",
+      "sha256": "08a284b55d9b18415bb7a1827ccc2bebc0af3494503dc127758f4413920f7fed"
     },
     {
       "path": "analysis/xyz.easypro.httpcustom/934/tools/unseal.py",
-      "version": "research snapshot"
+      "version": "2026-11-15 research followup",
+      "sha256": "77500172d6b3dbc8f31a1dd67d47368d3644177e3ac8fa566f1b0c528f6a8c9e"
     },
     {
       "path": "analysis/xyz.easypro.httpcustom/934/tools/verify_private.py",
-      "version": "research snapshot"
+      "version": "2026-11-15 research followup",
+      "sha256": "2bf92fdeb62b1048c7aac5a5460eb1ebd425a19ab1a5930e0a8c857d29638321"
     },
     {
       "name": "JADX",
@@ -364,52 +374,98 @@
     },
     {
       "path": "analysis/xyz.easypro.httpcustom/934/tools/static_probe.py",
-      "version": "research snapshot"
+      "version": "2026-11-15 research followup",
+      "sha256": "5bb32de6666ffc5e0c8e9ef83bd34fa2652f2d1f61eb0a7584351c0539a89246"
     },
     {
       "path": "analysis/xyz.easypro.httpcustom/934/tools/probe_user_script.py",
-      "version": "2026-11-15 research revision",
+      "version": "2026-11-15 research followup",
       "sha256": "f6ffa9ce98365fa6953b09c86091a3b3551edc22a16c37a3a966fb335f34cc67"
     },
     {
       "path": "analysis/xyz.easypro.httpcustom/934/tools/probe_password_schedule.py",
-      "version": "2026-11-15 research revision",
+      "version": "2026-11-15 research followup",
       "sha256": "15e26e51edc0eb01df60903a45a4dc757f6bdba530972c81225ca477ddc82ba1"
     },
     {
       "path": "analysis/xyz.easypro.httpcustom/934/tools/probe_hwid_schedule.py",
-      "version": "2026-11-15 research revision",
+      "version": "2026-11-15 research followup",
       "sha256": "c89821b545edf6aac9af015f717241648f4aef478cac47dad3e5ca2ded1a1945"
     },
     {
       "path": "analysis/xyz.easypro.httpcustom/934/tools/revise_supplied_reader.py",
-      "version": "2026-11-15 research revision",
+      "version": "2026-11-15 research followup",
       "sha256": "7a728e0ce179b63a3cf6ad014e44635bd09bdc741012d0a88a22061262014e36"
     },
     {
       "path": "analysis/xyz.easypro.httpcustom/934/tools/decode_batch.py",
-      "version": "2026-11-15 research revision",
+      "version": "2026-11-15 research followup",
       "sha256": "bbf9814f7626c566967c441247a6a9e584d547590278a5e6e5beb4c01f683484"
     },
     {
       "path": "analysis/xyz.easypro.httpcustom/934/tools/n15_content.py",
-      "version": "2026-11-15 research revision",
+      "version": "2026-11-15 research followup",
       "sha256": "dfad4ec3a628fe21152b91c95edea54244e87f763b1d7a94a51fe05c4d9215a5"
     },
     {
       "path": "analysis/xyz.easypro.httpcustom/934/tools/verify_revision_private.py",
-      "version": "2026-11-15 research revision",
+      "version": "2026-11-15 research followup",
       "sha256": "f1a4d8593b9187ca2983f10d52e2c95de5a0907819b567ffe7cfa8456e436035"
     },
     {
       "path": "analysis/xyz.easypro.httpcustom/934/tools/write_public_vectors.py",
-      "version": "2026-11-15 research revision",
+      "version": "2026-11-15 research followup",
       "sha256": "5c2be0224522a8ea976917f9739a1df0a679c72ba2fda203ab69e80ae772be15"
     },
     {
       "path": "analysis/xyz.easypro.httpcustom/934/tools/recipient_lab.py",
-      "version": "2026-11-15 research revision",
+      "version": "2026-11-15 research followup",
       "sha256": "8f4c2d886750193f9e000e91f1f610fa92f8f72417f43142318509db9842f869"
+    },
+    {
+      "path": "analysis/xyz.easypro.httpcustom/934/tools/access_followup.py",
+      "version": "2026-11-15 research followup",
+      "sha256": "684a1e4ad681b438e1b8f33aaadb69acd18e5ebe4e67e72462a13e3f486997da"
+    },
+    {
+      "path": "analysis/xyz.easypro.httpcustom/934/tools/dex_followup.py",
+      "version": "2026-11-15 research followup",
+      "sha256": "0f89e738021061a10753b1bee85bbea09efb84d6c289f0ddbf2e2894b03b1a75"
+    },
+    {
+      "path": "analysis/xyz.easypro.httpcustom/934/tools/hc2_identity.py",
+      "version": "2026-11-15 research followup",
+      "sha256": "b73b1eb28aac546aa989a303f4c2c10a3ac362ca79c743368d48be190e61c5ca"
+    },
+    {
+      "path": "analysis/xyz.easypro.httpcustom/934/tools/native_followup.py",
+      "version": "2026-11-15 research followup",
+      "sha256": "2a72f65cbdb709a8f177a1da5a742e8215bf0cbecdcd437bebb47406b117a5d4"
+    },
+    {
+      "path": "analysis/xyz.easypro.httpcustom/934/tools/native_memory_fs.py",
+      "version": "2026-11-15 research followup",
+      "sha256": "bf685d6ae3ecd65a5db89a189a1f5fd38a7e3c9b364fdf892ccd8a2d28d898f3"
+    },
+    {
+      "path": "analysis/xyz.easypro.httpcustom/934/tools/probe_n16_content.py",
+      "version": "2026-11-15 research followup",
+      "sha256": "23679c27a59ac4800de2e4c94ba516900ad043b0855e96346d1c3302bf71a7b6"
+    },
+    {
+      "path": "analysis/xyz.easypro.httpcustom/934/tools/probe_n16_wrap_family5.py",
+      "version": "2026-11-15 research followup",
+      "sha256": "cdf7a85311f68c8882900b28bf746bf9994fef48ff99079a1d9fad072ba8beb0"
+    },
+    {
+      "path": "analysis/xyz.easypro.httpcustom/934/tools/trace_native_q.py",
+      "version": "2026-11-15 research followup",
+      "sha256": "7318e0e764322bc37a4999937932f6b99438303ec51175f6b079d984030db3ec"
+    },
+    {
+      "path": "analysis/xyz.easypro.httpcustom/934/tools/trace_oaep_init.py",
+      "version": "2026-11-15 research followup",
+      "sha256": "65d744079158bcc19ef0c8a0164e54fe54e10111e4ef6a35603cd73c21a622aa"
     }
   ],
   "dependencies": [
@@ -477,6 +533,13 @@
       "review": "UNREVIEWED_LICENSE_RESEARCH_ONLY",
       "license": "UNKNOWN",
       "lockfile": "analysis/xyz.easypro.httpcustom/934/dependencies.lock.json"
+    },
+    {
+      "id": "androguard",
+      "version": "4.1.3",
+      "source": "https://pypi.org/project/androguard/4.1.3/",
+      "lockfile": "analysis/xyz.easypro.httpcustom/934/dependencies.lock.json",
+      "review": "RESEARCH_ONLY; full isolated installed graph recorded; no production dependency added"
     }
   ],
   "code_paths": [
@@ -493,7 +556,12 @@
     "analysis/xyz.easypro.httpcustom/934/REVISION_2026_11_15.md",
     "analysis/xyz.easypro.httpcustom/934/generated/revision_validation.json",
     "analysis/xyz.easypro.httpcustom/934/generated/n15_public_vectors.json",
-    "analysis/xyz.easypro.httpcustom/934/tests/test_revision_research.py"
+    "analysis/xyz.easypro.httpcustom/934/tests/test_revision_research.py",
+    "analysis/xyz.easypro.httpcustom/934/FOLLOWUP_METHODS_2026_11_15.md",
+    "analysis/xyz.easypro.httpcustom/934/generated/followup_validation.json",
+    "analysis/xyz.easypro.httpcustom/934/tests/test_hc2_identity.py",
+    "analysis/xyz.easypro.httpcustom/934/tests/HcOaepOracle.java",
+    "analysis/xyz.easypro.httpcustom/934/tests/test_native_models.py"
   ],
   "signer_certificate_sha256": "95dd433d7e4a0be02d55cc62553edcfc8f077fe780be5a7da7f861c2558dc181",
   "apk_signature_cryptographic_verification": "NOT_RUN",
@@ -518,10 +586,19 @@
     "Observe an authorized original-app import on a suitable device and compare full plaintext/codec inputs with the new engine."
   ],
   "unresolved_questions": [
-    "Full n15/n16 key-session derivation and section authentication",
-    "Original-device access-ID unwrap contract",
+    "Complete n16 key-session derivation and slot/section authentication",
+    "Original-device access-ID unwrap call path, issuer verification and section AAD",
     "Extra-protection grant and local activation cache",
     "Actual eprdv.link configuration retrieval protocol"
   ],
-  "revision_local_date": "2026-11-15 America/Tijuana"
+  "revision_local_date": "2026-11-15 America/Tijuana",
+  "followup": {
+    "status": "PARTIAL_PRIMITIVES_ONLY",
+    "new_real_successes": 0,
+    "hc2_public_hash_confirmed": true,
+    "original_rsa_parameters_captured": true,
+    "n16_native_operation_traced": true,
+    "full_access_wrapper_verified": false,
+    "dossier_tests_passed": 14
+  }
 }
