@@ -4,9 +4,10 @@ for(const [ip,prefix] of [['0.0.0.0',8],['10.0.0.0',8],['100.64.0.0',10],['127.0
   ['169.254.0.0',16],['172.16.0.0',12],['192.0.0.0',24],['192.0.2.0',24],['192.88.99.0',24],
   ['192.168.0.0',16],['198.18.0.0',15],['198.51.100.0',24],['203.0.113.0',24],['224.0.0.0',4],['240.0.0.0',4]])nonPublicV4.addSubnet(ip,prefix,'ipv4');
 export class ShopError extends Error {
-  constructor(code,status=400){super(code);this.code=code;this.status=status;}
+  constructor(code,status=400,details){super(code);this.code=code;this.status=status;
+    if(details!==undefined)this.details=details;}
 }
-export const fail=(code,status=400)=>{throw new ShopError(code,status);};
+export const fail=(code,status=400,details)=>{throw new ShopError(code,status,details);};
 export function siteOrigin(env=process.env){
   const value=env.CLOUD_SITE_PUBLIC_ORIGIN||"https://spdecode.xyz";
   const u=new URL(value);
@@ -58,4 +59,5 @@ export function requireOrigin(request){
 export function reply(body,status=200){return Response.json(body,{status,headers:{
   'Cache-Control':'private, no-store, max-age=0','X-Content-Type-Options':'nosniff'}});}
 export async function safe(action){try{return await action();}
-  catch(e){return reply({error:{code:e instanceof ShopError?e.code:'SERVICE_UNAVAILABLE'}},e instanceof ShopError?e.status:503);}}
+  catch(e){if(!(e instanceof ShopError))return reply({error:{code:'SERVICE_UNAVAILABLE'}},503);
+    return reply({error:{code:e.code,...(e.details!==undefined?e.details:{})}},e.status);}}

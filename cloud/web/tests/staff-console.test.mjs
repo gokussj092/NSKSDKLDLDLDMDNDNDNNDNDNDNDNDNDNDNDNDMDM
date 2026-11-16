@@ -8,7 +8,8 @@ import {makeAuth} from '../lib/commerce/auth.mjs';
 import {createStaff,updateStaff,listStaff,loginStaff,panelPrincipal,can,
   changeStaffPassword,recentStaffAudit} from '../lib/commerce/staff.mjs';
 import {createSupportThread,assignSupportThread,replyAdminSupport,
-  listAdminSupport,listUserSupport} from '../lib/commerce/support.mjs';
+  listAdminSupport,listUserSupport,liftSupportSuspension,
+  findAutoAssignStaffId} from '../lib/commerce/support.mjs';
 import {userDirectory,userDetail} from '../lib/commerce/users-admin.mjs';
 import {customRoles,writeCustomRole,roleCapabilities} from '../lib/commerce/staff-roles.mjs';
 let pg,db,auth,redis;
@@ -35,7 +36,7 @@ before(async()=>{
  auth=makeAuth(db,env);
  await (await getMigrations(auth.options)).runMigrations();
  for(const name of ['002_shop.sql','003_ads_free.sql','004_gifts.sql',
-   '005_account_support_apk.sql','006_support_agent_identity.sql','007_staff_permissions.sql','008_account_notifications.sql','009_staff_custom_roles.sql','010_support_reads_avatar.sql']){
+   '005_account_support_apk.sql','006_support_agent_identity.sql','007_staff_permissions.sql','008_account_notifications.sql','009_staff_custom_roles.sql','010_support_reads_avatar.sql','011_support_autoassign_reads_antispam.sql']){
   const sql=await readFile(new URL('../sql/'+name,import.meta.url),'utf8');
   await pg.exec(sql);
  }
@@ -161,6 +162,80 @@ test('registered customers directory is scoped, paginated and redacts secrets',a
  const audit=await recentStaffAudit({db});
  assert.ok(audit.events.some(x=>x.action==='customer_viewed'));
  await assert.rejects(userDirectory({db,page:1001}),/INVALID_REQUEST/);
+});
+
+test('assigned staff can rename a thread title without touching status or time',async()=>{
+ // Fresh support agent; manual assignment requires the first-password-change
+ // gate to be cleared (assignSupportThread checks must_change_password=false).
+ const agent=await createStaff(owner,{username:'rename.qa',name:'Rename QA',role:'support'},{db});
+ await db.query(`UPDATE spdecode_shop.staff_accounts SET must_change_password=false WHERE id=$1`,[agent.staff.id]);
+ const actor={id:agent.staff.id,name:'Rename QA',role:'support'};
+ const thread=await createSupportThread(users[0],{subject:'Provisional title',
+  category:'technical',message:'The app crashes on open'},{db,env});
+ assert.equal(thread.assignedStaffId,null);
+ await assignSupportThread(owner,{threadId:thread.id,action:'assign',
+  assignedId:actor.id,priority:'normal'},{db});
+ const before=(await db.query(`SELECT status,last_message_at FROM spdecode_shop.support_threads WHERE id=$1`,[thread.id])).rows[0];
+ const renamed=await replyAdminSupport({id:actor.id,name:actor.name,role:'support'},
+  {threadId:thread.id,action:'rename',subject:'Crash on open'},{db,env});
+ assert.equal(renamed.saved,true);
+ assert.equal(renamed.status,before.status);
+ const after=(await db.query(`SELECT subject,status,last_message_at FROM spdecode_shop.support_threads WHERE id=$1`,[thread.id])).rows[0];
+ assert.equal(after.subject,'Crash on open');
+ assert.equal(after.status,before.status);
+ assert.equal(new Date(after.last_message_at).getTime(),new Date(before.last_message_at).getTime());
+ const client=await listUserSupport(users[0],{db,env});
+ assert.equal(client.threads.find(t=>t.id===thread.id).subject,'Crash on open');
+ const audit=await recentStaffAudit({db});
+ assert.ok(audit.events.some(x=>x.action==='support_rename'&&x.target_id===thread.id));
+ // Rename validation: too short, and subject on any other action, are refused.
+ await assert.rejects(replyAdminSupport({id:actor.id,name:actor.name,role:'support'},
+  {threadId:thread.id,action:'rename',subject:'No'},{db,env}),/INVALID_REQUEST/);
+ await assert.rejects(replyAdminSupport({id:actor.id,name:actor.name,role:'support'},
+  {threadId:thread.id,action:'close',subject:'Crash on open'},{db,env}),/INVALID_REQUEST/);
+ // Unassigned staff still cannot rename someone else's thread.
+ await assert.rejects(replyAdminSupport({id:randomUUID(),name:'Other',role:'support'},
+  {threadId:thread.id,action:'rename',subject:'Other title'},{db,env}),/SUPPORT_NOT_ASSIGNED/);
+});
+test('support role can lift a suspension; new threads auto-assign to Yamada',async()=>{
+ const actor=globalThis.staffTestActor;
+ // No Yamada account exists yet: new threads stay unassigned.
+ const plain=await createSupportThread(users[1],{subject:'Plain thread',
+  category:'technical',message:'First'},{db,env});
+ assert.equal(plain.assignedStaffId,null);
+ // Limited staff sees unassigned threads too (safety net until auto-assign exists).
+ const unassigned=await listAdminSupport({db,env,principal:actor});
+ assert.ok(unassigned.threads.some(t=>t.id===plain.id));
+ // 4 threads in one day suspend the account; the support role lifts it.
+ const mk=subject=>createSupportThread(users[1],{subject,category:'technical',
+  message:'Help with '+subject},{db,env});
+ await mk('Second thread');
+ await mk('Third thread');
+ const fourth=await mk('Fourth thread');
+ assert.ok(fourth.suspendedUntil);
+ const support={id:actor.id,role:'support',capabilities:['support.read','support.write']};
+ assert.deepEqual(await liftSupportSuspension(support,users[1],{db}),{lifted:true});
+ assert.equal((await listUserSupport(users[1],{db,env})).suspension,null);
+});
+test('auto-assignment picks the Yamada account, preferring the support role',async()=>{
+ // An admin named Yamada exists, but the support-role Yamada wins.
+ const adminYamada=await createStaff(owner,{username:'yamada.admin',name:'Yamada',role:'admin'},{db});
+ const supportYamada=await createStaff(owner,{username:'yamada.qa',name:'Yamada',role:'support'},{db});
+ assert.equal(await findAutoAssignStaffId(db,env),supportYamada.staff.id);
+ // Name match is case-insensitive and honours the env override.
+ assert.equal(await findAutoAssignStaffId(db,{...env,
+  SPDECODE_SUPPORT_AUTO_ASSIGN_NAME:'YAMADA'}),supportYamada.staff.id);
+ assert.equal(await findAutoAssignStaffId(db,{...env,
+  SPDECODE_SUPPORT_AUTO_ASSIGN_NAME:'Nobody'}),null);
+ const thread=await createSupportThread(users[0],{subject:'Auto assigned',
+  category:'apk',message:'Please help'},{db,env});
+ assert.equal(thread.assignedStaffId,supportYamada.staff.id);
+ const row=(await db.query('SELECT assigned_staff_id FROM spdecode_shop.support_threads WHERE id=$1',[thread.id])).rows[0];
+ assert.equal(row.assigned_staff_id,supportYamada.staff.id);
+ const yamadaPrincipal={id:supportYamada.staff.id,
+  capabilities:['support.read','support.write']};
+ const listed=await listAdminSupport({db,env,principal:yamadaPrincipal});
+ assert.ok(listed.threads.some(t=>t.id===thread.id));
 });
 
 test('owner creates least-privilege custom role with no escalation to staff administration',async()=>{

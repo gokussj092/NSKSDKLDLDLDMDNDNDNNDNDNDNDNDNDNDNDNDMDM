@@ -6,7 +6,8 @@ import {PGlite} from '@electric-sql/pglite';
 import {getMigrations} from 'better-auth/db/migration';
 import {makeAuth} from '../lib/commerce/auth.mjs';
 import {createSupportThread,sendSupportMessage,listUserSupport,listAdminSupport,
- replyAdminSupport,markSupportThreadRead,encryptMessage,decryptMessage} from '../lib/commerce/support.mjs';
+ replyAdminSupport,markSupportThreadRead,encryptMessage,decryptMessage,
+ liftSupportSuspension} from '../lib/commerce/support.mjs';
 import {registerDevice,makeDeletionChallenge,authorizeDeviceDeletion,
  deleteAccountData} from '../lib/commerce/account-device.mjs';
 let pg,db,auth;
@@ -27,7 +28,7 @@ before(async()=>{
  db={query,connect:async()=>({query,release(){}})};
  auth=makeAuth(db,env);
  await (await getMigrations(auth.options)).runMigrations();
- for(const name of ['002_shop.sql','003_ads_free.sql','004_gifts.sql','005_account_support_apk.sql','006_support_agent_identity.sql','007_staff_permissions.sql','008_account_notifications.sql','009_staff_custom_roles.sql','010_support_reads_avatar.sql']){
+ for(const name of ['002_shop.sql','003_ads_free.sql','004_gifts.sql','005_account_support_apk.sql','006_support_agent_identity.sql','007_staff_permissions.sql','008_account_notifications.sql','009_staff_custom_roles.sql','010_support_reads_avatar.sql','011_support_autoassign_reads_antispam.sql']){
   const sql=await readFile(new URL('../sql/'+name,import.meta.url),'utf8');
   await pg.exec(sql);
  }
@@ -125,6 +126,78 @@ test('AndroidKeyStore-compatible P256 signatures require account binding and one
   signature:signText(challenge.challenge)},{db});
  await assert.rejects(authorizeDeviceDeletion(ids[1],{...challenge,keyId,
   signature:signText(challenge.challenge)},{db}),/CHALLENGE_EXPIRED/);
+});
+test('one open ticket, 4th ticket of the day suspends support for 1h, lift restores it',async()=>{
+ const userId=randomUUID();
+ await db.query(`INSERT INTO shop_user(id,name,email,"emailVerified","createdAt","updatedAt")
+  VALUES($1,$2,$3,true,now(),now())`,[userId,'Spam QA',userId+'@example.invalid']);
+ const mk=subject=>createSupportThread(userId,{subject,category:'technical',
+  message:'Help with '+subject},{db,env});
+ const t1=await mk('First issue');
+ const t2=await mk('Second issue');
+ // A new thread closes the previous open one: only one stays open (D4).
+ let listing=await listUserSupport(userId,{db,env});
+ assert.equal(listing.threads.find(t=>t.id===t1.id).status,'closed');
+ assert.equal(listing.threads.find(t=>t.id===t2.id).status,'open');
+ assert.equal(listing.suspension,null);
+ await mk('Third issue');
+ assert.equal((await listUserSupport(userId,{db,env})).suspension,null);
+ // The 4th thread of the day is created AND suspends support for 1 hour.
+ const t4=await mk('Fourth issue');
+ assert.ok(t4.suspendedUntil);
+ assert.ok(new Date(t4.suspendedUntil).getTime()>Date.now());
+ assert.ok(new Date(t4.suspendedUntil).getTime()<=Date.now()+3600_000+5000);
+ listing=await listUserSupport(userId,{db,env});
+ assert.equal(listing.suspension?.reason,'too_many_tickets');
+ assert.equal(listing.suspension?.suspendedUntil,t4.suspendedUntil);
+ // Suspended: new threads and messages fail with 429 SUPPORT_SUSPENDED
+ // carrying the suspension end.
+ await assert.rejects(mk('Fifth issue'),e=>e.code==='SUPPORT_SUSPENDED'&&e.status===429&&
+  typeof e.details?.suspendedUntil==='string');
+ await assert.rejects(sendSupportMessage(userId,t4.id,{message:'Still there?'},{db,env}),
+  e=>e.code==='SUPPORT_SUSPENDED'&&e.status===429);
+ // The admin list shows the suspension on the thread, no priors yet.
+ const admin=await listAdminSupport({db,env});
+ const row=admin.threads.find(t=>t.id===t4.id);
+ assert.equal(row.suspension?.reason,'too_many_tickets');
+ assert.equal(row.suspension?.priorCount,0);
+ // Lift by a support-role staff member restores access; a second lift is a no-op.
+ const support={id:randomUUID(),role:'support',capabilities:['support.read','support.write']};
+ assert.deepEqual(await liftSupportSuspension(support,userId,{db}),{lifted:true});
+ assert.equal((await listUserSupport(userId,{db,env})).suspension,null);
+ assert.deepEqual(await liftSupportSuspension(support,userId,{db}),{lifted:false});
+ await sendSupportMessage(userId,t4.id,{message:'Back again'},{db,env});
+ // Creating another thread the same day suspends again; the lifted one counts as prior.
+ const t5=await mk('Fifth issue');
+ assert.ok(t5.suspendedUntil);
+ const admin2=await listAdminSupport({db,env});
+ assert.equal(admin2.threads.find(t=>t.id===t5.id).suspension?.priorCount,1);
+ // Without support.write the lift is refused.
+ await assert.rejects(liftSupportSuspension({id:randomUUID(),role:'billing',
+  capabilities:['users.read','billing.read']},userId,{db}),/INVALID_REQUEST/);
+});
+test('staff read receipt and inactivity close only when staff spoke last',async()=>{
+ const userId=randomUUID();
+ await db.query(`INSERT INTO shop_user(id,name,email,"emailVerified","createdAt","updatedAt")
+  VALUES($1,$2,$3,true,now(),now())`,[userId,'Reads QA',userId+'@example.invalid']);
+ const thread=await createSupportThread(userId,{subject:'Read receipt',
+  category:'apk',message:'Hello'},{db,env});
+ let listing=await listUserSupport(userId,{db,env});
+ assert.equal(listing.threads[0].staffReadAt,null);
+ await markSupportThreadRead(thread.id,{kind:'staff',id:randomUUID(),canSeeAll:true},{db});
+ listing=await listUserSupport(userId,{db,env});
+ assert.ok(listing.threads[0].staffReadAt);
+ assert.ok(new Date(listing.threads[0].staffReadAt).getTime()<=Date.now());
+ // Last message is from the user: 2h of silence does not close the thread.
+ await db.query(`UPDATE spdecode_shop.support_threads SET last_message_at=now()-interval '2 hours' WHERE id=$1`,[thread.id]);
+ listing=await listUserSupport(userId,{db,env});
+ assert.equal(listing.threads[0].status,'open');
+ // Staff replies and 2h pass with no user answer: the next list closes it.
+ await replyAdminSupport({id:'f'.repeat(64),name:'Operator QA',role:'owner'},
+  {threadId:thread.id,action:'reply',message:'Looking into it.'},{db,env});
+ await db.query(`UPDATE spdecode_shop.support_threads SET last_message_at=now()-interval '2 hours' WHERE id=$1`,[thread.id]);
+ listing=await listUserSupport(userId,{db,env});
+ assert.equal(listing.threads[0].status,'closed');
 });
 test('confirmed deletion removes account and private messages',async()=>{
  await deleteAccountData(ids[1],{db});

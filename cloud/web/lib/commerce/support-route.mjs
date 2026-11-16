@@ -1,7 +1,8 @@
 import {requireAccount} from './auth.mjs';
 import {safe,reply,requireOrigin,jsonBody,fail} from './config.mjs';
 import {createSupportThread,sendSupportMessage,listUserSupport,listAdminSupport,
-  replyAdminSupport,assignSupportThread,markSupportThreadRead} from './support.mjs';
+  replyAdminSupport,assignSupportThread,markSupportThreadRead,
+  liftSupportSuspension} from './support.mjs';
 import {adminSettings,validMutation} from '../c6-admin-auth.mjs';
 import {requirePanel,can} from './staff.mjs';
 
@@ -42,6 +43,11 @@ export const supportAdminRequest=request=>safe(async()=>{
    return reply(await markSupportThreadRead(body.threadId,{
      kind:'staff',id:principal.id,
      canSeeAll:principal.capabilities.includes('support.assign')}));
+ }
+ if(body.action==='liftSuspension'){
+   if(!can(principal,'support.write'))fail('FORBIDDEN',403);
+   if(Object.keys(body).some(k=>!['action','accountId'].includes(k)))fail('INVALID_REQUEST');
+   return reply(await liftSupportSuspension(principal,body.accountId));
  }
  if(!can(principal,'support.write'))fail('FORBIDDEN',403);
  return reply(await replyAdminSupport({
