@@ -1,14 +1,17 @@
 import {test,before,after} from 'node:test';
 import assert from 'node:assert/strict';
-import {readFile} from 'node:fs/promises';
+import {readFile,mkdtemp,rm} from 'node:fs/promises';
+import {tmpdir} from 'node:os';
+import {join} from 'node:path';
 import {randomUUID,generateKeyPairSync,sign,randomBytes} from 'node:crypto';
 import {PGlite} from '@electric-sql/pglite';
 import {getMigrations} from 'better-auth/db/migration';
 import {makeAuth} from '../lib/commerce/auth.mjs';
+import {readStoredFeed} from '../lib/notice-store.mjs';
 import {createSupportThread,sendSupportMessage,listUserSupport,listAdminSupport,
  replyAdminSupport,markSupportThreadRead,encryptMessage,decryptMessage,
  liftSupportSuspension,escalateSupportThread,findAutoAssignStaffId,
- escalationNoticeId} from '../lib/commerce/support.mjs';
+ escalationNoticeId,newSupportMessageNoticeId} from '../lib/commerce/support.mjs';
 import {registerDevice,makeDeletionChallenge,authorizeDeviceDeletion,
  deleteAccountData} from '../lib/commerce/account-device.mjs';
 let pg,db,auth;
@@ -297,4 +300,56 @@ test('escalation to Pedro: assigned agent escalates, owner sees the mark, idempo
  assert.equal(third.alreadyEscalated,false);
  assert.equal(third.thread.priority,'high');
  assert.equal(third.thread.escalatedBy,owner.id);
+});
+const noticeEnv={...env,CLOUD_NOTICE_STORE_PATH:'/app/notices/feed.json'};
+test('new-user-message notice id is a stable v4 UUID per thread',()=>{
+ const id=randomUUID();
+ assert.match(newSupportMessageNoticeId(id),
+  /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/);
+ assert.equal(newSupportMessageNoticeId(id),newSupportMessageNoticeId(id));
+ assert.notEqual(newSupportMessageNoticeId(id),newSupportMessageNoticeId(randomUUID()));
+ assert.notEqual(newSupportMessageNoticeId(id),escalationNoticeId(id));
+});
+test('new user message publishes one notice per thread; staff reply adds none',async()=>{
+ const root=await mkdtemp(join(tmpdir(),'support-notice-'));
+ try{
+  const user=await mkUser();
+  const thread=await createSupportThread(user,{subject:'Notice check',
+   category:'technical',message:'My VPN fails on login'},{db,env:noticeEnv,noticeRoot:root});
+  let feed=await readStoredFeed({root,env:noticeEnv});
+  assert.equal(feed.length,1);
+  assert.equal(feed[0].id,newSupportMessageNoticeId(thread.id));
+  assert.equal(feed[0].title,'Nuevo mensaje de soporte');
+  assert.equal(feed[0].body,'Un usuario escribió en soporte y necesita respuesta.');
+  assert.equal(feed[0].body.includes('My VPN fails'),false);
+  assert.equal(feed[0].type,'general');
+  assert.equal(feed[0].importance,'normal');
+  assert.equal(feed[0].delivery,'poll');
+  assert.equal(feed[0].expiresAt-feed[0].createdAt,24*3600000);
+  // A user follow-up in the same thread does not duplicate the notice.
+  await sendSupportMessage(user,thread.id,{message:'Still failing'},{db,env:noticeEnv,noticeRoot:root});
+  feed=await readStoredFeed({root,env:noticeEnv});
+  assert.equal(feed.length,1);
+  assert.equal(feed[0].id,newSupportMessageNoticeId(thread.id));
+  // A staff reply publishes no new-message notice either.
+  await replyAdminSupport({id:yamadaStaffId,name:'Yamada',role:'support'},
+   {threadId:thread.id,action:'reply',message:'Checking it.'},{db,env});
+  feed=await readStoredFeed({root,env:noticeEnv});
+  assert.equal(feed.length,1);
+ }finally{await rm(root,{recursive:true,force:true});}
+});
+test('notice store failure never blocks a user message',async()=>{
+ const root=await mkdtemp(join(tmpdir(),'support-notice-bad-'));
+ try{
+  const user=await mkUser();
+  const badRoot=join(root,'missing');
+  const thread=await createSupportThread(user,{subject:'Store down check',
+   category:'technical',message:'Can you hear me?'},{db,env:noticeEnv,noticeRoot:badRoot});
+  let listing=await listUserSupport(user,{db,env});
+  assert.equal(listing.threads[0].messages[0].text,'Can you hear me?');
+  await sendSupportMessage(user,thread.id,{message:'Second attempt'},{db,env:noticeEnv,noticeRoot:badRoot});
+  listing=await listUserSupport(user,{db,env});
+  assert.equal(listing.threads[0].messages.length,2);
+  assert.equal(listing.threads[0].messages[1].text,'Second attempt');
+ }finally{await rm(root,{recursive:true,force:true});}
 });

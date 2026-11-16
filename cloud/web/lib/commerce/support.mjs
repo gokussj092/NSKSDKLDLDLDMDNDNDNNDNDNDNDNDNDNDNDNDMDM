@@ -129,7 +129,7 @@ function validateText(text,max=4096){
       /[\u0000-\u0008\u000b\u000c\u000e-\u001f]/.test(text))fail('INVALID_MESSAGE');
   return text.trim();
 }
-export async function createSupportThread(accountId,input,{db=database(),env=process.env}={}){
+export async function createSupportThread(accountId,input,{db=database(),env=process.env,noticeRoot}={}){
   secret(env);
   const category=input?.category,subject=input?.subject;
   if(!CATEGORIES.has(category)||typeof subject!=='string'||subject.trim().length<4||
@@ -138,7 +138,7 @@ export async function createSupportThread(accountId,input,{db=database(),env=pro
   const text=validateText(input.message);
   await requireNoSuspension(db,accountId);
   await rate(accountId,db);
-  return transaction(async client=>{
+  const result=await transaction(async client=>{
     const account=await client.query('SELECT id FROM shop_user WHERE id=$1 FOR UPDATE',[accountId]);
     if(!account.rowCount)fail('SIGN_IN_REQUIRED',401);
     await closeOtherThreads(client,accountId);
@@ -163,14 +163,20 @@ export async function createSupportThread(accountId,input,{db=database(),env=pro
     return {id,created:true,assignedStaffId,
       ...(suspendedUntil?{suspendedUntil:new Date(suspendedUntil).toISOString()}:{})};
   },db);
+  // Best-effort notice: the durable feed is the channel the owner reads
+  // in the panel and the Admin app (Notices). A missing or misconfigured
+  // notice store must never fail the thread creation itself, and the
+  // deterministic id keeps follow-up messages from duplicating it.
+  await publishNewSupportMessageNotice(result.id,{env,root:noticeRoot}).catch(()=>{});
+  return result;
 }
-export async function sendSupportMessage(accountId,threadId,input,{db=database(),env=process.env}={}){
+export async function sendSupportMessage(accountId,threadId,input,{db=database(),env=process.env,noticeRoot}={}){
   secret(env);
   if(!UUID.test(threadId)||Object.keys(input||{}).some(k=>k!=='message'))fail('INVALID_REQUEST');
   const text=validateText(input?.message);
   await requireNoSuspension(db,accountId);
   await rate(accountId,db);
-  return transaction(async client=>{
+  const result=await transaction(async client=>{
     const row=(await client.query(`SELECT id,status FROM spdecode_shop.support_threads
       WHERE id=$1 AND account_id=$2 FOR UPDATE`,[threadId,accountId])).rows[0];
     if(!row)fail('SUPPORT_NOT_FOUND',404);
@@ -182,6 +188,10 @@ export async function sendSupportMessage(accountId,threadId,input,{db=database()
       last_message_at=now() WHERE id=$1`,[threadId]);
     return {sent:true,id};
   },db);
+  // Best-effort notice, same as thread creation: a failing notice store
+  // must never discard a message the user already sent.
+  await publishNewSupportMessageNotice(threadId,{env,root:noticeRoot}).catch(()=>{});
+  return result;
 }
 export async function listUserSupport(accountId,{db=database(),env=process.env}={}){
   secret(env);
@@ -366,6 +376,27 @@ export function escalationNoticeId(threadId){
   chars[12]='4';chars[16]='8';
   return [chars.slice(0,8).join(''),chars.slice(8,12).join(''),chars.slice(12,16).join(''),
     chars.slice(16,20).join(''),chars.slice(20,32).join('')].join('-');
+}
+// New-user-message notice: when a user writes in support, a durable
+// notice is published so the owner sees it in the admin notices feed
+// (panel Avisos / Admin app Notices) without opening the inbox. One
+// entry per thread: the deterministic id keeps follow-up messages in
+// the same thread from duplicating it. Staff replies never publish it.
+// The notice carries no user text, only that an answer is needed.
+export function newSupportMessageNoticeId(threadId){
+  const chars=createHash('sha256').update('spdecode-support-new-message:'+threadId)
+    .digest('hex').slice(0,32).split('');
+  chars[12]='4';chars[16]='8';
+  return [chars.slice(0,8).join(''),chars.slice(8,12).join(''),chars.slice(12,16).join(''),
+    chars.slice(16,20).join(''),chars.slice(20,32).join('')].join('-');
+}
+async function publishNewSupportMessageNotice(threadId,{env=process.env,root}={}){
+  const now=Date.now();
+  await transactStoredFeed({id:newSupportMessageNoticeId(threadId),
+    title:'Nuevo mensaje de soporte',
+    body:'Un usuario escribió en soporte y necesita respuesta.',
+    type:'general',importance:'normal',delivery:'poll',
+    createdAt:now,expiresAt:now+24*3600000},{env,root});
 }
 async function publishEscalationNotice(threadId,{env=process.env}={}){
   const now=Date.now();
