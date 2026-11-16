@@ -34,7 +34,7 @@ function NavIcon({name}){
 }
 export default function AdminNav({children}){
  const pathname=usePathname(),[expanded,setExpanded]=useState(false),
-  [principal,setPrincipal]=useState(null);
+  [principal,setPrincipal]=useState(null),[unread,setUnread]=useState(0);
  const permissionForPath={
   '/admin/support':'support.read','/admin/users':'users.read',
   '/admin/staff':'staff.read','/admin/staff-audit':'audit.read'
@@ -53,6 +53,19 @@ export default function AdminNav({children}){
    .catch(()=>{if(active)setPrincipal(null);});
   return()=>{active=false};
  },[pathname]);
+ // Insignia de no leídos en "Mensajes de soporte" (GET /api/admin/support, cada 30 s).
+ useEffect(()=>{
+  if(pathname==='/admin/login'||!principal)return;
+  if(!(principal.role==='owner'||principal.capabilities?.includes('support.read')))return;
+  let active=true;
+  const fetchUnread=()=>fetch('/api/admin/support',{credentials:'same-origin',cache:'no-store'})
+   .then(r=>r.ok?r.json():null)
+   .then(x=>{if(active&&typeof x?.unreadTotal==='number')setUnread(x.unreadTotal);})
+   .catch(()=>{});
+  fetchUnread();
+  const t=setInterval(fetchUnread,30000);
+  return()=>{active=false;clearInterval(t);};
+ },[pathname,principal]);
  useEffect(()=>{const onKey=e=>{if(e.key==="Escape")setExpanded(false);};window.addEventListener("keydown",onKey);return()=>window.removeEventListener("keydown",onKey);},[]);
  if(pathname==="/admin/login")return children;
  const name=groups.flatMap(g=>g.links).find(item=>item[1]===pathname)?.[0]||"Panel";
@@ -71,7 +84,9 @@ export default function AdminNav({children}){
       <h2>{group.label}</h2>
       {group.links.map(([label,url,icon])=><Link key={url} href={url} aria-current={pathname===url?"page":undefined}
        className={pathname===url?"current":""} onClick={()=>{if(window.innerWidth<980)setExpanded(false);}}>
-       <NavIcon name={icon}/><span>{label}</span></Link>)}
+       <NavIcon name={icon}/><span>{label}</span>
+       {url==='/admin/support'&&unread>0&&<span className="sp-admin-nav-badge"
+        aria-label={unread+' conversaciones sin leer'}>{unread>99?'99+':unread}</span>}</Link>)}
     </section>)}
    </nav>
   </aside>

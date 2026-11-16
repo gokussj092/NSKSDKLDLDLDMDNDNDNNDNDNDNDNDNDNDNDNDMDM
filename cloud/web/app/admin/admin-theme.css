@@ -571,3 +571,69 @@ body:has(.sp-admin-frame){background:#000;color:#f7f7f7}
  .sp-customer-stat-grid{grid-template-columns:repeat(2,minmax(120px,1fr))}
 }
 @media(max-width:550px){.sp-person-fields{grid-template-columns:1fr}}
+
+/* Soporte: no leídos, suspensión anti-spam, chat a pantalla completa y avatar del agente. */
+.sp-chat-hero-pills{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.sp-support-pill-unread{background:#f7f7f7!important;color:#080808!important}
+.sp-chat-unread-badge{display:inline-grid;place-items:center;min-width:20px;height:20px;padding:0 6px;
+  border-radius:20px;background:#f7f7f7;color:#000;font-size:11px;font-weight:800;line-height:1;flex:none}
+.sp-chat-thread.unread{background:#20261f}
+.sp-chat-thread.unread .sp-chat-thread-title strong{font-weight:800;color:#fff}
+.sp-chat-thread.unread .sp-chat-thread-subtitle{font-weight:700;color:#f0f0f0}
+.sp-chat-chip{display:inline-flex;align-items:center;font-size:10px;border-radius:30px;
+  padding:4px 9px;background:#303030;color:#d6d6d6;white-space:nowrap}
+.sp-chat-chip.priority-high{color:#ffd9a8;background:#443725}
+.sp-chat-chip.priority-low{color:#b5b5b5;background:#282828}
+.sp-chat-suspended{display:inline-flex;align-items:center;font-size:10px;font-weight:750;border-radius:30px;
+  padding:4px 9px;background:#3a2f16;color:#e0b563;border:1px solid #6b5518;white-space:nowrap;cursor:help}
+button.sp-chat-suspended{cursor:pointer;font:inherit}
+.sp-chat-suspension-detail{display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding:10px 16px;
+  background:#241d0d;border-bottom:1px solid #4a3d16;color:#ecd9a0;font-size:12px}
+.sp-chat-suspension-detail .button{min-height:32px;padding:6px 12px;font-size:11px}
+.sp-chat-fullscreen{display:flex;flex-direction:column;gap:12px;min-height:calc(100vh - 230px)}
+.sp-chat-fullscreen-top{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.sp-chat-fullscreen-top .muted{margin-left:auto}
+.sp-chat-dialog-full{flex:1;min-height:560px;height:calc(100vh - 320px);
+  border:1px solid #353535;border-radius:23px;overflow:hidden}
+.sp-chat-dialog-full .sp-chat-dialog-header{flex-wrap:wrap}
+.sp-chat-inbox-card{border:1px solid #353535;border-radius:23px;overflow:hidden;
+  background:#101010;border-right:0;min-height:420px}
+.sp-chat-rename{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.sp-chat-rename input{min-width:220px;max-width:420px;flex:1;border:1px solid #454545;border-radius:9px;
+  padding:7px 10px;background:#272727;color:#f5f5f5;font:inherit}
+.sp-chat-rename-btn{background:none;border:0;color:#b3b3b3;cursor:pointer;padding:2px 4px;font:inherit}
+.sp-chat-rename-btn:hover{color:#fff}
+.sp-chat-client-link{color:#cce4ff;font-size:12px;white-space:nowrap}
+.sp-chat-bubble-row{display:flex;gap:8px;align-items:flex-end;max-width:min(86%,570px);align-self:flex-start}
+.sp-chat-bubble-row.outgoing{align-self:flex-end}
+.sp-chat-bubble-row .sp-chat-bubble{flex:1;min-width:0;align-self:auto}
+.sp-chat-bubble-avatar{width:28px;height:28px;min-width:28px;flex:none}
+.sp-chat-bubble-avatar .sp-conversation-avatar{width:28px;height:28px;min-width:28px;font-size:12px}
+.sp-chat-loading{display:grid;gap:12px;padding:22px;text-align:center;color:#aaa}
+.sp-chat-loading .button{justify-self:center}
+.sp-chat-spinner{width:26px;height:26px;margin:auto;border:3px solid #3a3a3a;border-top-color:#f7f7f7;
+  border-radius:50%;animation:sp-chat-spin .8s linear infinite}
+@keyframes sp-chat-spin{to{transform:rotate(360deg)}}
+.sp-chat-skeleton{display:grid;gap:8px}
+.sp-chat-skeleton i{display:block;height:54px;border-radius:12px;background:#1e1e1e;
+  animation:sp-chat-pulse 1.4s ease-in-out infinite}
+.sp-chat-skeleton i:nth-child(2){animation-delay:.2s}
+.sp-chat-skeleton i:nth-child(3){animation-delay:.4s}
+@keyframes sp-chat-pulse{0%,100%{opacity:.55}50%{opacity:1}}
+.sp-chat-shortcuts{font-size:11px;color:#888;margin:0}
+.sp-chat-inbox-card .sp-chat-shortcuts{padding:0 13px 12px}
+.sp-chat-link-button{background:none;border:0;color:#fff;text-decoration:underline;cursor:pointer;font:inherit;padding:0}
+.sp-admin-nav-badge{margin-left:auto;background:#f7f7f7;color:#000;border-radius:20px;
+  padding:1px 8px;font-size:11px;font-weight:800;line-height:1.6;flex:none}
+@media(max-width:900px){.sp-chat-dialog-full{height:auto}}
+@media(prefers-reduced-motion:reduce){.sp-chat-spinner,.sp-chat-skeleton i{animation:none}}
+
+/* Avatar del personal: subida (conversión automática a JPEG) o data-URI pegado. */
+.sp-staff-avatar-field{width:100%;display:grid;gap:10px;border-top:1px solid #333;padding-top:14px}
+.sp-staff-avatar-preview{display:flex;gap:12px;align-items:center}
+.sp-staff-avatar-preview img{width:47px;height:47px;border-radius:50%;object-fit:cover;border:1px solid #454545}
+.sp-staff-avatar-preview>div{display:grid;gap:4px}
+.sp-staff-avatar-field label{display:grid;gap:6px;font-size:12px;color:#c6c6c6}
+.sp-staff-avatar-field input{min-width:0;border:1px solid #464646;border-radius:11px;background:#131313;
+  color:#f5f5f5;padding:11px;font:inherit}
+.sp-staff-avatar-field .form-message{margin:0}

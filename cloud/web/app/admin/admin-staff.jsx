@@ -34,11 +34,74 @@ function CustomRoleRow({row,busy,onSave}){
 }
 
 const canName=value=>value?.trim()?.length>=2;
+// Avatar de personal: misma regla que el servidor (data-URI JPEG ≤ 85 KB).
+const MAX_AVATAR_URI=115000;
+function avatarOk(src){
+ if(typeof src!=='string')return null;
+ if(/^data:image\/jpeg;base64,[A-Za-z0-9+/]+={0,2}$/.test(src)&&src.length<=MAX_AVATAR_URI)return src;
+ return null;
+}
+function fileToJpegDataUri(file){
+ return new Promise((resolve,reject)=>{
+  const url=URL.createObjectURL(file);
+  const img=new Image();
+  img.onload=()=>{
+   URL.revokeObjectURL(url);
+   const maxSide=512,scale=Math.min(1,maxSide/Math.max(img.width,img.height));
+   const canvas=document.createElement('canvas');
+   canvas.width=Math.max(1,Math.round(img.width*scale));
+   canvas.height=Math.max(1,Math.round(img.height*scale));
+   const ctx=canvas.getContext('2d');
+   ctx.fillStyle='#000';ctx.fillRect(0,0,canvas.width,canvas.height);
+   ctx.drawImage(img,0,0,canvas.width,canvas.height);
+   let quality=0.85,uri=canvas.toDataURL('image/jpeg',quality);
+   while(uri.length>MAX_AVATAR_URI&&quality>0.5){quality-=0.1;uri=canvas.toDataURL('image/jpeg',quality);}
+   resolve(uri);
+  };
+  img.onerror=()=>{URL.revokeObjectURL(url);reject(new Error('Imagen no válida'));};
+  img.src=url;
+ });
+}
+function AvatarField({value,name,onChange,busy}){
+ const [error,setError]=useState(''),[paste,setPaste]=useState('');
+ const apply=uri=>{
+  if(!avatarOk(uri)){setError('Pega un data-URI JPEG válido de 85 KB o menos.');return;}
+  setError('');onChange(uri);
+ };
+ const onFile=async e=>{
+  const file=e.target.files?.[0];
+  e.target.value='';
+  if(!file)return;
+  try{
+   const uri=await fileToJpegDataUri(file);
+   if(!avatarOk(uri)){setError('La imagen convertida a JPEG supera 85 KB. Usa una imagen más pequeña.');return;}
+   setError('');onChange(uri);
+  }catch{setError('No se pudo leer la imagen. Sube un archivo de imagen válido.');}
+ };
+ const preview=avatarOk(value);
+ return <div className="sp-staff-avatar-field">
+  <div className="sp-staff-avatar-preview">
+   {preview?<img src={preview} alt="Avatar actual"/>:
+    <span className="sp-person-avatar" aria-hidden="true">{name?.slice(0,1)?.toUpperCase()||'S'}</span>}
+   <div><strong>Avatar de soporte</strong>
+    <small className="muted">Se muestra junto a las respuestas en el chat. JPEG de 85 KB o menos; las imágenes subidas se convierten a JPEG automáticamente.</small></div>
+  </div>
+  <label>Subir imagen<input type="file" accept="image/*" disabled={busy} onChange={onFile}/></label>
+  <label>Pegar data-URI JPEG<input type="text" value={paste} disabled={busy} placeholder="data:image/jpeg;base64,…"
+   onChange={e=>setPaste(e.target.value)}/></label>
+  <div className="sp-action-group">
+   <button className="button" type="button" disabled={busy||!paste.trim()} onClick={()=>apply(paste.trim())}>Aplicar imagen pegada</button>
+   {value&&<button className="button" type="button" disabled={busy} onClick={()=>{setError('');setPaste('');onChange(null);}}>Quitar avatar</button>}
+  </div>
+  {error&&<p className="form-message error" role="alert">{error}</p>}
+ </div>;
+}
 function StaffRow({row,onSave,onReset,busy,roleLabels}){
- const [edit,setEdit]=useState({name:row.name,username:row.username,role:row.role,enabled:row.enabled});
- useEffect(()=>{setEdit({name:row.name,username:row.username,role:row.role,enabled:row.enabled});},[row.id,row.updatedAt]);
+ const [edit,setEdit]=useState({name:row.name,username:row.username,role:row.role,enabled:row.enabled,avatar:row.avatar??null});
+ useEffect(()=>{setEdit({name:row.name,username:row.username,role:row.role,enabled:row.enabled,avatar:row.avatar??null});},[row.id,row.updatedAt]);
  return <article className="sp-personnel-row">
-  <div className="sp-person-avatar" aria-hidden="true">{row.name?.slice(0,1)?.toUpperCase()||'S'}</div>
+  {avatarOk(edit.avatar)?<img className="sp-person-avatar" src={avatarOk(edit.avatar)} alt=""/>:
+   <div className="sp-person-avatar" aria-hidden="true">{row.name?.slice(0,1)?.toUpperCase()||'S'}</div>}
   <div className="sp-person-fields">
    <label>Nombre<input value={edit.name} maxLength={80} onChange={e=>setEdit(x=>({...x,name:e.target.value}))}/></label>
    <label>Usuario<input value={edit.username} maxLength={48} onChange={e=>setEdit(x=>({...x,username:e.target.value.toLowerCase()}))}/></label>
@@ -54,6 +117,7 @@ function StaffRow({row,onSave,onReset,busy,roleLabels}){
     <button className="button" disabled={busy} onClick={()=>onReset(row)}>Restablecer contraseña</button>
    </div>
   </div>
+  <AvatarField value={edit.avatar} name={edit.name} busy={busy} onChange={v=>setEdit(x=>({...x,avatar:v}))}/>
  </article>;
 }
 export default function StaffAdmin(){
