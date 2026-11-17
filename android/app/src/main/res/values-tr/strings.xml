@@ -310,9 +310,9 @@
     <string name="decrypt_credits_edit">Düzenle</string>
     <string name="decrypt_credits_delete">Sil</string>
     <string name="decrypt_credits_delete_confirm">Kaydedilmiş Telegram kullanıcı adı silinsin mi? Sonraki kopyalarda varsayılan SP-DECODE bilgileri kullanılacak.</string>
-    <!-- App analysis (SP-DECODE Arnes, fase 1) -->
-    <string name="app_analysis_arnes_name">SP-DECODE Arnés</string>
-    <string name="app_analysis_intro">Analiz etmek istediğiniz uygulamayı yükleyin. Arnés inceler ve komut dosyalarını ve kataloğu size verir.</string>
+    <!-- App analysis (SP-DECODE Harness, fase 1) -->
+    <string name="app_analysis_arnes_name">SP-DECODE Harness</string>
+    <string name="app_analysis_intro">Analiz etmek istediğiniz uygulamayı yükleyin. SP-DECODE Harness inceler ve komut dosyalarını ve kataloğu size verir.</string>
     <string name="app_analysis_cost">Ücret</string>
     <string name="app_analysis_cost_value">1 kredi = 1 analiz</string>
     <string name="app_analysis_balance">Bakiyeniz</string>

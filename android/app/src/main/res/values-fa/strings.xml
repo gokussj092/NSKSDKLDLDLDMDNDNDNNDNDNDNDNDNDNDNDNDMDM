@@ -309,9 +309,9 @@
     <string name="decrypt_credits_edit">ویرایش</string>
     <string name="decrypt_credits_delete">حذف</string>
     <string name="decrypt_credits_delete_confirm">نام کاربری ذخیره‌شده تلگرام حذف شود؟ نسخه‌های بعدی از اعتبار پیش‌فرض SP-DECODE استفاده می‌کنند.</string>
-    <!-- App analysis (SP-DECODE Arnes, fase 1) -->
-    <string name="app_analysis_arnes_name">SP-DECODE Arnés</string>
-    <string name="app_analysis_intro">برنامه‌ای را که می‌خواهید تحلیل کنید بارگذاری کنید. Arnés آن را بررسی می‌کند و اسکریپت‌ها و کاتالوگ را به شما می‌دهد.</string>
+    <!-- App analysis (SP-DECODE Harness, fase 1) -->
+    <string name="app_analysis_arnes_name">SP-DECODE Harness</string>
+    <string name="app_analysis_intro">برنامه‌ای را که می‌خواهید تحلیل کنید بارگذاری کنید. SP-DECODE Harness آن را بررسی می‌کند و اسکریپت‌ها و کاتالوگ را به شما می‌دهد.</string>
     <string name="app_analysis_cost">هزینه</string>
     <string name="app_analysis_cost_value">۱ اعتبار = ۱ تحلیل</string>
     <string name="app_analysis_balance">موجودی شما</string>

@@ -310,9 +310,9 @@
     <string name="decrypt_credits_edit">Chỉnh sửa</string>
     <string name="decrypt_credits_delete">Xóa</string>
     <string name="decrypt_credits_delete_confirm">Xóa tên người dùng Telegram đã lưu? Các bản sao tiếp theo sẽ dùng ghi công mặc định của SP-DECODE.</string>
-    <!-- App analysis (SP-DECODE Arnes, fase 1) -->
-    <string name="app_analysis_arnes_name">SP-DECODE Arnés</string>
-    <string name="app_analysis_intro">Tải lên ứng dụng bạn muốn phân tích. Arnés sẽ nghiên cứu và gửi cho bạn các tập lệnh cùng danh mục.</string>
+    <!-- App analysis (SP-DECODE Harness, fase 1) -->
+    <string name="app_analysis_arnes_name">SP-DECODE Harness</string>
+    <string name="app_analysis_intro">Tải lên ứng dụng bạn muốn phân tích. SP-DECODE Harness sẽ nghiên cứu và gửi cho bạn các tập lệnh cùng danh mục.</string>
     <string name="app_analysis_cost">Chi phí</string>
     <string name="app_analysis_cost_value">1 tín dụng = 1 lần phân tích</string>
     <string name="app_analysis_balance">Số dư của bạn</string>

@@ -349,13 +349,21 @@ async function creditPriceCents({db=database()}={}){
  return CREDIT_PRICE_CENTS_FALLBACK;
 }
 
-export async function preflight(accountId,{db=database()}={}){
+export async function preflight(accountId,{db=database(),env=process.env}={}){
  const row=(await db.query('SELECT id FROM shop_user WHERE id=$1',[accountId])).rows[0];
  if(!row)fail('SIGN_IN_REQUIRED',401);
  const credits=await creditBalance(accountId,{db});
- if(credits.available<1)fail('INSUFFICIENT_CREDITS',402);
+ // A balance read is valid at zero; reserving a job still enforces payment.
+ let avatar=null;
+ try{
+  const {findAutoAssignStaffId}=await import('./commerce/support.mjs');
+  const id=await findAutoAssignStaffId(db,env);
+  if(id)avatar=(await db.query(
+   'SELECT avatar FROM spdecode_shop.staff_accounts WHERE id=$1',[id])).rows[0]?.avatar??null;
+ }catch{ /* An optional staff profile must never hide the credit balance. */ }
  return {creditsAvailable:credits.available,balance:credits.balance,held:credits.held,
-  creditPriceCents:await creditPriceCents({db}),currency:'USD',creditsPerAnalysis:1};
+  creditPriceCents:await creditPriceCents({db}),currency:'USD',creditsPerAnalysis:1,
+  agent:{name:'Yamada',role:'support_ai',avatar}};
 }
 
 export async function startJob(accountId,input,{db=database(),env=process.env,root}={}){
@@ -367,7 +375,8 @@ export async function startJob(accountId,input,{db=database(),env=process.env,ro
     typeof sha256!=='string'||!HEX64.test(sha256)||
     typeof deviceKeyHash!=='string'||!HEX64.test(deviceKeyHash))
   fail('INVALID_REQUEST');
- await preflight(accountId,{db});
+ const availability=await preflight(accountId,{db,env});
+ if(availability.creditsAvailable<1)fail('INSUFFICIENT_CREDITS',402);
  const jobId=randomUUID();
  const uploadToken=randomBytes(32).toString('base64url');
  // Reserve first: a failed start must never leave a job without a held credit,

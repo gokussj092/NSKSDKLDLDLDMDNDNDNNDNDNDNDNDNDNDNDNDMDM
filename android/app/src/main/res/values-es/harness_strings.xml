@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="harness_preparing">Preparando aplicación…</string>
+    <string name="harness_review">En revisión</string>
+    <string name="harness_metadata">Revisando los datos de la aplicación…</string>
+    <string name="harness_code">Revisando el código de la aplicación…</string>
+    <string name="harness_details">Detalles del análisis</string>
+    <string name="harness_filename">Archivo</string>
+    <string name="harness_size">Tamaño</string>
+    <string name="harness_unknown_size">Tamaño pendiente</string>
+    <string name="harness_updated">Actualizado: %1$s</string>
+    <string name="harness_local_copy">Resultados guardados en este dispositivo</string>
+    <string name="harness_normal">Transferencia normal</string>
+    <string name="harness_chunks">Transferencia por partes</string>
+    <string name="harness_support_ai">IA de soporte</string>
+    <string name="harness_history_hint">Abre una aplicación para consultar su análisis y los resultados guardados.</string>
+    <string name="harness_queued_hint">Subida completada. Esperando un turno de análisis.</string>
+    <string name="harness_review_hint">El análisis está pendiente de revisión.</string>
+    <string name="harness_transfer_title">Modo de transferencia</string>
+    <string name="harness_transfer_scope">Se aplica a la próxima descarga del catálogo o subida de una APK.</string>
+    <string name="harness_stable">Conexión estable · transferencia continua</string>
+    <string name="harness_unstable">Conexión lenta o inestable · transferencia por partes</string>
+</resources>

@@ -309,9 +309,9 @@
     <string name="decrypt_credits_edit">Изменить</string>
     <string name="decrypt_credits_delete">Удалить</string>
     <string name="decrypt_credits_delete_confirm">Удалить сохранённое имя Telegram? Следующие копии будут содержать стандартные сведения SP-DECODE.</string>
-    <!-- App analysis (SP-DECODE Arnes, fase 1) -->
-    <string name="app_analysis_arnes_name">SP-DECODE Arnés</string>
-    <string name="app_analysis_intro">Загрузите приложение для анализа. Arnés изучит его и выдаст скрипты и каталог.</string>
+    <!-- App analysis (SP-DECODE Harness, fase 1) -->
+    <string name="app_analysis_arnes_name">SP-DECODE Harness</string>
+    <string name="app_analysis_intro">Загрузите приложение для анализа. SP-DECODE Harness изучит его и выдаст скрипты и каталог.</string>
     <string name="app_analysis_cost">Стоимость</string>
     <string name="app_analysis_cost_value">1 кредит = 1 анализ</string>
     <string name="app_analysis_balance">Ваш баланс</string>

@@ -309,9 +309,9 @@
     <string name="decrypt_credits_edit">Bearbeiten</string>
     <string name="decrypt_credits_delete">Entfernen</string>
     <string name="decrypt_credits_delete_confirm">Gespeicherten Telegram-Nutzernamen entfernen? Neue Kopien verwenden wieder die standardmäßige SP-DECODE-Zuordnung.</string>
-    <!-- App analysis (SP-DECODE Arnes, fase 1) -->
-    <string name="app_analysis_arnes_name">SP-DECODE Arnés</string>
-    <string name="app_analysis_intro">Lade die App hoch, die du analysieren möchtest. Arnés untersucht sie und liefert dir die Skripte und den Katalog.</string>
+    <!-- App analysis (SP-DECODE Harness, fase 1) -->
+    <string name="app_analysis_arnes_name">SP-DECODE Harness</string>
+    <string name="app_analysis_intro">Lade die App hoch, die du analysieren möchtest. SP-DECODE Harness untersucht sie und liefert dir die Skripte und den Katalog.</string>
     <string name="app_analysis_cost">Kosten</string>
     <string name="app_analysis_cost_value">1 Credit = 1 Analyse</string>
     <string name="app_analysis_balance">Dein Guthaben</string>

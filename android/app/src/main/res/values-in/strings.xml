@@ -309,9 +309,9 @@
     <string name="decrypt_credits_edit">Ubah</string>
     <string name="decrypt_credits_delete">Hapus</string>
     <string name="decrypt_credits_delete_confirm">Hapus nama pengguna Telegram yang tersimpan? Salinan berikutnya akan memakai kredit bawaan SP-DECODE.</string>
-    <!-- App analysis (SP-DECODE Arnes, fase 1) -->
-    <string name="app_analysis_arnes_name">SP-DECODE Arnés</string>
-    <string name="app_analysis_intro">Unggah aplikasi yang ingin Anda analisis. Arnés mempelajarinya dan memberikan skrip serta katalognya.</string>
+    <!-- App analysis (SP-DECODE Harness, fase 1) -->
+    <string name="app_analysis_arnes_name">SP-DECODE Harness</string>
+    <string name="app_analysis_intro">Unggah aplikasi yang ingin Anda analisis. SP-DECODE Harness mempelajarinya dan memberikan skrip serta katalognya.</string>
     <string name="app_analysis_cost">Biaya</string>
     <string name="app_analysis_cost_value">1 kredit = 1 analisis</string>
     <string name="app_analysis_balance">Saldo Anda</string>

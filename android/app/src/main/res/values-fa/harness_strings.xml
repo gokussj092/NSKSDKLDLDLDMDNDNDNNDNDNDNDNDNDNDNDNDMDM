@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="harness_preparing">آماده‌سازی برنامه…</string>
+    <string name="harness_review">در حال بازبینی</string>
+    <string name="harness_metadata">بررسی فرادادهٔ برنامه…</string>
+    <string name="harness_code">بررسی کد برنامه…</string>
+    <string name="harness_details">جزئیات تحلیل</string>
+    <string name="harness_filename">فایل</string>
+    <string name="harness_size">اندازه</string>
+    <string name="harness_unknown_size">اندازه در انتظار</string>
+    <string name="harness_updated">به‌روزرسانی: %1$s</string>
+    <string name="harness_local_copy">نتایج در این دستگاه ذخیره شده‌اند</string>
+    <string name="harness_normal">انتقال عادی</string>
+    <string name="harness_chunks">انتقال بخش‌بخش</string>
+    <string name="harness_support_ai">هوش مصنوعی پشتیبانی</string>
+    <string name="harness_history_hint">برای دیدن تحلیل و نتایج ذخیره‌شده یک برنامه را باز کنید.</string>
+    <string name="harness_queued_hint">بارگذاری کامل شد. در انتظار نوبت تحلیل.</string>
+    <string name="harness_review_hint">تحلیل در انتظار بازبینی است.</string>
+    <string name="harness_transfer_title">روش انتقال</string>
+    <string name="harness_transfer_scope">برای دانلود بعدی کاتالوگ یا بارگذاری APK اعمال می‌شود.</string>
+    <string name="harness_stable">اتصال پایدار · انتقال پیوسته</string>
+    <string name="harness_unstable">اتصال کند یا ناپایدار · انتقال بخش‌بخش</string>
+</resources>

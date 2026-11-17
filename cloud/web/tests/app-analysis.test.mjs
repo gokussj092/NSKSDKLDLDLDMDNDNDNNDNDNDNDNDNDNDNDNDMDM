@@ -168,7 +168,7 @@ before(async()=>{
  db={query,connect:async()=>({query,release(){}})};
  auth=makeAuth(db,env);
  await (await getMigrations(auth.options)).runMigrations();
- for(const name of ['002_shop.sql','005_account_support_apk.sql','007_staff_permissions.sql','008_account_notifications.sql','012_app_analysis.sql']){
+ for(const name of ['002_shop.sql','005_account_support_apk.sql','007_staff_permissions.sql','008_account_notifications.sql','009_staff_custom_roles.sql','010_support_reads_avatar.sql','012_app_analysis.sql']){
   const sql=await readFile(new URL('../sql/'+name,import.meta.url),'utf8');
   await pg.exec(sql);
  }
@@ -189,9 +189,11 @@ test('manifest parser: VPN service is detected, plain apps are not',()=>{
    {ok:false,errorCode:'METHOD_UNAVAILABLE',blocked:'FLEX_NET'});
 });
 
-test('preflight is server-authoritative: 402 without credits, price from server',async()=>{
+test('preflight returns zero balance; start still enforces credits',async()=>{
  const poor=await newAccount(0);
- await assert.rejects(preflight(poor,{db}),/INSUFFICIENT_CREDITS/);
+ assert.equal((await preflight(poor,{db})).creditsAvailable,0);
+ await assert.rejects(startJob(poor,{filename:'zero.apk',totalBytes:100,sha256:'a'.repeat(64),deviceKeyHash:deviceHash},{db,env,root}),/INSUFFICIENT_CREDITS/);
+ assert.equal((await db.query('SELECT job_id FROM spdecode_shop.app_analysis_jobs WHERE account_id=$1',[poor])).rows.length,0);
  const rich=await newAccount(5);
  const ok=await preflight(rich,{db});
  assert.equal(ok.creditsAvailable,5);
@@ -464,11 +466,11 @@ test('V2 routing: ops 25-30 map to app-analysis, limits and integrity mirror apk
  assert.equal(routes[5],'decode/file');
 });
 
-test('V2 preflight: 200 with credits, 402 without',async()=>{
+test('V2 preflight: real balance at zero and positive credits',async()=>{
  const poor=await newAccount(0);
  const denied=await v2(25,{},poor);
- assert.equal(denied.status,402);
- assert.deepEqual(await denied.json(),{error:{code:'INSUFFICIENT_CREDITS'}});
+ assert.equal(denied.status,200);
+ assert.equal((await denied.json()).creditsAvailable,0);
  const rich=await newAccount(5);
  const ok=await v2(25,{},rich);
  assert.equal(ok.status,200);
@@ -688,4 +690,21 @@ test('V2 chunk 27 via HPKE binary tail reaches appendChunk as dataBase64',async(
    'SELECT received_bytes FROM spdecode_shop.app_analysis_jobs WHERE job_id=$1',
    [jobId])).rows[0];
  assert.equal(Number(row.received_bytes),2*1024*1024);
+});
+
+
+test('preflight returns only the enabled support agent public avatar',async()=>{
+ const account=await newAccount(1),id=randomUUID();
+ const avatar='data:image/jpeg;base64,c3ludGhldGlj';
+ await db.query(`INSERT INTO spdecode_shop.staff_accounts(id,username,display_name,role,password_hash,avatar)
+ VALUES($1,'synthetic.yamada','Yamada','support',$2,$3)`,[id,'x'.repeat(64),avatar]);
+ try{
+  const info=await preflight(account,{db,env});
+  assert.deepEqual(info.agent,{name:'Yamada',role:'support_ai',avatar});
+  assert(!JSON.stringify(info).includes(id));
+  assert(!JSON.stringify(info).includes('synthetic.yamada'));
+  assert(!JSON.stringify(info).includes('x'.repeat(64)));
+  await db.query('UPDATE spdecode_shop.staff_accounts SET enabled=false WHERE id=$1',[id]);
+  assert.equal((await preflight(account,{db,env})).agent.avatar,null);
+ }finally{await db.query('DELETE FROM spdecode_shop.staff_accounts WHERE id=$1',[id]);}
 });

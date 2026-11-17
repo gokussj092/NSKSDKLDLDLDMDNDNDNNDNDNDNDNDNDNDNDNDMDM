@@ -317,9 +317,9 @@
     <string name="decrypt_credits_edit">Edit</string>
     <string name="decrypt_credits_delete">Remove</string>
     <string name="decrypt_credits_delete_confirm">Remove the saved Telegram username? Future copied results will use the default SP-DECODE credits.</string>
-    <!-- App analysis (SP-DECODE Arnes, fase 1) -->
-    <string name="app_analysis_arnes_name">SP-DECODE Arnés</string>
-    <string name="app_analysis_intro">Upload the app you want analyzed. Arnés studies it and gives you the scripts and the catalog.</string>
+    <!-- App analysis (SP-DECODE Harness, fase 1) -->
+    <string name="app_analysis_arnes_name">SP-DECODE Harness</string>
+    <string name="app_analysis_intro">Upload the app you want analyzed. SP-DECODE Harness studies it and gives you the scripts and the catalog.</string>
     <string name="app_analysis_cost">Cost</string>
     <string name="app_analysis_cost_value">1 credit = 1 analysis</string>
     <string name="app_analysis_balance">Your balance</string>

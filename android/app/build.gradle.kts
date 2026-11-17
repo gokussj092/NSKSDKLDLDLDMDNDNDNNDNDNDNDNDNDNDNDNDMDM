@@ -912,6 +912,7 @@ android {
 }
 
 dependencies {
+    testImplementation("junit:junit:4.13.2")
     if(enableUnityAds) {
         implementation("com.unity3d.ads-mediation:mediation-sdk:9.7.0")
         implementation("com.unity3d.ads-mediation:unityads-adapter:5.16.0")

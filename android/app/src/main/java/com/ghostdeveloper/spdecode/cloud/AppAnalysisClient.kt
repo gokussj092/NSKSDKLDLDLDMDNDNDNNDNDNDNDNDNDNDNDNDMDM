@@ -9,6 +9,7 @@ import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
 import android.util.Base64
 import com.ghostdeveloper.spdecode.NativeCommerceAuth
+import com.ghostdeveloper.spdecode.CommerceSession
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.ensureActive
@@ -22,6 +23,7 @@ import java.net.URL
 import java.security.KeyStore
 import java.security.MessageDigest
 import java.security.SecureRandom
+import java.util.zip.ZipFile
 import javax.crypto.Cipher
 import javax.crypto.KeyGenerator
 import javax.crypto.SecretKey
@@ -56,6 +58,7 @@ internal class AppAnalysisClient(context: Context, private val cloud: CloudDecod
         val creditsAvailable: Int, val balance: Int, val held: Int,
         val creditPriceCents: Int, val currency: String,
         val creditsPerAnalysis: Int = 1,
+        val agentAvatar: String? = null,
     )
     data class JobView(
         val jobId: String, val status: String, val phaseCode: String?,
@@ -70,10 +73,12 @@ internal class AppAnalysisClient(context: Context, private val cloud: CloudDecod
         val active: Boolean get() = status !in setOf(
             "COMPLETED", "COMPLETED_PARTIAL", "FAILED", "REJECTED", "EXPIRED")
         val terminal: Boolean get() = !active
+        val displayName: String get() = HarnessPresentation.name(appName, filename, packageName)
     }
     data class Snapshot(
         val active: Boolean, val job: JobView?, val error: String?,
         val filename: String, val preflight: Preflight?,
+        val totalBytes: Long = 0L, val chunked: Boolean = false,
     )
 
     companion object {
@@ -134,6 +139,15 @@ internal class AppAnalysisClient(context: Context, private val cloud: CloudDecod
     private fun token(): String =
         NativeCommerceAuth(app).sessionToken() ?: throw Failure("SIGN_IN_REQUIRED", 401)
 
+    private fun owner(): String? {
+        val auth = NativeCommerceAuth(app)
+        if (auth.sessionToken() == null) return null
+        auth.restoreCachedIdentity()
+        return HarnessPresentation.text(CommerceSession.user?.id)
+    }
+    private fun JSONObject.text(key: String): String? =
+        if (isNull(key)) null else HarnessPresentation.text(optString(key))
+
     // Mirror of CloudApkQaClient.qaPost: a fresh accountToken on every
     // attempt, bound into a copy of the payload, inside the V2
     // HPKE-encrypted request. CloudDecodeClient.Failure is converted to
@@ -163,30 +177,32 @@ internal class AppAnalysisClient(context: Context, private val cloud: CloudDecod
     fun jobViewOf(raw: JSONObject): JobView = JobView(
         jobId = raw.optString("jobId"),
         status = raw.optString("status"),
-        phaseCode = raw.optString("phaseCode").takeIf { it.isNotBlank() },
+        phaseCode = raw.text("phaseCode"),
         progressPercent = if (raw.has("progressPercent") && !raw.isNull("progressPercent"))
             raw.optInt("progressPercent") else null,
         receivedBytes = raw.optLong("receivedBytes"),
         totalBytes = raw.optLong("totalBytes"),
-        filename = raw.optString("filename"),
-        packageName = raw.optString("packageName").takeIf { it.isNotBlank() },
-        appName = raw.optString("appName").takeIf { it.isNotBlank() },
+        filename = raw.text("filename").orEmpty(),
+        packageName = raw.text("packageName"),
+        appName = raw.text("appName"),
         creditState = raw.optString("creditState"),
-        errorCode = raw.optString("errorCode").takeIf { it.isNotBlank() },
+        errorCode = raw.text("errorCode"),
         needsToken = raw.optBoolean("needsToken", false),
         isNewCatalogCandidate = raw.optBoolean("isNewCatalogCandidate", false),
         resultBytes = if (raw.has("resultBytes") && !raw.isNull("resultBytes"))
             raw.optLong("resultBytes") else null,
-        resultSha256 = raw.optString("resultSha256").takeIf { it.isNotBlank() },
-        downloadUrl = raw.optString("downloadUrl").takeIf { it.isNotBlank() },
-        expiresAt = raw.optString("expiresAt").takeIf { it.isNotBlank() },
-        createdAt = raw.optString("createdAt").takeIf { it.isNotBlank() },
-        updatedAt = raw.optString("updatedAt").takeIf { it.isNotBlank() },
+        resultSha256 = raw.text("resultSha256"),
+        downloadUrl = raw.text("downloadUrl"),
+        expiresAt = raw.text("expiresAt"),
+        createdAt = raw.text("createdAt"),
+        updatedAt = raw.text("updatedAt"),
     )
 
     /** Server-authoritative preflight: credits + price. Never cached long. */
     suspend fun preflight(): Preflight = withContext(Dispatchers.IO) {
+        val account = owner() ?: throw Failure("SIGN_IN_REQUIRED", 401)
         val raw = analysisPost(CloudOperation.APP_ANALYSIS_PREFLIGHT, JSONObject())
+        if (owner() != account) throw Failure("SIGN_IN_REQUIRED", 401)
         val preflight = Preflight(
             creditsAvailable = raw.optInt("creditsAvailable"),
             balance = raw.optInt("balance"),
@@ -194,39 +210,48 @@ internal class AppAnalysisClient(context: Context, private val cloud: CloudDecod
             creditPriceCents = raw.optInt("creditPriceCents"),
             currency = raw.optString("currency").takeIf { it.isNotBlank() } ?: "USD",
             creditsPerAnalysis = raw.optInt("creditsPerAnalysis", 1),
+            agentAvatar = raw.optJSONObject("agent")?.text("avatar"),
         )
-        val state = readState() ?: JSONObject()
-        writeState(state.put("preflight", JSONObject()
+        // Independent cache: refreshing balance must not overwrite a worker checkpoint.
+        val cache = JSONObject().put("owner", account)
             .put("creditsAvailable", preflight.creditsAvailable)
             .put("balance", preflight.balance).put("held", preflight.held)
             .put("creditPriceCents", preflight.creditPriceCents)
             .put("currency", preflight.currency)
-            .put("creditsPerAnalysis", preflight.creditsPerAnalysis)))
+            .put("creditsPerAnalysis", preflight.creditsPerAnalysis)
+            .put("agentAvatar", preflight.agentAvatar)
+        prefs.edit().putString("preflight", encrypt(cache.toString())).commit()
         preflight
     }
 
     fun hasActiveJob(): Boolean {
         val state = readState() ?: return false
-        val job = state.optJSONObject("job") ?: return false
-        return jobViewOf(job).active
+        if (state.text("owner") != null && state.text("owner") != owner()) return false
+        val job = state.optJSONObject("job")
+        return job?.let { jobViewOf(it).active } ?: (state.text("uri") != null && !state.optBoolean("terminal"))
     }
 
     /** Local snapshot for the observer: no network, never a progress estimate. */
     fun snapshot(): Snapshot? {
-        val state = readState() ?: return null
+        val state = readState() ?: JSONObject()
+        val account = owner() ?: return null
+        if (state.text("owner") != null && state.text("owner") != account) return null
         val job = state.optJSONObject("job")?.let { runCatching { jobViewOf(it) }.getOrNull() }
-        val stored = state.optJSONObject("preflight")
+        val stored = prefs.getString("preflight", null)?.let {
+            runCatching { JSONObject(decrypt(it)) }.getOrNull()
+        }?.takeIf { it.text("owner") == account }
         val preflight = stored?.let {
             Preflight(it.optInt("creditsAvailable"), it.optInt("balance"),
                 it.optInt("held"), it.optInt("creditPriceCents"),
                 it.optString("currency").takeIf { s -> s.isNotBlank() } ?: "USD",
-                it.optInt("creditsPerAnalysis", 1))
+                it.optInt("creditsPerAnalysis", 1), it.text("agentAvatar"))
         }
         return Snapshot(
-            active = job?.active ?: false, job = job,
-            error = state.optString("error").takeIf { it.isNotBlank() },
+            active = job?.active ?: (state.text("uri") != null && !state.optBoolean("terminal")), job = job,
+            error = state.text("error"),
             filename = state.optString("filename"),
-            preflight = preflight,
+            preflight = preflight, totalBytes = state.optLong("totalBytes"),
+            chunked = state.optBoolean("chunked", selectedChunked()),
         )
     }
 
@@ -246,6 +271,16 @@ internal class AppAnalysisClient(context: Context, private val cloud: CloudDecod
         return (base.ifEmpty { "spdecode-sample" }) + "." + extension
     }
 
+    private fun selectedChunked(): Boolean = app.getSharedPreferences(
+        HarnessPresentation.TRANSFER_PREFS, Context.MODE_PRIVATE)
+        .getBoolean(HarnessPresentation.TRANSFER_KEY, false)
+
+    private fun size(uri: Uri): Long = runCatching {
+        resolver.query(uri, arrayOf(OpenableColumns.SIZE), null, null, null)?.use { c ->
+            if (c.moveToFirst() && !c.isNull(0)) c.getLong(0).coerceAtLeast(0L) else 0L
+        } ?: 0L
+    }.getOrDefault(0L)
+
     /** Called only after the user taps "Importar aplicación". */
     fun queue(uri: Uri) {
         if (hasActiveJob()) throw IOException("APP_ANALYSIS_ALREADY_ACTIVE")
@@ -256,13 +291,16 @@ internal class AppAnalysisClient(context: Context, private val cloud: CloudDecod
         }
         val startId = ByteArray(32).also { SecureRandom().nextBytes(it) }.let { hex(it) }
         writeState(JSONObject().put("uri", uri.toString()).put("filename", filename(uri))
-            .put("startId", startId).put("job", JSONObject.NULL))
+            .put("startId", startId).put("job", JSONObject.NULL)
+            .put("owner", owner() ?: throw Failure("SIGN_IN_REQUIRED", 401))
+            .put("totalBytes", size(uri)).put("chunked", selectedChunked()))
     }
 
-    private suspend fun hashFile(uri: Uri): Pair<Long, String> = withContext(Dispatchers.IO) {
+    private suspend fun hashFile(uri: Uri, archive: File? = null): Pair<Long, String> = withContext(Dispatchers.IO) {
         val digest = MessageDigest.getInstance("SHA-256")
         val buffer = ByteArray(256 * 1024)
         var total = 0L
+        val copy = archive?.outputStream()
         try {
             (resolver.openInputStream(uri) ?: throw IOException("APP_ANALYSIS_FILE_UNAVAILABLE")).use { src ->
                 while (true) {
@@ -273,14 +311,48 @@ internal class AppAnalysisClient(context: Context, private val cloud: CloudDecod
                     total += count
                     if (total > MAX_BYTES) throw IOException("APP_ANALYSIS_INPUT_TOO_LARGE")
                     digest.update(buffer, 0, count)
+                    copy?.write(buffer, 0, count)
                 }
             }
             if (total == 0L) throw IOException("APP_ANALYSIS_EMPTY_FILE")
             total to hex(digest.digest())
         } finally {
+            copy?.close()
             buffer.fill(0)
         }
     }
+
+    /** Read Android's declared label only; never load or execute APK code. */
+    @Suppress("DEPRECATION")
+    private fun applicationLabel(archive: File, filename: String): String? = runCatching {
+        var base: File? = null
+        try {
+            val apk = if (filename.endsWith(".apks", ignoreCase = true)) {
+                base = File.createTempFile("harness-base-", ".apk", app.cacheDir)
+                ZipFile(archive).use { zip ->
+                    val entries = zip.entries().asSequence().filter { !it.isDirectory && it.name.endsWith(".apk") }.toList()
+                    val entry = entries.firstOrNull { it.name.substringAfterLast('/') in setOf("base.apk", "base-master.apk") }
+                        ?: entries.singleOrNull() ?: return@runCatching null
+                    var bytes = 0L
+                    zip.getInputStream(entry).use { input -> base!!.outputStream().use { output ->
+                        val buffer = ByteArray(256 * 1024)
+                        while (true) {
+                            val n = input.read(buffer); if (n < 0) break
+                            bytes += n
+                            if (bytes > MAX_BYTES) return@runCatching null
+                            output.write(buffer, 0, n)
+                        }
+                    } }
+                }
+                base!!
+            } else archive
+            val pm = app.packageManager
+            val info = pm.getPackageArchiveInfo(apk.absolutePath, 0)?.applicationInfo ?: return@runCatching null
+            info.sourceDir = apk.absolutePath
+            info.publicSourceDir = apk.absolutePath
+            HarnessPresentation.text(info.loadLabel(pm).toString())?.takeUnless { it == info.packageName }
+        } finally { base?.delete() }
+    }.getOrNull()
 
     private fun saveJob(state: JSONObject, job: JobView, error: String = ""): JSONObject {
         val raw = JSONObject()
@@ -288,10 +360,11 @@ internal class AppAnalysisClient(context: Context, private val cloud: CloudDecod
             .put("phaseCode", job.phaseCode)
             .put("receivedBytes", job.receivedBytes).put("totalBytes", job.totalBytes)
             .put("filename", job.filename).put("packageName", job.packageName)
-            .put("appName", job.appName).put("creditState", job.creditState)
+            .put("appName", job.appName ?: state.text("appName")).put("creditState", job.creditState)
             .put("errorCode", job.errorCode).put("needsToken", job.needsToken)
             .put("resultSha256", job.resultSha256).put("downloadUrl", job.downloadUrl)
             .put("expiresAt", job.expiresAt).put("createdAt", job.createdAt)
+            .put("updatedAt", job.updatedAt).put("isNewCatalogCandidate", job.isNewCatalogCandidate)
         if (job.progressPercent != null) raw.put("progressPercent", job.progressPercent)
         if (job.resultBytes != null) raw.put("resultBytes", job.resultBytes)
         return state.put("job", raw).put("error", error)
@@ -348,7 +421,8 @@ internal class AppAnalysisClient(context: Context, private val cloud: CloudDecod
                         next++
                         current = saveJob(current, job.copy(receivedBytes = sent))
                         writeState(current)
-                        if (sent < total) delay(4500L)
+                        val pause = HarnessPresentation.pauseMillis(current.optBoolean("chunked", selectedChunked()))
+                        if (sent < total && pause > 0L) delay(pause)
                     } finally {
                         piece.fill(0)
                     }
@@ -368,7 +442,16 @@ internal class AppAnalysisClient(context: Context, private val cloud: CloudDecod
         if (job.resultSha256.isNullOrBlank() || job.status !in setOf("COMPLETED", "COMPLETED_PARTIAL"))
             return@withContext false
         val file = File(resultsDir, job.jobId + ".zip")
-        if (file.exists() && file.length() == (job.resultBytes ?: -1L)) return@withContext true
+        if (file.exists() && file.length() <= MAX_RESULT_BYTES &&
+            runCatching { file.inputStream().use { src ->
+                val digest = MessageDigest.getInstance("SHA-256")
+                val buffer = ByteArray(256 * 1024)
+                while (true) { val n = src.read(buffer); if (n < 0) break; digest.update(buffer, 0, n) }
+                hex(digest.digest()) == job.resultSha256
+            } }.getOrDefault(false)) {
+            indexResult(job)
+            return@withContext true
+        }
         try {
             // Signed download link from the JobView: direct HTTPS, no
             // Authorization header (the HMAC exp/sig in the URL is the
@@ -418,10 +501,7 @@ internal class AppAnalysisClient(context: Context, private val cloud: CloudDecod
                     tmp.delete()
                     return@withContext false
                 }
-                val index = readLocalIndex().filter { it.jobId != job.jobId } +
-                    LocalResult(job.jobId, job.filename, job.resultSha256,
-                        job.packageName, job.appName, System.currentTimeMillis())
-                writeLocalIndex(index)
+                indexResult(job)
                 true
             } finally {
                 connection.disconnect()
@@ -434,7 +514,15 @@ internal class AppAnalysisClient(context: Context, private val cloud: CloudDecod
     data class LocalResult(
         val jobId: String, val filename: String, val sha256: String,
         val packageName: String?, val appName: String?, val savedAt: Long,
+        val owner: String? = null,
     )
+    private fun indexResult(job: JobView) {
+        val index = readLocalIndex().filter { it.jobId != job.jobId } +
+            LocalResult(job.jobId, job.filename, job.resultSha256!!,
+                job.packageName, job.appName, System.currentTimeMillis(), owner())
+        writeLocalIndex(index)
+        cacheJobs(listOf(job) + cachedHistory().filter { it.jobId != job.jobId })
+    }
     private fun readLocalIndex(): List<LocalResult> {
         val raw = prefs.getString("localResults", null) ?: return emptyList()
         return runCatching {
@@ -444,26 +532,32 @@ internal class AppAnalysisClient(context: Context, private val cloud: CloudDecod
                 val item = array.optJSONObject(n) ?: return@mapNotNull null
                 LocalResult(item.optString("jobId"), item.optString("filename"),
                     item.optString("sha256"),
-                    item.optString("packageName").takeIf { it.isNotBlank() },
-                    item.optString("appName").takeIf { it.isNotBlank() },
-                    item.optLong("savedAt"))
+                    item.text("packageName"), item.text("appName"),
+                    item.optLong("savedAt"), item.text("owner"))
             }
         }.getOrDefault(emptyList())
     }
     private fun writeLocalIndex(items: List<LocalResult>) {
         val array = JSONArray()
-        items.take(50).forEach {
+        items.sortedByDescending { it.savedAt }.take(50).forEach {
             array.put(JSONObject().put("jobId", it.jobId).put("filename", it.filename)
                 .put("sha256", it.sha256).put("packageName", it.packageName)
-                .put("appName", it.appName).put("savedAt", it.savedAt))
+                .put("appName", it.appName).put("savedAt", it.savedAt).put("owner", it.owner))
         }
         prefs.edit().putString("localResults", encrypt(array.toString())).apply()
     }
-    fun localResults(): List<LocalResult> = readLocalIndex()
+    fun localResults(): List<LocalResult> {
+        val account = owner() ?: return emptyList()
+        val knownJobs = cachedHistory().map { it.jobId }.toSet()
+        return readLocalIndex().filter { it.owner == account || (it.owner == null && it.jobId in knownJobs) }
+    }
+    fun hasLocalResult(jobId: String): Boolean = localResults().any {
+        it.jobId == jobId && File(resultsDir, jobId + ".zip").isFile
+    }
 
     /** Re-export a saved result.zip to a SAF document, verifying SHA-256. */
     suspend fun exportResult(jobId: String, uri: Uri): Boolean = withContext(Dispatchers.IO) {
-        val local = readLocalIndex().find { it.jobId == jobId }
+        val local = localResults().find { it.jobId == jobId }
             ?: return@withContext false
         val file = File(resultsDir, jobId + ".zip")
         if (!file.exists()) return@withContext false
@@ -497,12 +591,42 @@ internal class AppAnalysisClient(context: Context, private val cloud: CloudDecod
     }
 
     /** Server history ("Aplicaciones"): the account's own jobs. */
-    suspend fun refreshHistory(): List<JobView> = withContext(Dispatchers.IO) {
-        val raw = analysisPost(CloudOperation.APP_ANALYSIS_HISTORY, JSONObject())
-        val array = raw.optJSONArray("jobs") ?: JSONArray()
-        (0 until array.length()).mapNotNull { n ->
-            array.optJSONObject(n)?.let { runCatching { jobViewOf(it) }.getOrNull() }
+    private fun cacheJobs(jobs: List<JobView>) {
+        val account = owner() ?: return
+        val array = JSONArray()
+        jobs.distinctBy { it.jobId }.take(50).forEach { job ->
+            array.put(saveJob(JSONObject(), job).getJSONObject("job"))
         }
+        prefs.edit().putString("history", encrypt(JSONObject()
+            .put("owner", account).put("jobs", array).toString())).apply()
+    }
+    fun cachedHistory(): List<JobView> {
+        val account = owner() ?: return emptyList()
+        return runCatching {
+            val raw = JSONObject(decrypt(prefs.getString("history", null) ?: return emptyList()))
+            if (raw.text("owner") != account) return emptyList()
+            val array = raw.optJSONArray("jobs") ?: return emptyList()
+            (0 until array.length()).mapNotNull { array.optJSONObject(it)?.let(::jobViewOf) }
+        }.getOrDefault(emptyList())
+    }
+    suspend fun refreshHistory(): List<JobView> = withContext(Dispatchers.IO) {
+        val account = owner() ?: throw Failure("SIGN_IN_REQUIRED", 401)
+        val raw = analysisPost(CloudOperation.APP_ANALYSIS_HISTORY, JSONObject())
+        if (owner() != account) throw Failure("SIGN_IN_REQUIRED", 401)
+        val array = raw.optJSONArray("jobs") ?: JSONArray()
+        val known = cachedHistory().associateBy { it.jobId }
+        val remote = (0 until array.length()).mapNotNull { n ->
+            array.optJSONObject(n)?.let { runCatching { jobViewOf(it) }.getOrNull() }?.let {
+                it.copy(appName = it.appName ?: known[it.jobId]?.appName)
+            }
+        }
+        // Keep completed local exports discoverable even after server retention.
+        val localIds = localResults().map { it.jobId }.toSet()
+        val jobs = remote + cachedHistory().filter { old ->
+            old.jobId in localIds && remote.none { it.jobId == old.jobId }
+        }
+        cacheJobs(jobs)
+        jobs
     }
 
     fun noteRecoverableError(code: String) {
@@ -515,7 +639,7 @@ internal class AppAnalysisClient(context: Context, private val cloud: CloudDecod
         val safe = code.takeIf { it.matches(Regex("[A-Z_]{3,60}")) } ?: "APP_ANALYSIS_FAILED"
         val job = state.optJSONObject("job")?.let { runCatching { jobViewOf(it) }.getOrNull() }
         if (job != null) writeState(saveJob(state, job.copy(status = "FAILED", errorCode = safe), safe))
-        else writeState(state.put("error", safe))
+        else writeState(state.put("error", safe).put("terminal", true))
     }
 
     /** Single durable unit: start (reserves the credit) -> upload -> finish
@@ -523,14 +647,21 @@ internal class AppAnalysisClient(context: Context, private val cloud: CloudDecod
      * Reentrant: every retry re-verifies server-authoritative progress. */
     suspend fun executeQueued(): Unit = withContext(Dispatchers.IO) {
         var state = readState() ?: return@withContext
+        if (state.text("owner") != null && state.text("owner") != owner())
+            throw Failure("SIGN_IN_REQUIRED", 401)
+        if (state.optBoolean("terminal")) return@withContext
         if (state.optJSONObject("job")?.let { runCatching { jobViewOf(it) }.getOrNull()?.terminal } == true)
             return@withContext
         val deadline = SystemClock.elapsedRealtime() + WORK_BUDGET_MS
         val uri = Uri.parse(state.optString("uri"))
         if (state.optString("sha256").isBlank()) {
-            val (total, digest) = hashFile(uri)
-            state = state.put("sha256", digest).put("totalBytes", total)
-            writeState(state)
+            val archive = File.createTempFile("harness-label-", ".bin", app.cacheDir)
+            try {
+                val (total, digest) = hashFile(uri, archive)
+                state = state.put("sha256", digest).put("totalBytes", total)
+                    .put("appName", applicationLabel(archive, state.optString("filename")))
+                writeState(state)
+            } finally { archive.delete() }
         }
         if (state.optString("jobId").isBlank()) {
             val started = analysisPost(CloudOperation.APP_ANALYSIS_START, JSONObject()
@@ -546,7 +677,7 @@ internal class AppAnalysisClient(context: Context, private val cloud: CloudDecod
             state = state.put("jobId", id).put("uploadToken", uploadToken)
                 .put("chunkBytes", step)
             val job = JobView(id, started.optString("status", "UPLOADING"), null, null,
-                0L, state.optLong("totalBytes"), state.optString("filename"), null, null,
+                0L, state.optLong("totalBytes"), state.optString("filename"), null, state.text("appName"),
                 "held", null, false, false, null, null, null, null, null, null)
             state = saveJob(state, job)
             writeState(state)
@@ -555,10 +686,12 @@ internal class AppAnalysisClient(context: Context, private val cloud: CloudDecod
             coroutineContext.ensureActive()
             val current = readState() ?: return@withContext
             val job = current.optJSONObject("job")?.let { jobViewOf(it) } ?: return@withContext
-            val remote = jobViewOf(analysisPost(CloudOperation.APP_ANALYSIS_STATUS,
+            val received = jobViewOf(analysisPost(CloudOperation.APP_ANALYSIS_STATUS,
                 JSONObject().put("jobId", job.jobId)))
-            state = saveJob(current, remote)
+            val remote = received.copy(appName = received.appName ?: state.text("appName") ?: job.appName)
+            state = saveJob(current.put("owner", owner()), remote)
             writeState(state)
+            cacheJobs(listOf(remote) + cachedHistory().filter { it.jobId != remote.jobId })
             when (remote.status) {
                 "COMPLETED", "COMPLETED_PARTIAL" -> {
                     saveLocalResult(remote)

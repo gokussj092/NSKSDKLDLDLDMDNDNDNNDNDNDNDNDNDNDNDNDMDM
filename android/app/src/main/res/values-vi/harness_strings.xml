@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="harness_preparing">Đang chuẩn bị ứng dụng…</string>
+    <string name="harness_review">Đang chờ xem xét</string>
+    <string name="harness_metadata">Đang kiểm tra siêu dữ liệu ứng dụng…</string>
+    <string name="harness_code">Đang kiểm tra mã ứng dụng…</string>
+    <string name="harness_details">Chi tiết phân tích</string>
+    <string name="harness_filename">Tệp</string>
+    <string name="harness_size">Kích thước</string>
+    <string name="harness_unknown_size">Đang xác định kích thước</string>
+    <string name="harness_updated">Cập nhật: %1$s</string>
+    <string name="harness_local_copy">Kết quả đã lưu trên thiết bị này</string>
+    <string name="harness_normal">Truyền thông thường</string>
+    <string name="harness_chunks">Truyền theo phần</string>
+    <string name="harness_support_ai">AI hỗ trợ</string>
+    <string name="harness_history_hint">Mở ứng dụng để xem phân tích và kết quả đã lưu.</string>
+    <string name="harness_queued_hint">Tải lên hoàn tất. Đang chờ lượt phân tích.</string>
+    <string name="harness_review_hint">Phân tích đang chờ xem xét.</string>
+    <string name="harness_transfer_title">Chế độ truyền</string>
+    <string name="harness_transfer_scope">Áp dụng cho lần tải danh mục hoặc tải APK lên tiếp theo.</string>
+    <string name="harness_stable">Kết nối ổn định · truyền liên tục</string>
+    <string name="harness_unstable">Kết nối chậm hoặc không ổn định · truyền theo phần</string>
+</resources>

@@ -133,6 +133,9 @@ on:
       - android/app/src/main/java/com/ghostdeveloper/spdecode/FunctionalSettingsPanel.kt
       - android/app/src/main/java/com/ghostdeveloper/spdecode/TelegramResultCopy.kt
       - android/app/src/main/java/com/ghostdeveloper/spdecode/V2rayShareLinks.kt
+      - android/app/src/main/res/**/harness_strings.xml
+      - android/app/src/main/java/com/ghostdeveloper/spdecode/cloud/HarnessPresentation.kt
+      - android/app/src/test/java/com/ghostdeveloper/spdecode/cloud/HarnessPresentationTest.kt
       - android/app/src/main/res/**/strings.xml
       - android/app/src/sharedAndroidTest/java/com/ghostdeveloper/spdecode/V2rayShareLinksInstrumentedTest.kt
       - android/app/src/sharedAndroidTest/java/com/ghostdeveloper/spdecode/LargeResultEngineInstrumentedTest.kt
@@ -315,7 +318,7 @@ jobs:
           SPDECODE_RELEASE_STORE_PASSWORD: ${{ secrets.SPDECODE_SIGNING_STORE_PASSWORD }}
           SPDECODE_RELEASE_KEY_ALIAS: ${{ secrets.SPDECODE_SIGNING_KEY_ALIAS }}
           SPDECODE_RELEASE_KEY_PASSWORD: ${{ secrets.SPDECODE_SIGNING_KEY_PASSWORD }}
-        run: gradle --no-daemon --max-workers=2 -PspdecodeUnityAds=true -PspdecodeAdsEveryFileQa=false :app:assembleRelease
+        run: gradle --no-daemon --max-workers=2 -PspdecodeUnityAds=true -PspdecodeAdsEveryFileQa=false :app:testReleaseUnitTest :app:assembleRelease
       - name: Validate signed external APK only (no AAB)
         run: |
           set -euo pipefail

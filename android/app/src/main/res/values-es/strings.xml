@@ -317,9 +317,9 @@
     <string name="decrypt_credits_edit">Editar</string>
     <string name="decrypt_credits_delete">Eliminar</string>
     <string name="decrypt_credits_delete_confirm">¿Eliminar el usuario de Telegram guardado? Los próximos resultados copiados usarán los créditos predeterminados de SP-DECODE.</string>
-    <!-- App analysis (SP-DECODE Arnes, fase 1) -->
-    <string name="app_analysis_arnes_name">SP-DECODE Arnés</string>
-    <string name="app_analysis_intro">Sube la app que quieres analizar. Arnés la estudia y te entrega los scripts y el catálogo.</string>
+    <!-- App analysis (SP-DECODE Harness, fase 1) -->
+    <string name="app_analysis_arnes_name">SP-DECODE Harness</string>
+    <string name="app_analysis_intro">Sube la app que quieres analizar. SP-DECODE Harness la estudia y te entrega los scripts y el catálogo.</string>
     <string name="app_analysis_cost">Coste</string>
     <string name="app_analysis_cost_value">1 crédito = 1 análisis</string>
     <string name="app_analysis_balance">Tu saldo</string>

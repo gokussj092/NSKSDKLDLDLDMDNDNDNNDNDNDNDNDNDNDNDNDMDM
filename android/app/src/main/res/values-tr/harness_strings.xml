@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="harness_preparing">Uygulama hazırlanıyor…</string>
+    <string name="harness_review">İncelemede</string>
+    <string name="harness_metadata">Uygulama meta verileri inceleniyor…</string>
+    <string name="harness_code">Uygulama kodu inceleniyor…</string>
+    <string name="harness_details">Analiz ayrıntıları</string>
+    <string name="harness_filename">Dosya</string>
+    <string name="harness_size">Boyut</string>
+    <string name="harness_unknown_size">Boyut bekleniyor</string>
+    <string name="harness_updated">Güncellendi: %1$s</string>
+    <string name="harness_local_copy">Sonuçlar bu cihazda kayıtlı</string>
+    <string name="harness_normal">Normal aktarım</string>
+    <string name="harness_chunks">Parçalı aktarım</string>
+    <string name="harness_support_ai">Destek yapay zekâsı</string>
+    <string name="harness_history_hint">Analizi ve kayıtlı sonuçları görmek için uygulamayı açın.</string>
+    <string name="harness_queued_hint">Yükleme tamamlandı. Analiz sırası bekleniyor.</string>
+    <string name="harness_review_hint">Analiz inceleme bekliyor.</string>
+    <string name="harness_transfer_title">Aktarım modu</string>
+    <string name="harness_transfer_scope">Sonraki katalog indirmesine veya APK yüklemesine uygulanır.</string>
+    <string name="harness_stable">Kararlı bağlantı · sürekli aktarım</string>
+    <string name="harness_unstable">Yavaş veya kararsız bağlantı · parçalı aktarım</string>
+</resources>

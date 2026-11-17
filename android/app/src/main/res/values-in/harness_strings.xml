@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="harness_preparing">Menyiapkan aplikasi…</string>
+    <string name="harness_review">Dalam peninjauan</string>
+    <string name="harness_metadata">Memeriksa metadata aplikasi…</string>
+    <string name="harness_code">Memeriksa kode aplikasi…</string>
+    <string name="harness_details">Detail analisis</string>
+    <string name="harness_filename">Berkas</string>
+    <string name="harness_size">Ukuran</string>
+    <string name="harness_unknown_size">Ukuran belum tersedia</string>
+    <string name="harness_updated">Diperbarui: %1$s</string>
+    <string name="harness_local_copy">Hasil disimpan di perangkat ini</string>
+    <string name="harness_normal">Transfer normal</string>
+    <string name="harness_chunks">Transfer per bagian</string>
+    <string name="harness_support_ai">AI dukungan</string>
+    <string name="harness_history_hint">Buka aplikasi untuk melihat analisis dan hasil tersimpan.</string>
+    <string name="harness_queued_hint">Unggahan selesai. Menunggu giliran analisis.</string>
+    <string name="harness_review_hint">Analisis menunggu peninjauan.</string>
+    <string name="harness_transfer_title">Mode transfer</string>
+    <string name="harness_transfer_scope">Berlaku untuk unduhan katalog atau unggahan APK berikutnya.</string>
+    <string name="harness_stable">Koneksi stabil · transfer berkelanjutan</string>
+    <string name="harness_unstable">Koneksi lambat atau tidak stabil · transfer per bagian</string>
+</resources>

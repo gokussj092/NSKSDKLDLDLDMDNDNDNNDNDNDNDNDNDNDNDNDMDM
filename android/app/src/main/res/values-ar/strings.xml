@@ -309,9 +309,9 @@
     <string name="decrypt_credits_edit">تعديل</string>
     <string name="decrypt_credits_delete">حذف</string>
     <string name="decrypt_credits_delete_confirm">هل تريد حذف اسم مستخدم تيليجرام المحفوظ؟ ستستخدم النسخ التالية نسب SP-DECODE الافتراضي.</string>
-    <!-- App analysis (SP-DECODE Arnes, fase 1) -->
-    <string name="app_analysis_arnes_name">SP-DECODE Arnés</string>
-    <string name="app_analysis_intro">ارفع التطبيق الذي تريد تحليله. سيدرسه Arnés ويعطيك السكربتات والكتالوج.</string>
+    <!-- App analysis (SP-DECODE Harness, fase 1) -->
+    <string name="app_analysis_arnes_name">SP-DECODE Harness</string>
+    <string name="app_analysis_intro">ارفع التطبيق الذي تريد تحليله. سيدرسه SP-DECODE Harness ويعطيك السكربتات والكتالوج.</string>
     <string name="app_analysis_cost">التكلفة</string>
     <string name="app_analysis_cost_value">1 رصيد = 1 تحليل</string>
     <string name="app_analysis_balance">رصيدك</string>

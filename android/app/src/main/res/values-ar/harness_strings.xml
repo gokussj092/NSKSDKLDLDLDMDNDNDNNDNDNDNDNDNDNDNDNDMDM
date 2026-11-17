@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="harness_preparing">جارٍ تحضير التطبيق…</string>
+    <string name="harness_review">قيد المراجعة</string>
+    <string name="harness_metadata">جارٍ فحص بيانات التطبيق…</string>
+    <string name="harness_code">جارٍ فحص شيفرة التطبيق…</string>
+    <string name="harness_details">تفاصيل التحليل</string>
+    <string name="harness_filename">الملف</string>
+    <string name="harness_size">الحجم</string>
+    <string name="harness_unknown_size">الحجم قيد التحديد</string>
+    <string name="harness_updated">آخر تحديث: %1$s</string>
+    <string name="harness_local_copy">النتائج محفوظة على هذا الجهاز</string>
+    <string name="harness_normal">نقل عادي</string>
+    <string name="harness_chunks">نقل على أجزاء</string>
+    <string name="harness_support_ai">ذكاء اصطناعي للدعم</string>
+    <string name="harness_history_hint">افتح تطبيقًا لعرض التحليل والنتائج المحفوظة.</string>
+    <string name="harness_queued_hint">اكتمل الرفع. في انتظار دور التحليل.</string>
+    <string name="harness_review_hint">التحليل في انتظار المراجعة.</string>
+    <string name="harness_transfer_title">وضع النقل</string>
+    <string name="harness_transfer_scope">يطبق على تنزيل الكتالوج أو رفع APK التالي.</string>
+    <string name="harness_stable">اتصال مستقر · نقل مستمر</string>
+    <string name="harness_unstable">اتصال بطيء أو غير مستقر · نقل على أجزاء</string>
+</resources>

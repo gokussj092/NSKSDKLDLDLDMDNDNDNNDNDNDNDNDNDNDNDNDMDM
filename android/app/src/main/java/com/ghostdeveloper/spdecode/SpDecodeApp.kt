@@ -148,6 +148,7 @@ internal fun SpDecodeApp(
     appAnalysisPreflightLoading:Boolean=false,
     appAnalysisJob:com.ghostdeveloper.spdecode.cloud.AppAnalysisClient.JobView?=null,
     appAnalysisRunning:Boolean=false,
+    appAnalysisPending:com.ghostdeveloper.spdecode.cloud.AppAnalysisClient.Snapshot?=null,
     appAnalysisError:String?=null,
     appAnalysisHistory:List<com.ghostdeveloper.spdecode.cloud.AppAnalysisClient.JobView> = emptyList(),
     onAppAnalysisPick:()->Unit={},
@@ -187,6 +188,7 @@ internal fun SpDecodeApp(
                             preflightLoading=appAnalysisPreflightLoading,
                             job=appAnalysisJob,running=appAnalysisRunning,
                             error=appAnalysisError,history=appAnalysisHistory,
+                            pending=appAnalysisPending,chunked=catalogDownloadChunks,
                             onPick=onAppAnalysisPick,onRefresh=onAppAnalysisRefresh)
                     3->ServerVpnScreen(busy,serverVpnApps,serverVpnLoading && catalogTransfer==null,serverVpnUnavailable,
                         onDecodeServerCatalog,onDecodeServerApp,onExternalLink,catalogProgress)

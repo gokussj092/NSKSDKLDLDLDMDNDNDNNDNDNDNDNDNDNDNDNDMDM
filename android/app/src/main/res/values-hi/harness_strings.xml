@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="harness_preparing">ऐप तैयार हो रहा है…</string>
+    <string name="harness_review">समीक्षा में</string>
+    <string name="harness_metadata">ऐप का मेटाडेटा जाँचा जा रहा है…</string>
+    <string name="harness_code">ऐप का कोड जाँचा जा रहा है…</string>
+    <string name="harness_details">विश्लेषण विवरण</string>
+    <string name="harness_filename">फ़ाइल</string>
+    <string name="harness_size">आकार</string>
+    <string name="harness_unknown_size">आकार लंबित</string>
+    <string name="harness_updated">अपडेट: %1$s</string>
+    <string name="harness_local_copy">परिणाम इस डिवाइस पर सहेजे गए</string>
+    <string name="harness_normal">सामान्य ट्रांसफ़र</string>
+    <string name="harness_chunks">भागों में ट्रांसफ़र</string>
+    <string name="harness_support_ai">सहायता AI</string>
+    <string name="harness_history_hint">विश्लेषण और सहेजे गए परिणाम देखने के लिए ऐप खोलें।</string>
+    <string name="harness_queued_hint">अपलोड पूरा हुआ। विश्लेषण की बारी का इंतज़ार है।</string>
+    <string name="harness_review_hint">विश्लेषण समीक्षा के लिए लंबित है।</string>
+    <string name="harness_transfer_title">ट्रांसफ़र मोड</string>
+    <string name="harness_transfer_scope">अगले कैटलॉग डाउनलोड या APK अपलोड पर लागू होगा।</string>
+    <string name="harness_stable">स्थिर कनेक्शन · लगातार ट्रांसफ़र</string>
+    <string name="harness_unstable">धीमा या अस्थिर कनेक्शन · भागों में ट्रांसफ़र</string>
+</resources>

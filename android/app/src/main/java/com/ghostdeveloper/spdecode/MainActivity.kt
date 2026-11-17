@@ -90,6 +90,7 @@ class MainActivity : ComponentActivity() {
     private val appAnalysisClient by lazy { AppAnalysisClient(this, cloudClient) }
     private var appAnalysisObserver:Job?=null
     private var appAnalysisRunning by mutableStateOf(false)
+    private var appAnalysisPending by mutableStateOf<AppAnalysisClient.Snapshot?>(null)
     private var appAnalysisJob by mutableStateOf<AppAnalysisClient.JobView?>(null)
     private var appAnalysisPreflight by mutableStateOf<AppAnalysisClient.Preflight?>(null)
     private var appAnalysisPreflightLoading by mutableStateOf(false)
@@ -553,11 +554,20 @@ class MainActivity : ComponentActivity() {
                 try {
                     val latest=withContext(Dispatchers.IO){appAnalysisClient.snapshot()}
                     if(latest!=null) {
+                        val changed=appAnalysisJob?.status!=latest.job?.status
                         appAnalysisRunning=latest.active
+                        appAnalysisPending=latest
                         appAnalysisJob=latest.job
-                        appAnalysisError=latest.error
+                        if(latest.active || latest.error!=null)appAnalysisError=latest.error
+                        if(changed)refreshAppAnalysis()
                         latest.preflight?.let{appAnalysisPreflight=it}
-                    }else appAnalysisRunning=false
+                    }else {
+                        appAnalysisRunning=false
+                        appAnalysisJob=null
+                        appAnalysisPending=null
+                        appAnalysisPreflight=null
+                        appAnalysisHistory=emptyList()
+                    }
                     if(!appAnalysisRunning && appAnalysisPreflight==null &&
                         appAnalysisError==null && !appAnalysisPreflightLoading)
                         refreshAppAnalysisPreflight()
@@ -595,7 +605,7 @@ class MainActivity : ComponentActivity() {
         scope.launch {
             try {appAnalysisHistory=withContext(Dispatchers.IO){appAnalysisClient.refreshHistory()}}
             catch(_:Exception){
-                // History is best-effort; the status card stays authoritative.
+                appAnalysisHistory=withContext(Dispatchers.IO){appAnalysisClient.cachedHistory()}
             }
         }
     }
@@ -625,6 +635,7 @@ class MainActivity : ComponentActivity() {
             // the upload capability, URI or analysis result in its plaintext Data.
             appAnalysisClient.queue(uri)
             appAnalysisRunning=true
+            appAnalysisPending=appAnalysisClient.snapshot()
             appAnalysisJob=null
             appAnalysisError=null
             AppAnalysisWorker.enqueue(this)
@@ -811,6 +822,7 @@ class MainActivity : ComponentActivity() {
                     // overlay intercepting taps in the language picker.
                     if(newTab==4 && guideStep!=null)guideStep=null
                     tab=newTab
+                    if(newTab==2 && BuildConfig.SPDECODE_CLOUD_ENABLED)refreshAppAnalysis()
                     reveal=false
                     // Both screens use the already loaded, encrypted catalog snapshot.
                     scope.launch {
@@ -836,6 +848,7 @@ class MainActivity : ComponentActivity() {
                 appAnalysisPreflightLoading=appAnalysisPreflightLoading,
                 appAnalysisJob=appAnalysisJob,
                 appAnalysisRunning=appAnalysisRunning,
+                appAnalysisPending=appAnalysisPending,
                 appAnalysisError=appAnalysisError,
                 appAnalysisHistory=appAnalysisHistory,
                 onAppAnalysisPick={appAnalysisPicker.launch(arrayOf("application/vnd.android.package-archive","application/octet-stream","*/*"))},

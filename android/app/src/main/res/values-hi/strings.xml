@@ -310,9 +310,9 @@
     <string name="decrypt_credits_edit">संपादित करें</string>
     <string name="decrypt_credits_delete">हटाएँ</string>
     <string name="decrypt_credits_delete_confirm">सहेजा गया Telegram यूज़रनेम हटाएँ? अगली कॉपी में SP-DECODE का डिफ़ॉल्ट श्रेय होगा।</string>
-    <!-- App analysis (SP-DECODE Arnes, fase 1) -->
-    <string name="app_analysis_arnes_name">SP-DECODE Arnés</string>
-    <string name="app_analysis_intro">वह ऐप अपलोड करें जिसका विश्लेषण करना है। Arnés उसका अध्ययन करके स्क्रिप्ट और कैटलॉग देगा।</string>
+    <!-- App analysis (SP-DECODE Harness, fase 1) -->
+    <string name="app_analysis_arnes_name">SP-DECODE Harness</string>
+    <string name="app_analysis_intro">वह ऐप अपलोड करें जिसका विश्लेषण करना है। SP-DECODE Harness उसका अध्ययन करके स्क्रिप्ट और कैटलॉग देगा।</string>
     <string name="app_analysis_cost">लागत</string>
     <string name="app_analysis_cost_value">1 क्रेडिट = 1 विश्लेषण</string>
     <string name="app_analysis_balance">आपका बैलेंस</string>

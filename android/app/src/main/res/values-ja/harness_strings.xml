@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="harness_preparing">アプリを準備中…</string>
+    <string name="harness_review">確認待ち</string>
+    <string name="harness_metadata">アプリのメタデータを確認中…</string>
+    <string name="harness_code">アプリのコードを確認中…</string>
+    <string name="harness_details">解析の詳細</string>
+    <string name="harness_filename">ファイル</string>
+    <string name="harness_size">サイズ</string>
+    <string name="harness_unknown_size">サイズ確認中</string>
+    <string name="harness_updated">更新：%1$s</string>
+    <string name="harness_local_copy">結果はこの端末に保存されています</string>
+    <string name="harness_normal">通常転送</string>
+    <string name="harness_chunks">分割転送</string>
+    <string name="harness_support_ai">サポートAI</string>
+    <string name="harness_history_hint">アプリを開いて解析と保存済みの結果を確認できます。</string>
+    <string name="harness_queued_hint">アップロード完了。解析の順番待ちです。</string>
+    <string name="harness_review_hint">解析は確認待ちです。</string>
+    <string name="harness_transfer_title">転送方式</string>
+    <string name="harness_transfer_scope">次回のカタログダウンロードまたはAPKアップロードに適用されます。</string>
+    <string name="harness_stable">安定した接続 · 連続転送</string>
+    <string name="harness_unstable">低速・不安定な接続 · 分割転送</string>
+</resources>

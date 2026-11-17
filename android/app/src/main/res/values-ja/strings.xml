@@ -310,9 +310,9 @@
     <string name="decrypt_credits_edit">編集</string>
     <string name="decrypt_credits_delete">削除</string>
     <string name="decrypt_credits_delete_confirm">保存された Telegram ユーザー名を削除しますか？ 次回以降は SP-DECODE の標準クレジットを使用します。</string>
-    <!-- App analysis (SP-DECODE Arnes, fase 1) -->
-    <string name="app_analysis_arnes_name">SP-DECODE Arnés</string>
-    <string name="app_analysis_intro">分析したいアプリをアップロードしてください。Arnésが調査し、スクリプトとカタログをお渡しします。</string>
+    <!-- App analysis (SP-DECODE Harness, fase 1) -->
+    <string name="app_analysis_arnes_name">SP-DECODE Harness</string>
+    <string name="app_analysis_intro">分析したいアプリをアップロードしてください。SP-DECODE Harnessが調査し、スクリプトとカタログをお渡しします。</string>
     <string name="app_analysis_cost">料金</string>
     <string name="app_analysis_cost_value">1クレジット = 1件の分析</string>
     <string name="app_analysis_balance">残高</string>
