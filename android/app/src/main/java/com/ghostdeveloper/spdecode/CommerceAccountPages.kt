@@ -1,6 +1,8 @@
 package com.ghostdeveloper.spdecode
 
 import android.content.Context
+import android.graphics.Movie
+import androidx.compose.foundation.Canvas
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -21,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
@@ -180,6 +183,51 @@ private fun currentWeekKeyUtc():String=
 private val streakGold=Color(0xFFFFD54F)
 private val streakGreen=Color(0xFF38A36D)
 
+/** Animated GIF from the app assets, played in a continuous loop with
+ * android.graphics.Movie (no new dependency; works from API 24, unlike
+ * ImageDecoder which needs API 28). The streak GIFs are 192x192 with a
+ * transparent background, so only the flame/chest is visible on the card. */
+@Composable
+private fun AnimatedStreakGif(assetName:String,modifier:Modifier=Modifier){
+    val context=LocalContext.current
+    val movie=remember(assetName){
+        runCatching{context.assets.open(assetName).use{Movie.decodeStream(it)}}.getOrNull()
+    }
+    if(movie==null)return
+    val duration=if(movie.duration()>0)movie.duration() else 1000
+    var timeMs by remember{mutableIntStateOf(0)}
+    LaunchedEffect(movie){
+        val start=withFrameNanos{it}
+        while(true){
+            withFrameNanos{now->
+                timeMs=(((now-start)/1_000_000)%duration).toInt()
+            }
+        }
+    }
+    Canvas(modifier){
+        movie.setTime(timeMs)
+        val scale=minOf(size.width/movie.width(),size.height/movie.height())
+        val dx=(size.width-movie.width()*scale)/2f
+        val dy=(size.height-movie.height()*scale)/2f
+        with(drawContext.canvas.nativeCanvas){
+            save()
+            translate(dx,dy)
+            scale(scale,scale)
+            movie.draw(this,0f,0f)
+            restore()
+        }
+    }
+}
+
+/** Flame GIF for the streak stage: days 1-7 week 1, 8-14 week 2,
+ * 15-21 week 3, 22 or more the purple max flame. */
+private fun streakFlameAsset(days:Int):String=when{
+    days>=22->"llama_maxima.gif"
+    days>=15->"llama_semana3.gif"
+    days>=8->"llama_semana2.gif"
+    else->"llama_semana1.gif"
+}
+
 @Composable
 private fun DecryptionStreakCard(language:String,user:CommerceIdentity?,
     streak:DecryptionStreak?,onChestTap:()->Unit){
@@ -191,7 +239,8 @@ private fun DecryptionStreakCard(language:String,user:CommerceIdentity?,
     SectionCard{
         Row(verticalAlignment=Alignment.CenterVertically,
             horizontalArrangement=Arrangement.spacedBy(11.dp)){
-            Icon(Icons.Outlined.Whatshot,null,tint=accent,modifier=Modifier.size(22.dp))
+            AnimatedStreakGif(streakFlameAsset(streak?.currentStreakDays?:0),
+                modifier=Modifier.size(28.dp))
             Column(Modifier.weight(1f),verticalArrangement=Arrangement.spacedBy(3.dp)){
                 Text(tr("Decryption streak"),color=foreground,fontSize=16.sp,
                     fontWeight=FontWeight.SemiBold)
@@ -229,9 +278,7 @@ private fun DecryptionStreakCard(language:String,user:CommerceIdentity?,
             Box(Modifier.size(chestSize+14.dp)
                 .clickable(enabled=streak?.chestOpen==true){onChestTap()},
                 contentAlignment=Alignment.Center){
-                Icon(Icons.Outlined.CardGiftcard,null,
-                    tint=if(streak?.chestOpen==true)streakGold else secondary,
-                    modifier=Modifier.size(chestSize))
+                AnimatedStreakGif("cofre_cerrado.gif",modifier=Modifier.size(chestSize))
             }
         }
         if(streak?.chestOpen==true)
@@ -259,6 +306,7 @@ private fun StreakCelebrationDialog(language:String,onDismiss:()->Unit){
             Column(Modifier.fillMaxWidth(),
                 horizontalAlignment=Alignment.CenterHorizontally,
                 verticalArrangement=Arrangement.spacedBy(14.dp)){
+                AnimatedStreakGif("cofre_abierto.gif",modifier=Modifier.size(120.dp))
                 Box(Modifier.size(72.dp).clip(RoundedCornerShape(50))
                     .background(streakGold)
                     .graphicsLayer{rotationY=rotation},
