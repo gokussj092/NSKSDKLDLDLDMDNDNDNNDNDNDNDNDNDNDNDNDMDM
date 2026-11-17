@@ -26,7 +26,9 @@ export async function recordAdminNotice(db,{id,recipientId,kind,threadId=null,cr
  if(!uuid(id)||!recipient(recipientId)||!Object.hasOwn(labels,kind)||threadId!==null&&!uuid(threadId))fail('INVALID_NOTICE_EVENT');
  const out=await db.query(`INSERT INTO spdecode_shop.admin_notices
   (id,recipient_id,kind,thread_id,created_at,expires_at) VALUES($1,$2,$3,$4,COALESCE($5::timestamptz,now()),COALESCE($6::timestamptz,now()+interval '24 hours'))
-  ON CONFLICT(recipient_id,id) DO NOTHING RETURNING id`,[id,recipientId,kind,threadId,createdAt,expiresAt]);
+  ON CONFLICT(recipient_id,id) DO UPDATE SET created_at=excluded.created_at,
+   expires_at=excluded.expires_at,read_at=NULL
+   WHERE spdecode_shop.admin_notices.expires_at<=now() RETURNING id`,[id,recipientId,kind,threadId,createdAt,expiresAt]);
  return out.rows[0]?.id??null;
 }
 export async function registerAdminPush(recipientId,token,{db=database(),env=process.env}={}){

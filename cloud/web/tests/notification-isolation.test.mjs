@@ -125,3 +125,13 @@ test('private Admin API derives its recipient from the session and rejects recip
  const id=(await db.query("SELECT id FROM spdecode_shop.admin_notices WHERE recipient_id='owner' LIMIT 1")).rows[0].id;
  assert.equal((await adminInboxRequest(mutation({action:'read',id}),options)).status,404);
 });
+test('active internal events deduplicate but a later message can renew an expired event',async()=>{
+ const id=randomUUID(),event={id,recipientId:'owner',kind:'support_message'};
+ assert.equal(await recordAdminNotice(db,event),id);
+ assert.equal(await recordAdminNotice(db,event),null);
+ await db.query("UPDATE spdecode_shop.admin_notices SET expires_at=now()-interval '1 second',read_at=now() WHERE id=$1",[id]);
+ assert.equal(await recordAdminNotice(db,event),id);
+ const row=(await db.query('SELECT read_at,expires_at FROM spdecode_shop.admin_notices WHERE id=$1',[id])).rows[0];
+ assert.equal(row.read_at,null);assert(new Date(row.expires_at)>new Date());
+ assert.equal(await recordAdminNotice(db,event),null);
+});
