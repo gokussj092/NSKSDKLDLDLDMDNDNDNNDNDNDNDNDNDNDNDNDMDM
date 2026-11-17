@@ -58,10 +58,13 @@ while on that page. Other account sections retain their existing behavior.
 
 ```sh
 spdecode update web ci/unity-ads-online-qa
+spdecode commerce migrate
 ```
 
-The existing update command runs commerce migrations, including 015. No new
-secret or worker-resource change is needed. Install the signed Online APK too.
+The explicit `commerce migrate` step applies migration 015 using the newly built
+web image. Do not omit it: updating the web image alone does not migrate the
+database. No new secret or worker-resource change is needed. Install the signed
+Online APK too.
 The VPS was not accessed by this patch.
 
 Tests cover UTC compatibility, local midnight, DST repeated hours, immutable
