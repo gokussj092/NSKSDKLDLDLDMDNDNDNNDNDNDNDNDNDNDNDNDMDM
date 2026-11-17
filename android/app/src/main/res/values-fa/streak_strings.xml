@@ -12,4 +12,7 @@
         <item quantity="one">%1$d روز باقی مانده</item>
         <item quantity="other">%1$d روز باقی مانده</item>
     </plurals>
+    <string name="streak_reminder_channel">یادآوری زنجیره</string>
+    <string name="streak_reminder_title">زنجیرهٔ شما منتظر است</string>
+    <string name="streak_reminder_body">امروز یک فایل یا متن را رمزگشایی کنید تا زنجیرهٔ شما ادامه یابد.</string>
 </resources>

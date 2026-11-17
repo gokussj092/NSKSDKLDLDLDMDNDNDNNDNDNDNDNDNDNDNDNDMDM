@@ -12,4 +12,7 @@
         <item quantity="one">Осталось дней: %1$d</item>
         <item quantity="other">Осталось дней: %1$d</item>
     </plurals>
+    <string name="streak_reminder_channel">Напоминания о серии</string>
+    <string name="streak_reminder_title">Ваша серия ждёт</string>
+    <string name="streak_reminder_body">Расшифруйте файл или текст сегодня, чтобы продолжить серию.</string>
 </resources>

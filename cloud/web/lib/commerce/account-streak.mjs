@@ -140,12 +140,3 @@ export async function recordDecodeDay(accountId,
   return {...deriveStreakState(updated,clock),creditGranted};
  },db);
 }
-export async function recordSuccessfulDecodeForDevice(devicePublicKey,{db=database(),today,live}={}){
- if(typeof devicePublicKey!=='string'||!devicePublicKey)return null;
- const owner=(await db.query('SELECT account_id FROM spdecode_shop.account_device_keys WHERE public_key=$1',[devicePublicKey])).rows[0];
- return owner?.account_id?recordDecodeDay(owner.account_id,{db,today,live}):null;
-}
-export async function recordDecodeStreak(claims,{db,today,live}={}){
- try{return claims&&typeof claims.key==='string'&&claims.key?await recordSuccessfulDecodeForDevice(claims.key,{db,today,live}):null;}
- catch{return null;} // A reward outage never breaks an otherwise successful decode.
-}

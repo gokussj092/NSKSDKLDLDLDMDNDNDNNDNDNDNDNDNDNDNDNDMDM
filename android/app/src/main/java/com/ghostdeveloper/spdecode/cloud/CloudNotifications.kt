@@ -102,6 +102,7 @@ internal object CloudNotifications {
         }
         edit.commit()
         CloudNoticePush.configure(c,value)
+        if(value)StreakReminders.schedule(c) else StreakReminders.cancel(c)
         if(value) {ensureSoundChannel(c);ensureScheduled(c);enqueue(c)} else {
             WorkManager.getInstance(c).cancelUniqueWork(PERIODIC)
             WorkManager.getInstance(c).cancelUniqueWork(IMMEDIATE)

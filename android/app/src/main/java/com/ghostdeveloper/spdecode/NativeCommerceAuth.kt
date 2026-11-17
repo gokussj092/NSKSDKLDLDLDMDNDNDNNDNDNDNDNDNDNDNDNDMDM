@@ -99,6 +99,11 @@ internal class NativeCommerceAuth(private val context:Context) {
         val cached=prefs.getString("profile",null)?:return
         runCatching{CommerceSession.restore(JSONObject(decrypt(cached)))}
     }
+    fun cachedAccountId():String? {
+        if(sessionToken()==null)return null
+        return runCatching{JSONObject(decrypt(prefs.getString("profile",null)?:return null))
+            .optString("id").takeIf{it.isNotBlank()}}.getOrNull()
+    }
     private fun cacheIdentity(snapshot:JSONObject){
         val user=snapshot.optJSONObject("user")?:return
         val copy=JSONObject().put("id",user.optString("id"))
@@ -111,6 +116,7 @@ internal class NativeCommerceAuth(private val context:Context) {
             runCatching{prefs.edit().putString("profile",encrypt(text)).apply()}
     }
     private fun wipeSession(){
+        com.ghostdeveloper.spdecode.cloud.StreakReminders.clear(context)
         prefs.edit().remove("session").remove("profile").commit()
         CommerceSession.clear()
     }
@@ -274,6 +280,8 @@ internal class NativeCommerceAuth(private val context:Context) {
         }
         CommerceSession.update(response)
         cacheIdentity(response)
+        runCatching{com.ghostdeveloper.spdecode.cloud.StreakReminders.sync(context,
+            response.getJSONObject("user").getString("id"),response.optJSONObject("streak"))}
         // The app may have started before Google/email sign-in. At startup FCM
         // had no authenticated account to bind the device token to; register it
         // after every confirmed account session so background support/purchase

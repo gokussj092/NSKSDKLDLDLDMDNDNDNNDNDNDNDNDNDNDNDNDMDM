@@ -12,4 +12,7 @@
         <item quantity="one">%1$d दिन बाकी</item>
         <item quantity="other">%1$d दिन बाकी</item>
     </plurals>
+    <string name="streak_reminder_channel">लगातार दिनों के रिमाइंडर</string>
+    <string name="streak_reminder_title">आपकी स्ट्रीक आपका इंतज़ार कर रही है</string>
+    <string name="streak_reminder_body">अपनी स्ट्रीक जारी रखने के लिए आज कोई फ़ाइल या टेक्स्ट डिक्रिप्ट करें।</string>
 </resources>

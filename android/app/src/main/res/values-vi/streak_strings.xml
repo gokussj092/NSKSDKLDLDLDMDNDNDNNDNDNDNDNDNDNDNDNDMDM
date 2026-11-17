@@ -12,4 +12,7 @@
         <item quantity="one">Còn %1$d ngày</item>
         <item quantity="other">Còn %1$d ngày</item>
     </plurals>
+    <string name="streak_reminder_channel">Nhắc nhở chuỗi ngày</string>
+    <string name="streak_reminder_title">Chuỗi ngày đang chờ bạn</string>
+    <string name="streak_reminder_body">Giải mã một tệp hoặc văn bản hôm nay để tiếp tục chuỗi ngày.</string>
 </resources>

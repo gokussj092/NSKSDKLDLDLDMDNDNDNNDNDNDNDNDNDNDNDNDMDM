@@ -12,4 +12,7 @@
         <item quantity="one">Falta %1$d dia</item>
         <item quantity="other">Faltam %1$d dias</item>
     </plurals>
+    <string name="streak_reminder_channel">Lembretes de sequência</string>
+    <string name="streak_reminder_title">Sua sequência está esperando</string>
+    <string name="streak_reminder_body">Decifre um arquivo ou texto hoje para manter sua sequência.</string>
 </resources>

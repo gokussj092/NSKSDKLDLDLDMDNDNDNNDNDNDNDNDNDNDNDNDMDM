@@ -12,4 +12,7 @@
         <item quantity="one">الأيام المتبقية: %1$d</item>
         <item quantity="other">الأيام المتبقية: %1$d</item>
     </plurals>
+    <string name="streak_reminder_channel">تذكيرات السلسلة</string>
+    <string name="streak_reminder_title">سلسلتك تنتظرك</string>
+    <string name="streak_reminder_body">فك تشفير ملف أو نص اليوم للحفاظ على سلسلتك.</string>
 </resources>

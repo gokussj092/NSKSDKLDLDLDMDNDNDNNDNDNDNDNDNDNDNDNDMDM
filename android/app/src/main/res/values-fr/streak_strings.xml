@@ -12,4 +12,7 @@
         <item quantity="one">Encore %1$d jour</item>
         <item quantity="other">Encore %1$d jours</item>
     </plurals>
+    <string name="streak_reminder_channel">Rappels de série</string>
+    <string name="streak_reminder_title">Votre série vous attend</string>
+    <string name="streak_reminder_body">Déchiffrez un fichier ou un texte aujourd’hui pour continuer votre série.</string>
 </resources>

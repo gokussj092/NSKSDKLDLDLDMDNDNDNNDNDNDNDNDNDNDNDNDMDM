@@ -12,4 +12,7 @@
         <item quantity="one">Noch %1$d Tag</item>
         <item quantity="other">Noch %1$d Tage</item>
     </plurals>
+    <string name="streak_reminder_channel">Serienerinnerungen</string>
+    <string name="streak_reminder_title">Deine Serie wartet</string>
+    <string name="streak_reminder_body">Entschlüssle heute eine Datei oder einen Text, um deine Serie fortzusetzen.</string>
 </resources>

@@ -12,7 +12,7 @@ import { maintenanceEnabled, serviceMaintenanceEnabled, recordWorkerResult } fro
 import {admissionPolicy} from "./c11-play-admission.mjs";
 import {publicFormats} from "./file-format-catalog.mjs";
 import {allowsHcPartial} from "./hc-partial-result.mjs";
-import {recordDecodeStreak} from "./commerce/account-streak.mjs";
+import {takeStreakAccountToken,withDecodeStreak} from "./commerce/decode-account-streak.mjs";
 import {SUPPLIED_CATALOG_ITEMS} from "./supplied-integrations.mjs";
 const suppliedCatalogIds=new Set(SUPPLIED_CATALOG_ITEMS.map(x=>x.id));
 
@@ -549,6 +549,7 @@ export async function decodeRequest(request,kind,options={}) {
     if(claims.rateLimited)return failure("RATE_LIMITED",429);
     const max=kind==="text"?1024*1024:limits.maxJsonBodyBytes;
     const payload=await boundedBody(request,max);
+    const streakToken=takeStreakAccountToken(payload,claims);
     validatePayload(kind,payload);
     const requestedExport=kind==="file"&&payload.compatibleExport!==undefined;
     let workerPayload=payload,exportUnavailable=null;
@@ -620,16 +621,9 @@ export async function decodeRequest(request,kind,options={}) {
       appVersion:request.headers.get("x-spdecode-app-version"),
     });}catch{}
     recorded=true;
-    // Decryption streak (2026-11-16): a successful file/text decode counts
-    // one day for the linked account (V2 bound claims carry the device key;
-    // V1 legacy sessions carry none and are skipped inside). Best-effort:
-    // a streak failure must never fail the decode. Ops 9/12 never reach
-    // here, so catalog downloads do not count. See
-    // lib/commerce/account-streak.mjs for the exact rules.
-    if(clientOutcome.ok){
-      await recordDecodeStreak(claims,{db:options.streakDb}).catch(()=>{});
-    }
-    return clientOutcome;
+    // The transport key is not the account's biometric/deletion key. Resolve
+    // ownership from the authenticated account session inside HPKE instead.
+    return await withDecodeStreak(clientOutcome,claims,streakToken,options);
   }catch(error){
     if(telemetry && !recorded && redis && lease){
       try{await recordWorkerResult(redis,"failed",{...telemetry,errorCode:isExternalImportError(error)?error.code:"ENGINE_UNAVAILABLE",

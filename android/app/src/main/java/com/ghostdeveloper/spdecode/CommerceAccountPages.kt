@@ -284,11 +284,11 @@ private fun DecryptionStreakCard(language:String,user:CommerceIdentity?,
                 color=if(streak.completedToday)tint else secondary,fontSize=12.sp,lineHeight=18.sp)
         }
         Box(Modifier.fillMaxWidth()){
-            Canvas(Modifier.fillMaxWidth().height(34.dp)){
+            Canvas(Modifier.fillMaxWidth().padding(top=50.dp).height(34.dp)){
                 val step=size.width/7f
                 val start=Offset(step/2,size.height/2);val end=Offset(size.width-step/2,size.height/2)
                 drawLine(sectionRaised,start,end,5.dp.toPx(),StrokeCap.Round)
-                if(progress>0f)drawLine(tint,start,Offset(start.x+(end.x-start.x)*progress,end.y),5.dp.toPx(),StrokeCap.Round)
+                if(progress>0f)drawLine(streakGold,start,Offset(start.x+(end.x-start.x)*progress,end.y),5.dp.toPx(),StrokeCap.Round)
             }
             Row(Modifier.fillMaxWidth()){
                 (0 until 7).forEach{day->
@@ -296,13 +296,23 @@ private fun DecryptionStreakCard(language:String,user:CommerceIdentity?,
                     val date=streak?.cycleDays?.getOrNull(day)
                     val today=date!=null&&date==streak?.today
                     Column(Modifier.weight(1f),horizontalAlignment=Alignment.CenterHorizontally,
-                        verticalArrangement=Arrangement.spacedBy(7.dp)){
-                        Box(Modifier.size(34.dp).background(if(done)tint else sectionRaised,RoundedCornerShape(50))
-                            .then(if(today)Modifier.border(2.dp,tint,RoundedCornerShape(50)) else Modifier),
+                        verticalArrangement=Arrangement.spacedBy(4.dp)){
+                        Box(Modifier.height(46.dp),contentAlignment=Alignment.Center){
+                            if(day==6)Box(Modifier.size(44.dp)
+                                .clickable(enabled=streak?.chestOpen==true){onChestTap()},
+                                contentAlignment=Alignment.Center){
+                                AnimatedStreakGif(if(streak?.chestOpen==true)"cofre_abierto.gif" else "cofre_cerrado.gif",
+                                    Modifier.size(44.dp))
+                            }
+                        }
+                        Box(Modifier.size(34.dp).background(if(done)streakGold else sectionRaised,RoundedCornerShape(50))
+                            .then(if(today)Modifier.border(2.dp,streakGold,RoundedCornerShape(50)) else Modifier),
                             contentAlignment=Alignment.Center){
-                            if(done)Icon(Icons.Outlined.Check,null,tint=midnight,modifier=Modifier.size(18.dp))
-                            else Text((day+1).toString(),color=if(today)tint else secondary,fontSize=11.sp,
-                                fontWeight=if(today)FontWeight.Bold else FontWeight.Normal)
+                            Text((day+1).toString(),color=if(done)midnight else if(today)streakGold else secondary,
+                                fontSize=12.sp,fontWeight=if(done||today)FontWeight.Bold else FontWeight.Normal)
+                            if(done)Icon(Icons.Outlined.Check,null,tint=midnight,
+                                modifier=Modifier.align(Alignment.TopEnd).size(11.dp)
+                                    .background(streakGold,RoundedCornerShape(50)))
                         }
                         Text(date?.dayOfWeek?.getDisplayName(TextStyle.NARROW,locale)?:"—",
                             color=if(today)foreground else secondary,fontSize=11.sp,
@@ -311,26 +321,7 @@ private fun DecryptionStreakCard(language:String,user:CommerceIdentity?,
                 }
             }
         }
-        Row(Modifier.fillMaxWidth(),verticalAlignment=Alignment.CenterVertically,
-            horizontalArrangement=Arrangement.spacedBy(12.dp)){
-            Box(Modifier.size(64.dp).clip(RoundedCornerShape(18.dp))
-                .background(Brush.radialGradient(listOf(streakGold.copy(alpha=.22f),Color.Transparent)))
-                .clickable(enabled=streak?.chestOpen==true){onChestTap()},contentAlignment=Alignment.Center){
-                AnimatedStreakGif(if(streak?.chestOpen==true)"cofre_abierto.gif" else "cofre_cerrado.gif",Modifier.size(58.dp))
-            }
-            Column(Modifier.weight(1f),verticalArrangement=Arrangement.spacedBy(5.dp)){
-                Text(if(streak?.chestOpen==true)stringResource(R.string.streak_reward_delivered)
-                    else pluralStringResource(R.plurals.streak_days_left,(7-completed).coerceAtLeast(1),(7-completed).coerceAtLeast(1)),
-                    color=foreground,fontSize=14.sp,fontWeight=FontWeight.SemiBold)
-                Text(stringResource(R.string.streak_weekly_reward),color=secondary,fontSize=11.sp,lineHeight=17.sp)
-                Surface(color=streakGold.copy(alpha=.14f),shape=RoundedCornerShape(50)){
-                    Text(stringResource(R.string.streak_reward),color=streakGold,fontWeight=FontWeight.SemiBold,
-                        fontSize=11.sp,modifier=Modifier.padding(horizontal=10.dp,vertical=6.dp))
-                }
-            }
-        }
-        Text(if(streak?.chestOpen==true)tr("Tap the chest to see it again")
-            else stringResource(R.string.streak_verified_note),color=secondary,fontSize=10.sp,lineHeight=15.sp)
+
     }
 }
 

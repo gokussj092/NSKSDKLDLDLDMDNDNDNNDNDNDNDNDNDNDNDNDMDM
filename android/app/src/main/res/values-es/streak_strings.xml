@@ -12,4 +12,7 @@
         <item quantity="one">Falta %1$d día</item>
         <item quantity="other">Faltan %1$d días</item>
     </plurals>
+    <string name="streak_reminder_channel">Recordatorios de racha</string>
+    <string name="streak_reminder_title">Tu racha te espera</string>
+    <string name="streak_reminder_body">Descifra un archivo o texto hoy para mantener tu racha.</string>
 </resources>

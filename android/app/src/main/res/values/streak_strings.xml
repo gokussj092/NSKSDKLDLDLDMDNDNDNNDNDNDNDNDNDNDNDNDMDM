@@ -12,4 +12,7 @@
         <item quantity="one">%1$d day left</item>
         <item quantity="other">%1$d days left</item>
     </plurals>
+    <string name="streak_reminder_channel">Streak reminders</string>
+    <string name="streak_reminder_title">Your streak is waiting</string>
+    <string name="streak_reminder_body">Decode a file or text today to keep your streak going.</string>
 </resources>

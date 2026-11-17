@@ -12,4 +12,7 @@
         <item quantity="one">%1$d gün kaldı</item>
         <item quantity="other">%1$d gün kaldı</item>
     </plurals>
+    <string name="streak_reminder_channel">Seri hatırlatıcıları</string>
+    <string name="streak_reminder_title">Serin seni bekliyor</string>
+    <string name="streak_reminder_body">Serini sürdürmek için bugün bir dosya veya metnin şifresini çöz.</string>
 </resources>

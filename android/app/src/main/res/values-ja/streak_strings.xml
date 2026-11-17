@@ -12,4 +12,7 @@
         <item quantity="one">あと%1$d日</item>
         <item quantity="other">あと%1$d日</item>
     </plurals>
+    <string name="streak_reminder_channel">連続記録のリマインダー</string>
+    <string name="streak_reminder_title">連続記録が待っています</string>
+    <string name="streak_reminder_body">今日もファイルやテキストを復号して、連続記録を続けましょう。</string>
 </resources>

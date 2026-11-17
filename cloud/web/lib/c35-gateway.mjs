@@ -7,6 +7,7 @@ import {providerAllowed} from "./c12-provider-controls.mjs";
 import { settings } from "./c3-config.mjs";
 import { store, reserveSlot, releaseSlot } from "./c3-store.mjs";
 import { requireSession } from "./c3-session.mjs";
+import {takeStreakAccountToken,withDecodeStreak} from "./commerce/decode-account-streak.mjs";
 import { enabled, notEnabled, failure, boundedBody, fetchWorker } from "./c3-gateway.mjs";
 import { maintenanceEnabled, serviceMaintenanceEnabled, recordWorkerResult } from "./c6-ops-store.mjs";
 import {
@@ -39,6 +40,7 @@ export async function externalImportRequest(request,kind,opts={}) {
     if (!claims) return failure("UNAUTHORIZED",401);
     if (claims.rateLimited) return failure("RATE_LIMITED",429);
     const body=await boundedBody(request,4096);
+    const streakToken=takeStreakAccountToken(body,claims);
     if(kind==="cloud") {
       // Old APKs omit provider and are always HTTP Injector.
       const hasProvider=Object.hasOwn(body||{},"provider");
@@ -94,7 +96,8 @@ export async function externalImportRequest(request,kind,opts={}) {
           const code=response.ok?"":(await response.clone().json()).error?.code||"";
           try{await recordWorkerResult(redis,response.ok?"success":"failed",{kind:"file",format:"hc",bytes:bytes.length,
             errorCode:code,latencyMs:performance.now()-started,appVersion:request.headers.get("x-spdecode-app-version")});}catch{}
-          if(!["PASSWORD_REQUIRED","HWID_REQUIRED","HWID_PASSWORD_REQUIRED"].includes(code))return response;
+          if(!["PASSWORD_REQUIRED","HWID_REQUIRED","HWID_PASSWORD_REQUIRED"].includes(code))
+            return await withDecodeStreak(response,claims,streakToken,opts);
           return jsonReply({apiVersion:"v1",status:"credentials_required",kind:"encrypted_file",format:"hc",code,
             sourceBytes:bytes.length,dataBase64:bytes.toString("base64")},200);
         }
@@ -114,7 +117,7 @@ export async function externalImportRequest(request,kind,opts={}) {
         kind:"file",format:"stp",bytes:bytes.length,errorCode,latencyMs:performance.now()-started,
         appVersion:request.headers.get("x-spdecode-app-version"),
       });}catch{}
-      return result;
+      return await withDecodeStreak(result,claims,streakToken,opts);
     }
     if(kind==="ehi"){
       const ehi=await importEhiReference(body.reference,vendor);
@@ -125,7 +128,7 @@ export async function externalImportRequest(request,kind,opts={}) {
         kind:"ehi",bytes:ehi.length,errorCode,latencyMs:performance.now()-started,
         appVersion:request.headers.get("x-spdecode-app-version"),
       });}catch{}
-      return result;
+      return await withDecodeStreak(result,claims,streakToken,opts);
     }
     return failure("INVALID_REQUEST",400);
   }catch(error) {

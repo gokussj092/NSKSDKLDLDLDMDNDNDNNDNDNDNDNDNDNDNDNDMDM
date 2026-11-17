@@ -2,7 +2,7 @@
 
 Online branch: `ci/unity-ads-online-qa`. Daily activity is still recorded only
 by the existing gateway hook after a successful bound file/text decode. Failed,
-anonymous or unlinked decodes and catalog downloads do not count.
+anonymous decodes and catalog downloads do not count.
 
 ## Calendar and clock integrity
 
@@ -42,8 +42,10 @@ so an observed new reward has already been committed to the same credit ledger.
 ## Android presentation and assets
 
 The profile card includes the verified local date, gold/purple progress, checked
-completed days, the actual dates of the current seven-day block, a colorful
-animated chest and the credit reward. Profile snapshots refresh every 30 seconds
+completed days, the actual dates of the current seven-day block and a colorful animated chest
+above day seven. Completed circles retain their numbers with a gold fill and a
+small check; the path fills between verified completed days. The prize is hidden
+until the earned chest opens. Profile snapshots refresh every 30 seconds
 while on that page. Other account sections retain their existing behavior.
 
 - Days 0–99: `racha-fuego-naranja.gif`.
@@ -71,3 +73,37 @@ Tests cover UTC compatibility, local midnight, DST repeated hours, immutable
 zones, rejected client dates/claims, repeated-day idempotency, missed days,
 legacy rewards and 105 simulated days yielding 15 credits. These are synthetic
 server tests, not a claim of 105 real days or a device UI test.
+
+
+## Follow-up: first-day attribution and local reminders (2026-11-17)
+
+The decoder transport key and the optional biometric account-deletion key are
+independent. Looking up the transport key in `account_device_keys` silently found
+no account, so successful decodes could leave the counter at zero. Decodes now
+carry the current account bearer **inside the HPKE-encrypted body**. The gateway
+strips it before payload validation/provider/worker dispatch and validates the
+account session only after a successful decode with nonempty output. A missing,
+expired or revoked account session never awards a day, and never breaks the
+decoder. Phone dates/counters/account IDs are not accepted. The verified streak
+is returned with the decode to refresh local reminder state immediately.
+
+The first verified decode counts day 1; four decodes on that same date still count
+one day. HTTP Custom combined reference decoding also records a day on actual
+success, never for a downloaded locked file or a request for credentials.
+Previously unassociated decodes cannot safely be retroactively credited. After
+updating **both server and APK**, perform another successful signed-in decode.
+No new schema or secret is required beyond the existing migration 015.
+
+`StreakReminderWorker` runs locally via WorkManager, without network constraints
+or FCM. It checks for inactivity in the evening (20:00–22:59 in the account zone),
+at most once per calendar day. A confirmed successful decode cancels today's
+notification and moves the next check to the following evening. Logout clears
+its state and scheduled work; notification opt-out cancels it. System permission,
+legal consent and the existing notification preference are respected. Texts are
+localized in all 14 app languages and reveal no prize.
+
+Within a boot, reminder time advances from the last verified server timestamp
+using elapsed realtime, so changing the phone clock does not move it. After a
+reboot, only reminder timing may use the phone clock until the next account sync;
+this never changes progress or rewards. Android can defer background work; these
+are reminders, not exact alarms or guaranteed delivery after force-stop.

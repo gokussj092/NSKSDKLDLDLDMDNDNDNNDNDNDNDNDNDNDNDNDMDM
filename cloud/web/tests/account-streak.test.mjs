@@ -7,12 +7,16 @@ import {join} from 'node:path';
 import {randomUUID,createHash,randomBytes,generateKeyPairSync} from 'node:crypto';
 import {PGlite} from '@electric-sql/pglite';
 import {getMigrations} from 'better-auth/db/migration';
-import {makeAuth} from '../lib/commerce/auth.mjs';
+import {makeAuth,requireAccount} from '../lib/commerce/auth.mjs';
+import {takeStreakAccountToken,withDecodeStreak} from '../lib/commerce/decode-account-streak.mjs';
+import {decodeRequest} from '../lib/c3-gateway.mjs';
+import {externalImportRequest} from '../lib/c35-gateway.mjs';
+import {bindVerifiedRequest} from '../lib/v2-bound-request.mjs';
 import {creditBalance} from '../lib/commerce/credits.mjs';
 import {completeJob} from '../lib/app-analysis.mjs';
 import {utcDayString,weekMondayString,weekDayIndex,emptyStreakState,
  deriveStreakState,chestJobId,getAccountStreak,recordDecodeDay,
- recordSuccessfulDecodeForDevice,recordDecodeStreak,configureStreakTimeZone,localDayString,validatedTimeZone} from '../lib/commerce/account-streak.mjs';
+ configureStreakTimeZone,localDayString,validatedTimeZone} from '../lib/commerce/account-streak.mjs';
 
 import {streakTimeZoneRequest} from '../lib/commerce/streak-route.mjs';
 import {ShopError} from '../lib/commerce/config.mjs';
@@ -176,22 +180,99 @@ test('chest job id is deterministic per account and week',()=>{
    /^[0-9a-f]{8}-[0-9a-f]{4}-5[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/);
 });
 
-test('device key resolves to the linked account; unknown keys count nothing',async()=>{
+test('real account session counts the first successful day with an unrelated transport key',async()=>{
  await resetStreak();
- const recorded=await recordSuccessfulDecodeForDevice(deviceKey,{db,today:at(MON)});
- assert.equal(recorded.currentStreakDays,1);
- assert.equal(await recordSuccessfulDecodeForDevice('no-such-key',{db,today:at(TUE)}),null);
- assert.equal(await recordSuccessfulDecodeForDevice('',{db,today:at(TUE)}),null);
- assert.equal(await recordSuccessfulDecodeForDevice(null,{db,today:at(TUE)}),null);
- // The unknown-key attempts did not advance the streak.
+ const token=randomBytes(32).toString('base64url');
+ await db.query(`INSERT INTO shop_session(id,token,"userId","expiresAt","createdAt","updatedAt")
+  VALUES($1,$2,$3,now()+interval '1 day',now(),now())`,[randomUUID(),token,accountId]);
+ const claims={hpke:true,scope:'decode',key:'different-transport-key',jti:randomUUID()};
+ const authenticate=request=>requireAccount(request,{auth});
+ const opts={streakDb:db,streakToday:at(MON),streakAuthenticate:authenticate};
+ const success=()=>Response.json({status:'success',rawText:'{"verified":true}',isPartial:false});
+ for(let n=0;n<4;n++){
+  const payload={text:'synthetic',accountToken:token};
+  const extracted=takeStreakAccountToken(payload,claims);
+  assert.deepEqual(payload,{text:'synthetic'}); // Never forwarded to the worker.
+  const body=await (await withDecodeStreak(success(),claims,extracted,opts)).json();
+  assert.equal(body.streak.currentStreakDays,1);
+  assert.equal(body.streak.rewardProgress,1);
+  assert.equal(body.streak.cycleCompleted[0],true);
+ }
+ assert.equal((await getAccountStreak(otherId,{db,today:at(MON)})).currentStreakDays,0);
+ await db.query('DELETE FROM shop_session WHERE token=$1',[token]);
+ const revoked=await withDecodeStreak(success(),claims,token,{...opts,streakToday:at(TUE)});
+ assert.equal((await revoked.json()).streak,undefined);
  assert.equal((await getAccountStreak(accountId,{db,today:at(TUE)})).currentStreakDays,1);
- // Gateway hook: bound V2 claims count, anything without a key does not.
+});
+
+test('unauthenticated, unencrypted, failed and credential-gated requests never award a day',async()=>{
  await resetStreak();
- const viaClaims=await recordDecodeStreak({key:deviceKey},{db,today:at(MON)});
- assert.equal(viaClaims.currentStreakDays,1);
- assert.equal(await recordDecodeStreak({},{db,today:at(TUE)}),null);
- assert.equal(await recordDecodeStreak(null,{db,today:at(TUE)}),null);
- assert.equal(await recordDecodeStreak({key:''},{db,today:at(TUE)}),null);
+ const claims={hpke:true,scope:'decode',key:'transport'};
+ const token='synthetic-account-token-123456';let authCalls=0;
+ const opts={streakDb:db,streakToday:at(MON),streakAuthenticate:async()=>{
+  authCalls++;return {user:{id:accountId,emailVerified:true}};
+ }};
+ for(const bad of [null,{}, {key:deviceKey}, {...claims,hpke:false},{...claims,scope:'catalog'}]){
+  const payload={text:'sample',accountToken:token};
+  assert.equal(takeStreakAccountToken(payload,bad),null);
+  assert.equal(payload.accountToken,undefined);
+ }
+ for(const value of ['',{},'x',token+' ',null])assert.equal(takeStreakAccountToken({accountToken:value},claims),null);
+ for(const response of [Response.json({error:{code:'INVALID_PASSWORD'}},{status:422}),
+  Response.json({status:'credentials_required'}),Response.json({status:'success',rawText:''})]){
+  assert.equal(await withDecodeStreak(response,claims,token,opts),response);
+ }
+ const response=Response.json({status:'success',rawText:'{}'});
+ assert.equal(await withDecodeStreak(response,claims,null,opts),response);
+ assert.equal(authCalls,0);
+ assert.equal((await getAccountStreak(accountId,{db,today:at(MON)})).currentStreakDays,0);
+});
+
+test('file/text gateway strips account credentials, validates ownership and returns verified progress',async()=>{
+ await resetStreak();
+ Object.assign(process.env,{CLOUD_API_ENABLED:'true',CLOUD_WORKER_TOKEN:'x'.repeat(48),
+  CLOUD_SESSION_SIGNING_KEY:'s'.repeat(48),CLOUD_GOOGLE_PLAY_PACKAGE:'com.ghostdeveloper.spdecode',
+  CLOUD_BETA_ADMISSION_ENABLED:'true',CLOUD_REDIS_URL:'redis://redis:6379',CLOUD_TRUST_PROXY:'true',
+  WORKER_INTERNAL_URL:'http://decoder-worker:8787'});
+ const redis={get:async()=>null,eval:async()=>1,zRem:async()=>1};
+ const token='synthetic-account-token-123456';
+ for(const kind of ['file','text']){
+  const payload=kind==='file'?{format:'hc',dataBase64:'YWJj'}:{text:'synthetic'};
+  const request=new Request('https://example.invalid/api/v2',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({...payload,accountToken:token})});
+  bindVerifiedRequest(request,{hpke:true,scope:'decode',key:'transport-key-not-in-account-table',jti:randomUUID()});
+  const result=await decodeRequest(request,kind,{storeProvider:async()=>redis,streakDb:db,streakToday:at(MON),
+   streakAuthenticate:async req=>{assert.equal(req.headers.get('authorization'),'Bearer '+token);return {user:{id:accountId,emailVerified:true}};},
+   fetchImpl:async(url,options)=>{
+    assert.deepEqual(JSON.parse(options.body),payload);
+    return Response.json({apiVersion:'v1',status:'success',rawText:'{"decoded":true}',isPartial:false});
+   }});
+  assert.equal(result.status,200);
+  assert.equal((await result.json()).streak.currentStreakDays,1);
+ }
+});
+
+test('combined HTTP Custom reference counts decoded output, never a locked download',async()=>{
+ await resetStreak();let locked=true,authCalls=0;
+ const token='synthetic-account-token-123456';
+ const options={storeProvider:async()=>({get:async()=>null,eval:async()=>1,zRem:async()=>1}),
+  vendor:{download:async()=>Buffer.from('synthetic encrypted HC')},streakDb:db,streakToday:at(MON),
+  streakAuthenticate:async()=>{authCalls++;return {user:{id:accountId,emailVerified:true}};},
+  fetchImpl:async(url,opts)=>{
+   assert.equal(JSON.parse(opts.body).accountToken,undefined);
+   return locked?Response.json({error:{code:'PASSWORD_REQUIRED'}},{status:422}):
+    Response.json({apiVersion:'v1',status:'success',isPartial:false,rawText:'{"decoded":true}'});
+  }};
+ const request=()=>{
+  const req=new Request('https://example.invalid/api/v2',{method:'POST',headers:{'content-type':'application/json'},
+   body:JSON.stringify({reference:'https://cloudvpn.mrfrankofc.com/ABC123',consent:true,decode:true,accountToken:token})});
+  bindVerifiedRequest(req,{hpke:true,scope:'decode',key:'different-transport-key',jti:randomUUID()});return req;
+ };
+ const gated=await externalImportRequest(request(),'hc',options);
+ assert.equal((await gated.json()).status,'credentials_required');assert.equal(authCalls,0);
+ assert.equal((await getAccountStreak(accountId,{db,today:at(MON)})).currentStreakDays,0);
+ locked=false;
+ const done=await externalImportRequest(request(),'hc',options);
+ assert.equal((await done.json()).streak.currentStreakDays,1);assert.equal(authCalls,1);
 });
 
 async function seedJob(jobId){

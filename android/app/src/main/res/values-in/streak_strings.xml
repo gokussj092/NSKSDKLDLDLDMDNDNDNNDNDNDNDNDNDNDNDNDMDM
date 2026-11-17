@@ -12,4 +12,7 @@
         <item quantity="one">Tersisa %1$d hari</item>
         <item quantity="other">Tersisa %1$d hari</item>
     </plurals>
+    <string name="streak_reminder_channel">Pengingat rentetan</string>
+    <string name="streak_reminder_title">Rentetan Anda menunggu</string>
+    <string name="streak_reminder_body">Dekripsi file atau teks hari ini untuk melanjutkan rentetan Anda.</string>
 </resources>

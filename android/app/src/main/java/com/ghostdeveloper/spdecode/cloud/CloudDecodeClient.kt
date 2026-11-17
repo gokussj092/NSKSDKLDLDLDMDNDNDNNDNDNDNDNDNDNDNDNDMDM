@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Base64
 import com.ghostdeveloper.spdecode.BuildConfig
 import com.ghostdeveloper.spdecode.ReleaseIntegrity
+import com.ghostdeveloper.spdecode.NativeCommerceAuth
 import com.ghostdeveloper.spdecode.parity.HcHccfgPort
 import com.google.android.play.core.integrity.IntegrityManagerFactory
 import com.google.android.play.core.integrity.IntegrityTokenRequest
@@ -237,13 +238,18 @@ internal class CloudDecodeClient(context: Context) {
         lastDiagnostic=null
         onPhase(TransferPhase.SENDING)
         val bearer = session()
+        val streakAuth=NativeCommerceAuth(app)
+        val streakAccount=streakAuth.cachedAccountId()
+        val requestPayload=JSONObject(payload.toString())
+        if(operation in setOf(CloudOperation.FILE,CloudOperation.TEXT,CloudOperation.IMPORT_CLOUD))
+            streakAuth.sessionToken()?.let{requestPayload.put("accountToken",it)}
         onPhase(TransferPhase.PROCESSING)
         coroutineContext.ensureActive()
         val response = try {
             withContext(Dispatchers.IO) {
                 // Never store request payloads or credentials in a diagnostic.
                 requireLegalConsent()
-                extract(protectedPost(operation,payload,bearer,attachment))
+                extract(protectedPost(operation,requestPayload,bearer,attachment))
             }
         }catch(failure:Failure) {
             // Only whitelisted enum-like codes and known format labels are retained in RAM.
@@ -267,7 +273,9 @@ internal class CloudDecodeClient(context: Context) {
         }
         coroutineContext.ensureActive()
         onPhase(TransferPhase.DOWNLOADING_RESULTS)
-        return decodedResponse(operation,payload,response)
+        val decoded=decodedResponse(operation,payload,response)
+        runCatching{streakAccount?.let{StreakReminders.sync(app,it,response.optJSONObject("streak"))}}
+        return decoded
     }
 
     private fun decodedResponse(operation:Int,payload:JSONObject,response:JSONObject):Decoded {
@@ -420,6 +428,9 @@ internal class CloudDecodeClient(context: Context) {
         require(BuildConfig.SPDECODE_CLOUD_ENABLED)
         requireLegalConsent()
         val payload=JSONObject().put("reference",reference.trim()).put("consent",true).put("decode",true)
+        val streakAuth=NativeCommerceAuth(app)
+        val streakAccount=streakAuth.cachedAccountId()
+        streakAuth.sessionToken()?.let{payload.put("accountToken",it)}
         onPhase(TransferPhase.SENDING)
         val bearer=session()
         onPhase(TransferPhase.PROCESSING)
@@ -429,8 +440,11 @@ internal class CloudDecodeClient(context: Context) {
         }
         coroutineContext.ensureActive()
         onPhase(TransferPhase.DOWNLOADING_RESULTS)
-        if(reply.optString("status")=="success")
-            return decodedResponse(CloudOperation.IMPORT_HTTP_CUSTOM,payload,reply).rawText
+        if(reply.optString("status")=="success"){
+            val decoded=decodedResponse(CloudOperation.IMPORT_HTTP_CUSTOM,payload,reply)
+            runCatching{streakAccount?.let{StreakReminders.sync(app,it,reply.optJSONObject("streak"))}}
+            return decoded.rawText
+        }
         val locks=when(reply.optString("code")){
             "PASSWORD_REQUIRED"->true to false
             "HWID_REQUIRED"->false to true

@@ -46,6 +46,11 @@ on:
       - android/app/src/main/java/com/ghostdeveloper/spdecode/NativeCommerceAuth.kt
       - android/app/src/main/java/com/ghostdeveloper/spdecode/NativeCommerceScreens.kt
       - cloud/web/lib/commerce/account-streak.mjs
+      - cloud/web/lib/commerce/decode-account-streak.mjs
+      - cloud/web/lib/c3-gateway.mjs
+      - cloud/web/lib/c35-gateway.mjs
+      - android/app/src/main/java/com/ghostdeveloper/spdecode/cloud/StreakReminder*.kt
+      - android/app/src/test/java/com/ghostdeveloper/spdecode/cloud/StreakReminderPolicyTest.kt
       - cloud/web/lib/commerce/streak-route.mjs
       - cloud/web/app/api/account/streak/**
       - cloud/web/sql/015_streak_calendar.sql
@@ -292,7 +297,7 @@ jobs:
           set -euo pipefail
           npm ci --prefix cloud/web --no-audit --no-fund
           node --test cloud/web/tests/app-analysis-transfer.test.mjs cloud/web/tests/app-analysis.test.mjs cloud/web/tests/app-analysis-contract.test.mjs cloud/web/tests/app-analysis-input.test.mjs cloud/web/tests/device-security.test.mjs
-          node --test cloud/web/tests/account-streak.test.mjs
+          node --test cloud/web/tests/account-streak.test.mjs cloud/web/tests/c3-security.test.mjs cloud/web/tests/c35-import-security.test.mjs
           node --test cloud/web/tests/gifts.test.mjs
           node --test cloud/web/tests/account-support-security.test.mjs
           node --test cloud/web/tests/account-notices.test.mjs
