@@ -35,7 +35,7 @@ function network(t,answer=()=>({body:Buffer.from("synthetic encrypted response")
 }
 test("all supplied catalog methods reach pinned fixed sources and operator controls",async t=>{
  environment(t,{SPDECODE_DTUNNEL_REQUEST_ID:"synthetic-authorized-account",SPDECODE_FMT_VPN_GITHUB_TOKEN:"synthetic-fmt-github-token",SPDECODE_RH_TUNNEL_GITHUB_TOKEN:"synthetic-rh-github-token"});const calls=network(t);
- assert.equal(SUPPLIED_INTEGRATIONS.length,81);
+ assert.equal(SUPPLIED_INTEGRATIONS.length,82);
  for(const item of SUPPLIED_CATALOG_ITEMS){
   assert(PUBLIC_PROVIDER_IDS.includes(item.id));
   const card=catalog().apps.find(x=>x.id===item.id);assert(card);assert(iconFor(item.id).bytes.length);

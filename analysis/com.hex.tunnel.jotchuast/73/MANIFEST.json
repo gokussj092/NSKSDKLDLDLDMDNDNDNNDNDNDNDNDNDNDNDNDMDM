@@ -1,0 +1,95 @@
+{
+  "app_name": "HexVPN",
+  "authorization_note": "Owner explicitly requested connection of all supplied methods on ci/unity-ads-online-qa; no service credentials or attestation fabrication authorized. HexVPN is treated as its own app (owner correction 2026-11-17), not as a repeat of Hex Tunnel; the file method is shared by build identity (identical package, versionCode and native-library hashes), not by name assumption.",
+  "code_paths": [
+    "decoders/Python/apps/Hex_Tunnel/file_decoder.py",
+    "decoders/Python/apps/Hex_Tunnel/manifest.json",
+    "cloud/workers/python/engine.py",
+    "cloud/web/content/supplied-integrations.json",
+    "cloud/web/content/file-formats.json",
+    "cloud/web/lib/supplied-integrations.mjs",
+    "cloud/web/lib/server-vpn-catalog.mjs"
+  ],
+  "connection_authentication": {
+    "scope": "No VPN connection-authentication research in this dossier; file integrity only (AES-GCM tag + SHA-256 signature of the profile document).",
+    "status": "UNCONFIRMED"
+  },
+  "dependencies": [
+    {
+      "lockfile": "requirements.txt",
+      "purpose": "Existing pinned server codec dependencies (pycryptodome for the worker)"
+    },
+    {
+      "lockfile": "cloud/web/package-lock.json",
+      "purpose": "Existing pinned Node broker/build dependencies"
+    }
+  ],
+  "evidence_refs": [
+    "analysis/com.hex.tunnel.jotchuast/73/live.json",
+    "analysis/com.hex.tunnel.jotchuast/73/RESULTS.md",
+    "analysis/com.hex.tunnel.jotchuast/73/tests/INTEGRATION_TESTS.md",
+    "tests/test_hex_tunnel.py",
+    "tests/golden/hexcm_vectors.json"
+  ],
+  "inputs": [
+    {
+      "note": "Byte-identical to the delivered HexVPN_archivos.py (verified with sha256sum)",
+      "path": "decoders/Python/apps/Hex_Tunnel/file_decoder.py",
+      "sha256": "9bb9958199b3e3695ffc8a0003621837a95dbee3f5b10f0d086fd0539d265e68"
+    },
+    {
+      "name": "HexVPN_1.7.3-Rev_0_btjx.apks",
+      "note": "Owner-supplied; APK itself is NOT stored in this repo",
+      "sha256": "df5c64a9cfde6a84908d3928c32a539a458a708f92550e9bc6736d7b3790d735",
+      "size_bytes": 36767965,
+      "type": "apks"
+    }
+  ],
+  "integration_review": {
+    "scope": "Supplied FILE_ONLY card (hex-tunnel) + icon; file decoder already in repo, untouched.",
+    "status": "PARTIAL"
+  },
+  "limitations": [
+    "No live catalog: catalog URLs live in KovSec-encrypted methods; RTDB returns 401 on root and all 27 candidate nodes; no Firebase Database/Auth/Firestore SDK in the APK; no embedded catalog.",
+    "No real .hexcm file exported by THIS build (1.7.3-Rev) on a phone yet; the 6 real files that opened the repo decoder came from the build the decoder was made on, which is the same package/versionCode with byte-identical native libraries.",
+    "Double variant verified only synthetically (JCA reference + synthetic vectors); no real double export available.",
+    "No own text URI scheme; generic vless://, vmess://, trojan://, ss://, socks://, hysteria2:// and WireGuard links are already supported by SP-DECODE and are not HexVPN-specific.",
+    "No .hex sample: manifest VIEW filter .*\\.hex exists but no .hex file or method confirmed."
+  ],
+  "observed_at": "2026-11-17",
+  "package_name": "com.hex.tunnel.jotchuast",
+  "schema_version": 1,
+  "source_category": "owner-supplied repository code",
+  "status": "PARTIAL",
+  "targets": [
+    {
+      "kind": "catalog",
+      "status": "NO_CATALOG"
+    },
+    {
+      "extensions": [
+        "hexcm"
+      ],
+      "kind": "files",
+      "status": "VERIFIED_SYNTHETIC_AND_PRIOR_REAL"
+    },
+    {
+      "kind": "text",
+      "prefixes": [],
+      "status": "NO_OWN_SCHEME"
+    }
+  ],
+  "tooling": [
+    {
+      "command": "python3 analysis/com.hex.tunnel.jotchuast/73/tools/HexVPN.py --probe --out analysis/com.hex.tunnel.jotchuast/73/live.json",
+      "path": "analysis/com.hex.tunnel.jotchuast/73/tools/HexVPN.py",
+      "purpose": "Live RTDB probe (27 read-only GETs) and NO_CATALOG report"
+    },
+    {
+      "path": "analysis/com.hex.tunnel.jotchuast/73/tools/integration_recipe.json",
+      "purpose": "Integration recipe (supplied FILE_ONLY card + icon)"
+    }
+  ],
+  "version_code": 73,
+  "version_name": "1.7.3-Rev"
+}

@@ -1,0 +1,1 @@
+{"node_lock":"cloud/web/package-lock.json","notes":"No new dependencies. The .hexcm reader uses the already pinned pycryptodome==3.23.0 from the root requirements.txt; the probe script uses only the Python standard library plus pycryptodome.","production_requirements":"requirements.txt"}

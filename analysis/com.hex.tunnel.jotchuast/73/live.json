@@ -1,0 +1,182 @@
+{
+  "application": "HexVPN",
+  "package": "com.hex.tunnel.jotchuast",
+  "version": "1.7.3-Rev",
+  "versionCode": 73,
+  "catalog": {
+    "status": "NO_CATALOG"
+  },
+  "reason": "No hay endpoint HTTP de catalogo recuperable por analisis estatico: las URLs viven en metodos cifrados con KovSec (AppConfig.updatesJsonUrl/serversUpdateUrl, ServerUpdateManager, ServerCatalogStore, ServerPresence); la app no incluye SDK de Firebase Database/Auth/Firestore; el RTDB del proyecto responde 401 sin autenticacion en la raiz y en todos los nodos candidatos; no hay URL en recursos, assets ni librerias nativas, ni catalogo embebido.",
+  "what_would_confirm": "Captura de red en un telefono durante 'buscar actualizaciones' en la app (revela updatesJsonUrl/serversUpdateUrl y el User-Agent real), o un .hexcm real exportado por este build.",
+  "probed_at_utc": "2026-11-17T22:54:30.410035Z",
+  "probed_endpoint": "https://hex-tunnel-afd6e-default-rtdb.firebaseio.com",
+  "probes": [
+    {
+      "node": "(root)",
+      "url": "https://hex-tunnel-afd6e-default-rtdb.firebaseio.com/.json",
+      "http_status": 401,
+      "body_snippet": "{\n  \"error\" : \"Permission denied\"\n}"
+    },
+    {
+      "node": "servers",
+      "url": "https://hex-tunnel-afd6e-default-rtdb.firebaseio.com/servers.json",
+      "http_status": 401,
+      "body_snippet": "{\n  \"error\" : \"Permission denied\"\n}"
+    },
+    {
+      "node": "free_servers",
+      "url": "https://hex-tunnel-afd6e-default-rtdb.firebaseio.com/free_servers.json",
+      "http_status": 401,
+      "body_snippet": "{\n  \"error\" : \"Permission denied\"\n}"
+    },
+    {
+      "node": "vip_servers",
+      "url": "https://hex-tunnel-afd6e-default-rtdb.firebaseio.com/vip_servers.json",
+      "http_status": 401,
+      "body_snippet": "{\n  \"error\" : \"Permission denied\"\n}"
+    },
+    {
+      "node": "free",
+      "url": "https://hex-tunnel-afd6e-default-rtdb.firebaseio.com/free.json",
+      "http_status": 401,
+      "body_snippet": "{\n  \"error\" : \"Permission denied\"\n}"
+    },
+    {
+      "node": "vip",
+      "url": "https://hex-tunnel-afd6e-default-rtdb.firebaseio.com/vip.json",
+      "http_status": 401,
+      "body_snippet": "{\n  \"error\" : \"Permission denied\"\n}"
+    },
+    {
+      "node": "config",
+      "url": "https://hex-tunnel-afd6e-default-rtdb.firebaseio.com/config.json",
+      "http_status": 401,
+      "body_snippet": "{\n  \"error\" : \"Permission denied\"\n}"
+    },
+    {
+      "node": "updates",
+      "url": "https://hex-tunnel-afd6e-default-rtdb.firebaseio.com/updates.json",
+      "http_status": 401,
+      "body_snippet": "{\n  \"error\" : \"Permission denied\"\n}"
+    },
+    {
+      "node": "version",
+      "url": "https://hex-tunnel-afd6e-default-rtdb.firebaseio.com/version.json",
+      "http_status": 401,
+      "body_snippet": "{\n  \"error\" : \"Permission denied\"\n}"
+    },
+    {
+      "node": "app_config",
+      "url": "https://hex-tunnel-afd6e-default-rtdb.firebaseio.com/app_config.json",
+      "http_status": 401,
+      "body_snippet": "{\n  \"error\" : \"Permission denied\"\n}"
+    },
+    {
+      "node": "server_list",
+      "url": "https://hex-tunnel-afd6e-default-rtdb.firebaseio.com/server_list.json",
+      "http_status": 401,
+      "body_snippet": "{\n  \"error\" : \"Permission denied\"\n}"
+    },
+    {
+      "node": "servers_list",
+      "url": "https://hex-tunnel-afd6e-default-rtdb.firebaseio.com/servers_list.json",
+      "http_status": 401,
+      "body_snippet": "{\n  \"error\" : \"Permission denied\"\n}"
+    },
+    {
+      "node": "public",
+      "url": "https://hex-tunnel-afd6e-default-rtdb.firebaseio.com/public.json",
+      "http_status": 401,
+      "body_snippet": "{\n  \"error\" : \"Permission denied\"\n}"
+    },
+    {
+      "node": "catalog",
+      "url": "https://hex-tunnel-afd6e-default-rtdb.firebaseio.com/catalog.json",
+      "http_status": 401,
+      "body_snippet": "{\n  \"error\" : \"Permission denied\"\n}"
+    },
+    {
+      "node": "data",
+      "url": "https://hex-tunnel-afd6e-default-rtdb.firebaseio.com/data.json",
+      "http_status": 401,
+      "body_snippet": "{\n  \"error\" : \"Permission denied\"\n}"
+    },
+    {
+      "node": "settings",
+      "url": "https://hex-tunnel-afd6e-default-rtdb.firebaseio.com/settings.json",
+      "http_status": 401,
+      "body_snippet": "{\n  \"error\" : \"Permission denied\"\n}"
+    },
+    {
+      "node": "info",
+      "url": "https://hex-tunnel-afd6e-default-rtdb.firebaseio.com/info.json",
+      "http_status": 401,
+      "body_snippet": "{\n  \"error\" : \"Permission denied\"\n}"
+    },
+    {
+      "node": "status",
+      "url": "https://hex-tunnel-afd6e-default-rtdb.firebaseio.com/status.json",
+      "http_status": 401,
+      "body_snippet": "{\n  \"error\" : \"Permission denied\"\n}"
+    },
+    {
+      "node": "freeServers",
+      "url": "https://hex-tunnel-afd6e-default-rtdb.firebaseio.com/freeServers.json",
+      "http_status": 401,
+      "body_snippet": "{\n  \"error\" : \"Permission denied\"\n}"
+    },
+    {
+      "node": "vipServers",
+      "url": "https://hex-tunnel-afd6e-default-rtdb.firebaseio.com/vipServers.json",
+      "http_status": 401,
+      "body_snippet": "{\n  \"error\" : \"Permission denied\"\n}"
+    },
+    {
+      "node": "all_servers",
+      "url": "https://hex-tunnel-afd6e-default-rtdb.firebaseio.com/all_servers.json",
+      "http_status": 401,
+      "body_snippet": "{\n  \"error\" : \"Permission denied\"\n}"
+    },
+    {
+      "node": "serverlist",
+      "url": "https://hex-tunnel-afd6e-default-rtdb.firebaseio.com/serverlist.json",
+      "http_status": 401,
+      "body_snippet": "{\n  \"error\" : \"Permission denied\"\n}"
+    },
+    {
+      "node": "hexvpn",
+      "url": "https://hex-tunnel-afd6e-default-rtdb.firebaseio.com/hexvpn.json",
+      "http_status": 401,
+      "body_snippet": "{\n  \"error\" : \"Permission denied\"\n}"
+    },
+    {
+      "node": "hex",
+      "url": "https://hex-tunnel-afd6e-default-rtdb.firebaseio.com/hex.json",
+      "http_status": 401,
+      "body_snippet": "{\n  \"error\" : \"Permission denied\"\n}"
+    },
+    {
+      "node": "tunnel",
+      "url": "https://hex-tunnel-afd6e-default-rtdb.firebaseio.com/tunnel.json",
+      "http_status": 401,
+      "body_snippet": "{\n  \"error\" : \"Permission denied\"\n}"
+    },
+    {
+      "node": "announcements",
+      "url": "https://hex-tunnel-afd6e-default-rtdb.firebaseio.com/announcements.json",
+      "http_status": 401,
+      "body_snippet": "{\n  \"error\" : \"Permission denied\"\n}"
+    },
+    {
+      "node": "notices",
+      "url": "https://hex-tunnel-afd6e-default-rtdb.firebaseio.com/notices.json",
+      "http_status": 401,
+      "body_snippet": "{\n  \"error\" : \"Permission denied\"\n}"
+    }
+  ],
+  "servers": [],
+  "networks": [],
+  "payloads": [],
+  "catalog_version": null,
+  "note": "live.json NO contiene servidores: el catalogo en vivo no se pudo descargar ni descifrar. En este JSON no van APIs de descarga; solo datos descifrados, y aqui no hay ninguno."
+}

@@ -16,12 +16,12 @@
     "extensions": [
         "hexcm"
     ],
-    "fileDecoder": "Hex_Custom_archivos.py",
+    "fileDecoder": "Hex_Custom_10.6.7.py",
     "id": "hex-custom",
     "name": "Hex Custom",
     "package": "com.hex.custom.jotchuast",
     "realSampleVerified": true,
     "textPrefixes": [],
-    "versionCode": 104,
-    "versionName": "10.6.4"
+    "versionCode": 107,
+    "versionName": "10.6.7"
 }

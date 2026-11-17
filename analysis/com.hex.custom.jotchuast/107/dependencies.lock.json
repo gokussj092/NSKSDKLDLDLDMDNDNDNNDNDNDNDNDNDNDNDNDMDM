@@ -1,0 +1,1 @@
+{"node_lock":"cloud/web/package-lock.json","notes":"No new dependencies. The 10.6.7 decoder is standard-library only at the top level; the worker already pins argon2-cffi==25.1.0 and pycryptodome==3.23.0 in the root requirements.txt.","production_requirements":"requirements.txt"}

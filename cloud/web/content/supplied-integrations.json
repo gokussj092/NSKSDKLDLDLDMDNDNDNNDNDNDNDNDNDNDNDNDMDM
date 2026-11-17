@@ -449,14 +449,14 @@
       "appDir": "Hex_Custom",
       "name": "Hex Custom",
       "package": "com.hex.custom.jotchuast",
-      "versionCode": 104,
-      "versionName": "10.6.4",
+      "versionCode": 107,
+      "versionName": "10.6.7",
       "catalogModule": "Hex_Custom.py",
       "extensions": [
         "hexcm"
       ],
       "textPrefixes": [],
-      "fileModule": "Hex_Custom_archivos.py",
+      "fileModule": "Hex_Custom_10.6.7.py",
       "requests": [],
       "sourceIcon": "Hex_Custom.png",
       "icon": "hex-custom.png",
@@ -2048,6 +2048,23 @@
       "requests": [],
       "sourceIcon": "Fx_Tunnel.png",
       "icon": "fx-tunnel.png",
+      "catalogState": "FILE_ONLY"
+    },
+    {
+      "id": "hex-tunnel",
+      "appDir": "Hex_Tunnel",
+      "name": "Hex Tunnel / HexVPN",
+      "package": "com.hex.tunnel.jotchuast",
+      "versionCode": 73,
+      "versionName": "1.7.3-Rev",
+      "extensions": [
+        "hexcm"
+      ],
+      "textPrefixes": [],
+      "fileModule": "file_decoder.py",
+      "requests": [],
+      "sourceIcon": "HexVPN.png",
+      "icon": "hexvpn.png",
       "catalogState": "FILE_ONLY"
     }
   ]

@@ -1,0 +1,1 @@
+{"network":false,"provider_id":"hex-custom","steps":["python3 decoders/Python/apps/Hex_Custom/Hex_Custom_10.6.7.py --self-test","python3 analysis/com.hex.custom.jotchuast/107/tools/verify_107.py -v","python3 -m unittest tests.test_hex_custom_recovery tests.test_hx_tunnel -v"],"tool":"analysis/com.hex.custom.jotchuast/107/tools/verify_107.py"}

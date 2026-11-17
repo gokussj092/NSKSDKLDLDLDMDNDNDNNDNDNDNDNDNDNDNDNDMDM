@@ -500,7 +500,7 @@ def decode_file(suffix: str, contents: bytes, *, timeout: int = TIMEOUT_SECONDS,
         engine = load_file_engines()["roy"]
     # Content dispatch for suffixes shared by two different formats.
     # Predicates inspect bytes only; they never decrypt or guess keys.
-    # - .hexcm starting with the HXS3 v3 container is Hex Custom 10.6.4
+    # - .hexcm starting with the HXS3 v3 container is Hex Custom 10.6.7
     #   (password arrives on stdin, see hex_custom_bridge.py); anything
     #   else keeps the existing Hex Tunnel 1.7.3 route.
     # - .tgv starting with STGCM2.VC./STGCM3.VC. is VC VPN 8.0 (bridge:
@@ -520,7 +520,7 @@ def decode_file(suffix: str, contents: bytes, *, timeout: int = TIMEOUT_SECONDS,
         engine = {
             "source": str(Path(__file__).with_name("hex_custom_bridge.py")),
             "runtime": "python",
-            "name": "Hex Custom 10.6.4",
+            "name": "Hex Custom 10.6.7",
             "phase": "C8",
         }
     elif is_vc_tgv:

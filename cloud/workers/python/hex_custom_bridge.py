@@ -41,10 +41,21 @@ def main() -> int:
     except (OSError, UnicodeError, ValueError):
         return fail("DECODE_FAILED")
     try:
-        from decoders.Python.apps.Hex_Custom.Hex_Custom_archivos import (
-            DecodeError,
-            decode,
+        # File name contains dots (10.6.7), so no dotted import is
+        # possible; load it by path like supplied_bridge.load does.
+        import importlib.util
+
+        _path = (
+            ROOT
+            / "decoders/Python/apps/Hex_Custom/Hex_Custom_10.6.7.py"
         )
+        _spec = importlib.util.spec_from_file_location(
+            "_hex_custom_10_6_7", _path
+        )
+        _module = importlib.util.module_from_spec(_spec)
+        _spec.loader.exec_module(_module)
+        DecodeError = _module.DecodeError
+        decode = _module.decode
     except Exception:
         return fail("ENGINE_UNAVAILABLE")
     try:
