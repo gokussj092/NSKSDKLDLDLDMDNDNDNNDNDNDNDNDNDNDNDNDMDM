@@ -9,7 +9,8 @@ import {touchStaffPresence} from './staff-presence.mjs';
 
 export const supportUserRequest=request=>safe(async()=>{
  const session=await requireAccount(request);
- if(request.method==='GET')return reply(await listUserSupport(session.user.id));
+ if(request.method==='GET')return reply(await listUserSupport(session.user.id,{
+  sharedAvatars:request.headers.get('x-spdecode-support-avatars')==='shared-v1'}));
  if(request.method!=='POST')fail('METHOD_NOT_ALLOWED',405);
  requireOrigin(request);
  const input=await jsonBody(request,6200);

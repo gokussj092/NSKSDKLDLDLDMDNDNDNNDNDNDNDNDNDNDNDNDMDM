@@ -131,6 +131,8 @@ internal class NativeCommerceAuth(private val context:Context) {
             connection.requestMethod=method
             connection.setRequestProperty("Accept","application/json")
             connection.setRequestProperty("Cache-Control","no-store")
+            if(path=="/api/support" && method=="GET")
+                connection.setRequestProperty("X-SPDECODE-Support-Avatars","shared-v1")
             if(authenticated){
                 val token=sessionToken()?:throw IllegalStateException("SIGN_IN_REQUIRED")
                 connection.setRequestProperty("Authorization","Bearer "+token)
@@ -176,12 +178,13 @@ internal class NativeCommerceAuth(private val context:Context) {
             if(!connection.contentType.orEmpty().startsWith("application/json"))
                 throw IllegalStateException("INVALID_RESPONSE")
             val output=ByteArrayOutputStream()
+            val responseLimit=if(path=="/api/support" && method=="GET")4*1024*1024 else 256*1024
             connection.inputStream.use{input->
                 val buffer=ByteArray(4096)
                 while(true){
                     val n=input.read(buffer)
                     if(n<0)break
-                    if(output.size()+n>256*1024)throw IllegalStateException("RESPONSE_TOO_LARGE")
+                    if(output.size()+n>responseLimit)throw IllegalStateException("RESPONSE_TOO_LARGE")
                     output.write(buffer,0,n)
                 }
             }
@@ -342,8 +345,26 @@ internal class NativeCommerceAuth(private val context:Context) {
     suspend fun unregisterPushToken(token:String):JSONObject =
         http("/api/account/notifications","POST",
             JSONObject().put("action","unregister").put("token",token),true).first
-    suspend fun supportInbox():JSONObject =
-        http("/api/support",authenticated=true).first
+    suspend fun supportInbox():JSONObject {
+        val inbox=http("/api/support",authenticated=true).first
+        if(inbox.optString("avatarFormat")=="shared-v1"){
+            val avatars=inbox.optJSONObject("avatars")
+            fun resolve(agent:JSONObject?){
+                if(agent==null)return
+                val ref=agent.optString("avatarRef").takeIf{it.matches(Regex("[a-f0-9]{64}"))}
+                val avatar=ref?.let{avatars?.optString(it)}?.takeUnless{it.isBlank()||it=="null"}
+                agent.put("avatar",avatar?:JSONObject.NULL)
+            }
+            val threads=inbox.optJSONArray("threads")
+            for(i in 0 until (threads?.length()?:0)){
+                val thread=threads?.optJSONObject(i)?:continue
+                resolve(thread.optJSONObject("agent"))
+                val messages=thread.optJSONArray("messages")
+                for(n in 0 until (messages?.length()?:0))resolve(messages?.optJSONObject(n)?.optJSONObject("agent"))
+            }
+        }
+        return inbox
+    }
     suspend fun markSupportThreadRead(threadId:String):JSONObject =
         http("/api/support","POST",
             JSONObject().put("action","read").put("threadId",threadId),true).first

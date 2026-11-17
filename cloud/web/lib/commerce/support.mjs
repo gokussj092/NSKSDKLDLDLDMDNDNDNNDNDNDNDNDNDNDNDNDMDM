@@ -39,6 +39,34 @@ function messageRow(row,env){
       avatar:row.agent_avatar??null
     }}:{})};
 }
+async function supportMessageRows(db,threadId){
+  // Resolve the current photo by immutable author id. Keep the stored
+  // name/role/avatar snapshots intact for audit and deleted staff accounts.
+  return (await db.query(`SELECT m.id,m.thread_id,m.sender_kind,m.ciphertext,m.created_at,
+    m.agent_name,m.agent_role,
+    CASE WHEN a.id IS NOT NULL THEN a.avatar ELSE m.agent_avatar END AS agent_avatar
+    FROM spdecode_shop.support_messages m
+    LEFT JOIN spdecode_shop.staff_accounts a ON a.id::text=m.agent_id
+    WHERE m.thread_id=$1 ORDER BY m.created_at ASC,m.id ASC LIMIT 150`,[threadId])).rows;
+}
+function shareSupportAvatars(inbox){
+  // Opt-in wire format: send each image once, rather than repeating a
+  // 40–115 KB photo on every old message whenever the profile changes.
+  const avatars={};
+  for(const thread of inbox.threads){
+    for(const agent of [thread.agent,...thread.messages.map(m=>m.agent)]){
+      if(!agent)continue;
+      const avatar=agent.avatar;
+      delete agent.avatar;
+      agent.avatarRef=null;
+      if(typeof avatar==='string'&&avatar.trim()){
+        const ref=createHash('sha256').update(avatar).digest('hex');
+        avatars[ref]=avatar;agent.avatarRef=ref;
+      }
+    }
+  }
+  return {...inbox,avatarFormat:'shared-v1',avatars};
+}
 // Last read position per actor (user account or staff id). Threads with no row
 // count every opposite-side message as unread.
 async function readTimes(db,readerKind,readerId){
@@ -211,12 +239,14 @@ export async function sendSupportMessage(accountId,threadId,input,{db=database()
   await publishNewSupportMessageNotice(threadId,{env,root:noticeRoot}).catch(()=>{});
   return result;
 }
-export async function listUserSupport(accountId,{db=database(),env=process.env,redis=null}={}){
+export async function listUserSupport(accountId,{db=database(),env=process.env,redis=null,sharedAvatars=false}={}){
   secret(env);
   await closeInactiveThreads(db);
-  const threads=(await db.query(`SELECT id,subject,category,status,last_message_at,assigned_staff_id
-    FROM spdecode_shop.support_threads WHERE account_id=$1
-    ORDER BY last_message_at DESC LIMIT 50`,[accountId])).rows;
+  const threads=(await db.query(`SELECT t.id,t.subject,t.category,t.status,t.last_message_at,t.assigned_staff_id,
+    a.display_name AS assigned_agent_name,a.role AS assigned_agent_role,a.avatar AS assigned_agent_avatar
+    FROM spdecode_shop.support_threads t
+    LEFT JOIN spdecode_shop.staff_accounts a ON a.id=t.assigned_staff_id
+    WHERE t.account_id=$1 ORDER BY t.last_message_at DESC LIMIT 50`,[accountId])).rows;
   // Presencia real del agente asignado (best-effort: sin Redis = offline).
   const presence=await staffPresenceOnline(redis,threads.map(t=>t.assigned_staff_id));
   const reads=await readTimes(db,'user',accountId);
@@ -227,21 +257,22 @@ export async function listUserSupport(accountId,{db=database(),env=process.env,r
     GROUP BY r.thread_id`,[accountId])).rows.map(r=>[r.thread_id,new Date(r.staff_read_at).toISOString()]));
   const suspension=await activeSuspension(db,accountId);
   const messages=await Promise.all(threads.map(async thread=>{
-    const rows=(await db.query(`SELECT id,thread_id,sender_kind,ciphertext,created_at,agent_name,agent_role,agent_avatar
-      FROM spdecode_shop.support_messages WHERE thread_id=$1
-      ORDER BY created_at ASC,id ASC LIMIT 150`,[thread.id])).rows;
+    const rows=await supportMessageRows(db,thread.id);
     const rendered=rows.map(x=>messageRow(x,env));
     const since=reads.get(thread.id);
     const unread=rendered.filter(m=>m.sender==='admin'&&
       (since===undefined||new Date(m.at).getTime()>since)).length;
     // D7: the client marks the user's messages as "read" up to this point.
     const staffReadAt=staffReads.get(thread.id)??null;
-    // El id del personal asignado no se expone al usuario; solo su presencia.
-    const {assigned_staff_id:assignedStaffId,...rest}=thread;
-    return {...rest,agentOnline:presence.get(assignedStaffId)??false,unread,staffReadAt,messages:rendered};
+    // Only public presentation fields, never staff ids or login details.
+    const {assigned_staff_id:assignedStaffId,assigned_agent_name:name,
+      assigned_agent_role:role,assigned_agent_avatar:avatar,...rest}=thread;
+    const agent=name?{name,role,avatar:avatar??null}:null;
+    return {...rest,agent,agentOnline:presence.get(assignedStaffId)??false,unread,staffReadAt,messages:rendered};
   }));
-  return {threads:messages,unreadTotal:messages.reduce((n,t)=>n+t.unread,0),
+  const inbox={threads:messages,unreadTotal:messages.reduce((n,t)=>n+t.unread,0),
     suspension:suspensionView(suspension)};
+  return sharedAvatars?shareSupportAvatars(inbox):inbox;
 }
 export async function listAdminSupport({db=database(),env=process.env,principal=null,redis=null}={}){
   secret(env);
@@ -280,9 +311,7 @@ export async function listAdminSupport({db=database(),env=process.env,principal=
   // Presencia real de cada agente asignado (best-effort: sin Redis = offline).
   const presence=await staffPresenceOnline(redis,threads.map(t=>t.assigned_staff_id));
   const threadsWithMessages=await Promise.all(threads.map(async t=>{
-    const rows=(await db.query(`SELECT id,thread_id,sender_kind,ciphertext,created_at,agent_name,agent_role,agent_avatar
-      FROM spdecode_shop.support_messages WHERE thread_id=$1
-      ORDER BY created_at ASC,id ASC LIMIT 150`,[t.id])).rows;
+    const rows=await supportMessageRows(db,t.id);
     const rendered=rows.map(row=>messageRow(row,env));
     const since=reads.get(t.id);
     const unread=rendered.filter(m=>m.sender==='user'&&

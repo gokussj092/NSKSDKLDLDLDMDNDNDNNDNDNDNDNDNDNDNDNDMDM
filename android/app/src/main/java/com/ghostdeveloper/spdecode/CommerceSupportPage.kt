@@ -4,6 +4,8 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -18,6 +20,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.AnnotatedString
@@ -41,6 +44,7 @@ import java.time.Instant
 import java.util.Date
 import java.util.Locale
 import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 import java.util.UUID
 
 // AMOLED exacto del tema global (SpDecodeAmoledTheme): nada de la paleta
@@ -55,6 +59,34 @@ private val supportAmber=Color(0xFFE0B563)
 private val supportError=Color(0xFFFF8585)
 private val supportOutgoing=Color(0xFF2A2A2A)
 private val supportIncoming=Color(0xFF242424)
+private val supportInboxPanel=Color(0xFF171717)
+
+private fun publicAgentText(agent:JSONObject?,key:String):String? =
+    agent?.optString(key)?.trim()?.takeUnless{it.isBlank()||it=="null"}
+
+/** Assigned support identity, independent of who wrote the last message. */
+private fun conversationAgent(thread:JSONObject?):JSONObject? {
+    thread?.optJSONObject("agent")?.let{return it}
+    val messages=thread?.optJSONArray("messages")?:return null
+    for(n in messages.length()-1 downTo 0){
+        val message=messages.optJSONObject(n)
+        if(message?.optString("sender")=="admin")return message.optJSONObject("agent")
+    }
+    return null
+}
+
+private fun conversationTime(input:String,language:String):String = runCatching {
+    val zone=ZoneId.systemDefault()
+    val at=Instant.parse(input).atZone(zone)
+    val now=Instant.now().atZone(zone)
+    when {
+        at.toLocalDate()==now.toLocalDate()->DateFormat.getTimeInstance(DateFormat.SHORT,
+            Locale.forLanguageTag(language)).format(Date.from(at.toInstant()))
+        at.year==now.year->at.format(DateTimeFormatter.ofPattern("d MMM",Locale.forLanguageTag(language)))
+        else->DateFormat.getDateInstance(DateFormat.SHORT,Locale.forLanguageTag(language))
+            .format(Date.from(at.toInstant()))
+    }
+}.getOrDefault("")
 
 private fun parseIsoMs(input:String):Long? = runCatching{
     Instant.parse(input).toEpochMilli()
@@ -150,7 +182,7 @@ private fun StatusChip(status:String,language:String){
 private fun AgentBubble(row:JSONObject,language:String,showAvatar:Boolean,
     showName:Boolean){
     val agent=row.optJSONObject("agent")
-    val avatar=agent?.optString("avatar")?.takeIf{it.isNotBlank()}
+    val avatar=publicAgentText(agent,"avatar")
     val shape=RoundedCornerShape(topStart=20.dp,topEnd=20.dp,
         bottomStart=6.dp,bottomEnd=20.dp)
     Row(Modifier.fillMaxWidth().padding(horizontal=10.dp,vertical=3.dp),
@@ -166,7 +198,7 @@ private fun AgentBubble(row:JSONObject,language:String,showAvatar:Boolean,
             .padding(horizontal=14.dp,vertical=11.dp),
             verticalArrangement=Arrangement.spacedBy(7.dp)){
             if(showName)Text(
-                CommerceI18n.translate(language,"Yamada","Yamada")+" · "+
+                (publicAgentText(agent,"name")?:"Yamada")+" · "+
                 CommerceI18n.translate(language,"Asistente","Assistant"),
                 color=supportText,fontSize=11.sp,fontWeight=FontWeight.SemiBold,
                 maxLines=2)
@@ -554,14 +586,8 @@ internal fun CommerceSupportPage(language:String,auth:NativeCommerceAuth,
                 }
             }
         }else if(inChat){
-            val lastAgent=active?.let{thread->
-                val list=thread.optJSONArray("messages")
-                val rows=(0 until (list?.length()?:0))
-                    .mapNotNull{list?.optJSONObject(it)}
-                rows.lastOrNull{it.optString("sender")=="admin"}
-                    ?.optJSONObject("agent")
-            }
-            val agentAvatar=lastAgent?.optString("avatar")?.takeIf{it.isNotBlank()}
+            val assignedAgent=conversationAgent(active)
+            val agentAvatar=publicAgentText(assignedAgent,"avatar")
             Row(Modifier.fillMaxWidth().background(supportPanel)
                 .border(width=.6.dp,color=supportBorder)
                 .padding(start=4.dp,end=12.dp,top=10.dp,bottom=10.dp),
@@ -574,7 +600,7 @@ internal fun CommerceSupportPage(language:String,auth:NativeCommerceAuth,
                 CommerceAvatar(agentAvatar,Modifier.size(44.dp))
                 Column(Modifier.weight(1f),
                     verticalArrangement=Arrangement.spacedBy(3.dp)){
-                    Text(t("Yamada","Yamada"),color=supportText,fontSize=17.sp,
+                    Text(publicAgentText(assignedAgent,"name")?:"Yamada",color=supportText,fontSize=17.sp,
                         fontWeight=FontWeight.Bold,maxLines=1)
                     Text(t("Asistente","Assistant")+" · "+if(active?.optBoolean("agentOnline")==true) t("En línea","Online") else t("Sin conexión","Offline"),
                         color=supportMuted,fontSize=11.sp,maxLines=1)
@@ -801,7 +827,8 @@ internal fun CommerceSupportPage(language:String,auth:NativeCommerceAuth,
                                 }
                             })
                     }
-                    Row(horizontalArrangement=Arrangement.spacedBy(8.dp)){
+                    Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
+                        horizontalArrangement=Arrangement.spacedBy(8.dp)){
                         listOf("all" to t("Todos","All"),
                             "open" to t("Abiertos","Open"),
                             "answered" to t("Respondido","Answered"),
@@ -857,54 +884,72 @@ internal fun CommerceSupportPage(language:String,auth:NativeCommerceAuth,
                     }
                 }else{
                     LazyColumn(modifier=Modifier.weight(1f)
-                            .padding(horizontal=12.dp,vertical=6.dp),
-                        verticalArrangement=Arrangement.spacedBy(9.dp)){
-                        itemsIndexed(visible,key={_,it->it.optString("id")}){_,thread->
+                            .padding(horizontal=16.dp,vertical=10.dp)){
+                        itemsIndexed(visible,key={_,it->it.optString("id")}){index,thread->
                             val unread=threadUnread(thread)
                             val all=thread.optJSONArray("messages")
                             val last=all?.optJSONObject((all.length()-1).coerceAtLeast(0))
                             val lastFromAgent=last?.optString("sender")=="admin"
-                            val lastAvatar=last?.optJSONObject("agent")
-                                ?.optString("avatar")?.takeIf{it.isNotBlank()}
-                            val rowAvatar=if(lastFromAgent)lastAvatar
-                                else CommerceSession.user?.avatar
-                            Row(Modifier.fillMaxWidth()
-                                .background(supportPanel,RoundedCornerShape(20.dp))
-                                .border(1.dp,supportBorder,RoundedCornerShape(20.dp))
-                                .clickable{
+                            val assignedAgent=conversationAgent(thread)
+                            val rowAvatar=publicAgentText(assignedAgent,"avatar")
+                            val agentName=publicAgentText(assignedAgent,"name")?:"Yamada"
+                            val status=thread.optString("status")
+                            val statusText=when(status){
+                                "answered"->t("Respondido","Answered")
+                                "closed"->t("Cerrado","Closed")
+                                else->t("Pendiente","Pending")
+                            }
+                            val statusColor=when(status){
+                                "answered"->supportGreen
+                                "closed"->supportMuted
+                                else->supportAmber
+                            }
+                            val shape=RoundedCornerShape(
+                                topStart=if(index==0)22.dp else 0.dp,
+                                topEnd=if(index==0)22.dp else 0.dp,
+                                bottomStart=if(index==visible.lastIndex)22.dp else 0.dp,
+                                bottomEnd=if(index==visible.lastIndex)22.dp else 0.dp)
+                            Column(Modifier.fillMaxWidth().clip(shape).background(supportInboxPanel)){
+                                Row(Modifier.fillMaxWidth().clickable{
                                     activeId=thread.optString("id")
                                     newChat=false;text="";error=null
-                                }
-                                .padding(horizontal=13.dp,vertical=15.dp),
-                                verticalAlignment=Alignment.CenterVertically,
-                                horizontalArrangement=Arrangement.spacedBy(13.dp)){
-                                CommerceAvatar(rowAvatar,Modifier.size(44.dp))
-                                Column(Modifier.weight(1f),
-                                    verticalArrangement=Arrangement.spacedBy(6.dp)){
-                                    Row(verticalAlignment=Alignment.CenterVertically){
-                                        Text(thread.optString("subject"),color=supportText,
-                                            fontSize=16.sp,
-                                            fontWeight=if(unread>0)FontWeight.Bold
-                                                else FontWeight.SemiBold,
-                                            maxLines=1,overflow=TextOverflow.Ellipsis,
-                                            modifier=Modifier.weight(1f))
-                                        Text(chatTime(thread.optString("last_message_at"),true),
-                                            color=supportMuted,fontSize=10.sp)
+                                }.padding(horizontal=14.dp,vertical=16.dp),
+                                    verticalAlignment=Alignment.Top,
+                                    horizontalArrangement=Arrangement.spacedBy(12.dp)){
+                                    Box{
+                                        CommerceAvatar(rowAvatar,Modifier.size(52.dp))
+                                        if(thread.optBoolean("agentOnline"))Box(
+                                            Modifier.align(Alignment.BottomEnd).size(12.dp)
+                                                .background(supportGreen,CircleShape)
+                                                .border(2.dp,supportInboxPanel,CircleShape))
                                     }
-                                    Text((if(lastFromAgent)
-                                        t("Yamada","Yamada")
-                                    else t("Tú","You"))+": " +
-                                        (last?.optString("text")?:""),
-                                        color=supportMuted,fontSize=13.sp,maxLines=1,
-                                        overflow=TextOverflow.Ellipsis)
-                                    Row(verticalAlignment=Alignment.CenterVertically,
-                                        horizontalArrangement=Arrangement.spacedBy(8.dp)){
-                                        StatusChip(thread.optString("status"),language)
+                                    Column(Modifier.weight(1f),verticalArrangement=Arrangement.spacedBy(6.dp)){
+                                        Text(thread.optString("subject"),color=supportText,
+                                            fontSize=15.sp,fontWeight=if(unread>0)FontWeight.Bold else FontWeight.SemiBold,
+                                            maxLines=2,overflow=TextOverflow.Ellipsis)
+                                        Text((if(lastFromAgent)
+                                            publicAgentText(last?.optJSONObject("agent"),"name")?:agentName
+                                            else t("Tú","You"))+": "+last?.optString("text").orEmpty(),
+                                            color=if(unread>0)supportText else supportMuted,
+                                            fontSize=13.sp,maxLines=1,overflow=TextOverflow.Ellipsis)
+                                        Row(verticalAlignment=Alignment.CenterVertically,
+                                            horizontalArrangement=Arrangement.spacedBy(6.dp)){
+                                            Box(Modifier.size(5.dp).background(statusColor,CircleShape))
+                                            Text(agentName+" · "+statusText,color=statusColor,fontSize=11.sp,
+                                                maxLines=1,overflow=TextOverflow.Ellipsis)
+                                        }
+                                    }
+                                    Column(horizontalAlignment=Alignment.End,
+                                        verticalArrangement=Arrangement.spacedBy(13.dp)){
+                                        Text(conversationTime(thread.optString("last_message_at"),language),
+                                            color=if(unread>0)supportText else supportMuted,fontSize=10.sp,
+                                            maxLines=1)
                                         UnreadPill(unread)
                                     }
                                 }
-                                Icon(Icons.Outlined.ChevronRight,null,
-                                    tint=Color(0xFF777777),modifier=Modifier.size(20.dp))
+                                if(index<visible.lastIndex)HorizontalDivider(
+                                    modifier=Modifier.padding(start=78.dp,end=14.dp),
+                                    color=supportBorder.copy(alpha=.35f),thickness=.5.dp)
                             }
                         }
                     }

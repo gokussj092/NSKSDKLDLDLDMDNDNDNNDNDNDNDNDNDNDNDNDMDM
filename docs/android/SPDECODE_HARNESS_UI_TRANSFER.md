@@ -19,9 +19,26 @@ The existing decoder result viewers are unchanged.
   download action. Completed results keep their verified local ZIP and can be exported
   again. Cached history and new local exports are scoped to the signed-in account.
   Signing out does not delete existing files or replace encryption keys.
-- Yamada's avatar comes from the enabled staff profile selected by the existing support
-  assignment rule. The preflight returns only `{name, role, avatar}`, never staff credentials.
-  A missing avatar uses the existing neutral account icon; no synthetic portrait is used.
+- APK analysis, including its completed result card and detail sheet, always uses the
+  **SP-DECODE Harness** name and the existing `arnes.webp` icon. Support staff identity
+  and profile photos are displayed only in support conversations.
+
+## Support profile photos
+
+Support reads resolve current photos by the original staff account id. Editing or
+removing a profile photo updates old bubbles and the conversation list at the next
+normal inbox refresh (12 seconds while open). Stored message snapshots, ciphertext,
+names, read receipts and delivery behavior are preserved. Messages from deleted or
+unidentifiable staff retain their recorded snapshot rather than borrowing another
+agent's photo. Thread rows use the assigned agent, or the last responding agent on
+older servers; they no longer swap to the user's photo after an outgoing message.
+
+New Android clients request `X-SPDECODE-Support-Avatars: shared-v1`. The server sends
+one copy of each photo in an account-scoped avatar map; the client resolves references
+for the existing chat components. Other clients retain the compatible inline format.
+This avoids multiplying a full-size photo across every historical reply. Only the
+support inbox GET has a 4 MiB response cap; other account endpoints retain 256 KiB.
+No new key, migration or change to the support bot/watcher is required.
 
 ## Shared transfer preference
 

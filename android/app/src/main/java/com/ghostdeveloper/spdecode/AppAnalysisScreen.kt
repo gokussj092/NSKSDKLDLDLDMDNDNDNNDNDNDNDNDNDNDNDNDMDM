@@ -210,10 +210,14 @@ internal fun AppAnalysisScreen(
                 Text(filename, color = AA_MUTED, fontSize = 12.sp, maxLines = 2, overflow = TextOverflow.Ellipsis)
                 HorizontalDivider(color = AA_BORDER)
                 Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                    CommerceAvatar(preflight?.agentAvatar, Modifier.size(38.dp))
+                    Image(painterResource(R.drawable.arnes),
+                        contentDescription = stringResource(R.string.app_analysis_arnes_name),
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier.size(38.dp).clip(CircleShape))
                     Column(verticalArrangement = Arrangement.spacedBy(3.dp)) {
-                        Text("Yamada", color = AA_WHITE, fontSize = 13.sp, fontWeight = FontWeight.SemiBold)
-                        Text(stringResource(R.string.harness_support_ai), color = AA_MUTED, fontSize = 11.sp)
+                        Text(stringResource(R.string.app_analysis_arnes_name), color = AA_WHITE,
+                            fontSize = 13.sp, fontWeight = FontWeight.SemiBold)
+                        Text(stringResource(R.string.app_analysis_title), color = AA_MUTED, fontSize = 11.sp)
                     }
                 }
                 Text(stringResource(activityLabel(job)), color = AA_WHITE, fontSize = 14.sp, lineHeight = 21.sp)
@@ -283,6 +287,12 @@ internal fun AppAnalysisScreen(
     if (detail != null) ModalBottomSheet(onDismissRequest = { detailId = null }, containerColor = AA_CARD) {
         Column(Modifier.fillMaxWidth().verticalScroll(rememberScrollState()).padding(horizontal = 22.dp).padding(bottom = 32.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                Image(painterResource(R.drawable.arnes), null, contentScale = ContentScale.Crop,
+                    modifier = Modifier.size(32.dp).clip(CircleShape))
+                Text(stringResource(R.string.app_analysis_arnes_name), color = AA_MUTED,
+                    fontSize = 13.sp, fontWeight = FontWeight.SemiBold)
+            }
             Text(detail.displayName, color = AA_WHITE, fontWeight = FontWeight.Bold, fontSize = 23.sp)
             HarnessBadge(stringResource(statusLabel(detail.status)), detail.status in setOf("COMPLETED", "COMPLETED_PARTIAL"))
             Text(stringResource(R.string.harness_filename) + "\n" + detail.filename, color = AA_MUTED, fontSize = 13.sp)

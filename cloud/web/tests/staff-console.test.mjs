@@ -345,3 +345,87 @@ test('staff save body fits a real avatar: old 2048 cap rejects it, STAFF_BODY_MA
  assert.equal(parsed.avatar,avatar);
  assert.equal(parsed.username,'yamada');
 });
+
+async function photoAccount(){
+ const id=randomUUID();
+ await db.query(`INSERT INTO shop_user(id,name,email,"emailVerified","createdAt","updatedAt")
+ VALUES($1,'Photo Test',$2,true,now(),now())`,[id,id+'@example.invalid']);
+ return id;
+}
+
+// Profile edits change presentation at read time; encrypted/audit rows stay immutable.
+test('support reads the latest author photo, including removal, without rewriting old messages',async()=>{
+ const account=await photoAccount();
+ const oldPhoto=jpegDataUri(1024),newPhoto=jpegDataUri(2048);
+ const staff=await createStaff(owner,{username:'photo.refresh',name:'Photo Refresh',role:'support'},{db});
+ await updateStaff(owner,{id:staff.staff.id,avatar:oldPhoto},{db});
+ await db.query('UPDATE spdecode_shop.staff_accounts SET must_change_password=false WHERE id=$1',[staff.staff.id]);
+ const thread=await createSupportThread(account,{subject:'Current profile photo',category:'technical',message:'Photo check'},{db,env});
+ await assignSupportThread(owner,{threadId:thread.id,action:'assign',assignedId:staff.staff.id},{db});
+ await replyAdminSupport({id:staff.staff.id,name:'Photo Refresh',role:'support',avatar:oldPhoto},
+  {threadId:thread.id,action:'reply',message:'Original reply'},{db,env});
+ const before=(await db.query(`SELECT * FROM spdecode_shop.support_messages
+  WHERE thread_id=$1 AND sender_kind='admin'`,[thread.id])).rows;
+ await updateStaff(owner,{id:staff.staff.id,avatar:newPhoto},{db});
+ const current=(await listUserSupport(account,{db,env})).threads.find(t=>t.id===thread.id);
+ assert.equal(current.agent.avatar,newPhoto);
+ assert.equal(current.agent.name,'Photo Refresh');
+ assert.equal(current.messages.at(-1).agent.avatar,newPhoto);
+ assert.equal(current.messages.at(-1).text,'Original reply');
+ assert.equal((await listAdminSupport({db,env})).threads.find(t=>t.id===thread.id).messages.at(-1).agent.avatar,newPhoto);
+ assert(!JSON.stringify(current).includes(staff.staff.id),'private staff id must not escape');
+ assert.deepEqual((await db.query(`SELECT * FROM spdecode_shop.support_messages
+  WHERE thread_id=$1 AND sender_kind='admin'`,[thread.id])).rows,before);
+ await updateStaff(owner,{id:staff.staff.id,avatar:null},{db});
+ const cleared=(await listUserSupport(account,{db,env})).threads.find(t=>t.id===thread.id);
+ assert.equal(cleared.agent.avatar,null);
+ assert.equal(cleared.messages.at(-1).agent.avatar,null,'an explicit removal must not revive the old photo');
+});
+
+test('photos follow the immutable message author, not a matching display name or reassignment',async()=>{
+ const account=await photoAccount();
+ const first=await createStaff(owner,{username:'photo.first',name:'Same Name',role:'support'},{db});
+ const second=await createStaff(owner,{username:'photo.second',name:'Same Name',role:'support'},{db});
+ const a=jpegDataUri(1100),b=jpegDataUri(1200),updated=jpegDataUri(1300);
+ await updateStaff(owner,{id:first.staff.id,avatar:a},{db});
+ await updateStaff(owner,{id:second.staff.id,avatar:b},{db});
+ await db.query('UPDATE spdecode_shop.staff_accounts SET must_change_password=false WHERE id=ANY($1::uuid[])',[[first.staff.id,second.staff.id]]);
+ const thread=await createSupportThread(account,{subject:'Distinct support identities',category:'technical',message:'Identity check'},{db,env});
+ await assignSupportThread(owner,{threadId:thread.id,action:'assign',assignedId:first.staff.id},{db});
+ await replyAdminSupport({id:first.staff.id,name:'Same Name',role:'support',avatar:a},
+  {threadId:thread.id,action:'reply',message:'First agent'},{db,env});
+ await assignSupportThread(owner,{threadId:thread.id,action:'assign',assignedId:second.staff.id},{db});
+ await replyAdminSupport({id:second.staff.id,name:'Same Name',role:'support',avatar:b},
+  {threadId:thread.id,action:'reply',message:'Second agent'},{db,env});
+ await updateStaff(owner,{id:first.staff.id,avatar:updated},{db});
+ const result=(await listUserSupport(account,{db,env})).threads.find(t=>t.id===thread.id);
+ assert.equal(result.agent.avatar,b);
+ assert.equal(result.messages.find(m=>m.text==='First agent').agent.avatar,updated);
+ assert.equal(result.messages.find(m=>m.text==='Second agent').agent.avatar,b);
+});
+
+test('shared avatar format transmits a real-size updated photo once and remains account scoped',async()=>{
+ const account=await photoAccount();
+ const avatar=jpegDataUri(31725);
+ const staff=await createStaff(owner,{username:'photo.shared',name:'Shared Photo',role:'support'},{db});
+ await updateStaff(owner,{id:staff.staff.id,avatar},{db});
+ await db.query('UPDATE spdecode_shop.staff_accounts SET must_change_password=false WHERE id=$1',[staff.staff.id]);
+ const thread=await createSupportThread(account,{subject:'Shared avatar payload',category:'technical',message:'Payload check'},{db,env});
+ await assignSupportThread(owner,{threadId:thread.id,action:'assign',assignedId:staff.staff.id},{db});
+ for(let n=0;n<8;n++)await replyAdminSupport({id:staff.staff.id,name:'Shared Photo',role:'support',avatar},
+  {threadId:thread.id,action:'reply',message:'Shared photo reply '+n},{db,env});
+ const inbox=await listUserSupport(account,{db,env,sharedAvatars:true});
+ assert.equal(inbox.avatarFormat,'shared-v1');
+ assert.equal(Object.values(inbox.avatars).filter(a=>a===avatar).length,1);
+ const item=inbox.threads.find(t=>t.id===thread.id);
+ assert.equal(inbox.avatars[item.agent.avatarRef],avatar);
+ for(const message of item.messages.filter(m=>m.sender==='admin')){
+  assert.equal(inbox.avatars[message.agent.avatarRef],avatar);
+  assert(!('avatar' in message.agent));
+ }
+ assert.equal(JSON.stringify(inbox).split(avatar).length-1,1);
+ assert(Buffer.byteLength(JSON.stringify(inbox))<256*1024,'photos must not inflate every old message');
+ const other=await listUserSupport(await photoAccount(),{db,env,sharedAvatars:true});
+ assert(!other.threads.some(t=>t.id===thread.id));
+ assert(!Object.values(other.avatars).includes(avatar));
+});
