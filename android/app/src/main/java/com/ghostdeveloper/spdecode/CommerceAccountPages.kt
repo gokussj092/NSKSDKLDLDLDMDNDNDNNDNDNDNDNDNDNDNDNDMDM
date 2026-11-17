@@ -39,7 +39,6 @@ import java.time.temporal.TemporalAdjusters
 import java.text.DateFormat
 import java.util.Date
 import java.util.Locale
-import kotlin.math.minOf
 
 private val midnight=Color.Black
 private val sectionPanel=Color(0xFF202020)
@@ -248,7 +247,7 @@ private fun StreakCelebrationDialog(language:String,onDismiss:()->Unit){
     val tr:(String)->String={CommerceAccountWords.get(language,it)}
     val spin=rememberInfiniteTransition(label="streak-coin")
     val rotation by spin.animateFloat(0f,360f,
-        infiniteRepeatable(animationSpec=tween(900,easing=LinearEasing),
+        infiniteRepeatable(animation=tween(900,easing=LinearEasing),
             repeatMode=RepeatMode.Restart),label="coin-spin")
     AlertDialog(onDismissRequest=onDismiss,
         containerColor=Color(0xFF242424),
