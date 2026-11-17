@@ -7,6 +7,7 @@ import {randomUUID,generateKeyPairSync,sign,randomBytes} from 'node:crypto';
 import {PGlite} from '@electric-sql/pglite';
 import {getMigrations} from 'better-auth/db/migration';
 import {makeAuth} from '../lib/commerce/auth.mjs';
+import {adminInbox} from '../lib/commerce/admin-notices.mjs';
 import {readStoredFeed} from '../lib/notice-store.mjs';
 import {createSupportThread,sendSupportMessage,listUserSupport,listAdminSupport,
  replyAdminSupport,markSupportThreadRead,encryptMessage,decryptMessage,
@@ -34,7 +35,7 @@ before(async()=>{
  db={query,connect:async()=>({query,release(){}})};
  auth=makeAuth(db,env);
  await (await getMigrations(auth.options)).runMigrations();
- for(const name of ['002_shop.sql','003_ads_free.sql','004_gifts.sql','005_account_support_apk.sql','006_support_agent_identity.sql','007_staff_permissions.sql','008_account_notifications.sql','009_staff_custom_roles.sql','010_support_reads_avatar.sql','011_support_autoassign_reads_antispam.sql','013_support_escalation.sql']){
+ for(const name of ['002_shop.sql','003_ads_free.sql','004_gifts.sql','005_account_support_apk.sql','006_support_agent_identity.sql','007_staff_permissions.sql','008_account_notifications.sql','009_staff_custom_roles.sql','010_support_reads_avatar.sql','011_support_autoassign_reads_antispam.sql','013_support_escalation.sql','016_private_admin_notices.sql']){
   const sql=await readFile(new URL('../sql/'+name,import.meta.url),'utf8');
   await pg.exec(sql);
  }
@@ -103,7 +104,7 @@ test('unread counters, mark-as-read and agent avatar snapshot',async()=>{
  assert.equal(unreadOf(user,thread.id),1);
  assert.equal(user.unreadTotal,user.threads.reduce((n,t)=>n+t.unread,0));
  assert.equal(user.threads.find(t=>t.id===thread.id).messages.at(-1).agent.avatar,avatar);
- assert.equal(user.threads.find(t=>t.id===thread.id).messages.at(-1).agent.name,'Operator QA');
+ assert.equal(user.threads.find(t=>t.id===thread.id).messages.at(-1).agent.name,'Ghost Developer');
  // User marks read: the thread clears; a reply without avatar emits null.
  await markSupportThreadRead(thread.id,{kind:'user',id:ids[0]},{db});
  user=await listUserSupport(ids[0],{db,env});
@@ -234,7 +235,7 @@ test('auto-assignment finds Yamada case-insensitively',async()=>{
  assert.equal(await findAutoAssignStaffId(db,{...env,
   SPDECODE_SUPPORT_AUTO_ASSIGN_NAME:'YAMADA'}),yamadaStaffId);
  assert.equal(await findAutoAssignStaffId(db,{...env,
-  SPDECODE_SUPPORT_AUTO_ASSIGN_NAME:'Pedro'}),null);
+  SPDECODE_SUPPORT_AUTO_ASSIGN_NAME:'Ghost Developer'}),null);
  await db.query(`UPDATE spdecode_shop.staff_accounts SET enabled=false WHERE id=$1`,
   [yamadaStaffId]);
  assert.equal(await findAutoAssignStaffId(db,env),null);
@@ -249,7 +250,7 @@ test('escalation notice id is a stable v4 UUID per thread',()=>{
  assert.equal(escalationNoticeId(id),escalationNoticeId(id));
  assert.notEqual(escalationNoticeId(id),escalationNoticeId(randomUUID()));
 });
-test('escalation to Pedro: assigned agent escalates, owner sees the mark, idempotent',async()=>{
+test('escalation to Ghost Developer: assigned agent escalates, owner sees the mark, idempotent',async()=>{
  const otherId=await mkStaff('helper','Helper');
  const yamada={id:yamadaStaffId,role:'support',capabilities:['support.read','support.write']};
  const other={id:otherId,role:'support',capabilities:['support.read','support.write']};
@@ -296,7 +297,7 @@ test('escalation to Pedro: assigned agent escalates, owner sees the mark, idempo
  assert.equal(audit2.length,1);
  // The owner can escalate a fresh thread even when it is not assigned to them.
  const threadB=await createSupportThread(userB,{subject:'Owner escalation',
-  category:'payments',message:'Needs Pedro'},{db,env});
+  category:'payments',message:'Needs Ghost Developer'},{db,env});
  assert.equal(threadB.assignedStaffId,yamadaStaffId);
  const third=await escalateSupportThread(owner,{action:'escalate',threadId:threadB.id},{db,env});
  assert.equal(third.alreadyEscalated,false);
@@ -318,7 +319,8 @@ test('new user message publishes one notice per thread; staff reply adds none',a
   const user=await mkUser();
   const thread=await createSupportThread(user,{subject:'Notice check',
    category:'technical',message:'My VPN fails on login'},{db,env:noticeEnv,noticeRoot:root});
-  let feed=await readStoredFeed({root,env:noticeEnv});
+  assert.equal(await readStoredFeed({root,env:noticeEnv}),null);
+  let feed=(await adminInbox('owner',{db,env:noticeEnv,root})).notices.filter(n=>n.id===newSupportMessageNoticeId(thread.id));
   assert.equal(feed.length,1);
   assert.equal(feed[0].id,newSupportMessageNoticeId(thread.id));
   assert.equal(feed[0].title,'Nuevo mensaje de soporte');
@@ -330,13 +332,13 @@ test('new user message publishes one notice per thread; staff reply adds none',a
   assert.equal(feed[0].expiresAt-feed[0].createdAt,24*3600000);
   // A user follow-up in the same thread does not duplicate the notice.
   await sendSupportMessage(user,thread.id,{message:'Still failing'},{db,env:noticeEnv,noticeRoot:root});
-  feed=await readStoredFeed({root,env:noticeEnv});
+  feed=(await adminInbox('owner',{db,env:noticeEnv,root})).notices.filter(n=>n.id===newSupportMessageNoticeId(thread.id));
   assert.equal(feed.length,1);
   assert.equal(feed[0].id,newSupportMessageNoticeId(thread.id));
   // A staff reply publishes no new-message notice either.
   await replyAdminSupport({id:yamadaStaffId,name:'Yamada',role:'support'},
    {threadId:thread.id,action:'reply',message:'Checking it.'},{db,env});
-  feed=await readStoredFeed({root,env:noticeEnv});
+  feed=(await adminInbox('owner',{db,env:noticeEnv,root})).notices.filter(n=>n.id===newSupportMessageNoticeId(thread.id));
   assert.equal(feed.length,1);
  }finally{await rm(root,{recursive:true,force:true});}
 });
@@ -345,11 +347,12 @@ test('notice store failure never blocks a user message',async()=>{
  try{
   const user=await mkUser();
   const badRoot=join(root,'missing');
+  const failingDb={...db,query:(sql,args)=>{if(sql.includes('INSERT INTO spdecode_shop.admin_notices'))throw Error('ADMIN_NOTICE_STORE_DOWN');return db.query(sql,args);}};
   const thread=await createSupportThread(user,{subject:'Store down check',
-   category:'technical',message:'Can you hear me?'},{db,env:noticeEnv,noticeRoot:badRoot});
+   category:'technical',message:'Can you hear me?'},{db:failingDb,env:noticeEnv,noticeRoot:badRoot});
   let listing=await listUserSupport(user,{db,env});
   assert.equal(listing.threads[0].messages[0].text,'Can you hear me?');
-  await sendSupportMessage(user,thread.id,{message:'Second attempt'},{db,env:noticeEnv,noticeRoot:badRoot});
+  await sendSupportMessage(user,thread.id,{message:'Second attempt'},{db:failingDb,env:noticeEnv,noticeRoot:badRoot});
   listing=await listUserSupport(user,{db,env});
   assert.equal(listing.threads[0].messages.length,2);
   assert.equal(listing.threads[0].messages[1].text,'Second attempt');

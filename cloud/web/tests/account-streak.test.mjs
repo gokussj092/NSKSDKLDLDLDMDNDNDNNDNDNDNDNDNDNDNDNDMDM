@@ -251,6 +251,27 @@ test('file/text gateway strips account credentials, validates ownership and retu
  }
 });
 
+test('guest decodes and expired account sessions remain successful without streak storage',async()=>{
+ const redis={get:async()=>null,eval:async()=>1,zRem:async()=>1};
+ for(const kind of ['file','text'])for(const mode of ['guest','expired','database-outage']){
+  const payload=kind==='file'?{format:'hc',dataBase64:'YWJj'}:{text:'synthetic'};
+  if(mode!=='guest')payload.accountToken='synthetic-expired-account-token';
+  const request=new Request('https://example.invalid/api/v2',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(payload)});
+  bindVerifiedRequest(request,{hpke:true,scope:'decode',key:'transport-key',jti:randomUUID()});
+  let authCalls=0;
+  const response=await decodeRequest(request,kind,{storeProvider:async()=>redis,
+   streakAuthenticate:async()=>{authCalls++;if(mode==='expired')throw Error('SIGN_IN_REQUIRED');return {user:{id:accountId,emailVerified:true}};},
+   streakDb:{connect:async()=>{throw Error('STREAK_DATABASE_UNAVAILABLE');}},
+   fetchImpl:async(url,opts)=>{
+    assert.equal(JSON.parse(opts.body).accountToken,undefined);
+    return Response.json({apiVersion:'v1',status:'success',isPartial:false,rawText:'{"guest":"unchanged"}'});
+   }});
+  assert.equal(response.status,200);
+  const body=await response.json();assert.equal(body.rawText,'{"guest":"unchanged"}');assert.equal(body.streak,undefined);
+  assert.equal(authCalls,mode==='guest'?0:1);
+ }
+});
+
 test('combined HTTP Custom reference counts decoded output, never a locked download',async()=>{
  await resetStreak();let locked=true,authCalls=0;
  const token='synthetic-account-token-123456';

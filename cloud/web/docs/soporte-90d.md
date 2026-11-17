@@ -3,7 +3,7 @@
 **Rama:** `server/soporte-90d` (base `b79fc51e572a`, local; sin push — la rama remota no existe).
 **Fecha:** 2026-11-15. **Tipo:** solo servidor (`cloud/web`). Sin despliegue.
 **Origen:** plan `~/workspace/support-tamara-plan/PLAN_SOPORTE_TAMARA.md` §1.4 y §6.1.
-**Decisiones de Pedro aplicadas:** sesión de 90 días para staff Y owner (en lugar de
+**Decisiones de Ghost Developer aplicadas:** sesión de 90 días para staff Y owner (en lugar de
 endpoint de refresco); construir las APIs P1 que las apps consumen y no existían;
 NO integrar polling/typing; adjuntos/capturas en otra fase.
 
@@ -19,7 +19,7 @@ NO integrar polling/typing; adjuntos/capturas en otra fase.
   Better Auth (90 días, `updateAge` 12 h) y los TTL de alertas/catálogo son
   independientes. Las sesiones existentes (1 h / 30 min) siguen validando
   (`exp-iat` menor que el nuevo TTL) y expiran por su propio `exp`; al
-  re-loguear obtienen 90 días. Sin endpoint de refresco (decisión de Pedro).
+  re-loguear obtienen 90 días. Sin endpoint de refresco (decisión de Ghost Developer).
 
 ### 1.2 Migración `sql/010_support_reads_avatar.sql` (nueva)
 - Tabla `spdecode_shop.support_thread_reads(thread_id, reader_kind, reader_id, read_at)`,
@@ -107,9 +107,9 @@ No se tocó el cifrado AES-256-GCM ni la auditoría de respuestas.
   exige Postgres vivo y no hay servidor (`ECONNREFUSED` a localhost:5432).
   Es una limitación del entorno, no del cambio (la lista nueva está en el
   script; la SQL 010 se verificó aplicándola en PGlite en los tests).
-- Sin verificación contra producción (sin despliegue, por decisión de Pedro).
+- Sin verificación contra producción (sin despliegue, por decisión de Ghost Developer).
 
-## 5. Pendientes / decisiones para Pedro
+## 5. Pendientes / decisiones para Ghost Developer
 - Crear la rama remota `server/soporte-90d` desde `ci/unity-ads-online-qa` en
   la web de GitHub para poder subir (el conector no puede crearla desde otra
   base). Tras el push, esta rama deberá rebasarse: el remoto

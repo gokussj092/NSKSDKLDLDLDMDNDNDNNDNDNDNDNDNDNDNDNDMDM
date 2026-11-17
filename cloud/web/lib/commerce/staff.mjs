@@ -87,7 +87,7 @@ export async function panelPrincipal(request,{db,redis,config=adminSettings()}={
  const owner=await authenticateAdmin(source,request,config);
  if(owner){
   return {id:owner.sub,username:config.username,
-   name:(process.env.SPDECODE_SUPPORT_AGENT_NAME||config.username).trim().slice(0,80),
+   name:'Ghost Developer',
    role:'owner',avatar:null,mustChangePassword:false,capabilities:privileges('owner'),owner:true};
  }
  return getStaffAuth(request,{db,redis:source,config});

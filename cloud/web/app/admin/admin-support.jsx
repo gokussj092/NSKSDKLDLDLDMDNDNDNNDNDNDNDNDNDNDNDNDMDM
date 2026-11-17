@@ -199,7 +199,7 @@ export default function AdminSupport(){
   if(!window.confirm('¿Levantar la suspensión de soporte de esta cuenta?'))return;
   mutate({action:'liftSuspension',accountId:selected.account_id},{notice:'Suspensión levantada.'});
  };
- // Escalación a Pedro (D5): solo el agente asignado o quien puede asignar
+ // Escalación a Ghost Developer (D5): solo el agente asignado o quien puede asignar
  // (owner/admin). El hilo queda marcado y en prioridad alta.
  // Confirmación dentro del panel (no window.confirm): el diálogo nativo
  // del navegador no se acepta en la revisión automática y el clic moría
@@ -211,7 +211,7 @@ export default function AdminSupport(){
  };
  const escalate=()=>{
   if(!selected||!canEscalate)return;
-  mutate({action:'escalate',threadId:selected.id},{notice:'Conversación escalada a Pedro.'});
+  mutate({action:'escalate',threadId:selected.id},{notice:'Conversación escalada a Ghost Developer.'});
   setConfirmEscalate(false);
  };
  const openThread=id=>{setActive(id);setConfirmEscalate(false);};
@@ -273,7 +273,7 @@ export default function AdminSupport(){
       <span className="sp-chat-ticket-footer"><span className={'sp-chat-status '+t.status}>{STATUS[t.status]}</span>
        <span className="sp-chat-chip">{CATEGORY[t.category]||t.category||'General'}</span>
        <span className={'sp-chat-chip priority-'+(t.priority||'normal')}>{PRIORITY[t.priority||'normal']||'Normal'}</span>
-       {t.escalated_at&&<span className="sp-chat-chip">Escalado a Pedro</span>}
+       {t.escalated_at&&<span className="sp-chat-chip">Escalado a Ghost Developer</span>}
        {susp&&<span className="sp-chat-suspended" title={suspensionDetail(t.suspension)}>{suspensionLabel(t.suspension)}</span>}
       </span>
      </span>
@@ -309,7 +309,7 @@ export default function AdminSupport(){
      <span className="sp-chat-chip">{CATEGORY[selected.category]||selected.category||'General'}</span>
      <span className={'sp-chat-chip priority-'+(selected.priority||'normal')}>{PRIORITY[selected.priority||'normal']||'Normal'}</span>
      {selected.assigned_name&&<span className="sp-chat-chip">{selected.assigned_name} · {selected.assignedOnline?'En línea':'Sin conexión'}</span>}
-     {selected.escalated_at&&<span className="sp-chat-chip">Escalado a Pedro</span>}
+     {selected.escalated_at&&<span className="sp-chat-chip">Escalado a Ghost Developer</span>}
      {suspendedSelected&&<button type="button" className="sp-chat-suspended" title={suspensionDetail(selected.suspension)}
        aria-label={suspensionDetail(selected.suspension)} onClick={()=>setShowSuspDetail(v=>!v)}>{suspensionLabel(selected.suspension)}</button>}
      {suspendedSelected&&canWrite&&<button type="button" className="button" disabled={busy} onClick={liftSuspension}>Levantar suspensión</button>}
@@ -347,11 +347,11 @@ export default function AdminSupport(){
      <button className="button" type="button" disabled={busy} onClick={()=>toggleClose(false)}>
       {selected.status==='closed'?'Reabrir conversación':'Cerrar conversación'}
      </button>
-     {canEscalate&&(confirmEscalate?<span className="muted">¿Escalar esta conversación a Pedro? La verá marcada y en prioridad alta.
+     {canEscalate&&(confirmEscalate?<span className="muted">¿Escalar esta conversación a Ghost Developer? La verá marcada y en prioridad alta.
       <button className="button" type="button" disabled={busy} onClick={escalate}>Sí, escalar</button>
       <button className="button" type="button" disabled={busy} onClick={()=>setConfirmEscalate(false)}>Cancelar</button>
      </span>:<button className="button" type="button" disabled={busy} onClick={requestEscalate}>
-      Escalar a Pedro
+      Escalar a Ghost Developer
      </button>)}
     </footer>}
    </section>

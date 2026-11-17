@@ -21,6 +21,22 @@ export function validStoredNotice(n) {
   (!modern||(NOTICE_TYPES.includes(n.type)&&NOTICE_IMPORTANCE.includes(n.importance)&&
     NOTICE_DELIVERY.includes(n.delivery)));
 }
+// Legacy support events accidentally shared this public volume. Quarantine
+// them on every client read, including Redis migration and old disk snapshots.
+export const isAdministrativeNotice=n=>typeof n?.title==='string'&&
+ (/^Soporte escalado a /i.test(n.title)||n.title==='Nuevo mensaje de soporte');
+const canonicalAdminNotice=n=>({...n,
+ title:n.title==='Nuevo mensaje de soporte'?'Nuevo mensaje de soporte':'Soporte escalado a Ghost Developer',
+ body:n.title==='Nuevo mensaje de soporte'?'Un usuario escribió en soporte y necesita respuesta.':
+  'Un hilo de soporte necesita la intervención de Ghost Developer.'});
+export async function readAdministrativeQuarantine({root=ROOT,env=process.env}={}){
+ if(!noticeStorageEnabled(env))return [];
+ try{
+  const raw=await readFile(join(root,'admin-quarantine.json'),'utf8');
+  if(Buffer.byteLength(raw)>100000)throw Error('NOTICE_STORE_INVALID');
+  return validate(JSON.parse(raw)).filter(isAdministrativeNotice).map(canonicalAdminNotice);
+ }catch(e){if(e.code==='ENOENT')return [];throw e;}
+}
 function validate(feed){
  if(!Array.isArray(feed)||feed.length>20||!feed.every(validStoredNotice)||new Set(feed.map(n=>n.id)).size!==feed.length)
   throw Error('NOTICE_STORE_INVALID');
@@ -52,10 +68,18 @@ export async function transactStoredFeed(notice,{root=ROOT,env=process.env,legac
  return withFileLock(root,'notice-feed',async()=>{
   let feed=await readStoredFeed({root,env});const missing=feed===null;
   if(missing)feed=validate(await legacy());
+  const internal=feed.filter(isAdministrativeNotice);
+  if(internal.length){
+   const old=await readAdministrativeQuarantine({root,env});
+   const merged=[...new Map([...old,...internal].map(n=>[n.id,canonicalAdminNotice(n)])).values()].slice(-20);
+   // Archive with canonical developer labels before removing from the public file.
+   await atomicJson(root,'admin-quarantine.json',merged);
+   feed=feed.filter(n=>!isAdministrativeNotice(n));
+  }
   const now=Date.now();const active=feed.filter(n=>n.createdAt<=now+5000&&n.expiresAt>now);
   const duplicate=!!notice&&active.some(n=>n.id===notice.id);
   const next=notice&&!duplicate?[...active,notice].slice(-20):active;
-  if(missing||notice&&!duplicate||active.length!==feed.length)await atomicJson(root,FILE,next);
+  if(missing||internal.length||notice&&!duplicate||active.length!==feed.length)await atomicJson(root,FILE,next);
   return {feed:next,duplicate};
  });
 }

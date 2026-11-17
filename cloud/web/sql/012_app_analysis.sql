@@ -53,7 +53,7 @@ CREATE INDEX IF NOT EXISTS app_analysis_events_job
  ON spdecode_shop.app_analysis_events(job_id,sequence ASC);
 
 -- Catalog candidates: a new method is delivered to the user AND saved at the
--- same time. Promotion to the public catalog is MANUAL (Pedro), never automatic.
+-- same time. Promotion to the public catalog is MANUAL (Ghost Developer), never automatic.
 -- icon_ref is internal only: it never appears in a job view or a download.
 CREATE TABLE IF NOT EXISTS spdecode_shop.app_analysis_catalog_candidates (
  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),

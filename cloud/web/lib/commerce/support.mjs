@@ -1,7 +1,7 @@
 import {randomBytes,randomUUID,createCipheriv,createDecipheriv,createHash} from 'node:crypto';
 import {database,transaction} from './db.mjs';
 import {recordAccountNotice,pushAccountNotice} from './account-notices.mjs';
-import {transactStoredFeed} from '../notice-store.mjs';
+import {recordAdminNotice,pushAdminRecipientNotice} from './admin-notices.mjs';
 import {avatarInput} from './profile.mjs';
 import {staffPresenceOnline} from './staff-presence.mjs';
 import {fail} from './config.mjs';
@@ -34,7 +34,7 @@ export function decryptMessage(row,{env=process.env}={}){
 function messageRow(row,env){
   return {id:row.id,sender:row.sender_kind,text:decryptMessage(row,{env}),at:row.created_at,
     ...(row.sender_kind==='admin'?{agent:{
-      name:row.agent_name||'SP-DECODE',
+      name:row.agent_role==='owner'?'Ghost Developer':row.agent_name||'SP-DECODE',
       role:row.agent_role||'support',
       avatar:row.agent_avatar??null
     }}:{})};
@@ -213,7 +213,7 @@ export async function createSupportThread(accountId,input,{db=database(),env=pro
   // in the panel and the Admin app (Notices). A missing or misconfigured
   // notice store must never fail the thread creation itself, and the
   // deterministic id keeps follow-up messages from duplicating it.
-  await publishNewSupportMessageNotice(result.id,{env,root:noticeRoot}).catch(()=>{});
+  await publishNewSupportMessageNotice(result.id,{db,env}).catch(()=>{});
   return result;
 }
 export async function sendSupportMessage(accountId,threadId,input,{db=database(),env=process.env,noticeRoot}={}){
@@ -236,7 +236,7 @@ export async function sendSupportMessage(accountId,threadId,input,{db=database()
   },db);
   // Best-effort notice, same as thread creation: a failing notice store
   // must never discard a message the user already sent.
-  await publishNewSupportMessageNotice(threadId,{env,root:noticeRoot}).catch(()=>{});
+  await publishNewSupportMessageNotice(threadId,{db,env}).catch(()=>{});
   return result;
 }
 export async function listUserSupport(accountId,{db=database(),env=process.env,redis=null,sharedAvatars=false}={}){
@@ -360,7 +360,7 @@ export async function replyAdminSupport(actor,input,{db=database(),env=process.e
         (id,thread_id,sender_kind,ciphertext,agent_id,agent_name,agent_role,agent_avatar)
         VALUES($1,$2,'admin',$3,$4,$5,$6,$7)`,
         [id,thread.id,encryptMessage(thread.id,id,'admin',text,{env}),
-         operator.id,operator.name,operator.role,avatar??null]);
+         operator.id,operator.role==='owner'?'Ghost Developer':operator.name,operator.role,avatar??null]);
       accountNoticeId=await recordAccountNotice(client,thread.account_id,
         'support:'+id,'support',thread.id);
     }
@@ -443,21 +443,15 @@ export function newSupportMessageNoticeId(threadId){
   return [chars.slice(0,8).join(''),chars.slice(8,12).join(''),chars.slice(12,16).join(''),
     chars.slice(16,20).join(''),chars.slice(20,32).join('')].join('-');
 }
-async function publishNewSupportMessageNotice(threadId,{env=process.env,root}={}){
-  const now=Date.now();
-  await transactStoredFeed({id:newSupportMessageNoticeId(threadId),
-    title:'Nuevo mensaje de soporte',
-    body:'Un usuario escribió en soporte y necesita respuesta.',
-    type:'general',importance:'normal',delivery:'poll',
-    createdAt:now,expiresAt:now+24*3600000},{env,root});
+async function publishNewSupportMessageNotice(threadId,{db=database(),env=process.env}={}){
+ const id=await recordAdminNotice(db,{id:newSupportMessageNoticeId(threadId),
+   recipientId:'owner',kind:'support_message',threadId});
+ if(id)await pushAdminRecipientNotice('owner',id,{db,env});
 }
-async function publishEscalationNotice(threadId,{env=process.env}={}){
-  const now=Date.now();
-  await transactStoredFeed({id:escalationNoticeId(threadId),
-    title:'Soporte escalado a Pedro',
-    body:'Un hilo de soporte fue escalado y necesita tu intervención.',
-    type:'general',importance:'important',delivery:'poll',
-    createdAt:now,expiresAt:now+24*3600000},{env});
+async function publishEscalationNotice(threadId,{db=database(),env=process.env}={}){
+ const id=await recordAdminNotice(db,{id:escalationNoticeId(threadId),
+   recipientId:'owner',kind:'support_escalation',threadId});
+ if(id)await pushAdminRecipientNotice('owner',id,{db,env});
 }
 export async function escalateSupportThread(principal,input,{db=database(),env=process.env}={}){
   const caps=Array.isArray(principal?.capabilities)?principal.capabilities:[];
@@ -500,11 +494,11 @@ export async function escalateSupportThread(principal,input,{db=database(),env=p
   // misconfigured notice store must never fail the escalation itself, and
   // the deterministic id keeps a repeated escalation from duplicating it.
   if(!result.alreadyEscalated)
-    await publishEscalationNotice(input.threadId,{env}).catch(()=>{});
+    await publishEscalationNotice(input.threadId,{db,env}).catch(()=>{});
   return result;
 }
 
-// Manual lift of an anti-spam suspension (D11 subnote: both Yamada and Pedro).
+// Manual lift of an anti-spam suspension (D11 subnote: both Yamada and Ghost Developer).
 // support.write covers the support role (Yamada) and the owner. A lifted
 // suspension stays in the table with lifted_at set, so it still counts as a
 // prior suspension for the panel.

@@ -536,7 +536,7 @@ class AndroidUnityReleaseContract(unittest.TestCase):
         store=read("cloud/web/lib/commerce/account-notices.mjs")
         sql=read("cloud/web/sql/008_account_notifications.sql")
         migration=read("cloud/web/scripts/commerce-migrate.mjs")
-        self.assertIn("notification:{title:'SP-DECODE'",push)
+        self.assertIn("notification:{title:admin?'SP-DECODE Admin':'SP-DECODE'",push)
         self.assertIn("targetToken",push)
         self.assertIn("CloudNoticePush.syncAccount",service)
         self.assertIn("showPushHint",service)

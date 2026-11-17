@@ -6,7 +6,7 @@ import {store,throttle} from './c3-store.mjs';
 import {boundRequestClaims} from './v2-bound-request.mjs';
 import {pushAccount,pushNotice} from './notice-push.mjs';
 import {noticeStorageEnabled,transactStoredFeed,validStoredNotice,
- NOTICE_TYPES,NOTICE_IMPORTANCE,NOTICE_DELIVERY,NOTICE_TTL_HOURS} from './notice-store.mjs';
+ isAdministrativeNotice,NOTICE_TYPES,NOTICE_IMPORTANCE,NOTICE_DELIVERY,NOTICE_TTL_HOURS} from './notice-store.mjs';
 const KEY='spnotice:feed:v1',LOCK='spnotice:publish-lock';
 const UUID=/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
 const reply=(body,status=200)=>Response.json(body,{status,headers:{'Cache-Control':'private, no-store','X-Content-Type-Options':'nosniff'}});
@@ -25,7 +25,11 @@ async function legacyFeed(redis) {
 }
 async function notices(redis,options={}) {
  const saved=await transactStoredFeed(null,{...options,legacy:()=>legacyFeed(redis)});
- return (saved?.feed||await legacyFeed(redis)).filter(n=>validNotice(n));
+ if(saved){
+  const old=await legacyFeed(redis);
+  if(old.some(isAdministrativeNotice))await redis.set(KEY,JSON.stringify(old.filter(n=>!isAdministrativeNotice(n))),{EX:8*86400});
+ }
+ return (saved?.feed||await legacyFeed(redis)).filter(n=>validNotice(n)&&!isAdministrativeNotice(n));
 }
 export async function notificationFeedRequest(request,{storeProvider=store,storageOptions={}}={}) {
   if(!boundRequestClaims(request))return reply({error:{code:'UNAUTHORIZED'}},401);
@@ -70,6 +74,7 @@ export async function adminNotices(request,{storeProvider=opsStore,push=pushNoti
         !NOTICE_DELIVERY.includes(input.delivery)||!NOTICE_TTL_HOURS.includes(input.ttlHours))))
       return reply({code:'INVALID_REQUEST'},400);
     if(!await throttle(redis,'spnotice:publish-rate',5,60))return reply({code:'RATE_LIMITED'},429);
+    if(isAdministrativeNotice(input))return reply({code:'PRIVATE_NOTICE_REQUIRED'},400);
     const now=Date.now();
     const notice={id:input.id,title:input.title,body:input.body,
       createdAt:now,expiresAt:now+(modern?input.ttlHours:168)*3600000,

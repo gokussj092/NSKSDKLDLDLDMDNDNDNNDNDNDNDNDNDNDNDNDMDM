@@ -71,6 +71,8 @@ export async function recordAccountNotice(client,accountId,eventKey,kind,resourc
 /** Push contains only an opaque UUID and generic notification text. */
 export async function pushAccountNotice(accountId,id,kind,{db=database(),env=process.env,send=pushNotice}={}){
  if(!id||!UUID.test(id)||!KINDS.has(kind))return {queued:0};
+ const owned=await db.query('SELECT id FROM spdecode_shop.account_notices WHERE account_id=$1 AND id=$2 AND kind=$3',[accountId,id,kind]);
+ if(!owned.rowCount)return {queued:0};
  const result=await db.query(`SELECT token_ciphertext FROM spdecode_shop.account_push_devices
   WHERE account_id=$1 AND seen_at>now()-interval '45 days'
   ORDER BY seen_at DESC LIMIT 8`,[accountId]);

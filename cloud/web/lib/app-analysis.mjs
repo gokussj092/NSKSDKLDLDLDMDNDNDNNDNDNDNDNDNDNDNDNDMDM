@@ -5,7 +5,7 @@
  * /api/v2/app-analysis/*. The old /api/v1/app-analysis/* routes were
  * removed with the V2 migration (2026-11-16).
  *
- * Rules enforced here (Pedro, 2026-11-15):
+ * Rules enforced here (Ghost Developer, 2026-11-15):
  * - 1 credit = 1 analysis, $4 USD (price always from the server, never
  *   hard-coded in the client). Reserve on start, charge on completion,
  *   release on failure. Re-analysis is ALWAYS charged.
@@ -204,7 +204,7 @@ export function parseAndroidManifest(axml){
   }
   off+=length;
  }
- // VPN criterion (Pedro, P1): the manifest asks for a VPN connection
+ // VPN criterion (Ghost Developer, P1): the manifest asks for a VPN connection
  // (BIND_VPN_SERVICE on a service, or a VpnService declaration / bind action)
  // and declares tunnel entry points (at least one service). A bare
  // uses-permission without any service does not count.
@@ -499,7 +499,7 @@ export async function finishJob(accountId,input,{db=database(),env=process.env,r
   await client.query(`UPDATE spdecode_shop.app_analysis_jobs
     SET status='UPLOADED',updated_at=now() WHERE job_id=$1`,[jobId]);
   await appendEvent(client,jobId,'UPLOAD_RECEIVED','DONE');
-  // Pre-analysis gate, BEFORE any deep analysis (Pedro, P1/P3).
+  // Pre-analysis gate, BEFORE any deep analysis (Ghost Developer, P1/P3).
   let manifest;
   try{manifest=parseAndroidManifest(await extractManifestBytes(apk,dir));}
   catch{return rejectJob(client,jobId,accountId,'INVALID_APK',{db,env,send});}

@@ -7,7 +7,7 @@ export const dynamic='force-dynamic';
 // Panel: job list + catalog-candidate review. Reading needs support.read;
 // reviewing a candidate needs support.write. Review only flips
 // pending -> approved/rejected; promoting to the public catalog stays a
-// manual step by Pedro and is deliberately NOT implemented here.
+// manual step by Ghost Developer and is deliberately NOT implemented here.
 export const GET=request=>safe(async()=>{
  const principal=await requirePanel(request);
  if(!can(principal,'support.read'))return reply({error:{code:'FORBIDDEN'}},403);

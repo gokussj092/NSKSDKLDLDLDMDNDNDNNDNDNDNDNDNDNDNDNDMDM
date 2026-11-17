@@ -5,7 +5,7 @@ import {useRouter} from 'next/navigation';
 // de admin-support.jsx: fetch con credentials same-origin, refresco cada
 // 15 s, errorText con códigos, fechas es-MX. La revisión de candidatos solo
 // cambia pending -> approved/rejected; la promoción al catálogo público es
-// manual (Pedro) y queda fuera de este panel.
+// manual (Ghost Developer) y queda fuera de este panel.
 const STATUS={UPLOADING:'Subiendo',UPLOADED:'Recibido',QUEUED_FOR_ANALYSIS:'En cola',
  ANALYZING:'Analizando',AWAITING_HUMAN:'En revisión',COMPLETED:'Completado',
  COMPLETED_PARTIAL:'Completado (parcial)',FAILED:'Fallido',REJECTED:'Rechazado',
@@ -79,7 +79,7 @@ export default function AdminAppAnalysis(){
     crédito. La cola es FIFO; solo 1 análisis a la vez por defecto
     (SPDECODE_APP_ANALYSIS_MAX_CONCURRENT). El icono del candidato nunca se
     muestra ni se descarga desde aquí: queda en el área privada hasta que
-    Pedro apruebe publicarlo.</p>
+    Ghost Developer apruebe publicarlo.</p>
   </div></header>
   {error&&<p className="form-message error" role="alert">{error}</p>}
   {notice&&<p className="form-message" role="status">{notice}</p>}

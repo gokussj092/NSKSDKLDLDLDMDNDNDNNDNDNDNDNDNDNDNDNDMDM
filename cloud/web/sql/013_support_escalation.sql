@@ -1,4 +1,4 @@
--- Support escalation to the owner (Pedro): when the assigned agent cannot solve
+-- Support escalation to the owner (Ghost Developer): when the assigned agent cannot solve
 -- a user's problem, the thread is marked escalated, raised to high priority,
 -- and listed for the owner. Escalation is one-way: there is no un-escalate;
 -- the owner resolves the thread normally (reply/close).

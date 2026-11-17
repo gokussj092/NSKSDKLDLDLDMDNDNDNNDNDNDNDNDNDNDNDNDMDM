@@ -95,11 +95,12 @@ export default function AdminNotifications(){
   finally{setBusy(false);}
  }
  return <div className="sp-admin-notice-page">
+  <PrivateAdminNotices/>
   {!isOwner&&<p className="muted">Estás viendo los avisos como personal de soporte. Solo el propietario puede publicar avisos nuevos.</p>}
   {isOwner&&<div className="admin-grid">
    <section className="admin-card">
-    <h2>Redactar una notificación</h2>
-    <p className="muted">Los avisos se muestran a quienes autorizaron notificaciones. No incluyas contraseñas, claves privadas ni información sensible.</p>
+    <h2>Anuncio público para SP-DECODE</h2>
+    <p className="muted">Estos anuncios se envían a los usuarios de SP-DECODE que autorizaron notificaciones. Los avisos internos de Admin se muestran por separado. No incluyas contraseñas, claves privadas ni información sensible.</p>
     <div className="sp-admin-notice-templates" role="group" aria-label="Plantillas de notificaciones">
      {samples.map((s,i)=><button key={s.name} type="button" className="button subtle" onClick={()=>useTemplate(i)}
       disabled={busy}>{s.name}</button>)}
@@ -173,4 +174,27 @@ export default function AdminNotifications(){
     </article>)}</div>}
   </section>
  </div>;
+}
+
+
+function PrivateAdminNotices(){
+ const [items,setItems]=useState([]),[configured,setConfigured]=useState(false),[error,setError]=useState('');
+ const refresh=useCallback(async()=>{
+  try{
+   const response=await fetch('/api/admin/notifications/inbox',{credentials:'same-origin',cache:'no-store'});
+   if(!response.ok)throw Error('No se pudo consultar la bandeja administrativa.');
+   const data=await response.json();if(data.audience!=='admin'||!Array.isArray(data.notices))throw Error('Bandeja no disponible.');
+   setItems(data.notices);setConfigured(data.pushConfigured===true);setError('');
+  }catch(e){setError(e.message);}
+ },[]);
+ useEffect(()=>{refresh();},[refresh]);
+ return <section className="admin-card" aria-label="Avisos privados de administración">
+  <div className="sp-admin-section-heading"><div><h2>Administración · avisos privados</h2>
+   <p className="muted">Solo los avisos dirigidos a tu cuenta administrativa. No se publican en SP-DECODE.</p></div>
+   <button className="button subtle" onClick={refresh}>Actualizar bandeja</button></div>
+  {!configured&&<p className="muted">FCM de Admin sin configurar. Los avisos permanecen disponibles en esta bandeja.</p>}
+  {error&&<p role="alert">{error}</p>}
+  {!error&&!items.length&&<p className="muted">Sin avisos administrativos pendientes.</p>}
+  {items.map(item=><article key={item.id}><h3>{item.title}</h3><p>{item.body}</p><small>{time(item.createdAt)}</small></article>)}
+ </section>;
 }

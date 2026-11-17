@@ -9,19 +9,32 @@ export function pushAccount(env=process.env) {
       typeof a.private_key==='string' ? a:null;
   }catch{return null;}
 }
+/** Admin uses an independent Firebase project and service account, never a fallback. */
+export function adminPushAccount(env=process.env){
+ const account=pushAccount({...env,CLOUD_NOTICE_FCM_SERVICE_ACCOUNT_JSON:env.CLOUD_ADMIN_FCM_SERVICE_ACCOUNT_JSON||''});
+ if(!account)return null;
+ const online=pushAccount(env),onlineProject=env.CLOUD_NOTICE_FCM_PROJECT_ID||online?.project_id||'sp-decode-android';
+ const project=env.CLOUD_ADMIN_FCM_PROJECT_ID||account.project_id;
+ if(project!==account.project_id||project===onlineProject||account.project_id===online?.project_id||
+    account.client_email===online?.client_email||account.private_key===online?.private_key)return null;
+ return account;
+}
+export const pushNotice=(id,options={})=>deliverPush(id,options,false);
+export const pushAdminNotice=(id,options={})=>deliverPush(id,options,true);
 /** Sends only a wake-up hint. Notice text must be fetched with the device-bound session. */
-export async function pushNotice(id,{env=process.env,fetchImpl=fetch,validateOnly=false,
- priority='normal',ttlSeconds=86400,targetToken=null,privateKind=null}={}) {
+async function deliverPush(id,{env=process.env,fetchImpl=fetch,validateOnly=false,
+ priority='normal',ttlSeconds=86400,targetToken=null,privateKind=null}={},admin=false) {
   // Public topic announcements and private account tokens have distinct payload
   // types. Only authenticated backend callers can supply a device token.
   if((targetToken!==null&&!/^[A-Za-z0-9:_-]{32,512}$/.test(targetToken))||
-     (privateKind!==null&&!['support','purchase','security'].includes(privateKind))||
+     (privateKind!==null&&!['support','purchase','security','service'].includes(privateKind))||
      (targetToken===null)!==(privateKind===null))throw Error('PUSH_INVALID');
   if(!/^[0-9a-f-]{36}$/.test(id)||typeof validateOnly!=='boolean'||
     !['normal','high'].includes(priority)||!Number.isInteger(ttlSeconds)||
     ttlSeconds<0||ttlSeconds>86400)throw Error('PUSH_INVALID');
-  const account=pushAccount(env);if(!account)return 'periodic';
-  const targetProject=env.CLOUD_NOTICE_FCM_PROJECT_ID||account.project_id;
+  if(admin&&(!targetToken||!privateKind))throw Error('PUSH_INVALID');
+  const account=admin?adminPushAccount(env):pushAccount(env);if(!account)return 'periodic';
+  const targetProject=admin?account.project_id:(env.CLOUD_NOTICE_FCM_PROJECT_ID||account.project_id);
   if(!/^[a-z][a-z0-9-]{4,60}$/.test(targetProject))throw Error('PUSH_INVALID');
   const now=Math.floor(Date.now()/1000);
   const unsigned=encode({alg:'RS256',typ:'JWT'})+'.'+encode({iss:account.client_email,aud:TOKEN,
@@ -41,13 +54,14 @@ export async function pushNotice(id,{env=process.env,fetchImpl=fetch,validateOnl
       ...(targetToken?{token:targetToken}:{topic:'spdecode-notices-v1'}),
       // Android presents the notification automatically in the background.
       // No personal messages, purchases or account data are sent to FCM.
-      notification:{title:'SP-DECODE',body:privateKind==='support'?
+      notification:{title:admin?'SP-DECODE Admin':'SP-DECODE',body:admin?
+        'Tienes una actualización administrativa':privateKind==='support'?
         'Nueva respuesta de soporte':privateKind==='purchase'?
         'Actualización de tu compra':privateKind==='security'?
         'Aviso de seguridad de tu cuenta':'Nuevo aviso disponible'},
-      data:privateKind?{noticeId:id,kind:'account'}:{noticeId:id},
-      android:{priority,ttl:ttlSeconds+'s',
-        notification:{channel_id:privateKind?'account-alerts-v1':'service-notices-chime-v2',
+      data:admin?{noticeId:id,kind:'admin'}:privateKind?{noticeId:id,kind:'account'}:{noticeId:id},
+      android:{priority,ttl:ttlSeconds+'s',...(admin?{restricted_package_name:'com.ghostdeveloper.spdecode.admin'}:{restricted_package_name:'com.ghostdeveloper.spdecode'}),
+        notification:{channel_id:admin?'admin-alerts-v1':privateKind?'account-alerts-v1':'service-notices-chime-v2',
           tag:id}}
     }})});
   if(!sent.ok)throw Error('PUSH_UNAVAILABLE');
