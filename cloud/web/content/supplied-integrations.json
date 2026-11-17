@@ -1479,10 +1479,18 @@
       "extensions": [],
       "textPrefixes": [],
       "fileModule": "MinaProNet_archivos.py",
-      "requests": [],
+      "requests": [
+        {
+          "name": "servers",
+          "url": "https://raw.githubusercontent.com/MinaDiNabil/update.link/refs/heads/main/v2ray-verified.json",
+          "agent": "okhttp/4.12.0",
+          "method": "GET",
+          "headers": {}
+        }
+      ],
       "sourceIcon": "MinaProNet.png",
       "icon": "minapronet-vpn.png",
-      "catalogState": "FILE_ONLY"
+      "catalogState": "CONNECTED"
     },
     {
       "id": "pph-good-vpn",
@@ -1841,6 +1849,206 @@
       "sourceIcon": "EUT_VPN.png",
       "icon": "eut-vpn.png",
       "catalogState": "PROVIDER_IDENTITY_REQUIRED"
+    },
+    {
+      "id": "m-light",
+      "appDir": "M_Light",
+      "name": "M Light",
+      "package": "com.pausatotal.mlight",
+      "versionCode": 80,
+      "versionName": "3.1.55",
+      "catalogModule": "M_Light.py",
+      "extensions": [
+        "pausa"
+      ],
+      "textPrefixes": [
+        "pausa://"
+      ],
+      "fileModule": "M_Light_archivos.py",
+      "requests": [
+        {
+          "name": "servers",
+          "url": "https://raw.githubusercontent.com/PausaStudio/pausada258/refs/heads/main/config.json",
+          "agent": "Dalvik/2.1.0",
+          "method": "GET",
+          "headers": {}
+        }
+      ],
+      "sourceIcon": "M_Light.png",
+      "icon": "m-light.png",
+      "catalogState": "CONNECTED"
+    },
+    {
+      "id": "deeptune-vpn",
+      "appDir": "DeepTune_VPN",
+      "name": "DeepTune-VPN",
+      "package": "tun.deep.vpn",
+      "versionCode": 8,
+      "versionName": "v8",
+      "catalogModule": "deeptune_vpn_catalog.py",
+      "extensions": [],
+      "textPrefixes": [],
+      "fileModule": "deeptune_vpn.py",
+      "requests": [
+        {
+          "name": "servers",
+          "url": "https://strongteam.co/api/deeptune/deep3.txt",
+          "agent": "DeepTune-VPN",
+          "method": "GET",
+          "headers": {}
+        }
+      ],
+      "sourceIcon": "deeptune_vpn.png",
+      "icon": "deeptune-vpn.png",
+      "catalogState": "CONNECTED"
+    },
+    {
+      "id": "str-vip-proxy",
+      "appDir": "STR_VIP_Proxy",
+      "name": "STR VIP Proxy",
+      "package": "app.isvsoft.strvipproxy",
+      "versionCode": 1,
+      "versionName": "1.42.5",
+      "catalogModule": "STR_VIP_Proxy.py",
+      "extensions": [
+        "isc"
+      ],
+      "textPrefixes": [
+        "isv-config://"
+      ],
+      "fileModule": "STR_VIP_Proxy_archivos.py",
+      "requests": [],
+      "sourceIcon": "STR_VIP_Proxy.png",
+      "icon": "str-vip-proxy.png",
+      "catalogState": "FILE_ONLY"
+    },
+    {
+      "id": "click-tunnel",
+      "appDir": "Click_Tunnel",
+      "name": "Click Tunnel",
+      "package": "com.clicktunnel.vpn",
+      "versionCode": 1,
+      "versionName": "1.0",
+      "catalogModule": "Click_Tunnel.py",
+      "extensions": [
+        "sup",
+        "wsuiou"
+      ],
+      "textPrefixes": [],
+      "fileModule": "Click_Tunnel_archivos.py",
+      "requests": [
+        {
+          "name": "servers",
+          "url": "https://raw.githubusercontent.com/uptechvpn/Click-Tunnel/refs/heads/main/Click%20Tunnel",
+          "agent": "Dalvik/2.1.0",
+          "method": "GET",
+          "headers": {}
+        }
+      ],
+      "sourceIcon": "Click_Tunnel.png",
+      "icon": "click-tunnel.png",
+      "catalogState": "CONNECTED"
+    },
+    {
+      "id": "mo-vpn",
+      "appDir": "MO_VPN",
+      "name": "MO VPN",
+      "package": "com.movpn.vpnth",
+      "versionCode": 6,
+      "versionName": "1.0.6",
+      "catalogModule": "MO_VPN.py",
+      "extensions": [],
+      "textPrefixes": [],
+      "fileModule": "MO_VPN_archivos.py",
+      "requests": [
+        {
+          "name": "updater",
+          "url": "https://raw.githubusercontent.com/sansoe2022/PNT_VPN/refs/heads/main/api.json",
+          "agent": "Dalvik/2.1.0 (Linux; U; Android 14; Redmi 14C Build/UP1A.231005.007)",
+          "method": "GET",
+          "headers": {
+            "Accept": "application/json"
+          }
+        },
+        {
+          "name": "servers",
+          "url": "https://raw.githubusercontent.com/sansoe2022/PNT_VPN/refs/heads/main/config.gen",
+          "agent": "Dalvik/2.1.0 (Linux; U; Android 14; Redmi 14C Build/UP1A.231005.007)",
+          "method": "GET",
+          "headers": {
+            "Accept": "*/*"
+          }
+        }
+      ],
+      "sourceIcon": "MO_VPN.png",
+      "icon": "mo-vpn.png",
+      "catalogState": "CONNECTED"
+    },
+    {
+      "id": "good-vpn",
+      "appDir": "Good_VPN",
+      "name": "GOOD VPN",
+      "package": "com.ovpnsevice.goodvpn",
+      "versionCode": 30,
+      "versionName": "3.0",
+      "catalogModule": "Good_VPN.py",
+      "extensions": [],
+      "textPrefixes": [],
+      "fileModule": "Good_VPN_archivos.py",
+      "requests": [
+        {
+          "name": "servers",
+          "url": "https://raw.githubusercontent.com/Anurak2534/ohmvpn/refs/heads/main/newgood.json",
+          "agent": "okhttp/5.2.1",
+          "method": "GET",
+          "headers": {}
+        }
+      ],
+      "sourceIcon": "Good_VPN.png",
+      "icon": "good-vpn.png",
+      "catalogState": "CONNECTED"
+    },
+    {
+      "id": "altaufik-vpn",
+      "appDir": "Altaufik_VPN",
+      "name": "ALTAUFIK VPN",
+      "package": "net.tcodes.altaufikvpn",
+      "versionCode": 44,
+      "versionName": "5.01",
+      "catalogModule": "Altaufik_VPN.py",
+      "extensions": [],
+      "textPrefixes": [],
+      "fileModule": null,
+      "requests": [
+        {
+          "name": "servers",
+          "url": "https://24clanvpn.com/updater/6ccbf3270197580767739262e2bcef",
+          "agent": "Apache-HttpClient/UNAVAILABLE (java 1.4)",
+          "method": "GET",
+          "headers": {}
+        }
+      ],
+      "sourceIcon": "Altaufik_VPN.png",
+      "icon": "altaufik-vpn.png",
+      "catalogState": "CONNECTED"
+    },
+    {
+      "id": "fx-tunnel",
+      "appDir": "Fx_Tunnel",
+      "name": "Fx Tunnel",
+      "package": "com.fx.tunnel",
+      "versionCode": 39,
+      "versionName": "4.8",
+      "catalogModule": "Fx_Tunnel.py",
+      "extensions": [
+        "fxt"
+      ],
+      "textPrefixes": [],
+      "fileModule": "Fx_Tunnel_archivos.py",
+      "requests": [],
+      "sourceIcon": "Fx_Tunnel.png",
+      "icon": "fx-tunnel.png",
+      "catalogState": "FILE_ONLY"
     }
   ]
 }

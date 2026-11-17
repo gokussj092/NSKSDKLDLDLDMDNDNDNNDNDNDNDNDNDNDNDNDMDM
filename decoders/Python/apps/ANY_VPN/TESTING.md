@@ -7,6 +7,7 @@ worker aislado real, sin valores de catálogos privados guardados en Git.
 |---|---|---:|---:|---:|
 | Constante cifrada del DEX | 1.1 | 12 | 46 | 342 |
 | GET oficial con User-Agent del APK | 5.84 | 13 | 91 | 535 |
+| GET oficial con User-Agent del APK | 7.3 | 13 | 89 | 527 |
 
 Los dos documentos, todas sus listas, campos y metadatos son iguales al JDK.
 Dos perfiles sintéticos adicionales, red sola y servidor/red, también coinciden

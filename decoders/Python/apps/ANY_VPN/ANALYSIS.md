@@ -41,6 +41,16 @@ como destino la constante histórica data_url de c_11. El GET de
 JsonManager.ServerUpdate usa el agente por defecto de OkHttp, confirmado en
 `okhttp3.internal._UtilCommonKt.userAgent`. Con ese agente respondió 200,
 118208 bytes: versión 5.84, 13 servidores y 91 redes.
+Re-verificación 2026-11-17: 115820 bytes, versión **7.3, 13 servidores y
+89 redes**, descifrado completo (0 campos sin descifrar, 0 caracteres CJK
+restantes). La corrección frente a v5.84: los valores de campo descifrados
+llevan la sustitución CJK→ASCII de 26 pares y hay que revertirla — el codec
+anterior devolvía los valores en CJK (las cuentas 13/91 eran correctas, los
+valores no). `config_url`/`account_api` se eliminan del JSON de resultado.
+La URL y la clave no cambian: el bug del decodificador `ObfuscatedString`
+(`Random.nextLong` con la mitad baja como unsigned) solo afectó a la
+recuperación de cadenas durante la investigación (herramienta
+`deobfuscate.py`, corregida; ver expediente `analysis/com.markvpnpro.pinas/40/`).
 
 El downloader acepta únicamente la constante comprobada. No se continúan
 URLs recibidas dentro de JSON ni redirecciones, y no se llama a account_api

@@ -1,0 +1,17 @@
+{
+  "meta": {
+    "serverVersion": "9.9.9-test"
+  },
+  "servers": [
+    {
+      "name": "TEST-SERVER",
+      "host": "enc:ZK8igzq7Y7wQeGmWLarLhO1K2vGoIbz3TVQ_5290K4AiKCuXhg-QtQ"
+    }
+  ],
+  "tweaks": [
+    {
+      "payload": "enc:qkJM7zmFD1w8qzcUnIRgLzxQbgvmXpKik2zQYc5A-FNXNkL1VISwlQ"
+    }
+  ],
+  "settings": {}
+}

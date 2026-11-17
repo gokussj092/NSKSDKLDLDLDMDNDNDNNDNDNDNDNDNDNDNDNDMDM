@@ -54,6 +54,25 @@ LIVE STATUS (2026-11-14, verificado con --url):
   catalogo de SLOW DNS (ya cubierto en la tanda 6); pero ese archivo
   NO aparece en el DEX de MinaProNet, asi que no es su catalogo.
 
+RE-TRABAJO 2026-11-17 (APK de Play MinaProNet_VPN_88.0.0_1_ci8x.apks,
+SHA-256 45a98eab074709ae47b31e46ccce4b9efea7b8688c0d12a6f4eca1dd820062b8):
+base.apk y el split arm64-v8a son BYTE-IDENTICOS al APK ya analizado
+en la tanda 13 (mismos SHA-256), asi que el metodo no cambio. En vivo:
+minapronet.updater y minapronet.json ya NO EXISTEN en el repo
+(listado GitHub 2026-11-17: solo .github, probe.py, requirements.txt,
+slowdns_config.json, slowdns_updater, udp_config, v2ray-verified.json);
+el updater da HTTP 404. minapronet.site sigue en UPDATE_REQUIRED para
+las versiones 88-100 (probadas 88, 89, 90, 91, 92 y 100). El UNICO
+catalogo que la app descarga en vivo hoy es el de servidores publicos
+v2ray-verified.json: 205 entradas, 205 online, 31 paises (153 ss,
+29 trojan, 17 vless, 6 vmess) — ver live.json. Lo que Pedro ve
+descargar en la app es ese catalogo publico (PublicServersActivity);
+el MinaConfig sigue sin datos. Queda un canal nativo sin resolver:
+ServerSyncManager / MinaCore.nativeFetchConfig + nativeSetServerUrl
+(libminacore.so, URL ofuscada en el codigo nativo, no recuperable
+desde el DEX); solo una captura en vivo en un telefono con la app
+de Play podria revelar su URL.
+
 Endpoint real minapronet.site (metodo v19, aportado por Pedro;
 script de DataPhreak, t.me/DataPhreak): POST
 https://minapronet.site/api/v1/config con body {"hwid"} y cabeceras
@@ -68,6 +87,9 @@ y la firma SE valida (firma mala -> conexion cerrada sin respuesta;
 sin x-signature -> HTTP 400), pero responde HTTP 200
 {"update_required": true} para las versiones 88 y 89: hoy NO entrega
 config. El script lo reporta como UPDATE_REQUIRED, sin inventar nada.
+(RE-TRABAJO 2026-11-17: sigue igual para las versiones 88, 89, 90, 91,
+92 y 100; el servidor a veces cierra la conexion sin responder y hay
+que reintentar.)
 
 Servidores publicos (segunda fuente, VIVA): la app tambien descarga
   GET https://raw.githubusercontent.com/MinaDiNabil/update.link/refs/heads/main/v2ray-verified.json
@@ -88,6 +110,24 @@ Nube -- compartir por clave (ExportActivity.addData / MainActivity.getCloudConfi
   real de un usuario no hay nada que descargar: las claves son
   aleatorias de 27 caracteres y no se pueden adivinar.
 
+  ENLACE DE NUBE — VERIFICADO 2026-11-17, NO EXISTE minapronet://:
+  la app NO define ningun esquema URI propio. El AndroidManifest solo
+  declara intent-filter de archivo file/content con pathPattern
+  "*.mina", y en todo el DEX no aparece "minapronet://" ni ningun
+  esquema propio (los unicos esquemas son los estandar vmess/vless/
+  trojan/ss/socks/hy2/tuic/wireguard/udpcustom y los de Firebase).
+  Lo que la app muestra al exportar es texto plano, exactamente:
+  "Config Key :  <clave-de-27>" (R.string.export_config_key_fmt) y
+  copia SOLO la clave al portapapeles (ExportActivity.addData, lineas
+  82-84: 27 caracteres de "0-9A-Za-z"). Al importar, MainActivity
+  pide la clave en un dialogo y llama getCloudConfig(clave) — nunca
+  parsea un enlace. Si Pedro vio un enlace tipo minapronet://, NO
+  viene de esta app 88.0.0 (puede ser de otra app o de un texto
+  compartido en Telegram). parse_cloud_key() acepta la clave suelta,
+  el texto "Config Key : <clave>" o cualquier texto/enlace que
+  contenga una clave de 27 caracteres, para no depender del formato
+  pegado; --cloud-link descarga con la clave extraida.
+
 Sin catalogo MinaConfig vivo no hay version/servidores/payloads que
 reportar; la fuente viva es v2ray-verified.json (ver arriba).
 
@@ -106,6 +146,7 @@ import hashlib
 import hmac
 import json
 import random
+import re
 import struct
 import sys
 import time
@@ -567,6 +608,34 @@ def fetch_public_servers(url: str = PUBLIC_SERVERS_URL) -> dict:
     }
 
 
+def decode_public_servers(data: bytes | str) -> dict:
+    """Adaptador puro (sin red) para el worker: v2ray-verified.json -> resultado.
+
+    Misma forma que la rama --public-servers-file del CLI: entradas, online,
+    paises, protocolos y la lista completa de servidores, SIN la URL de
+    descarga ni el tamano (regla del catalogo: el JSON de resultado no lleva
+    APIs de descarga). MinaConfig sigue SIN cablear: el updater del vendedor
+    es HTTP 404 y minapronet.site responde update_required.
+    """
+    raw = data if isinstance(data, bytes) else data.encode("utf-8")
+    try:
+        arr = json.loads(raw.decode("utf-8"))
+    except (json.JSONDecodeError, UnicodeDecodeError) as exc:
+        raise DecodeError("BAD_JSON", "v2ray-verified.json no es JSON: %s" % exc) from exc
+    if not isinstance(arr, list):
+        raise DecodeError("BAD_JSON", "v2ray-verified.json no es una lista.")
+    if not arr:
+        raise DecodeError("BAD_JSON", "v2ray-verified.json esta vacio.")
+    from collections import Counter
+    return {
+        "entries": len(arr),
+        "online": sum(1 for e in arr if isinstance(e, dict) and e.get("status") == "online"),
+        "countries": len({e.get("country") for e in arr if isinstance(e, dict)}),
+        "protocols": dict(Counter(e.get("protocol") for e in arr if isinstance(e, dict))),
+        "servers": arr,
+    }
+
+
 # ------------------------------------------------------------- minapronet.site (metodo v19, DataPhreak)
 # POST https://minapronet.site/api/v1/config, body {"hwid"}, firma
 # HMAC-SHA256 de "hwid:ts:body". Respuesta: {"config": "<blob b64>"}
@@ -726,6 +795,36 @@ def fetch_site(hwid: str, url: str = SITE_URL,
 
 
 # ------------------------------------------------------------- Nube (Firebase Storage por clave)
+CLOUD_KEY_LEN = 27
+_CLOUD_KEY_RE = re.compile(r"[0-9A-Za-z]{27}")
+
+
+def parse_cloud_key(text: str) -> str:
+    """Extrae la clave de nube de 27 caracteres de un texto pegado.
+
+    Acepta la clave suelta, el texto exacto que muestra la app
+    ("Config Key :  <clave>") o cualquier texto/enlace que contenga
+    una clave de 27 caracteres alfanumericos (p. ej. un enlace tipo
+    minapronet://<clave> pegado desde otro lado). La app NO define
+    esquema minapronet://: esto es solo tolerancia al pegado, y la
+    clave extraida es la misma que --cloud-key.
+    """
+    if not text:
+        raise DecodeError("BAD_KEY", "Texto vacio: no hay clave de nube.")
+    m = _CLOUD_KEY_RE.search(text.strip())
+    if not m:
+        raise DecodeError("BAD_KEY",
+                          "No se encontro ninguna clave de 27 caracteres alfanumericos.")
+    return m.group(0)
+
+
+def format_cloud_key(key: str) -> str:
+    """El texto exacto que la app muestra al exportar (R.string.export_config_key_fmt)."""
+    if len(key) != CLOUD_KEY_LEN or not key.isalnum():
+        raise DecodeError("BAD_KEY", "La clave debe tener 27 caracteres alfanumericos.")
+    return "Config Key :  %s" % key
+
+
 def _firebase_anonymous_token() -> str:
     """Sign-in anonimo con la API REST de Firebase (como el SDK de la app)."""
     body = json.dumps({"returnSecureToken": True}).encode()
@@ -855,6 +954,18 @@ def _self_test() -> dict:
         and site_res["summary"]["networks"] == 2
         and site_res["summary"]["networks_with_payload"] == 1)
 
+    # 10. Clave de nube: suelta, texto exacto de la app y enlace pegado.
+    key27 = "Ab3xY9kQ2mN7pR4sT6vW8zA1bC3"
+    checks["cloud_key_bare"] = parse_cloud_key(key27) == key27
+    checks["cloud_key_display_text"] = parse_cloud_key("Config Key :  " + key27) == key27
+    checks["cloud_key_link_text"] = parse_cloud_key("minapronet://" + key27) == key27
+    checks["cloud_key_format"] = format_cloud_key(key27) == "Config Key :  " + key27
+    checks["cloud_key_bad_rejected"] = False
+    try:
+        parse_cloud_key("clave-corta")
+    except DecodeError as exc:
+        checks["cloud_key_bad_rejected"] = exc.code == "BAD_KEY"
+
     checks["all_ok"] = all(checks.values())
     return checks
 
@@ -873,6 +984,11 @@ def main(argv=None) -> int:
                     help="Descargar v2ray-verified.json (servidores publicos vivos).")
     ap.add_argument("--public-servers-file", help="Leer v2ray-verified.json desde un archivo local.")
     ap.add_argument("--cloud-key", help="Clave de 27 caracteres para descargar un .mina de la nube.")
+    ap.add_argument("--cloud-link",
+                    help="Texto o enlace pegado que contiene la clave de nube de 27 caracteres "
+                         "(clave suelta, 'Config Key : <clave>' o minapronet://<clave>); "
+                         "extrae la clave y descarga el .mina. La app no define esquema "
+                         "minapronet://: esto es solo tolerancia al pegado.")
     ap.add_argument("--site", action="store_true",
                     help="Consultar minapronet.site (endpoint real, metodo v19 de DataPhreak).")
     ap.add_argument("--site-url", default=SITE_URL,
@@ -895,6 +1011,13 @@ def main(argv=None) -> int:
             for k, v in res.items():
                 print(("OK  " if v else "FALLO  ") + k)
         return 0 if res["all_ok"] else 1
+
+    if args.cloud_link:
+        try:
+            args.cloud_key = parse_cloud_key(args.cloud_link)
+        except DecodeError as exc:
+            print("CLOUD: %s: %s" % (exc.code, exc))
+            return 2
 
     if args.cloud_key:
         try:

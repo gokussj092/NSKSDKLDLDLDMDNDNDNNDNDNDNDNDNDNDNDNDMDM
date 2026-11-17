@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
-"""ANY VPN 16kb-page-size (40): lector y descargador para Python/Termux."""
+"""ANY VPN 16kb-page-size (40): lector y descargador para Python/Termux.
+
+Catalogo en vivo verificado v7.3 (13 servidores, 89 redes), 2026-11-17.
+Los valores de campo descifrados pasan por la sustitucion CJK->ASCII de
+la app; config_url/account_api no salen en el JSON de resultado."""
 from __future__ import annotations
 import argparse
 import base64
@@ -23,6 +27,28 @@ SERVER_FIELDS = frozenset({"ServerIPHost", "ServerCloudFrontHost", "ServerHTTPHo
     "etPublicKey", "etPrivateKey", "etPreSharedKey", "etAllowedIPs"})
 NETWORK_FIELDS = frozenset({"Payload", "Squid", "SNIHost", "vsni"})
 METADATA_FIELDS = frozenset({"config_url", "account_api"})
+
+# Catalog-download API keys: never in the result JSON (owner rule 2026-11-15).
+API_KEYS = frozenset({"config_url", "account_api"})
+
+
+# CJK -> ASCII substitution (ActivityUi.checkResources, 26 pairs). Every
+# decrypted field value is substituted text: without this step the values
+# come back as CJK garbage (verified live on catalog v7.3, 2026-11-17).
+SUB = {
+    "\u5927": "1", "\u5973": "2", "\ub4fd": "3", "\u304f": "4", "\ub4cc": "5",
+    "\u4e2d": "6", "\ub4e4": "7", "\u5c71": "8", "\ub540": "9", "\u5929": "0",
+    "\ub463": "a", "\ub538": "b", "\ub528": "c", "\ub56c": "d", "\u4e8c": "e",
+    "\u5c0f": "f", "\u4e0e": "g", "\u4e3b": "h", "\u6ca1": "i", "\u65e5": "j",
+    "\u5f53": "k", "\u5c31": "l", "\u56fd": "m", "\u4e3a": "n", "\u7684": "o",
+    "\u756b": "p",
+}
+
+
+def desubstitute(text):
+    """Reverse the CJK -> ASCII substitution (checkResources)."""
+    return "".join(SUB.get(c, c) for c in text)
+
 
 
 class DecodeError(ValueError):
@@ -106,7 +132,7 @@ def open_fields(item, fields):
         value = item[key]
         if not isinstance(value, str):
             raise DecodeError("Tipo de campo cifrado inválido.")
-        result[key] = "" if value == "" else open_text(value)
+        result[key] = "" if value == "" else desubstitute(open_text(value))
     return result
 
 
@@ -122,7 +148,10 @@ def decode_catalog(data):
             if any(not isinstance(v, dict) or not isinstance(v.get("Name"), str) for v in rows):
                 raise DecodeError("Perfil de catálogo inválido.")
             obj[name] = [open_fields(v, fields) for v in rows]
-        obj = open_fields(obj, METADATA_FIELDS)
+        # Catalog-download APIs are decrypted by the app but never leave
+        # the worker: the result JSON carries catalog data only.
+        for key in API_KEYS:
+            obj.pop(key, None)
         validate(obj)
         return obj
     except (ValueError, UnicodeError, RecursionError, TypeError) as exc:

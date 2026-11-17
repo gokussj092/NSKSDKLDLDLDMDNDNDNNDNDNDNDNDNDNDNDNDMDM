@@ -37,6 +37,16 @@ def verify(path,profile=False):
         lines=result.stdout.decode().splitlines()
         assert len(lines)==len(pending),'JDK omitted fields'
         for (obj,key,_),line in zip(pending,lines):obj[key]=base64.b64decode(line,validate=True).decode()
+    # The JDK oracle decrypts AES only: apply the app's CJK->ASCII
+    # substitution (codec.SUB) to every decrypted field value before
+    # comparing, and drop the catalog-download APIs from the reference
+    # (the worker never returns them, owner rule 2026-11-15).
+    for obj, fields in targets:
+        for key in fields:
+            if key in obj and isinstance(obj[key], str):
+                obj[key] = codec.desubstitute(obj[key])
+    reference.pop('config_url', None)
+    reference.pop('account_api', None)
     assert actual==reference,'Complete JDK JSON differs'
     result=decode_file('dtk',source) if profile else decode_provider_catalog('any-vpn',source)
     assert result['structuredJson']==actual and not result['isPartial'],'Complete worker JSON differs'

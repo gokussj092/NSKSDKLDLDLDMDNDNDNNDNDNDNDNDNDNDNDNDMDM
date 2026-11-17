@@ -13,6 +13,7 @@ python3 analysis/vpn.minapronet.com.eg/88/tools/verify.py
 
 ```sh
 python3 analysis/vpn.minapronet.com.eg/88/tests/test_method.py
+python3 analysis/vpn.minapronet.com.eg/88/tests/test_public_servers.py
 python3 -m unittest discover -s analysis/vpn.minapronet.com.eg/88/tests -v
 ```
 
@@ -31,7 +32,8 @@ python3 ~/workspace/catalogs/minapronet/*.py --self-test
 python3 ~/workspace/catalogs/minapronet/*_archivos.py --self-test
 ```
 
-Self-tests registrados: Catalogo 16/16 (8 viejas + 8 nuevas del sitio), archivos 7/7 (scripts operativos, 2026-11-15).
+Self-tests registrados: Catalogo 21/21, archivos 12/12 (scripts operativos, 2026-11-17;
+`all_ok` incluido: 22 y 13 líneas OK respectivamente).
 
 La descarga en vivo (`--url`) y la apertura de archivos reales (`--file`) se hacen con esos
 scripts operativos; este expediente no reproduce endpoints de descarga ni credenciales.
@@ -45,3 +47,49 @@ scripts operativos; este expediente no reproduce endpoints de descarga ni creden
 
 - `tools/verify.py`: `All N synthetic checks passed (TEST-ONLY keys, no network).`, exit 0.
 - `tests/test_method.py`: `Ran N tests ... OK`, exit 0.
+- `tests/test_public_servers.py`: `Ran 5 tests ... OK`, exit 0.
+
+## 6. Actualización 2026-11-17 — servidores públicos en vivo
+
+Re-corrida en vivo (requiere red; reproduce `live.json`):
+
+```sh
+python3 ~/workspace/catalogs/minapronet/MinaProNet.py --public-servers --json
+# Servidores publicos (v2ray-verified.json): 205 entradas, 205 online, 31 paises
+# Protocolos: {'ss': 153, 'trojan': 29, 'vless': 17, 'vmess': 6}
+```
+
+Comparación contra la referencia (lista de servidores y resumen idénticos):
+
+```sh
+python3 - <<'EOF'
+import json
+fresh = json.loads(open('/tmp/mina_fresh.json').read())  # salida --public-servers --json
+live = json.load(open('/home/hatch/workspace/catalogs/minapronet/live.json'))
+assert fresh['servers'] == live['servers']
+assert {k: fresh[k] for k in ('entries', 'online', 'countries', 'protocols')} == live['summary']
+print('live.json reproducido')
+EOF
+```
+
+Adaptador del worker (sin red; usa el cuerpo crudo descargado con el método de la app):
+
+```sh
+python3 - <<'EOF'
+import importlib.util
+spec = importlib.util.spec_from_file_location('m', 'decoders/Python/apps/MinaProNet/MinaProNet.py')
+m = importlib.util.module_from_spec(spec); spec.loader.exec_module(m)
+raw = open('/tmp/mina_raw_20261117.bin', 'rb').read()  # cuerpo crudo en vivo, 137266 B
+res = m.decode_public_servers(raw)
+assert res['entries'] == 205 and res['online'] == 205 and res['countries'] == 31
+assert 'url' not in res and 'bytes' not in res
+print('decode_public_servers OK')
+EOF
+```
+
+MinaConfig sigue sin datos (verificación negativa, en vivo):
+
+```sh
+python3 ~/workspace/catalogs/minapronet/MinaProNet.py --url https://raw.githubusercontent.com/MinaDiNabil/update.link/refs/heads/main/minapronet.updater
+# UPDATER: HTTP_404 ...
+```

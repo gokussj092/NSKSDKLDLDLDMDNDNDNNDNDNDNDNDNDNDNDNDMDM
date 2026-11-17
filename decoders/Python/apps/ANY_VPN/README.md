@@ -27,6 +27,7 @@ se conserva localmente. `--catalog` también acepta una copia privada de
 |---|---|---:|---:|
 | Incluido en DEX, `c_11.conf` | 1.1 | 12 | 46 |
 | GET oficial de `config_url` | 5.84 | 13 | 91 |
+| GET oficial de `config_url` | 7.3 | 13 | 89 |
 
 El origen principal **no es `assets/tk.js`**. `MainBaseActivity.getJSONObject`
 abre el `Servers.js` descargado o el catálogo cifrado incluido en `c_11.conf`.
@@ -44,7 +45,13 @@ una URL arbitraria del usuario ni de un catálogo descargado.
 
 `UtilsKey.key=red1987`; `AESHelper` deriva SHA-256 UTF-8, usa AES-256-CBC,
 IV cero, padding PKCS7 y Base64 estándar. La misma primitiva abre el exterior
-y los campos conocidos de servidores, redes y metadatos. Se conservan todos
+y los campos conocidos de servidores, redes y metadatos.
+Cada valor de campo descifrado pasa además por la sustitución CJK→ASCII de
+26 pares de `ActivityUi.checkResources` (misma tabla que la URL): sin ese
+paso los valores salen como texto CJK. Verificado en vivo en v7.3
+(2026-11-17): 13 servidores, 89 redes, 0 campos sin descifrar. El JSON de
+resultado NO incluye `config_url` ni `account_api` (regla del catálogo:
+solo datos, sin APIs de descarga). Se conservan todos
 los perfiles, certificados en claro, DNS, indicadores y campos desconocidos;
 un campo protegido inválido rechaza el documento entero. CBC no incluye MAC,
 por lo que padding y estructura no equivalen a autenticidad criptográfica.

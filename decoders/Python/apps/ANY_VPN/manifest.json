@@ -6,8 +6,12 @@
   "versionCode": 40,
   "engine": "python",
   "entrypoint": "file_decoder.py",
-  "extensions": ["dtk"],
-  "dependencies": ["pycryptodome==3.23.0"],
+  "extensions": [
+    "dtk"
+  ],
+  "dependencies": [
+    "pycryptodome==3.23.0"
+  ],
   "credentials": [],
   "userPasswordCryptographicallyRequired": false,
   "catalog": {
@@ -17,9 +21,9 @@
     "embeddedServers": 12,
     "embeddedNetworks": 46,
     "remote": "fixed-official-get",
-    "remoteVerifiedVersion": "5.84",
+    "remoteVerifiedVersion": "7.3",
     "remoteVerifiedServers": 13,
-    "remoteVerifiedNetworks": 91,
+    "remoteVerifiedNetworks": 89,
     "publicVisible": true,
     "cardDecodeEnabled": true
   },

@@ -1,0 +1,1 @@
+{"Networks":[{"Name":"Synthetic network","Payload":"GET / HTTP/1.1","SNIHost":"203.0.113.10","Squid":"","TunnelType":"3","vsni":""}],"Notes":"synthetic","Password":"","Servers":[{"AutoLogIn":false,"Category":"Premium","Name":"Synthetic server","ServerIPHost":"203.0.113.10","ServerPass":"testpass","ServerUser":"testuser","serverType":"4"}],"Username":"","Version":"test.7.3"}

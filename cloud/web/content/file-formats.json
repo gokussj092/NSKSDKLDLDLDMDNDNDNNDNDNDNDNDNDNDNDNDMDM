@@ -359,6 +359,14 @@
       "credentialFields": []
     },
     {
+      "suffix": "wsuiou",
+      "name": "Click Tunnel 1.0",
+      "kind": "file",
+      "offlineSupported": false,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
       "suffix": "1ftnl",
       "name": "1FTunnel 0.7.1",
       "kind": "file",
@@ -508,7 +516,7 @@
     },
     {
       "suffix": "pausa",
-      "name": "Generic AES-GCM / PBKDF2",
+      "name": "M Light 3.1.55",
       "kind": "file",
       "offlineSupported": true,
       "cloudSupported": true,
@@ -1216,6 +1224,14 @@
       "credentialFields": []
     },
     {
+      "suffix": "fxt",
+      "name": "Fx Tunnel 4.8",
+      "kind": "file",
+      "offlineSupported": false,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
       "suffix": "gol",
       "name": "VPN PLUS PERÚ",
       "kind": "file",
@@ -1329,6 +1345,14 @@
       "name": "WeTunnel",
       "kind": "file",
       "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "isc",
+      "name": "STR VIP Proxy 1.42.5",
+      "kind": "file",
+      "offlineSupported": false,
       "cloudSupported": true,
       "credentialFields": []
     },
@@ -1727,6 +1751,14 @@
     {
       "suffix": "stp",
       "name": "MNR TUNNEL PLUS 3.1",
+      "kind": "file",
+      "offlineSupported": false,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "sup",
+      "name": "Click Tunnel 1.0",
       "kind": "file",
       "offlineSupported": false,
       "cloudSupported": true,

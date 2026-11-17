@@ -1,0 +1,35 @@
+{
+  "dependencies": [
+    {
+      "name": "Python",
+      "note": "python3 --version en este entorno",
+      "source": "system",
+      "status": "VERIFIED",
+      "version": "3.12.3"
+    },
+    {
+      "name": "pycryptodome",
+      "note": "fijada en requirements.txt del worker y en decoders/Python/apps/ANY_VPN/requirements.txt",
+      "source": "PyPI",
+      "status": "VERIFIED",
+      "version": "3.23.0"
+    },
+    {
+      "name": "requests",
+      "note": "version del worker (requirements.txt); solo el script de investigacion la usa",
+      "source": "PyPI",
+      "status": "VERIFIED",
+      "version": "2.33.1"
+    },
+    {
+      "name": "jadx",
+      "note": "Version no registrada en los logs de origen",
+      "source": "UNKNOWN",
+      "status": "NEEDS_REVIEW",
+      "version": "UNKNOWN"
+    }
+  ],
+  "lockfile_version": 1,
+  "package": "com.markvpnpro.pinas",
+  "version_code": 40
+}

@@ -1,0 +1,1 @@
+{"Message":"synthetic fixture only — no real servers","Servers":[{"Flag":"TEST","Name":"Test Server 1","PublicKey":"00","SSHHost":"203.0.113.10","SSHPort":"22"}],"Tweaks":[{"Country":"TEST","Name":"Test Tweak 1","Payload":"GET / HTTP/1.1[crlf]Host: example.org[crlf][crlf]"}],"Version":"99.9"}

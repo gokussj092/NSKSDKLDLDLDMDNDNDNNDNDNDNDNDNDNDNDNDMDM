@@ -1,0 +1,1 @@
+{"block_rooted":false,"friendly_name":"Test Profile 1","hwid_lock":"","payload":"GET / HTTP/1.1[crlf]Host: example.org[crlf][crlf]","tweak_expiry":"","tweak_password":""}

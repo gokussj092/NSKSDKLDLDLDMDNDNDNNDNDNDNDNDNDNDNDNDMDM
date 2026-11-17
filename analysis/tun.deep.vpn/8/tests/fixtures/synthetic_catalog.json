@@ -1,0 +1,1 @@
+{"Networks":[{"Name":"Synthetic Network 01","Payload":"GET / HTTP/1.1\r\nHost: example.test\r\n","SNI":"example.test","TunnelType":"SSH"}],"ReleaseNotes":"SYNTHETIC TEST FIXTURE - not a real catalog","Servers":[{"Flag":"sa","Name":"Synthetic Server 01","OVPNPass":"test-pass","OVPNUser":"test-user","ServerHost":"203.0.113.20","ServerProtocol":"OVPN"}],"Version":"9.9.9-TEST"}

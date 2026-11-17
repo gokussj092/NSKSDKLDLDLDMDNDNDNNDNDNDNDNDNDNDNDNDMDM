@@ -1,0 +1,132 @@
+{
+  "app_name": "ANY VPN",
+  "authorization_note": "APK de espejo publico (ANY_VPN_16kb-page-size_2_5z0h.apks) de la version publica; catalogo descargado en vivo con el metodo propio de la app; sin cuentas ni datos de usuarios. Sin APK ni perfiles reales en este expediente.",
+  "code_paths": {
+    "catalog_decoder": "decoders/Python/apps/ANY_VPN/codec.py (actualizado 2026-11-17: +desubstitute() CJK->ASCII y strip de config_url/account_api; SHA-256 del staging 769780b4f80b6ba14d14c36fb48c830a98f6f1c77525528240188d32ca0e9a46)",
+    "file_decoder": "decoders/Python/apps/ANY_VPN/file_decoder.py (sin cambios; usa codec.decode_profile, cubierto por la correccion)",
+    "research_tool": "analysis/com.markvpnpro.pinas/40/tools/deobfuscate.py (decodificador ObfuscatedString corregido: Random.nextLong con mitad baja signed; SHA-256 21e2113b2b783da46f66d2dd3ec73857aa95234633e3a52e3ef1c22de1b75cbd)",
+    "work_notes": "~/workspace/catalogs/anyvpn/"
+  },
+  "connection_authentication": {
+    "catalog_download_auth": {
+      "detail": "GET simple al config_url fijo con UA okhttp/5.0.0-alpha.12, sin firma ni auth. Sin HMAC observado.",
+      "status": "NOT_OBSERVED"
+    },
+    "catalog_file_integrity": {
+      "detail": "AES-CBC sin MAC: la integridad se comprueba por padding PKCS7 y parseo JSON tras el descifrado. Sin HMAC observado.",
+      "status": "NOT_OBSERVED"
+    },
+    "connection_auth": {
+      "detail": "No se observo autenticacion de conexion VPN ni MAC del transporte.",
+      "status": "NOT_OBSERVED"
+    },
+    "crypto_derivation": {
+      "detail": "Clave AES = SHA-256 UTF-8 directo de la constante de build; sin PBKDF2 ni HMAC en la derivacion.",
+      "status": "NOT_OBSERVED"
+    },
+    "vpn_transport": {
+      "detail": "No se observo una conexion VPN en vivo ni MAC del transporte.",
+      "status": "NOT_OBSERVED"
+    }
+  },
+  "dependencies": {
+    "inventory": "DEPENDENCIES.md",
+    "lockfile": "dependencies.lock.json"
+  },
+  "evidence_refs": [
+    "RESULTS.md (verificacion en vivo v7.3 2026-11-17: 13 servidores, 89 redes, 0 sin descifrar)",
+    "tests/test_method.py (sintetico: desustitucion CJK, strip de APIs, .dtk, negativas; sin red)",
+    "tests/fixtures/synthetic_catalog.json (catalogo SINTETICO esperado, sin datos reales)",
+    "tools/deobfuscate.py (decodificador ObfuscatedString corregido)",
+    "~/workspace/catalogs/anyvpn/README.md, live.json (SHA-256 8e619516d83ed5c484714d03ec94fedead37c4e741d41a5b2b0a70c600b78cfe), live_probe.json"
+  ],
+  "inputs": [
+    {
+      "bytes": 65888635,
+      "name": "ANY_VPN_16kb-page-size_2_5z0h.apks",
+      "sha256": "c6c0dd0ac10a6eabfceb1d0b04e6025471d4f0c7f8fc2f66d5e51bf0176863bb",
+      "source": "Espejo publico, version de Google Play (base.apk + splits arm64/es/xhdpi)",
+      "type": "apks"
+    },
+    {
+      "bytes": 115820,
+      "name": "catalogo en vivo v7.3 (cuerpo crudo, 2026-11-17)",
+      "sha256": "ad4bc4b7c0e482caebff603390262c03d4808b03b7558f44c99c3f33da6ecc49",
+      "source": "GET en vivo a la URL fija con UA okhttp/5.0.0-alpha.12; 13 servidores, 89 redes. El cuerpo crudo NO se guarda en este expediente (contiene credenciales reales de servidores); solo su hash. El catalogo descifrado de referencia es ~/workspace/catalogs/anyvpn/live.json.",
+      "type": "catalog_live"
+    }
+  ],
+  "limitations": [
+    "Sin archivo .dtk REAL exportado por la app: el descifrador .dtk esta verificado con vectores reales del catalogo y roundtrip sintetico, no con un .dtk genuino.",
+    "El catalogo en vivo no se probo dentro de la app instalada (sin telefono): la confirmacion es estatica + descarga/descifrado reales, no ejecucion en Android.",
+    "Free-server API (freeze.php) 404: el endpoint de registro de servidor gratis ya no existe; no afecta al catalogo.",
+    "El endpoint auth.php (account_api) responde {\"auth\":false,...} sin parametros; no se usa.",
+    "Lo verificado en vivo es solo para esta version (versionName '16kb-page-size', versionCode 40); no se afirma compatibilidad con builds previos o posteriores sin prueba."
+  ],
+  "manual_steps": [
+    "Para un .dtk real: exportar desde la app en un telefono y pasarlo al descifrador de archivos.",
+    "Instalar la app y comprobar que descarga Servers.js v7.3 y muestra los 13 servidores / 89 redes."
+  ],
+  "network_requirements": [
+    "Catalogo: GET a la URL fija del config_url descifrado del catalogo embebido, UA okhttp/5.0.0-alpha.12, sin headers extra ni body. Sin redirecciones. (La URL completa vive solo en el script operativo y en el broker; aqui no se reproduce.)"
+  ],
+  "observed_at": "2026-11-17 (actualizacion v5.84 -> v7.3; el metodo base se documento antes en decoders/Python/apps/ANY_VPN/ANALYSIS.md)",
+  "package_name": "com.markvpnpro.pinas",
+  "schema_version": "1.0",
+  "source_category": "espejo publico de la version de Google Play + descarga en vivo con el metodo del script operativo",
+  "status": "VERIFIED",
+  "targets": [
+    {
+      "detail": "Catalogo remoto en vivo v7.3: 13 servidores, 89 redes, descifrado completo (0 campos sin descifrar, 0 caracteres CJK restantes). Re-corrido en vivo 2026-11-17; el codec del staging reproduce live.json como dict exacto (cuerpo guardado y descarga fresca).",
+      "id": "catalog",
+      "kind": "catalog",
+      "status": "VERIFIED"
+    },
+    {
+      "detail": ".dtk: contenedor sellado AES con secciones server/network como cadenas JSON; verificado con vectores reales del catalogo (host/usuario) y roundtrip sintetico con valores sustituidos CJK. Sin .dtk REAL exportado por la app.",
+      "id": "files",
+      "kind": "files",
+      "status": "VERIFIED_SYNTHETIC"
+    },
+    {
+      "detail": "Sin esquema propio: el manifest solo registra file/content para .dtk. El portapapeles acepta texto completo del catalogo y enlaces v2ray estandar (vmess/ss/socks/trojan/vless/wireguard/hy2/hysteria2), ya cubiertos por SP-DECODE. Nada nuevo que registrar.",
+      "id": "text",
+      "kind": "text",
+      "status": "NOT_APPLICABLE"
+    },
+    {
+      "detail": "Sin cloud de perfiles por token identificada. La descarga de actualizaciones de catalogo es independiente del login.",
+      "id": "export",
+      "kind": "export",
+      "status": "NOT_APPLICABLE"
+    }
+  ],
+  "tooling": [
+    {
+      "name": "Python",
+      "purpose": "ejecucion de scripts y tests",
+      "version": "3.12.3 (system)"
+    },
+    {
+      "name": "pycryptodome",
+      "purpose": "AES-256-CBC del codec (runtime del worker y tests)",
+      "version": "3.23.0"
+    },
+    {
+      "name": "requests",
+      "purpose": "descarga en vivo en el script de investigacion ANY_VPN.py (el codec del repo usa urllib stdlib)",
+      "version": "2.33.1"
+    },
+    {
+      "name": "jadx",
+      "purpose": "decompilacion DEX a Java",
+      "version": "UNKNOWN (version no registrada en los logs de origen)"
+    }
+  ],
+  "unresolved_questions": [
+    "¿Un .dtk real exportado por la app abre con este descifrador? (pendiente de muestra real).",
+    "¿La app instalada descarga Servers.js v7.3 y muestra 13/89? (pendiente de prueba en telefono)."
+  ],
+  "version_code": 40,
+  "version_name": "16kb-page-size"
+}

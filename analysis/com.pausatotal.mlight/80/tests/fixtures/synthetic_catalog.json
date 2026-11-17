@@ -1,0 +1,1 @@
+{"ReleaseNotes":"SYNTHETIC TEST FIXTURE - not a real catalog","Servers":[{"Flag":"mz","MyServer":"TESTDATA","Name":"Synthetic Server 01","Payload":"GET / HTTP/1.1\r\nHost: example.test\r\n","ProxyIP":"203.0.113.10","SNI":"example.test","ServerIP":"203.0.113.10","ServerPass":"test-pass","ServerUser":"test-user"}],"Version":"9.9.9-TEST"}

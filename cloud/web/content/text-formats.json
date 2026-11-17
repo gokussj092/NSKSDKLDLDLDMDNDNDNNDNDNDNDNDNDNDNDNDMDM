@@ -420,6 +420,18 @@
       "name": "EUT VPN",
       "suffix": "eut",
       "kind": "text"
+    },
+    {
+      "prefix": "pausa://",
+      "name": "M Light",
+      "suffix": "pausa",
+      "kind": "text"
+    },
+    {
+      "prefix": "isv-config://",
+      "name": "STR VIP Proxy",
+      "suffix": "isc",
+      "kind": "text"
     }
   ]
 }

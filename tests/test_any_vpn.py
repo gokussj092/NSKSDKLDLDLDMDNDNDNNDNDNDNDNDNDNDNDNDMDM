@@ -41,7 +41,7 @@ class AnyTests(unittest.TestCase):
         expected['Servers'][0]['ServerIPHost']='example.invalid';expected['Servers'][0]['ServerPass']='demo'
         expected['Networks'][0]['Payload']='GET / HTTP/1.1\r\nHost: example.invalid\r\n\r\n'
         expected['Networks'][0]['SNIHost']='example.invalid';expected['Networks'][0]['Squid']=''
-        expected['config_url']='https://example.invalid/catalog';expected['account_api']='https://example.invalid/account'
+        expected.pop('config_url');expected.pop('account_api')
         actual=codec.decode_catalog(seal(json.dumps(obj)).encode())
         self.assertEqual(actual,expected)
         self.assertEqual(codec.decode_catalog(json.dumps(obj).encode()),expected)

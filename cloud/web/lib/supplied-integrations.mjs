@@ -8,8 +8,8 @@ import {PENDING_CATALOGS} from "./catalog-provider-policy.mjs";
 const deployed=join(process.cwd(),"content/supplied-integrations.json");
 const source=existsSync(deployed)?deployed:new URL("../content/supplied-integrations.json",import.meta.url);
 const document=JSON.parse(readFileSync(source,"utf8"));
-if(document.schemaVersion!==1||document.apps.length!==73||
-   new Set(document.apps.map(x=>x.id)).size!==73)throw Error("INTEGRATION_INVENTORY_INVALID");
+if(document.schemaVersion!==1||document.apps.length!==81||
+   new Set(document.apps.map(x=>x.id)).size!==81)throw Error("INTEGRATION_INVENTORY_INVALID");
 export const SUPPLIED_INTEGRATIONS=Object.freeze(document.apps.map(x=>Object.freeze(x)));
 const byId=new Map(SUPPLIED_INTEGRATIONS.map(x=>[x.id,x]));
 export const SUPPLIED_CATALOG_ITEMS=Object.freeze(SUPPLIED_INTEGRATIONS

@@ -34,6 +34,18 @@ es una sola linea de texto:
   el texto en el portapapeles (MainActivity). No hay intent-filter de
   archivo ni esquema URI propio en el manifiesto.
 
+  NUBE (verificado 2026-11-17 en el APK de Play 88.0.0): la app NO
+  define ningun esquema minapronet://. Al exportar a la nube muestra
+  el texto exacto "Config Key :  <clave-de-27>" (ExportActivity.addData
+  genera 27 caracteres de "0-9A-Za-z" y copia SOLO la clave) y al
+  importar pide la clave en un dialogo (MainActivity.getCloudConfig).
+  parse_cloud_key() extrae esa clave de 27 caracteres de la clave
+  suelta, del texto "Config Key : <clave>" o de cualquier texto/enlace
+  pegado que la contenga (incluido un minapronet://<clave> venido de
+  fuera de la app); format_cloud_key() reproduce el texto que muestra
+  la app. Ver MinaProNet.py --cloud-key / --cloud-link para descargar
+  el .mina con esa clave.
+
   El JSON ConfigCustom (68 campos) describe el perfil completo: SSH
   (DIRECT/PAYLOAD/SSL/PROXY), SlowDNS, UDP, Hysteria, OpenVPN, Psiphon,
   ZIVPN, SNI, proxy ascendente, y las protecciones opcionales:
@@ -55,12 +67,43 @@ import binascii
 import hashlib
 import json
 import random
+import re
 import struct
 import sys
 import time
 from pathlib import Path
 
 MINA_PASSWORD = "u"
+CLOUD_KEY_LEN = 27
+_CLOUD_KEY_RE = re.compile(r"[0-9A-Za-z]{27}")
+
+
+def parse_cloud_key(text: str) -> str:
+    """Extrae la clave de nube de 27 caracteres de un texto pegado.
+
+    Acepta la clave suelta, el texto exacto que muestra la app
+    ("Config Key :  <clave>") o cualquier texto/enlace que contenga
+    una clave de 27 caracteres alfanumericos (p. ej. un enlace tipo
+    minapronet://<clave> pegado desde fuera de la app). La app 88.0.0
+    NO define esquema minapronet:// (verificado en el manifiesto y
+    en el DEX): esto es solo tolerancia al pegado.
+    """
+    if not text:
+        raise DecodeError("BAD_KEY", "Texto vacio: no hay clave de nube.")
+    m = _CLOUD_KEY_RE.search(text.strip())
+    if not m:
+        raise DecodeError("BAD_KEY",
+                          "No se encontro ninguna clave de 27 caracteres alfanumericos.")
+    return m.group(0)
+
+
+def format_cloud_key(key: str) -> str:
+    """El texto exacto que la app muestra al exportar (R.string.export_config_key_fmt)."""
+    if len(key) != CLOUD_KEY_LEN or not key.isalnum():
+        raise DecodeError("BAD_KEY", "La clave debe tener 27 caracteres alfanumericos.")
+    return "Config Key :  %s" % key
+
+
 class DecodeError(Exception):
     def __init__(self, code: str, message: str):
         super().__init__(message)
@@ -456,6 +499,17 @@ def _self_test() -> dict:
     # 5. xde/xec y k() basicos.
     s = "MinaProNet .mina test 123"
     checks["xec_xde"] = xde(xec(s)) == s
+    # 6. Clave de nube: suelta, texto exacto de la app y enlace pegado.
+    key27 = "Ab3xY9kQ2mN7pR4sT6vW8zA1bC3"
+    checks["cloud_key_bare"] = parse_cloud_key(key27) == key27
+    checks["cloud_key_display_text"] = parse_cloud_key("Config Key :  " + key27) == key27
+    checks["cloud_key_link_text"] = parse_cloud_key("minapronet://" + key27) == key27
+    checks["cloud_key_format"] = format_cloud_key(key27) == "Config Key :  " + key27
+    checks["cloud_key_bad_rejected"] = False
+    try:
+        parse_cloud_key("clave-corta")
+    except DecodeError as exc:
+        checks["cloud_key_bad_rejected"] = exc.code == "BAD_KEY"
     checks["all_ok"] = all(checks.values())
     return checks
 
@@ -468,6 +522,13 @@ def main(argv=None) -> int:
     ap.add_argument("--text", help="Texto .mina a abrir (en lugar de --file).")
     ap.add_argument("--seal", help="Archivo JSON con un ConfigCustom para sellar como .mina.")
     ap.add_argument("--out", help="Archivo de salida para --seal.")
+    ap.add_argument("--cloud-link",
+                    help="Texto o enlace pegado con la clave de nube de 27 caracteres: "
+                         "extrae la clave y la muestra con el formato exacto de la app. "
+                         "La app no define esquema minapronet://; esto es tolerancia al pegado.")
+    ap.add_argument("--cloud-text",
+                    help="Clave de nube de 27 caracteres: muestra el texto exacto de la app "
+                         "('Config Key :  <clave>').")
     ap.add_argument("--json", action="store_true", help="Salida en JSON.")
     ap.add_argument("--self-test", action="store_true", help="Pruebas internas sin red.")
     args = ap.parse_args(argv)
@@ -480,6 +541,19 @@ def main(argv=None) -> int:
             for k, v in res.items():
                 print(("OK  " if v else "FALLO  ") + k)
         return 0 if res["all_ok"] else 1
+
+    if args.cloud_link or args.cloud_text:
+        try:
+            key = parse_cloud_key(args.cloud_link) if args.cloud_link else args.cloud_text.strip()
+            if args.json:
+                print(json.dumps({"key": key, "display": format_cloud_key(key)},
+                                 ensure_ascii=False, indent=2))
+            else:
+                print(format_cloud_key(key))
+        except DecodeError as exc:
+            print("CLOUD: %s: %s" % (exc.code, exc))
+            return 2
+        return 0
 
     if args.seal:
         config = json.loads(Path(args.seal).read_text(encoding="utf-8"))

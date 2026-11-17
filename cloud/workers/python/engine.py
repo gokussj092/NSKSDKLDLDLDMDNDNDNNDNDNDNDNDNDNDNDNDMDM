@@ -140,6 +140,13 @@ _C8_FILE_ENGINES = {
     # .hs is dispatched by content in supplied_bridge (JK vs RH, RH default).
     "hs": ("decoders/Python/apps/RH_Tunnel_Lite/RH_Tunnel_Lite_archivos.py", "RH Tunnel Lite 39.0.1"),
     "bbtun": ("decoders/Python/apps/Marvs_V2Ray/Marvs_V2Ray_archivos.py", "Marvs V2Ray RHV1"),
+    # C8 (2026-11-17 integration): new suffixes of the 8-app batch.
+    # The supplied FILE_ROUTES override these in load_runtime_file_engines().
+    "isc": ("decoders/Python/apps/STR_VIP_Proxy/STR_VIP_Proxy_archivos.py", "STR VIP Proxy 1.42.5"),
+    "sup": ("decoders/Python/apps/Click_Tunnel/Click_Tunnel_archivos.py", "Click Tunnel 1.0"),
+    "wsuiou": ("decoders/Python/apps/Click_Tunnel/Click_Tunnel_archivos.py", "Click Tunnel 1.0"),
+    "fxt": ("decoders/Python/apps/Fx_Tunnel/Fx_Tunnel_archivos.py", "Fx Tunnel 4.8"),
+    "pausa": ("decoders/Python/apps/M_Light/M_Light_archivos.py", "M Light 3.1.55"),
 }
 
 def load_runtime_file_engines() -> dict[str, dict[str, str]]:

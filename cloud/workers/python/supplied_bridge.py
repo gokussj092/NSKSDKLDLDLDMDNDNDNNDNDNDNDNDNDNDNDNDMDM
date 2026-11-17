@@ -196,6 +196,71 @@ def decode_one(item, raw):
         return document(module.parse_catalog(raw.decode("utf-8-sig")))
     if app == "JK_VPN":
         return document(module.limpiar_catalogo(module.descifrar_hs_b64(raw)))
+    if app == "M_Light":
+        # Catalogo baybayin -> Base64 -> AES-CBC; decode_catalog
+        # devuelve el dict del catalogo (solo datos, sin APIs).
+        # DecodeError no es ValueError: convertirlo al contrato.
+        try:
+            return document(module.decode_catalog(raw.decode("utf-8-sig")))
+        except Exception as exc:
+            raise IntegrationError("DECODE_FAILED") from exc
+    if app == "DeepTune_VPN":
+        # deep3.txt: descarta el byte 3 y descifra el sobre; luego
+        # descifra los campos. Reporta los campos sin abrir con
+        # decryptionStatus (patron Bee/MM Tunnel).
+        # Regla PRECISA (verificada en vivo v3.12, 2026-11-17): solo
+        # SlowDNSHost/SlowDNSKey/V2rayUUID cuyo valor tras descifrar
+        # sigue siendo un sobre base64 (>=40 caracteres, >=44 bytes
+        # decodificados) -> exactamente los 12 parciales reales.
+        # La heuristica generica sobre SERVER_FIELDS/NETWORK_FIELDS
+        # marca 34 falsos positivos y NO se usa.
+        try:
+            data = json.loads(module.decrypt_file_text(raw.decode("utf-8-sig")))
+        except Exception as exc:
+            raise IntegrationError("DECODE_FAILED") from exc
+        result = module.decrypt_catalog(data)
+        failed = []
+        for _i, _srv in enumerate(result.get("Servers") or []):
+            for _f in ("SlowDNSHost", "SlowDNSKey", "V2rayUUID"):
+                _v = _srv.get(_f)
+                if isinstance(_v, str) and len(_v) >= 40:
+                    try:
+                        _raw = base64.b64decode(_v.strip())
+                    except Exception:
+                        continue
+                    if len(_raw) >= 44 and module.decrypt_field(_v) == _v:
+                        failed.append("Servers[%d].%s" % (_i, _f))
+        for _j, _net in enumerate(result.get("Networks") or []):
+            for _f in ("SlowDNSHost", "SlowDNSKey", "V2rayUUID"):
+                _v = _net.get(_f)
+                if isinstance(_v, str) and len(_v) >= 40:
+                    try:
+                        _raw = base64.b64decode(_v.strip())
+                    except Exception:
+                        continue
+                    if len(_raw) >= 44 and module.decrypt_field(_v) == _v:
+                        failed.append("Networks[%d].%s" % (_j, _f))
+        if failed:
+            result["decryptionStatus"] = {"complete": False,
+                                          "unresolvedFields": len(failed),
+                                          "locations": failed}
+        return document(result)
+    if app == "Click_Tunnel":
+        # decode() devuelve el documento CON DefUpdateURL/updater;
+        # solo main() las quita. Sin esta rama el resultado llevaria
+        # las APIs de descarga (regla del catalogo, 2026-11-15).
+        result = module.decode(raw.decode("utf-8-sig"))
+        if isinstance(result, dict):
+            result.pop("DefUpdateURL", None)
+            result.pop("updater", None)
+        return document(result)
+    if app == "MinaProNet":
+        # Public-servers catalog: plain JSON list (v2ray-verified.json).
+        # decode_public_servers() returns entries/online/countries/
+        # protocols/servers with no download URL (owner rule 2026-11-15).
+        # MinaConfig stays unwired: the vendor updater is 404 and the
+        # site answers update_required.
+        return document(module.decode_public_servers(raw))
     result = module.decode(raw.decode("utf-8-sig"))
     if app == "MM_Tunnel":
         result,stats=module.decode_fields(result,workers=2,strict=False)
@@ -215,6 +280,8 @@ def decode_one(item, raw):
     elif app == "PUKANG_VPN":
         result = module.decode_fields(result)
     elif app == "PNT_VPN":
+        result = module.decrypt_fields(result)
+    elif app == "MO_VPN":
         result = module.decrypt_fields(result)
     elif app == "RoVPN":
         result = module.decoded(result)
@@ -245,6 +312,21 @@ def catalog(provider, payload):
             if index.get("fileUrl") != item["requests"][1]["url"]:
                 raise IntegrationError("REMOTE_RESPONSE_INVALID")
             return decode_one(item, sources["servers"])
+        if item["appDir"] == "MO_VPN":
+            # Replica del precedente PNT_VPN: validar que el indice
+            # apunta al fileUrl fijo; si el vendor cambia la URL, falla
+            # cerrado con REMOTE_RESPONSE_INVALID en vez de descargar
+            # un destino no validado. El pop("tokenKey") es obligatorio:
+            # MO_VPN.decode() no elimina el token de GitHub incrustado
+            # (solo lo eliminan el CLI main() y el script de archivos);
+            # sin este pop, el token llegaria al JSON de resultado.
+            index = json.loads(sources["updater"])
+            if index.get("fileUrl") != item["requests"][1]["url"]:
+                raise IntegrationError("REMOTE_RESPONSE_INVALID")
+            result = decode_one(item, sources["servers"])
+            if isinstance(result, dict):
+                result.pop("tokenKey", None)
+            return document(result)
         return {"provider": provider, "complete": True,
                 "catalogs": {name: decode_one(item, data) for name, data in sources.items()}}
     return decode_one(item, payload)
@@ -345,6 +427,27 @@ def file_decode(provider, raw, credentials=None):
         if obj is None:
             raise IntegrationError("DECODE_FAILED")
         return document(obj)
+    if app == "M_Light":
+        # Bytes de un .pausa, o un enlace pausa:// pasado como texto
+        # (text_decode llega aqui). decrypt_link es case-sensitive
+        # con el prefijo; TEXT_ROUTES ya hizo match insensible.
+        text = raw.decode("utf-8-sig").strip()
+        if text.lower().startswith(("pausa://", "pausa:")):
+            try:
+                return document(module.decrypt_link(text))
+            except Exception as exc:
+                raise IntegrationError("DECODE_FAILED") from exc
+        try:
+            return document(module.decrypt_file_text(text))
+        except Exception as exc:
+            raise IntegrationError("DECODE_FAILED") from exc
+    if app == "DeepTune_VPN":
+        # Sin sufijo propio: configfile.json / deep3.txt / JSON plano.
+        try:
+            return document(module.decrypt_catalog(
+                module.decode_file(raw.decode("utf-8-sig"))))
+        except ValueError as exc:
+            raise IntegrationError("DECODE_FAILED") from exc
     fn = module.decode
     allowed = inspect.signature(fn).parameters
     kwargs = {key: value for key, value in (credentials or {}).items() if key in allowed}

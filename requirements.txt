@@ -4,3 +4,4 @@ pyelftools==0.32
 argon2-cffi==25.1.0
 msgpack==1.2.4
 requests==2.33.1
+cryptography==50.0.2
