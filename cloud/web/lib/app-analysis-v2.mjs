@@ -46,7 +46,13 @@ export async function appAnalysisRequest(request,operation,
  if(!action)return reply('INVALID_REQUEST',400);
  const claims=boundRequestClaims(request);
  if(!claims||claims.hpke!==true||typeof claims.key!=='string'||
-    claims.key.length<32||claims.scope!=='decode')return reply('UNAUTHORIZED',401);
+    claims.key.length<32||claims.scope!=='decode'){
+   // TEMPORARY diagnostic (preflight failure, 2026-11-16): log only booleans/lengths, never tokens or keys.
+   console.error('[spdecode-diag] app-analysis op='+operation+' claims rejected: '+
+     'hasClaims='+!!claims+' hpke='+(claims?.hpke)+' keyType='+(typeof claims?.key)+
+     ' keyLen='+(typeof claims?.key==='string'?claims.key.length:-1)+' scope='+(claims?.scope));
+   return reply('UNAUTHORIZED',401);
+ }
  if(request.method!=='POST')return reply('INVALID_REQUEST',405);
  let payload;
  try{payload=await readJSON(request,operation===27?MAX_BODY:4096);}
@@ -60,6 +66,10 @@ export async function appAnalysisRequest(request,operation,
   // A valid device session is NEVER sufficient to initiate commercial work.
   accountId=await authenticate(token);
  }catch(e){
+  // TEMPORARY diagnostic (preflight failure, 2026-11-16).
+  console.error('[spdecode-diag] app-analysis op='+operation+' authenticate failed: '+
+    'shopError='+(e instanceof ShopError)+' code='+(e instanceof ShopError?e.code:'ACCOUNT_AUTH_UNAVAILABLE')+
+    ' name='+(e?.name||'?')+' msg='+String(e?.message||'').slice(0,120));
   return reply(e instanceof ShopError?e.code:'ACCOUNT_AUTH_UNAVAILABLE',
     e instanceof ShopError?e.status:503);
  }
@@ -75,6 +85,10 @@ export async function appAnalysisRequest(request,operation,
    default:return reply('INVALID_REQUEST',400);
   }
  }catch(e){
+  // TEMPORARY diagnostic (preflight failure, 2026-11-16).
+  console.error('[spdecode-diag] app-analysis op='+operation+' handler failed: '+
+    'shopError='+(e instanceof ShopError)+' code='+(e instanceof ShopError?e.code:'APP_ANALYSIS_UNAVAILABLE')+
+    ' name='+(e?.name||'?')+' msg='+String(e?.message||'').slice(0,120));
   if(e instanceof ShopError)return reply(e.code,e.status);
   return reply('APP_ANALYSIS_UNAVAILABLE',503);
  }

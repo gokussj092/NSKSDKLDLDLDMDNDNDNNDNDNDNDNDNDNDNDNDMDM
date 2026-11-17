@@ -333,6 +333,8 @@ export async function transportRequest(request,options={}) {
     headers.delete("content-length");headers.delete("content-encoding");
     const internal=new Request(request.url,{method:"POST",headers,body:decoded,signal:request.signal});
     const response=await jsonTransportRequest(internal,{...options,hpkeWireBytes:wire});
+    // TEMPORARY diagnostic (preflight failure, 2026-11-16): op + status only.
+    if(op>=25&&op<=30)console.error('[spdecode-diag] transport op='+op+' status='+response.status);
     const responseBytes=await boundedReply(response);
     const ciphertext=sealHpkeReply(opened,response.status,responseBytes);
     return new Response(ciphertext,{status:response.status,headers:{
