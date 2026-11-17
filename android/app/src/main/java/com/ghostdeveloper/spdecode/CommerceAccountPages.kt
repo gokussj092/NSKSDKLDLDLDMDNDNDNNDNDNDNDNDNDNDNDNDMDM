@@ -1,6 +1,14 @@
 package com.ghostdeveloper.spdecode
 
+import android.content.Context
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -10,17 +18,28 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.json.JSONObject
+import java.time.DayOfWeek
 import java.time.Instant
+import java.time.LocalDate
+import java.time.ZoneOffset
+import java.time.format.TextStyle
+import java.time.temporal.TemporalAdjusters
 import java.text.DateFormat
 import java.util.Date
 import java.util.Locale
+import kotlin.math.minOf
 
 private val midnight=Color.Black
 private val sectionPanel=Color(0xFF202020)
@@ -37,7 +56,7 @@ internal object CommerceAccountWords {
         "Public IP updated","Save IP","Purchase details","Payment confirmed",
         "Pending payment","Refunded","No subscription","Renew access",
         "Explore plans","Continue with Google","30 days without ads",
-        "Remove ads from this account","Show purchases","Your account","Account settings")
+        "Remove ads from this account","Show purchases","Your account","Account settings","Decryption streak","Decode every day to grow your streak","Sign in to start your streak","Streak unavailable","Congratulations!","You earned 1 analysis credit","Tap the chest to see it again","days")
     private val es=listOf("Mi perfil","Mis compras","Licencias API","Seguridad de la cuenta",
         "Sin anuncios","Créditos disponibles","Historial de compras","Licencias activas",
         "Todavía no hay compras","No tienes licencias activas","Cuenta vinculada","Válido hasta",
@@ -45,20 +64,20 @@ internal object CommerceAccountWords {
         "IP actualizada","Guardar IP","Detalles del pedido","Pago confirmado",
         "Pago pendiente","Reembolsado","Sin suscripción","Renovar acceso",
         "Explorar planes","Continuar con Google","30 días sin anuncios",
-        "Eliminar anuncios de esta cuenta","Ver compras","Tu cuenta","Configuración de cuenta")
+        "Eliminar anuncios de esta cuenta","Ver compras","Tu cuenta","Configuración de cuenta","Racha de descifrado","Descifra cada día para hacer crecer tu racha","Inicia sesión para empezar tu racha","Racha no disponible","¡Felicidades!","Ganaste 1 crédito de análisis","Toca el cofre para verlo de nuevo","días")
     private val others=mapOf(
-        "pt" to "Meu perfil|Minhas compras|Licenças API|Segurança da conta|Sem anúncios|Créditos disponíveis|Histórico de compras|Licenças ativas|Ainda não há compras|Sem licenças ativas|Conta vinculada|Válido até|Inativo|Ativo|Gerenciar conta|Cobrança|Alterar IP público|IP atualizado|Salvar IP|Detalhes do pedido|Pagamento confirmado|Pagamento pendente|Reembolsado|Sem assinatura|Renovar acesso|Explorar planos|Continuar com Google|30 dias sem anúncios|Remover anúncios desta conta|Ver compras|Sua conta|Configurações da conta",
-        "fr" to "Mon profil|Mes achats|Licences API|Sécurité du compte|Sans publicité|Crédits disponibles|Historique des achats|Licences actives|Aucun achat|Aucune licence active|Compte lié|Valable jusqu'au|Inactif|Actif|Gérer le compte|Facturation|Modifier l'IP publique|IP mise à jour|Enregistrer l'IP|Détails de la commande|Paiement confirmé|Paiement en attente|Remboursé|Aucun abonnement|Renouveler|Voir les offres|Continuer avec Google|30 jours sans publicité|Supprimer les publicités de ce compte|Voir les achats|Votre compte|Paramètres du compte",
-        "de" to "Mein Profil|Meine Käufe|API-Lizenzen|Kontosicherheit|Werbefrei|Verfügbare Credits|Kaufverlauf|Aktive Lizenzen|Noch keine Käufe|Keine aktiven Lizenzen|Verknüpftes Konto|Gültig bis|Inaktiv|Aktiv|Konto verwalten|Abrechnung|Öffentliche IP ändern|IP aktualisiert|IP speichern|Bestelldetails|Zahlung bestätigt|Zahlung ausstehend|Erstattet|Kein Abonnement|Zugang verlängern|Tarife ansehen|Mit Google fortfahren|30 Tage werbefrei|Werbung für dieses Konto entfernen|Käufe ansehen|Dein Konto|Kontoeinstellungen",
-        "it" to "Il mio profilo|I miei acquisti|Licenze API|Sicurezza account|Senza pubblicità|Crediti disponibili|Storico acquisti|Licenze attive|Nessun acquisto|Nessuna licenza attiva|Account collegato|Valido fino al|Inattivo|Attivo|Gestisci account|Fatturazione|Cambia IP pubblico|IP aggiornato|Salva IP|Dettagli ordine|Pagamento confermato|Pagamento in sospeso|Rimborsato|Nessun abbonamento|Rinnova accesso|Esplora piani|Continua con Google|30 giorni senza annunci|Rimuovi annunci da questo account|Vedi acquisti|Il tuo account|Impostazioni account",
-        "ru" to "Мой профиль|Мои покупки|Лицензии API|Безопасность аккаунта|Без рекламы|Доступные кредиты|История покупок|Активные лицензии|Покупок пока нет|Нет активных лицензий|Привязанный аккаунт|Действует до|Неактивно|Активно|Управление аккаунтом|Оплата|Изменить публичный IP|IP обновлён|Сохранить IP|Детали заказа|Оплата подтверждена|Ожидается оплата|Возвращено|Нет подписки|Продлить доступ|Посмотреть планы|Продолжить с Google|30 дней без рекламы|Убрать рекламу для аккаунта|Посмотреть покупки|Ваш аккаунт|Настройки аккаунта",
-        "tr" to "Profilim|Satın almalarım|API lisansları|Hesap güvenliği|Reklamsız|Kullanılabilir krediler|Satın alma geçmişi|Etkin lisanslar|Henüz satın alma yok|Etkin lisans yok|Bağlı hesap|Geçerlilik|Pasif|Etkin|Hesabı yönet|Faturalama|Genel IP değiştir|IP güncellendi|IP kaydet|Sipariş detayları|Ödeme onaylandı|Ödeme bekleniyor|İade edildi|Abonelik yok|Erişimi yenile|Planlara göz at|Google ile devam et|30 gün reklamsız|Bu hesaptan reklamları kaldır|Satın almaları gör|Hesabın|Hesap ayarları",
-        "ar" to "ملفي الشخصي|مشترياتي|تراخيص API|أمان الحساب|بدون إعلانات|الرصيد المتاح|سجل المشتريات|التراخيص النشطة|لا توجد مشتريات|لا توجد تراخيص نشطة|حساب مرتبط|صالح حتى|غير نشط|نشط|إدارة الحساب|الفوترة|تغيير IP العام|تم تحديث IP|حفظ IP|تفاصيل الطلب|تم تأكيد الدفع|بانتظار الدفع|تم الاسترداد|لا اشتراك|تجديد الوصول|تصفح الخطط|المتابعة مع Google|30 يومًا بلا إعلانات|إزالة الإعلانات من الحساب|عرض المشتريات|حسابك|إعدادات الحساب",
-        "fa" to "نمایه من|خریدهای من|مجوزهای API|امنیت حساب|بدون تبلیغات|اعتبار موجود|سابقه خرید|مجوزهای فعال|هنوز خریدی نیست|مجوز فعالی نیست|حساب متصل|معتبر تا|غیرفعال|فعال|مدیریت حساب|صورتحساب|تغییر IP عمومی|IP به‌روز شد|ذخیره IP|جزئیات سفارش|پرداخت تأیید شد|در انتظار پرداخت|بازپرداخت شد|بدون اشتراک|تمدید دسترسی|مشاهده طرح‌ها|ادامه با Google|۳۰ روز بدون تبلیغات|حذف تبلیغات این حساب|نمایش خریدها|حساب شما|تنظیمات حساب",
-        "hi" to "मेरी प्रोफ़ाइल|मेरी खरीदारी|API लाइसेंस|खाता सुरक्षा|विज्ञापन मुक्त|उपलब्ध क्रेडिट|खरीदारी इतिहास|सक्रिय लाइसेंस|अभी कोई खरीदारी नहीं|कोई सक्रिय लाइसेंस नहीं|जुड़ा खाता|मान्य तिथि|निष्क्रिय|सक्रिय|खाता प्रबंधित करें|बिलिंग|पब्लिक IP बदलें|IP अपडेट हुआ|IP सहेजें|ऑर्डर विवरण|भुगतान पुष्टि हुई|भुगतान लंबित|धनवापसी|कोई सदस्यता नहीं|एक्सेस नवीनीकृत करें|प्लान देखें|Google से जारी रखें|30 दिन बिना विज्ञापन|इस खाते के विज्ञापन हटाएँ|खरीदारी देखें|आपका खाता|खाता सेटिंग",
-        "ja" to "マイプロフィール|購入履歴|APIライセンス|アカウントの安全性|広告なし|利用可能なクレジット|購入履歴|有効なライセンス|購入履歴はありません|有効なライセンスはありません|連携済みアカウント|有効期限|無効|有効|アカウント管理|請求|公開IPを変更|IPを更新しました|IPを保存|注文詳細|支払い完了|支払い待ち|返金済み|購読なし|利用を更新|プランを見る|Googleで続行|30日間広告なし|このアカウントの広告を削除|購入履歴を見る|アカウント|アカウント設定",
-        "id" to "Profil saya|Pembelian saya|Lisensi API|Keamanan akun|Tanpa iklan|Kredit tersedia|Riwayat pembelian|Lisensi aktif|Belum ada pembelian|Tidak ada lisensi aktif|Akun terhubung|Berlaku hingga|Tidak aktif|Aktif|Kelola akun|Tagihan|Ubah IP publik|IP diperbarui|Simpan IP|Rincian pesanan|Pembayaran dikonfirmasi|Pembayaran tertunda|Dikembalikan|Tanpa langganan|Perpanjang akses|Lihat paket|Lanjutkan dengan Google|30 hari tanpa iklan|Hapus iklan untuk akun ini|Lihat pembelian|Akun Anda|Pengaturan akun",
-        "vi" to "Hồ sơ của tôi|Đơn đã mua|Giấy phép API|Bảo mật tài khoản|Không quảng cáo|Tín dụng khả dụng|Lịch sử mua|Giấy phép đang hoạt động|Chưa có đơn mua|Không có giấy phép hoạt động|Tài khoản liên kết|Có hạn đến|Không hoạt động|Hoạt động|Quản lý tài khoản|Thanh toán|Đổi IP công khai|Đã cập nhật IP|Lưu IP|Chi tiết đơn hàng|Thanh toán thành công|Đang chờ thanh toán|Đã hoàn tiền|Chưa có gói|Gia hạn|Xem các gói|Tiếp tục với Google|30 ngày không quảng cáo|Xóa quảng cáo cho tài khoản này|Xem đơn mua|Tài khoản của bạn|Cài đặt tài khoản"
+        "pt" to "Meu perfil|Minhas compras|Licenças API|Segurança da conta|Sem anúncios|Créditos disponíveis|Histórico de compras|Licenças ativas|Ainda não há compras|Sem licenças ativas|Conta vinculada|Válido até|Inativo|Ativo|Gerenciar conta|Cobrança|Alterar IP público|IP atualizado|Salvar IP|Detalhes do pedido|Pagamento confirmado|Pagamento pendente|Reembolsado|Sem assinatura|Renovar acesso|Explorar planos|Continuar com Google|30 dias sem anúncios|Remover anúncios desta conta|Ver compras|Sua conta|Configurações da conta|Sequência de decifração|Decifre todos os dias para aumentar sua sequência|Entre para começar sua sequência|Sequência indisponível|Parabéns!|Você ganhou 1 crédito de análise|Toque no baú para ver novamente|dias",
+        "fr" to "Mon profil|Mes achats|Licences API|Sécurité du compte|Sans publicité|Crédits disponibles|Historique des achats|Licences actives|Aucun achat|Aucune licence active|Compte lié|Valable jusqu'au|Inactif|Actif|Gérer le compte|Facturation|Modifier l'IP publique|IP mise à jour|Enregistrer l'IP|Détails de la commande|Paiement confirmé|Paiement en attente|Remboursé|Aucun abonnement|Renouveler|Voir les offres|Continuer avec Google|30 jours sans publicité|Supprimer les publicités de ce compte|Voir les achats|Votre compte|Paramètres du compte|Série de déchiffrement|Déchiffrez chaque jour pour faire grandir votre série|Connectez-vous pour commencer votre série|Série indisponible|Félicitations !|Vous avez gagné 1 crédit d'analyse|Touchez le coffre pour revoir l'animation|jours",
+        "de" to "Mein Profil|Meine Käufe|API-Lizenzen|Kontosicherheit|Werbefrei|Verfügbare Credits|Kaufverlauf|Aktive Lizenzen|Noch keine Käufe|Keine aktiven Lizenzen|Verknüpftes Konto|Gültig bis|Inaktiv|Aktiv|Konto verwalten|Abrechnung|Öffentliche IP ändern|IP aktualisiert|IP speichern|Bestelldetails|Zahlung bestätigt|Zahlung ausstehend|Erstattet|Kein Abonnement|Zugang verlängern|Tarife ansehen|Mit Google fortfahren|30 Tage werbefrei|Werbung für dieses Konto entfernen|Käufe ansehen|Dein Konto|Kontoeinstellungen|Entschlüsselungsserie|Entschlüssle jeden Tag, um deine Serie zu vergrößern|Melde dich an, um deine Serie zu starten|Serie nicht verfügbar|Glückwunsch!|Du hast 1 Analyse-Credit erhalten|Tippe auf die Truhe, um sie erneut zu sehen|Tage",
+        "it" to "Il mio profilo|I miei acquisti|Licenze API|Sicurezza account|Senza pubblicità|Crediti disponibili|Storico acquisti|Licenze attive|Nessun acquisto|Nessuna licenza attiva|Account collegato|Valido fino al|Inattivo|Attivo|Gestisci account|Fatturazione|Cambia IP pubblico|IP aggiornato|Salva IP|Dettagli ordine|Pagamento confermato|Pagamento in sospeso|Rimborsato|Nessun abbonamento|Rinnova accesso|Esplora piani|Continua con Google|30 giorni senza annunci|Rimuovi annunci da questo account|Vedi acquisti|Il tuo account|Impostazioni account|Serie di decifratura|Decifra ogni giorno per far crescere la tua serie|Accedi per iniziare la tua serie|Serie non disponibile|Congratulazioni!|Hai guadagnato 1 credito di analisi|Tocca il forziere per rivederla|giorni",
+        "ru" to "Мой профиль|Мои покупки|Лицензии API|Безопасность аккаунта|Без рекламы|Доступные кредиты|История покупок|Активные лицензии|Покупок пока нет|Нет активных лицензий|Привязанный аккаунт|Действует до|Неактивно|Активно|Управление аккаунтом|Оплата|Изменить публичный IP|IP обновлён|Сохранить IP|Детали заказа|Оплата подтверждена|Ожидается оплата|Возвращено|Нет подписки|Продлить доступ|Посмотреть планы|Продолжить с Google|30 дней без рекламы|Убрать рекламу для аккаунта|Посмотреть покупки|Ваш аккаунт|Настройки аккаунта|Серия расшифровок|Расшифровывайте каждый день, чтобы продлить серию|Войдите, чтобы начать серию|Серия недоступна|Поздравляем!|Вы получили 1 кредит анализа|Нажмите на сундук, чтобы посмотреть ещё раз|дн.",
+        "tr" to "Profilim|Satın almalarım|API lisansları|Hesap güvenliği|Reklamsız|Kullanılabilir krediler|Satın alma geçmişi|Etkin lisanslar|Henüz satın alma yok|Etkin lisans yok|Bağlı hesap|Geçerlilik|Pasif|Etkin|Hesabı yönet|Faturalama|Genel IP değiştir|IP güncellendi|IP kaydet|Sipariş detayları|Ödeme onaylandı|Ödeme bekleniyor|İade edildi|Abonelik yok|Erişimi yenile|Planlara göz at|Google ile devam et|30 gün reklamsız|Bu hesaptan reklamları kaldır|Satın almaları gör|Hesabın|Hesap ayarları|Şifre çözme serisi|Serini büyütmek için her gün şifre çöz|Serine başlamak için giriş yap|Seri kullanılamıyor|Tebrikler!|1 analiz kredisi kazandın|Tekrar görmek için sandığa dokun|gün",
+        "ar" to "ملفي الشخصي|مشترياتي|تراخيص API|أمان الحساب|بدون إعلانات|الرصيد المتاح|سجل المشتريات|التراخيص النشطة|لا توجد مشتريات|لا توجد تراخيص نشطة|حساب مرتبط|صالح حتى|غير نشط|نشط|إدارة الحساب|الفوترة|تغيير IP العام|تم تحديث IP|حفظ IP|تفاصيل الطلب|تم تأكيد الدفع|بانتظار الدفع|تم الاسترداد|لا اشتراك|تجديد الوصول|تصفح الخطط|المتابعة مع Google|30 يومًا بلا إعلانات|إزالة الإعلانات من الحساب|عرض المشتريات|حسابك|إعدادات الحساب|سلسلة فك التشفير|فكّ التشفير كل يوم لتنمية سلسلتك|سجّل الدخول لبدء سلسلتك|السلسلة غير متاحة|تهانينا!|لقد ربحت رصيد تحليل واحد|المس الصندوق لمشاهدتها مجددًا|أيام",
+        "fa" to "نمایه من|خریدهای من|مجوزهای API|امنیت حساب|بدون تبلیغات|اعتبار موجود|سابقه خرید|مجوزهای فعال|هنوز خریدی نیست|مجوز فعالی نیست|حساب متصل|معتبر تا|غیرفعال|فعال|مدیریت حساب|صورتحساب|تغییر IP عمومی|IP به‌روز شد|ذخیره IP|جزئیات سفارش|پرداخت تأیید شد|در انتظار پرداخت|بازپرداخت شد|بدون اشتراک|تمدید دسترسی|مشاهده طرح‌ها|ادامه با Google|۳۰ روز بدون تبلیغات|حذف تبلیغات این حساب|نمایش خریدها|حساب شما|تنظیمات حساب|رشته رمزگشایی|هر روز رمزگشایی کنید تا رشته شما رشد کند|برای شروع رشته وارد شوید|رشته در دسترس نیست|تبریک!|۱ اعتبار تحلیل به دست آوردید|برای دیدن دوباره روی صندوق بزنید|روز",
+        "hi" to "मेरी प्रोफ़ाइल|मेरी खरीदारी|API लाइसेंस|खाता सुरक्षा|विज्ञापन मुक्त|उपलब्ध क्रेडिट|खरीदारी इतिहास|सक्रिय लाइसेंस|अभी कोई खरीदारी नहीं|कोई सक्रिय लाइसेंस नहीं|जुड़ा खाता|मान्य तिथि|निष्क्रिय|सक्रिय|खाता प्रबंधित करें|बिलिंग|पब्लिक IP बदलें|IP अपडेट हुआ|IP सहेजें|ऑर्डर विवरण|भुगतान पुष्टि हुई|भुगतान लंबित|धनवापसी|कोई सदस्यता नहीं|एक्सेस नवीनीकृत करें|प्लान देखें|Google से जारी रखें|30 दिन बिना विज्ञापन|इस खाते के विज्ञापन हटाएँ|खरीदारी देखें|आपका खाता|खाता सेटिंग|डिक्रिप्शन स्ट्रीक|अपनी स्ट्रीक बढ़ाने के लिए हर दिन डिक्रिप्ट करें|अपनी स्ट्रीक शुरू करने के लिए साइन इन करें|स्ट्रीक उपलब्ध नहीं है|बधाई हो!|आपको 1 विश्लेषण क्रेडिट मिला|फिर से देखने के लिए खजाने पर टैप करें|दिन",
+        "ja" to "マイプロフィール|購入履歴|APIライセンス|アカウントの安全性|広告なし|利用可能なクレジット|購入履歴|有効なライセンス|購入履歴はありません|有効なライセンスはありません|連携済みアカウント|有効期限|無効|有効|アカウント管理|請求|公開IPを変更|IPを更新しました|IPを保存|注文詳細|支払い完了|支払い待ち|返金済み|購読なし|利用を更新|プランを見る|Googleで続行|30日間広告なし|このアカウントの広告を削除|購入履歴を見る|アカウント|アカウント設定|解読ストリーク|毎日解読してストリークを伸ばそう|サインインしてストリークを始めよう|ストリークを利用できません|おめでとうございます！|解析クレジットを1つ獲得しました|もう一度見るには宝箱をタップ|日",
+        "id" to "Profil saya|Pembelian saya|Lisensi API|Keamanan akun|Tanpa iklan|Kredit tersedia|Riwayat pembelian|Lisensi aktif|Belum ada pembelian|Tidak ada lisensi aktif|Akun terhubung|Berlaku hingga|Tidak aktif|Aktif|Kelola akun|Tagihan|Ubah IP publik|IP diperbarui|Simpan IP|Rincian pesanan|Pembayaran dikonfirmasi|Pembayaran tertunda|Dikembalikan|Tanpa langganan|Perpanjang akses|Lihat paket|Lanjutkan dengan Google|30 hari tanpa iklan|Hapus iklan untuk akun ini|Lihat pembelian|Akun Anda|Pengaturan akun|Rangkaian dekripsi|Dekripsi setiap hari untuk menumbuhkan rangkaianmu|Masuk untuk memulai rangkaianmu|Rangkaian tidak tersedia|Selamat!|Kamu mendapat 1 kredit analisis|Ketuk peti untuk melihatnya lagi|hari",
+        "vi" to "Hồ sơ của tôi|Đơn đã mua|Giấy phép API|Bảo mật tài khoản|Không quảng cáo|Tín dụng khả dụng|Lịch sử mua|Giấy phép đang hoạt động|Chưa có đơn mua|Không có giấy phép hoạt động|Tài khoản liên kết|Có hạn đến|Không hoạt động|Hoạt động|Quản lý tài khoản|Thanh toán|Đổi IP công khai|Đã cập nhật IP|Lưu IP|Chi tiết đơn hàng|Thanh toán thành công|Đang chờ thanh toán|Đã hoàn tiền|Chưa có gói|Gia hạn|Xem các gói|Tiếp tục với Google|30 ngày không quảng cáo|Xóa quảng cáo cho tài khoản này|Xem đơn mua|Tài khoản của bạn|Cài đặt tài khoản|Chuỗi giải mã|Giải mã mỗi ngày để tăng chuỗi của bạn|Đăng nhập để bắt đầu chuỗi của bạn|Chuỗi không khả dụng|Chúc mừng!|Bạn đã nhận 1 tín dụng phân tích|Chạm vào rương để xem lại|ngày"
     ).mapValues{it.value.split("|")}
     fun get(language:String,key:String):String{
         val i=keys.indexOf(key)
@@ -118,13 +137,147 @@ private fun SectionButton(title:String,description:String,icon:ImageVector,onCli
     }
 }
 @Composable
-private fun NumberPanel(title:String,value:String,icon:ImageVector){
-    Column(Modifier.fillMaxWidth().background(sectionPanel,RoundedCornerShape(18.dp))
+private fun NumberPanel(title:String,value:String,icon:ImageVector,
+    highlight:Boolean=false,badge:String?=null){
+    Column(Modifier.fillMaxWidth()
+        .background(sectionPanel,RoundedCornerShape(18.dp))
+        .then(if(highlight)Modifier.border(2.dp,Color(0xFFFFD54F),RoundedCornerShape(18.dp))
+            else Modifier)
         .padding(16.dp),verticalArrangement=Arrangement.spacedBy(8.dp)){
         Icon(icon,null,tint=accent,modifier=Modifier.size(22.dp))
-        Text(value,color=foreground,fontSize=25.sp,fontWeight=FontWeight.Bold)
+        Row(verticalAlignment=Alignment.CenterVertically,
+            horizontalArrangement=Arrangement.spacedBy(8.dp)){
+            Text(value,color=foreground,fontSize=25.sp,fontWeight=FontWeight.Bold)
+            if(badge!=null)Surface(color=Color(0xFFFFD54F),shape=RoundedCornerShape(50)){
+                Text(badge,color=midnight,fontSize=13.sp,fontWeight=FontWeight.Bold,
+                    modifier=Modifier.padding(horizontal=8.dp,vertical=2.dp))
+            }
+        }
         Text(title,color=secondary,fontSize=12.sp)
     }
+}
+
+/** Weekly decryption streak from GET /api/account `streak` (server-owned).
+ * Null when the server did not send the object: the card then shows a
+ * neutral state and never invents days. weekCompleted is Mon..Sun (UTC). */
+internal data class DecryptionStreak(
+    val currentStreakDays:Int,
+    val weekCompleted:List<Boolean>,
+    val chestOpen:Boolean,
+)
+private fun streakOf(snapshot:JSONObject?):DecryptionStreak?{
+    val raw=snapshot?.optJSONObject("streak")?:return null
+    val week=raw.optJSONArray("weekCompleted")
+    return DecryptionStreak(
+        currentStreakDays=raw.optInt("currentStreakDays",0),
+        weekCompleted=(0 until 7).map{week?.optBoolean(it)?:false},
+        chestOpen=raw.optBoolean("chestOpen",false))
+}
+/** Monday (UTC) that starts the current week; key for "once per week". */
+private fun currentWeekKeyUtc():String=
+    LocalDate.now(ZoneOffset.UTC)
+        .with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)).toString()
+
+private val streakGold=Color(0xFFFFD54F)
+private val streakGreen=Color(0xFF38A36D)
+
+@Composable
+private fun DecryptionStreakCard(language:String,user:CommerceIdentity?,
+    streak:DecryptionStreak?,onChestTap:()->Unit){
+    val tr:(String)->String={CommerceAccountWords.get(language,it)}
+    val locale=Locale.forLanguageTag(if(language=="in")"id" else language)
+    val todayIndex=LocalDate.now(ZoneOffset.UTC).dayOfWeek.value-1
+    val weeks=(streak?.currentStreakDays?:0)/7
+    val chestSize=(34+minOf(weeks,4)*6).dp
+    SectionCard{
+        Row(verticalAlignment=Alignment.CenterVertically,
+            horizontalArrangement=Arrangement.spacedBy(11.dp)){
+            Icon(Icons.Outlined.Whatshot,null,tint=accent,modifier=Modifier.size(22.dp))
+            Column(Modifier.weight(1f),verticalArrangement=Arrangement.spacedBy(3.dp)){
+                Text(tr("Decryption streak"),color=foreground,fontSize=16.sp,
+                    fontWeight=FontWeight.SemiBold)
+                Text(when{
+                    user==null->tr("Sign in to start your streak")
+                    streak==null->tr("Streak unavailable")
+                    else->tr("Decode every day to grow your streak")
+                },color=secondary,fontSize=12.sp)
+            }
+            if(user!=null&&streak!=null)
+                Text(streak.currentStreakDays.toString()+" "+tr("days"),
+                    color=foreground,fontSize=14.sp,fontWeight=FontWeight.Bold)
+        }
+        Row(Modifier.fillMaxWidth(),
+            horizontalArrangement=Arrangement.SpaceBetween,
+            verticalAlignment=Alignment.CenterVertically){
+            (0 until 7).forEach{day->
+                val done=streak?.weekCompleted?.getOrNull(day)==true
+                Column(horizontalAlignment=Alignment.CenterHorizontally,
+                    verticalArrangement=Arrangement.spacedBy(4.dp)){
+                    Box(Modifier.size(32.dp)
+                        .background(if(done)streakGreen else sectionRaised,
+                            RoundedCornerShape(50))
+                        .then(if(day==todayIndex)Modifier.border(2.dp,foreground,
+                            RoundedCornerShape(50)) else Modifier),
+                        contentAlignment=Alignment.Center){
+                        if(done)Icon(Icons.Outlined.Check,null,tint=foreground,
+                            modifier=Modifier.size(17.dp))
+                    }
+                    Text(DayOfWeek.of(day+1).getDisplayName(TextStyle.NARROW,locale),
+                        color=if(day==todayIndex)foreground else secondary,fontSize=11.sp,
+                        fontWeight=if(day==todayIndex)FontWeight.Bold else FontWeight.Normal)
+                }
+            }
+            Box(Modifier.size(chestSize+14.dp)
+                .clickable(enabled=streak?.chestOpen==true){onChestTap()},
+                contentAlignment=Alignment.Center){
+                Icon(Icons.Outlined.CardGiftcard,null,
+                    tint=if(streak?.chestOpen==true)streakGold else secondary,
+                    modifier=Modifier.size(chestSize))
+            }
+        }
+        if(streak?.chestOpen==true)
+            Text(tr("Tap the chest to see it again"),color=secondary,fontSize=11.sp)
+    }
+}
+
+/** Chest celebration: adorned "¡Felicidades!" + spinning gold coin.
+ * The credit itself is granted by the server; this only animates, and the
+ * credits counter below shows the balance the snapshot already carries. */
+@Composable
+private fun StreakCelebrationDialog(language:String,onDismiss:()->Unit){
+    val tr:(String)->String={CommerceAccountWords.get(language,it)}
+    val spin=rememberInfiniteTransition(label="streak-coin")
+    val rotation by spin.animateFloat(0f,360f,
+        infiniteRepeatable(animationSpec=tween(900,easing=LinearEasing),
+            repeatMode=RepeatMode.Restart),label="coin-spin")
+    AlertDialog(onDismissRequest=onDismiss,
+        containerColor=Color(0xFF242424),
+        titleContentColor=foreground,textContentColor=secondary,
+        title={Text(tr("Congratulations!"),fontWeight=FontWeight.Bold,
+            fontSize=22.sp,modifier=Modifier.fillMaxWidth(),
+            textAlign=TextAlign.Center)},
+        text={
+            Column(Modifier.fillMaxWidth(),
+                horizontalAlignment=Alignment.CenterHorizontally,
+                verticalArrangement=Arrangement.spacedBy(14.dp)){
+                Box(Modifier.size(72.dp).clip(RoundedCornerShape(50))
+                    .background(streakGold)
+                    .graphicsLayer{rotationY=rotation},
+                    contentAlignment=Alignment.Center){
+                    Text("+1",color=midnight,fontSize=26.sp,fontWeight=FontWeight.Bold)
+                }
+                Text(tr("You earned 1 analysis credit"),color=foreground,
+                    fontSize=15.sp,textAlign=TextAlign.Center)
+            }
+        },
+        confirmButton={
+            Button(onClick=onDismiss,modifier=Modifier.fillMaxWidth(),
+                colors=ButtonDefaults.buttonColors(containerColor=foreground,
+                    contentColor=midnight)){
+                Text(CommerceI18n.translate(language,"Entendido","Got it"),
+                    fontWeight=FontWeight.Bold)
+            }
+        })
 }
 
 @Composable
@@ -132,12 +285,40 @@ internal fun CommerceAccountHome(language:String,user:CommerceIdentity?,
     snapshot:JSONObject?,onSignIn:()->Unit,onEdit:()->Unit,onSignOut:()->Unit,
     onNavigate:(String)->Unit){
     val tr:(String)->String={CommerceAccountWords.get(language,it)}
+    val context=LocalContext.current
+    val streak=streakOf(snapshot)
+    val weekKey=currentWeekKeyUtc()
+    var showCelebration by remember{mutableStateOf(false)}
+    var creditsHighlight by remember{mutableStateOf(false)}
+    val streakPrefs=remember(context){
+        context.getSharedPreferences("spdecode-streak",Context.MODE_PRIVATE)}
+    // Celebrate an open chest once per completed week: the week key is
+    // stored locally the first time the celebration is shown, so reopening
+    // the profile does not replay it. Tapping the chest replays it.
+    LaunchedEffect(weekKey,streak?.chestOpen){
+        if(user!=null&&streak?.chestOpen==true&&
+            streakPrefs.getString("celebrated_week",null)!=weekKey){
+            streakPrefs.edit().putString("celebrated_week",weekKey).apply()
+            showCelebration=true
+        }
+    }
+    LaunchedEffect(creditsHighlight){
+        if(creditsHighlight){delay(4000);creditsHighlight=false}
+    }
     Text(tr("My profile"),color=foreground,fontSize=28.sp,fontWeight=FontWeight.Bold)
     CommerceAccountHero(language,user,onSignIn,onEdit,onSignOut)
+    DecryptionStreakCard(language,user,streak,
+        onChestTap={if(streak?.chestOpen==true)showCelebration=true})
+    if(showCelebration)StreakCelebrationDialog(language,onDismiss={
+        showCelebration=false
+        creditsHighlight=true
+    })
     if(user==null)return
     val credit=snapshot?.optJSONObject("credits")?.optInt("available",0)?:0
     Row(horizontalArrangement=Arrangement.spacedBy(10.dp)){
-        Box(Modifier.weight(1f)){NumberPanel(tr("Available credits"),credit.toString(),Icons.Outlined.Toll)}
+        Box(Modifier.weight(1f)){NumberPanel(tr("Available credits"),credit.toString(),
+            Icons.Outlined.Toll,highlight=creditsHighlight,
+            badge=if(creditsHighlight)"+1" else null)}
         Box(Modifier.weight(1f)){NumberPanel(tr("Purchase history"),items(snapshot,"orders").size.toString(),Icons.Outlined.ReceiptLong)}
     }
     Text(tr("Manage account"),color=foreground,fontSize=18.sp,fontWeight=FontWeight.Bold)

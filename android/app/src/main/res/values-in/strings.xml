@@ -353,6 +353,7 @@
     <string name="app_analysis_status_uploading">Mengunggah…</string>
     <string name="app_analysis_status_analyzing">Menganalisis</string>
     <string name="app_analysis_status_queued">Dalam antrean</string>
+    <string name="app_analysis_result_summary">%1$d server · %2$d jaringan</string>
     <string name="app_analysis_error_method_unavailable">Metode tidak tersedia untuk aplikasi ini.</string>
     <string name="app_analysis_error_not_vpn">Aplikasi ini bukan aplikasi VPN</string>
     <string name="app_analysis_error_no_credits">Kredit Anda tidak cukup.</string>

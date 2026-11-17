@@ -60,6 +60,11 @@ internal class AppAnalysisClient(context: Context, private val cloud: CloudDecod
         val creditsPerAnalysis: Int = 1,
         val agentAvatar: String? = null,
     )
+    /** Optional per-job catalog totals from the server (op 30 `resultSummary`).
+     * Null when the server did not send them (e.g. jobs completed before the
+     * server change): the UI must hide the line, never show invented zeros. */
+    data class ResultSummary(val servers: Int, val networks: Int)
+
     data class JobView(
         val jobId: String, val status: String, val phaseCode: String?,
         val progressPercent: Int?, val receivedBytes: Long, val totalBytes: Long,
@@ -69,6 +74,7 @@ internal class AppAnalysisClient(context: Context, private val cloud: CloudDecod
         val resultBytes: Long?, val resultSha256: String?, val downloadUrl: String?,
         val expiresAt: String?, val createdAt: String?,
         val updatedAt: String?,
+        val resultSummary: ResultSummary? = null,
     ) {
         val active: Boolean get() = status !in setOf(
             "COMPLETED", "COMPLETED_PARTIAL", "FAILED", "REJECTED", "EXPIRED")
@@ -196,6 +202,12 @@ internal class AppAnalysisClient(context: Context, private val cloud: CloudDecod
         expiresAt = raw.text("expiresAt"),
         createdAt = raw.text("createdAt"),
         updatedAt = raw.text("updatedAt"),
+        resultSummary = raw.optJSONObject("resultSummary")?.let { summary ->
+            if (summary.has("servers") && !summary.isNull("servers") &&
+                summary.has("networks") && !summary.isNull("networks"))
+                ResultSummary(summary.optInt("servers"), summary.optInt("networks"))
+            else null
+        },
     )
 
     /** Server-authoritative preflight: credits + price. Never cached long. */
@@ -367,6 +379,9 @@ internal class AppAnalysisClient(context: Context, private val cloud: CloudDecod
             .put("updatedAt", job.updatedAt).put("isNewCatalogCandidate", job.isNewCatalogCandidate)
         if (job.progressPercent != null) raw.put("progressPercent", job.progressPercent)
         if (job.resultBytes != null) raw.put("resultBytes", job.resultBytes)
+        if (job.resultSummary != null) raw.put("resultSummary", JSONObject()
+            .put("servers", job.resultSummary.servers)
+            .put("networks", job.resultSummary.networks))
         return state.put("job", raw).put("error", error)
     }
 

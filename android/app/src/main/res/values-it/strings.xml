@@ -354,6 +354,7 @@
     <string name="app_analysis_status_uploading">Caricamento…</string>
     <string name="app_analysis_status_analyzing">In analisi</string>
     <string name="app_analysis_status_queued">In coda</string>
+    <string name="app_analysis_result_summary">%1$d server · %2$d reti</string>
     <string name="app_analysis_error_method_unavailable">Il metodo non è disponibile per questa applicazione.</string>
     <string name="app_analysis_error_not_vpn">Questa applicazione non è un’applicazione VPN</string>
     <string name="app_analysis_error_no_credits">Non hai crediti sufficienti.</string>

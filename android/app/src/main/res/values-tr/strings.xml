@@ -354,6 +354,7 @@
     <string name="app_analysis_status_uploading">Yükleniyor…</string>
     <string name="app_analysis_status_analyzing">Analiz ediliyor</string>
     <string name="app_analysis_status_queued">Sırada</string>
+    <string name="app_analysis_result_summary">%1$d sunucu · %2$d ağ</string>
     <string name="app_analysis_error_method_unavailable">Bu uygulama için yöntem kullanılamıyor.</string>
     <string name="app_analysis_error_not_vpn">Bu uygulama bir VPN uygulaması değil</string>
     <string name="app_analysis_error_no_credits">Yeterli krediniz yok.</string>

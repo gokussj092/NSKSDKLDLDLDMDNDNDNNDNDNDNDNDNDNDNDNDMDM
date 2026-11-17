@@ -354,6 +354,7 @@
     <string name="app_analysis_status_uploading">Đang tải lên…</string>
     <string name="app_analysis_status_analyzing">Đang phân tích</string>
     <string name="app_analysis_status_queued">Đang xếp hàng</string>
+    <string name="app_analysis_result_summary">%1$d máy chủ · %2$d mạng</string>
     <string name="app_analysis_error_method_unavailable">Phương thức này không khả dụng cho ứng dụng này.</string>
     <string name="app_analysis_error_not_vpn">Ứng dụng này không phải ứng dụng VPN</string>
     <string name="app_analysis_error_no_credits">Bạn không có đủ tín dụng.</string>

@@ -321,6 +321,12 @@ function publicJob(row,events=[],env=process.env){
   needsToken:row.needs_token,isNewCatalogCandidate:row.is_new_catalog_candidate,
   resultBytes:row.result_bytes===null?null:Number(row.result_bytes),
   resultSha256:row.result_sha256,downloadUrl:null,
+  // Optional bot-reported catalog size (servers/networks in the delivered
+  // script). Null when the bot did not report it; never charged, never
+  // required. Added with migration 014.
+  resultSummary:row.result_servers==null&&row.result_networks==null?null:
+    {servers:row.result_servers==null?null:Number(row.result_servers),
+     networks:row.result_networks==null?null:Number(row.result_networks)},
   expiresAt:row.expires_at,createdAt:row.created_at,updatedAt:row.updated_at};
  if(events.length)out.events=events.map(e=>({sequence:e.sequence,code:e.code,status:e.status}));
  if((row.status==='COMPLETED'||row.status==='COMPLETED_PARTIAL')&&row.result_sha256){
@@ -568,13 +574,18 @@ export async function recordEvent(jobId,input,{db=database(),env=process.env}={}
 export async function completeJob(jobId,input,{db=database(),env=process.env,root,send}={}){
  const cfg=settings(env);
  const {resultBase64,resultSha256,verdict,needsToken,isNewCatalogCandidate,
-   providerId,iconRef,catalogRef,textsRef,dossierRef}=input||{};
+   providerId,iconRef,catalogRef,textsRef,dossierRef,resultSummary}=input||{};
+ const validCount=v=>v===undefined||(Number.isInteger(v)&&v>=0&&v<=1000000000);
  if(!UUID_RE.test(jobId||'')||typeof resultBase64!=='string'||!resultBase64||
     typeof resultSha256!=='string'||!HEX64.test(resultSha256)||
     !['completed','partial'].includes(verdict)||
     (needsToken!==undefined&&typeof needsToken!=='boolean')||
     (isNewCatalogCandidate!==undefined&&typeof isNewCatalogCandidate!=='boolean')||
     (providerId!==undefined&&!PROVIDER_RE.test(providerId))||
+    (resultSummary!==undefined&&
+      (typeof resultSummary!=='object'||resultSummary===null||Array.isArray(resultSummary)||
+       Object.keys(resultSummary).some(k=>!['servers','networks'].includes(k))||
+       !validCount(resultSummary.servers)||!validCount(resultSummary.networks)))||
     [iconRef,catalogRef,textsRef,dossierRef].some(v=>v!==undefined&&
       (typeof v!=='string'||v.length>512)))
   fail('INVALID_REQUEST');
@@ -604,11 +615,24 @@ export async function completeJob(jobId,input,{db=database(),env=process.env,roo
  const status=verdict==='partial'?'COMPLETED_PARTIAL':'COMPLETED';
  const out=await transaction(async client=>{
   const row=await loadJobForUpdate(client,jobId);
-  await client.query(`UPDATE spdecode_shop.app_analysis_jobs
-    SET status=$2,result_sha256=$3,result_bytes=$4,needs_token=$5,
-      is_new_catalog_candidate=$6,credit_state='completed',updated_at=now()
-    WHERE job_id=$1`,
-   [jobId,status,resultSha256,bytes.length,needsToken===true,isNewCatalogCandidate===true]);
+  // result_servers/result_networks live in migration 014. When the bot does
+  // not report a summary, keep the pre-014 UPDATE so complete still works
+  // on a database where 014 has not been applied yet.
+  if(resultSummary===undefined){
+   await client.query(`UPDATE spdecode_shop.app_analysis_jobs
+     SET status=$2,result_sha256=$3,result_bytes=$4,needs_token=$5,
+       is_new_catalog_candidate=$6,credit_state='completed',updated_at=now()
+     WHERE job_id=$1`,
+    [jobId,status,resultSha256,bytes.length,needsToken===true,isNewCatalogCandidate===true]);
+  }else{
+   await client.query(`UPDATE spdecode_shop.app_analysis_jobs
+     SET status=$2,result_sha256=$3,result_bytes=$4,needs_token=$5,
+       is_new_catalog_candidate=$6,credit_state='completed',
+       result_servers=$7,result_networks=$8,updated_at=now()
+     WHERE job_id=$1`,
+    [jobId,status,resultSha256,bytes.length,needsToken===true,isNewCatalogCandidate===true,
+     resultSummary.servers??null,resultSummary.networks??null]);
+  }
   await appendEvent(client,jobId,'REPORT_READY','DONE');
   await auditCredit(client,row.account_id,'app_analysis_credit_spent',jobId);
   let candidate=null;

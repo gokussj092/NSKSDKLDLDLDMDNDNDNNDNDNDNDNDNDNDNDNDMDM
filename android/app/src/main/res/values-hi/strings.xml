@@ -354,6 +354,7 @@
     <string name="app_analysis_status_uploading">अपलोड हो रहा है…</string>
     <string name="app_analysis_status_analyzing">विश्लेषण हो रहा है</string>
     <string name="app_analysis_status_queued">कतार में</string>
+    <string name="app_analysis_result_summary">%1$d सर्वर · %2$d नेटवर्क</string>
     <string name="app_analysis_error_method_unavailable">इस ऐप्लिकेशन के लिए विधि उपलब्ध नहीं है।</string>
     <string name="app_analysis_error_not_vpn">यह ऐप्लिकेशन VPN ऐप्लिकेशन नहीं है</string>
     <string name="app_analysis_error_no_credits">आपके पास पर्याप्त क्रेडिट नहीं हैं।</string>

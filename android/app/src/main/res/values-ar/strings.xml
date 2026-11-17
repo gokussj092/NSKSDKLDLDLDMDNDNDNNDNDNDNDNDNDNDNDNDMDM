@@ -353,6 +353,7 @@
     <string name="app_analysis_status_uploading">جارٍ الرفع…</string>
     <string name="app_analysis_status_analyzing">قيد التحليل</string>
     <string name="app_analysis_status_queued">في الانتظار</string>
+    <string name="app_analysis_result_summary">%1$d خادمًا · %2$d شبكة</string>
     <string name="app_analysis_error_method_unavailable">الطريقة غير متاحة لهذا التطبيق.</string>
     <string name="app_analysis_error_not_vpn">هذا التطبيق ليس تطبيق VPN</string>
     <string name="app_analysis_error_no_credits">ليس لديك أرصدة كافية.</string>

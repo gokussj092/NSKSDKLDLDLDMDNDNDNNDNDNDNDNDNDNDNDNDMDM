@@ -354,6 +354,7 @@
     <string name="app_analysis_status_uploading">アップロード中…</string>
     <string name="app_analysis_status_analyzing">分析中</string>
     <string name="app_analysis_status_queued">キュー待ち</string>
+    <string name="app_analysis_result_summary">%1$d サーバー · %2$d ネットワーク</string>
     <string name="app_analysis_error_method_unavailable">このアプリではこの方法は利用できません。</string>
     <string name="app_analysis_error_not_vpn">このアプリはVPNアプリではありません</string>
     <string name="app_analysis_error_no_credits">クレジットが不足しています。</string>

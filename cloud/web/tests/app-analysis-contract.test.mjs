@@ -95,7 +95,7 @@ test('client shows SP-DECODE Arnes with its icon and the exact token notice',()=
    'values-ru','values-tr','values-vi']){
   const strings=read('../../android/app/src/main/res/'+locale+'/strings.xml');
   const count=(strings.match(/name="app_analysis_/g)||[]).length;
-  assert.equal(count,52,locale+' has '+count+' app_analysis_ keys, expected 52');
+  assert.equal(count,53,locale+' has '+count+' app_analysis_ keys, expected 53');
  }
 });
 

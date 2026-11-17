@@ -353,6 +353,7 @@
     <string name="app_analysis_status_uploading">Загрузка…</string>
     <string name="app_analysis_status_analyzing">Анализ</string>
     <string name="app_analysis_status_queued">В очереди</string>
+    <string name="app_analysis_result_summary">%1$d серверов · %2$d сетей</string>
     <string name="app_analysis_error_method_unavailable">Метод недоступен для этого приложения.</string>
     <string name="app_analysis_error_not_vpn">Это приложение не является VPN-приложением</string>
     <string name="app_analysis_error_no_credits">Недостаточно кредитов.</string>

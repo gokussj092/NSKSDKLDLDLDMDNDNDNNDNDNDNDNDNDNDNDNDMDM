@@ -353,6 +353,7 @@
     <string name="app_analysis_status_uploading">Wird hochgeladen…</string>
     <string name="app_analysis_status_analyzing">Wird analysiert</string>
     <string name="app_analysis_status_queued">In der Warteschlange</string>
+    <string name="app_analysis_result_summary">%1$d Server · %2$d Netzwerke</string>
     <string name="app_analysis_error_method_unavailable">Die Methode ist für diese Anwendung nicht verfügbar.</string>
     <string name="app_analysis_error_not_vpn">Diese Anwendung ist keine VPN-Anwendung</string>
     <string name="app_analysis_error_no_credits">Du hast nicht genug Credits.</string>

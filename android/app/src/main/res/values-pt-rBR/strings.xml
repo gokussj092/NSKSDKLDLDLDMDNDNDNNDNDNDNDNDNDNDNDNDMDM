@@ -353,6 +353,7 @@
     <string name="app_analysis_status_uploading">Enviando…</string>
     <string name="app_analysis_status_analyzing">Em análise</string>
     <string name="app_analysis_status_queued">Na fila</string>
+    <string name="app_analysis_result_summary">%1$d servidores · %2$d redes</string>
     <string name="app_analysis_error_method_unavailable">O método não está disponível para este aplicativo.</string>
     <string name="app_analysis_error_not_vpn">Este aplicativo não é um aplicativo VPN</string>
     <string name="app_analysis_error_no_credits">Você não tem créditos suficientes.</string>

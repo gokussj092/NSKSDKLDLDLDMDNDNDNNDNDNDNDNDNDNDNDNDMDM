@@ -199,7 +199,7 @@ internal fun NativeCommerceScreens(start:String,onExit:()->Unit,
             page=="email-login" -> page="login"
             page=="gift" -> if(start=="gift")onExit() else {page="store";detail="home"}
             page=="delete-account" -> if(start=="delete-account")onExit() else page="account"
-            page in setOf("support","report","notifications","activity") ->
+            page in setOf("support","report","notifications","activity","analysis-history") ->
                 if(start==page)onExit() else page="account"
             page=="account" && start=="profile-edit" -> onExit()
             page in setOf("orders","api","security","ad-free") ->
@@ -237,6 +237,7 @@ internal fun NativeCommerceScreens(start:String,onExit:()->Unit,
                     "report" -> local("Reportar un error","Report an issue")
                     "notifications" -> local("Notificaciones","Notifications")
                     "activity" -> local("Historial de operaciones","Activity history")
+                    "analysis-history" -> local("Historial de análisis APK","APK analysis history")
                     "delete-account" -> local("Eliminar cuenta","Delete account")
                     "ad-free" -> CommerceAccountWords.get(language,"Ad-free experience")
                     "login" -> local("Acceso seguro","Secure sign in")
@@ -247,7 +248,7 @@ internal fun NativeCommerceScreens(start:String,onExit:()->Unit,
         }
         HorizontalDivider(color=Color(0xFF292929))
         }
-        val chatPage=page in setOf("support","report","notifications","activity")
+        val chatPage=page in setOf("support","report","notifications","activity","analysis-history")
         val bodyModifier=if(supportOwnHeader)
             Modifier.weight(1f).fillMaxWidth()
         else if(chatPage)
@@ -259,7 +260,7 @@ internal fun NativeCommerceScreens(start:String,onExit:()->Unit,
         Column(bodyModifier,verticalArrangement=Arrangement.spacedBy(17.dp)){
             if(NativeDeviceAccountGuard.enabled(context) &&
                 !NativeDeviceAccountGuard.unlocked &&
-                page in setOf("account","orders","api","security","ad-free","profile-edit","password","gift","delete-account","support","report","notifications","activity"))
+                page in setOf("account","orders","api","security","ad-free","profile-edit","password","gift","delete-account","support","report","notifications","activity","analysis-history"))
                 CommerceAccountUnlockPage(language)
             else when(page){
                 "store" -> when(detail){
@@ -456,6 +457,7 @@ internal fun NativeCommerceScreens(start:String,onExit:()->Unit,
                 "notifications" -> CommerceNotificationCenter(language,auth,
                     onSignIn={page="login"},onOpen={route->page=route})
                 "activity" -> CommerceActivityPage(language,auth,onSignIn={page="login"})
+                "analysis-history" -> AppAnalysisHistoryScreen(language,auth,onSignIn={page="login"})
                 "api" -> CommerceApiPage(language,accountSnapshot,
                     onUpdateIp={id,ip->auth.editApiIp(id,ip)},
                     onUpdated={

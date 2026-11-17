@@ -2,8 +2,10 @@ package com.ghostdeveloper.spdecode
 
 import androidx.activity.compose.BackHandler
 import com.ghostdeveloper.spdecode.cloud.CloudNoticePush
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.*
@@ -11,8 +13,12 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -106,6 +112,13 @@ internal fun AccountDrawer(busy:Boolean,onExternalLink:(String)->Unit,
                     label={Text(local("Actividad","Activity"))},
                     icon={Icon(Icons.Outlined.History,null)},
                     onClick={navigate("activity")})
+                // SP-DECODE Arnes history: icon + text only, no NEW badge.
+                NavigationDrawerItem(selected=false,
+                    label={Text(stringResource(R.string.apk_analysis_title))},
+                    icon={Image(painterResource(R.drawable.arnes),null,
+                        contentScale=ContentScale.Crop,
+                        modifier=Modifier.size(24.dp).clip(CircleShape))},
+                    onClick={navigate("analysis-history")})
                 NavigationDrawerItem(selected=false,
                     label={
                         Row(verticalAlignment=Alignment.CenterVertically,

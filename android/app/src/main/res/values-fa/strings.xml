@@ -353,6 +353,7 @@
     <string name="app_analysis_status_uploading">در حال بارگذاری…</string>
     <string name="app_analysis_status_analyzing">در حال تحلیل</string>
     <string name="app_analysis_status_queued">در صف</string>
+    <string name="app_analysis_result_summary">%1$d سرور · %2$d شبکه</string>
     <string name="app_analysis_error_method_unavailable">روش برای این برنامه در دسترس نیست.</string>
     <string name="app_analysis_error_not_vpn">این برنامه یک برنامه VPN نیست</string>
     <string name="app_analysis_error_no_credits">اعتبار کافی ندارید.</string>
