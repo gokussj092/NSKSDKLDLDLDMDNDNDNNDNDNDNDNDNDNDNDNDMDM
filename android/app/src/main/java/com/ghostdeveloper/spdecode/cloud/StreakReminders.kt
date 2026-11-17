@@ -61,10 +61,16 @@ internal object StreakReminders {
         if(NativeCommerceAuth(c).cachedAccountId()!=account){clear(c);return}
         val zone=runCatching{ZoneId.of(p.getString("zone",null))}.getOrNull()?:return
         val delay=StreakReminderPolicy.initialDelay(now(c),zone,day(p.getString("completed",null)),day(p.getString("notified",null)))
+        val scheduleKey=account+"|"+zone.id+"|"+p.getString("completed","")
+        val changed=p.getString("scheduled",null)!=scheduleKey
         val work=PeriodicWorkRequestBuilder<StreakReminderWorker>(1,TimeUnit.HOURS)
             .setInitialDelay(delay,TimeUnit.MILLISECONDS).build()
         // A confirmed decode moves the next reminder to the following day.
-        WorkManager.getInstance(c).enqueueUniquePeriodicWork(WORK,ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE,work)
+        // Profile refreshes keep the existing enqueue time: replacing work on
+        // every 30s snapshot would postpone the reminder indefinitely.
+        WorkManager.getInstance(c).enqueueUniquePeriodicWork(WORK,
+            if(changed)ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE else ExistingPeriodicWorkPolicy.KEEP,work)
+        p.edit().putString("scheduled",scheduleKey).commit()
     }
     private fun now(c:Context):Long{
         val p=prefs(c);val currentBoot=boot(c)
