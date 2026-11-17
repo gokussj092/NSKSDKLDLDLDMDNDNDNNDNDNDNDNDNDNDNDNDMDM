@@ -19,6 +19,20 @@ export async function validBoundClaims(redis, claims, cfg) {
 export async function acceptBoundProof(redis,request,op,bytes,bearer,claims,wireBytes=bytes) {
   const nonce=verifyProof(request,op,wireBytes,bearer,claims.key);
   if (!nonce || await redis.set("spc2:proof:"+claims.jti+":"+sha256(nonce),"1",{EX:90,NX:true})!=="OK") return null;
+  // Upload frames do not execute the decoder. A 150 MB paid APK needs 72
+  // frames; charging every frame to the 10/min decoder budget stalls even
+  // a stable connection. Keep an independent, bounded upload budget AFTER
+  // proof/replay validation. Account/job/upload-token/size/hash checks still
+  // run in app-analysis-v2 and appendChunk before any file is accepted.
+  if (op===27) {
+    const id=keyId(claims.key),ip=ipKey(request);
+    const allowed=await throttle(redis,"spc2:upload:session:"+claims.jti,96,60) &&
+      await throttle(redis,"spc2:upload:key-minute:"+id,96,60) &&
+      await throttle(redis,"spc2:upload:key-day:"+id,3600,86400) &&
+      await throttle(redis,"spc2:upload:ip:"+ip,128,60) &&
+      await throttle(redis,"spc2:upload:global",256,60);
+    return allowed?claims:{rateLimited:true};
+  }
   const lightweight=metadata.has(op), ip=ipKey(request);
   if (!await throttle(redis,"spc2:"+(lightweight?"metadata:":"work:")+claims.jti,lightweight?180:10,60) ||
       (!lightweight && (!await throttle(redis,"spc2:work-ip:"+ip,20,60) || !await workBudget(redis,claims))))

@@ -37,6 +37,13 @@ HPKE/device/account authentication and durable encrypted checkpoints. Normal is 
 continuous transfer, not a new 150 MB HPKE request: it does not increase protocol limits
 or introduce a plaintext upload endpoint. Catalog download behavior is preserved.
 
+V2 op 27 uses a dedicated authenticated upload budget (96 frames/minute per
+session/device, 128/IP, 256 globally, 3600/day/device). Proof/replay validation
+still runs first, and the gateway still validates the account, job, upload token,
+size and SHA-256. Read-only ops 25/29/30 use the existing metadata quota; paid
+start/finish and decoder operations retain their work quotas. This prevents
+large uploads and status polling from exhausting the decoder's 10/minute budget.
+
 ## Notices from Muse / the watcher
 
 Continue using the existing authenticated bot event endpoint:
@@ -59,7 +66,7 @@ names, status precedence and transfer pacing. Server integration tests exercise 
 credits, paid-start rejection, public staff avatar and the existing encrypted upload,
 ZIP download and original-input access contracts.
 
-Server update (needed for public avatar and readable zero-credit balance):
+Server update (needed for continuous uploads, public avatar and readable zero-credit balance):
 
 ```sh
 spdecode update web ci/unity-ads-online-qa
