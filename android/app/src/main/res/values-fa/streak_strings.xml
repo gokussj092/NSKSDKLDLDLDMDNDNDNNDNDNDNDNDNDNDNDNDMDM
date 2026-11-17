@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="streak_verified_date">تاریخ تأییدشده توسط سرور</string>
+    <string name="streak_date_pending">در انتظار تأیید تاریخ</string>
+    <string name="streak_today_done">امروز انجام شد</string>
+    <string name="streak_today_pending">امروز یک فایل یا متن را رمزگشایی کنید تا زنجیره ادامه یابد</string>
+    <string name="streak_weekly_reward">هر ۷ روز متوالی</string>
+    <string name="streak_reward">+۱ اعتبار تحلیل APK</string>
+    <string name="streak_reward_delivered">پاداش واریز شد</string>
+    <string name="streak_verified_note">روزها و پاداش‌ها توسط سرور تأیید می‌شوند.</string>
+    <plurals name="streak_days_left">
+        <item quantity="one">%1$d روز باقی مانده</item>
+        <item quantity="other">%1$d روز باقی مانده</item>
+    </plurals>
+</resources>

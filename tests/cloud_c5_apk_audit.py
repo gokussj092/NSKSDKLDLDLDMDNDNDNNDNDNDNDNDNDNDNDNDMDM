@@ -20,6 +20,11 @@ with zipfile.ZipFile(sys.argv[1]) as z:
         "assets/decoder_catalog.json",
         "assets/dexopt/baseline.prof",
         "assets/dexopt/baseline.profm",
+        # Public streak UI animations, explicitly packaged by prepareCloudAssets.
+        "assets/racha-fuego-naranja.gif",
+        "assets/racha-fuego-violeta.gif",
+        "assets/cofre_cerrado.gif",
+        "assets/cofre_abierto.gif",
     }
     # Unity LevelPlay and Google Ads ship OMID / ad-viewer assets with the SDK.
     # Only allow these known public SDK resources in the explicit Unity QA build.

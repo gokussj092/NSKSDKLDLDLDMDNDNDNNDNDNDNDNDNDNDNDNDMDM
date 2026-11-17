@@ -265,6 +265,13 @@ internal class NativeCommerceAuth(private val context:Context) {
         if(response.isNull("user")||response.optJSONObject("user")==null){
             wipeSession();return null
         }
+        val streak=response.optJSONObject("streak")
+        if(streak?.has("timeZoneLocked")==true && !streak.optBoolean("timeZoneLocked")){
+            // Only an IANA zone is proposed. Dates, progress and credits are never sent.
+            runCatching { http("/api/account/streak","POST",JSONObject()
+                .put("timeZone",java.time.ZoneId.systemDefault().id),true).first }
+                .getOrNull()?.optJSONObject("streak")?.let{response.put("streak",it)}
+        }
         CommerceSession.update(response)
         cacheIdentity(response)
         // The app may have started before Google/email sign-in. At startup FCM

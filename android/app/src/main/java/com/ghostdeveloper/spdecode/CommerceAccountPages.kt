@@ -6,6 +6,7 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
@@ -22,10 +23,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -36,9 +42,9 @@ import org.json.JSONObject
 import java.time.DayOfWeek
 import java.time.Instant
 import java.time.LocalDate
-import java.time.ZoneOffset
 import java.time.format.TextStyle
-import java.time.temporal.TemporalAdjusters
+import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
 import java.text.DateFormat
 import java.util.Date
 import java.util.Locale
@@ -159,34 +165,40 @@ private fun NumberPanel(title:String,value:String,icon:ImageVector,
     }
 }
 
-/** Weekly decryption streak from GET /api/account `streak` (server-owned).
- * Null when the server did not send the object: the card then shows a
- * neutral state and never invents days. weekCompleted is Mon..Sun (UTC). */
+/** All dates/counters come from the authenticated server snapshot. */
 internal data class DecryptionStreak(
-    val currentStreakDays:Int,
-    val weekCompleted:List<Boolean>,
+    val currentStreakDays:Long,
+    val cycleDays:List<LocalDate?>,
+    val cycleCompleted:List<Boolean>,
+    val today:LocalDate?,
+    val completedToday:Boolean,
+    val rewardProgress:Int,
+    val rewardClaimId:String?,
     val chestOpen:Boolean,
 )
 private fun streakOf(snapshot:JSONObject?):DecryptionStreak?{
     val raw=snapshot?.optJSONObject("streak")?:return null
-    val week=raw.optJSONArray("weekCompleted")
+    val days=raw.optJSONArray("cycleDays")
+    val completed=raw.optJSONArray("cycleCompleted")
+    val claim=raw.optString("rewardClaimId").takeUnless{it.isBlank()||it=="null"}
     return DecryptionStreak(
-        currentStreakDays=raw.optInt("currentStreakDays",0),
-        weekCompleted=(0 until 7).map{week?.optBoolean(it)?:false},
-        chestOpen=raw.optBoolean("chestOpen",false))
+        currentStreakDays=raw.optLong("currentStreakDays",0).coerceAtLeast(0L),
+        cycleDays=(0 until 7).map{runCatching{LocalDate.parse(days?.optString(it))}.getOrNull()},
+        cycleCompleted=(0 until 7).map{completed?.optBoolean(it)?:false},
+        today=runCatching{LocalDate.parse(raw.optString("today"))}.getOrNull(),
+        completedToday=raw.optBoolean("completedToday"),
+        rewardProgress=raw.optInt("rewardProgress").coerceIn(0,7),
+        rewardClaimId=claim,
+        chestOpen=raw.optBoolean("chestOpen")&&claim!=null)
 }
-/** Monday (UTC) that starts the current week; key for "once per week". */
-private fun currentWeekKeyUtc():String=
-    LocalDate.now(ZoneOffset.UTC)
-        .with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)).toString()
 
 private val streakGold=Color(0xFFFFD54F)
 private val streakGreen=Color(0xFF38A36D)
 
 /** Animated GIF from the app assets, played in a continuous loop with
  * android.graphics.Movie (no new dependency; works from API 24, unlike
- * ImageDecoder which needs API 28). The streak GIFs are 192x192 with a
- * transparent background, so only the flame/chest is visible on the card. */
+ * ImageDecoder which needs API 28). Transparent 512px flames and 192px chests
+ * are drawn at their source frame cadence, rather than every display refresh. */
 @Composable
 private fun AnimatedStreakGif(assetName:String,modifier:Modifier=Modifier){
     val context=LocalContext.current
@@ -195,12 +207,13 @@ private fun AnimatedStreakGif(assetName:String,modifier:Modifier=Modifier){
     }
     if(movie==null)return
     val duration=if(movie.duration()>0)movie.duration() else 1000
+    val frameMs=if(assetName.startsWith("racha-fuego-"))60 else 80
     var timeMs by remember{mutableIntStateOf(0)}
     LaunchedEffect(movie){
         val start=withFrameNanos{it}
         while(true){
             withFrameNanos{now->
-                timeMs=(((now-start)/1_000_000)%duration).toInt()
+                timeMs=((((now-start)/1_000_000)%duration).toInt()/frameMs)*frameMs
             }
         }
     }
@@ -219,70 +232,105 @@ private fun AnimatedStreakGif(assetName:String,modifier:Modifier=Modifier){
     }
 }
 
-/** Flame GIF for the streak stage: days 1-7 week 1, 8-14 week 2,
- * 15-21 week 3, 22 or more the purple max flame. */
-private fun streakFlameAsset(days:Int):String=when{
-    days>=22->"llama_maxima.gif"
-    days>=15->"llama_semana3.gif"
-    days>=8->"llama_semana2.gif"
-    else->"llama_semana1.gif"
-}
+/** Visual tier only: the verified total keeps increasing beyond 100 days. */
+private fun streakFlameAsset(days:Long):String=
+    if(days>=100L)"racha-fuego-violeta.gif" else "racha-fuego-naranja.gif"
 
 @Composable
 private fun DecryptionStreakCard(language:String,user:CommerceIdentity?,
     streak:DecryptionStreak?,onChestTap:()->Unit){
     val tr:(String)->String={CommerceAccountWords.get(language,it)}
     val locale=Locale.forLanguageTag(if(language=="in")"id" else language)
-    val todayIndex=LocalDate.now(ZoneOffset.UTC).dayOfWeek.value-1
-    val weeks=(streak?.currentStreakDays?:0)/7
-    val chestSize=(34+minOf(weeks,4)*6).dp
-    SectionCard{
+    val total=streak?.currentStreakDays?:0L
+    val tint=if(total>=100L)Color(0xFFCC9CFF) else streakGold
+    val completed=streak?.rewardProgress?:0
+    val progress by animateFloatAsState(((completed-1).coerceAtLeast(0)/6f).coerceIn(0f,1f),
+        animationSpec=tween(450),label="verified-streak-progress")
+    Column(Modifier.fillMaxWidth().clip(RoundedCornerShape(26.dp))
+        .background(Brush.verticalGradient(listOf(tint.copy(alpha=.13f),sectionPanel)))
+        .border(1.dp,tint.copy(alpha=.3f),RoundedCornerShape(26.dp)).padding(18.dp),
+        verticalArrangement=Arrangement.spacedBy(16.dp)){
         Row(verticalAlignment=Alignment.CenterVertically,
-            horizontalArrangement=Arrangement.spacedBy(11.dp)){
-            AnimatedStreakGif(streakFlameAsset(streak?.currentStreakDays?:0),
-                modifier=Modifier.size(28.dp))
-            Column(Modifier.weight(1f),verticalArrangement=Arrangement.spacedBy(3.dp)){
-                Text(tr("Decryption streak"),color=foreground,fontSize=16.sp,
-                    fontWeight=FontWeight.SemiBold)
+            horizontalArrangement=Arrangement.spacedBy(10.dp)){
+            AnimatedStreakGif(streakFlameAsset(total),Modifier.size(64.dp))
+            Column(Modifier.weight(1f),verticalArrangement=Arrangement.spacedBy(5.dp)){
+                Text(tr("Decryption streak"),color=foreground,fontSize=17.sp,fontWeight=FontWeight.Bold)
                 Text(when{
                     user==null->tr("Sign in to start your streak")
                     streak==null->tr("Streak unavailable")
+                    total>=100L->"100+ "+tr("days")
                     else->tr("Decode every day to grow your streak")
                 },color=secondary,fontSize=12.sp)
             }
-            if(user!=null&&streak!=null)
-                Text(streak.currentStreakDays.toString()+" "+tr("days"),
-                    color=foreground,fontSize=14.sp,fontWeight=FontWeight.Bold)
+            if(user!=null&&streak!=null)Column(horizontalAlignment=Alignment.End){
+                Text(total.toString(),color=tint,fontSize=if(total<10000)36.sp else 28.sp,
+                    fontWeight=FontWeight.Bold,maxLines=1)
+                Text(tr("days"),color=secondary,fontSize=11.sp)
+            }
         }
-        Row(Modifier.fillMaxWidth(),
-            horizontalArrangement=Arrangement.SpaceBetween,
-            verticalAlignment=Alignment.CenterVertically){
-            (0 until 7).forEach{day->
-                val done=streak?.weekCompleted?.getOrNull(day)==true
-                Column(horizontalAlignment=Alignment.CenterHorizontally,
-                    verticalArrangement=Arrangement.spacedBy(4.dp)){
-                    Box(Modifier.size(32.dp)
-                        .background(if(done)streakGreen else sectionRaised,
-                            RoundedCornerShape(50))
-                        .then(if(day==todayIndex)Modifier.border(2.dp,foreground,
-                            RoundedCornerShape(50)) else Modifier),
-                        contentAlignment=Alignment.Center){
-                        if(done)Icon(Icons.Outlined.Check,null,tint=foreground,
-                            modifier=Modifier.size(17.dp))
+        HorizontalDivider(color=tint.copy(alpha=.14f))
+        Row(verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.spacedBy(7.dp)){
+            Icon(Icons.Outlined.CalendarToday,null,tint=tint,modifier=Modifier.size(16.dp))
+            Text(streak?.today?.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM).withLocale(locale))
+                ?:stringResource(R.string.streak_date_pending),
+                color=foreground,fontWeight=FontWeight.SemiBold,fontSize=13.sp,modifier=Modifier.weight(1f))
+            if(streak?.today!=null)Icon(Icons.Outlined.VerifiedUser,
+                stringResource(R.string.streak_verified_date),tint=streakGreen,modifier=Modifier.size(17.dp))
+        }
+        if(user!=null&&streak!=null)Row(verticalAlignment=Alignment.CenterVertically,
+            horizontalArrangement=Arrangement.spacedBy(7.dp)){
+            if(streak.completedToday)Icon(Icons.Outlined.CheckCircle,null,tint=tint,modifier=Modifier.size(17.dp))
+            Text(stringResource(if(streak.completedToday)R.string.streak_today_done else R.string.streak_today_pending),
+                color=if(streak.completedToday)tint else secondary,fontSize=12.sp,lineHeight=18.sp)
+        }
+        Box(Modifier.fillMaxWidth()){
+            Canvas(Modifier.fillMaxWidth().height(34.dp)){
+                val step=size.width/7f
+                val start=Offset(step/2,size.height/2);val end=Offset(size.width-step/2,size.height/2)
+                drawLine(sectionRaised,start,end,5.dp.toPx(),StrokeCap.Round)
+                if(progress>0f)drawLine(tint,start,Offset(start.x+(end.x-start.x)*progress,end.y),5.dp.toPx(),StrokeCap.Round)
+            }
+            Row(Modifier.fillMaxWidth()){
+                (0 until 7).forEach{day->
+                    val done=streak?.cycleCompleted?.getOrNull(day)==true
+                    val date=streak?.cycleDays?.getOrNull(day)
+                    val today=date!=null&&date==streak?.today
+                    Column(Modifier.weight(1f),horizontalAlignment=Alignment.CenterHorizontally,
+                        verticalArrangement=Arrangement.spacedBy(7.dp)){
+                        Box(Modifier.size(34.dp).background(if(done)tint else sectionRaised,RoundedCornerShape(50))
+                            .then(if(today)Modifier.border(2.dp,tint,RoundedCornerShape(50)) else Modifier),
+                            contentAlignment=Alignment.Center){
+                            if(done)Icon(Icons.Outlined.Check,null,tint=midnight,modifier=Modifier.size(18.dp))
+                            else Text((day+1).toString(),color=if(today)tint else secondary,fontSize=11.sp,
+                                fontWeight=if(today)FontWeight.Bold else FontWeight.Normal)
+                        }
+                        Text(date?.dayOfWeek?.getDisplayName(TextStyle.NARROW,locale)?:"—",
+                            color=if(today)foreground else secondary,fontSize=11.sp,
+                            fontWeight=if(today)FontWeight.Bold else FontWeight.Normal)
                     }
-                    Text(DayOfWeek.of(day+1).getDisplayName(TextStyle.NARROW,locale),
-                        color=if(day==todayIndex)foreground else secondary,fontSize=11.sp,
-                        fontWeight=if(day==todayIndex)FontWeight.Bold else FontWeight.Normal)
                 }
             }
-            Box(Modifier.size(chestSize+14.dp)
-                .clickable(enabled=streak?.chestOpen==true){onChestTap()},
-                contentAlignment=Alignment.Center){
-                AnimatedStreakGif("cofre_cerrado.gif",modifier=Modifier.size(chestSize))
+        }
+        Row(Modifier.fillMaxWidth(),verticalAlignment=Alignment.CenterVertically,
+            horizontalArrangement=Arrangement.spacedBy(12.dp)){
+            Box(Modifier.size(64.dp).clip(RoundedCornerShape(18.dp))
+                .background(Brush.radialGradient(listOf(streakGold.copy(alpha=.22f),Color.Transparent)))
+                .clickable(enabled=streak?.chestOpen==true){onChestTap()},contentAlignment=Alignment.Center){
+                AnimatedStreakGif(if(streak?.chestOpen==true)"cofre_abierto.gif" else "cofre_cerrado.gif",Modifier.size(58.dp))
+            }
+            Column(Modifier.weight(1f),verticalArrangement=Arrangement.spacedBy(5.dp)){
+                Text(if(streak?.chestOpen==true)stringResource(R.string.streak_reward_delivered)
+                    else pluralStringResource(R.plurals.streak_days_left,(7-completed).coerceAtLeast(1),(7-completed).coerceAtLeast(1)),
+                    color=foreground,fontSize=14.sp,fontWeight=FontWeight.SemiBold)
+                Text(stringResource(R.string.streak_weekly_reward),color=secondary,fontSize=11.sp,lineHeight=17.sp)
+                Surface(color=streakGold.copy(alpha=.14f),shape=RoundedCornerShape(50)){
+                    Text(stringResource(R.string.streak_reward),color=streakGold,fontWeight=FontWeight.SemiBold,
+                        fontSize=11.sp,modifier=Modifier.padding(horizontal=10.dp,vertical=6.dp))
+                }
             }
         }
-        if(streak?.chestOpen==true)
-            Text(tr("Tap the chest to see it again"),color=secondary,fontSize=11.sp)
+        Text(if(streak?.chestOpen==true)tr("Tap the chest to see it again")
+            else stringResource(R.string.streak_verified_note),color=secondary,fontSize=10.sp,lineHeight=15.sp)
     }
 }
 
@@ -334,18 +382,17 @@ internal fun CommerceAccountHome(language:String,user:CommerceIdentity?,
     val tr:(String)->String={CommerceAccountWords.get(language,it)}
     val context=LocalContext.current
     val streak=streakOf(snapshot)
-    val weekKey=currentWeekKeyUtc()
     var showCelebration by remember{mutableStateOf(false)}
     var creditsHighlight by remember{mutableStateOf(false)}
     val streakPrefs=remember(context){
         context.getSharedPreferences("spdecode-streak",Context.MODE_PRIVATE)}
-    // Celebrate an open chest once per completed week: the week key is
-    // stored locally the first time the celebration is shown, so reopening
-    // the profile does not replay it. Tapping the chest replays it.
-    LaunchedEffect(weekKey,streak?.chestOpen){
-        if(user!=null&&streak?.chestOpen==true&&
-            streakPrefs.getString("celebrated_week",null)!=weekKey){
-            streakPrefs.edit().putString("celebrated_week",weekKey).apply()
+    // Presentation acknowledgement only, scoped to account + server reward id.
+    LaunchedEffect(user?.id,streak?.rewardClaimId,streak?.chestOpen){
+        val account=user?.id
+        val claim=streak?.rewardClaimId
+        if(account!=null&&claim!=null&&streak?.chestOpen==true&&
+            streakPrefs.getString("celebrated_reward_"+account,null)!=claim){
+            streakPrefs.edit().putString("celebrated_reward_"+account,claim).apply()
             showCelebration=true
         }
     }

@@ -6,7 +6,7 @@ import {catalog,taxRules,checkout,settle,claim,updateApiAllowedIp,useApiKey,chec
 import {publicProduct,taxQuote,validateProduct} from './catalog.mjs';
 import {profile,editProfile} from './profile.mjs';
 import {creditBalance} from './credits.mjs';
-import {emptyStreakState,getAccountStreak} from './account-streak.mjs';
+import {getAccountStreak} from './account-streak.mjs';
 import {createGift,disableGift,listGifts,redeemGift} from './gifts.mjs';
 import {capturePaypal,paymentEvent} from './providers.mjs';
 import {adminSettings,authenticateAdmin,validMutation} from '../c6-admin-auth.mjs';
@@ -26,14 +26,14 @@ export const accountSnapshot=request=>safe(async()=>{
   const session=await accountAuth().api.getSession({headers:request.headers});
   if(!session)return reply({user:null,authEnabled:true});
   const user=session.user,p=await profile(user.id),db=database();
+  const streakRead=getAccountStreak(user.id,{db}).catch(()=>null);
   const [orders,entitlements,credits,passwordAccount,streak]=await Promise.all([
     db.query(`SELECT id,product_id,provider,status,quote,created_at,paid_at,payment_live,product_snapshot->>'term' AS term,product_snapshot->>'days' AS days,product_snapshot->>'credits' AS credits FROM spdecode_shop.orders WHERE account_id=$1 ORDER BY created_at DESC LIMIT 50`,[user.id]),
     db.query(`SELECT id,order_id,product_id,status,token_prefix,allowed_ip,quota,days,expires_at,claimed_at,payment_live FROM spdecode_shop.entitlements WHERE account_id=$1 ORDER BY created_at DESC`,[user.id]),
-    creditBalance(user.id,{db}),
+    streakRead.then(()=>creditBalance(user.id,{db})),
     db.query('SELECT 1 FROM shop_identity WHERE "userId"=$1 AND "providerId"=$2 AND password IS NOT NULL LIMIT 1',[user.id,'credential']),
-    // Streak is best-effort here: an account created before migration 014
-    // (or a streak-table failure) must never break the account snapshot.
-    getAccountStreak(user.id,{db}).catch(()=>emptyStreakState())]);
+    // Read the balance after the streak: a newly observed reward is already in the ledger.
+    streakRead]);
   const live=process.env.SPDECODE_PAYMENTS_LIVE==='true';
   const adEntitlements=entitlements.rows.filter(e=>e.product_id==='ads-free'&&
     e.status==='active'&&e.payment_live===live&&e.expires_at&&

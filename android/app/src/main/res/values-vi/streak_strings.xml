@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="streak_verified_date">Ngày đã được máy chủ xác minh</string>
+    <string name="streak_date_pending">Đang chờ xác minh ngày</string>
+    <string name="streak_today_done">Đã hoàn thành hôm nay</string>
+    <string name="streak_today_pending">Giải mã tệp hoặc văn bản hôm nay để giữ chuỗi ngày</string>
+    <string name="streak_weekly_reward">Mỗi 7 ngày liên tiếp</string>
+    <string name="streak_reward">+1 tín dụng phân tích APK</string>
+    <string name="streak_reward_delivered">Đã trao phần thưởng</string>
+    <string name="streak_verified_note">Ngày và phần thưởng được máy chủ xác minh.</string>
+    <plurals name="streak_days_left">
+        <item quantity="one">Còn %1$d ngày</item>
+        <item quantity="other">Còn %1$d ngày</item>
+    </plurals>
+</resources>

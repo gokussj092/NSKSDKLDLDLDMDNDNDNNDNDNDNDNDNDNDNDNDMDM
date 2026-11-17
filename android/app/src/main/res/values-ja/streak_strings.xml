@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="streak_verified_date">サーバーで確認済みの日付</string>
+    <string name="streak_date_pending">日付の確認待ち</string>
+    <string name="streak_today_done">本日は達成済み</string>
+    <string name="streak_today_pending">今日ファイルかテキストを復号して継続しましょう</string>
+    <string name="streak_weekly_reward">7日連続で達成するごとに</string>
+    <string name="streak_reward">APK解析クレジット +1</string>
+    <string name="streak_reward_delivered">報酬を受け取りました</string>
+    <string name="streak_verified_note">日数と報酬はサーバーで確認されます。</string>
+    <plurals name="streak_days_left">
+        <item quantity="one">あと%1$d日</item>
+        <item quantity="other">あと%1$d日</item>
+    </plurals>
+</resources>

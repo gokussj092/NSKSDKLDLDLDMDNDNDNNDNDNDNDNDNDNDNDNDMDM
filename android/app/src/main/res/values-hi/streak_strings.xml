@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="streak_verified_date">सर्वर से सत्यापित तारीख</string>
+    <string name="streak_date_pending">तारीख के सत्यापन का इंतज़ार</string>
+    <string name="streak_today_done">आज पूरा हुआ</string>
+    <string name="streak_today_pending">अपना क्रम बनाए रखने के लिए आज फ़ाइल या टेक्स्ट डिक्रिप्ट करें</string>
+    <string name="streak_weekly_reward">हर लगातार 7 दिनों पर</string>
+    <string name="streak_reward">+1 APK विश्लेषण क्रेडिट</string>
+    <string name="streak_reward_delivered">इनाम मिल गया</string>
+    <string name="streak_verified_note">दिन और इनाम सर्वर द्वारा सत्यापित होते हैं।</string>
+    <plurals name="streak_days_left">
+        <item quantity="one">%1$d दिन बाकी</item>
+        <item quantity="other">%1$d दिन बाकी</item>
+    </plurals>
+</resources>

@@ -12,7 +12,10 @@ import {creditBalance} from '../lib/commerce/credits.mjs';
 import {completeJob} from '../lib/app-analysis.mjs';
 import {utcDayString,weekMondayString,weekDayIndex,emptyStreakState,
  deriveStreakState,chestJobId,getAccountStreak,recordDecodeDay,
- recordSuccessfulDecodeForDevice,recordDecodeStreak} from '../lib/commerce/account-streak.mjs';
+ recordSuccessfulDecodeForDevice,recordDecodeStreak,configureStreakTimeZone,localDayString,validatedTimeZone} from '../lib/commerce/account-streak.mjs';
+
+import {streakTimeZoneRequest} from '../lib/commerce/streak-route.mjs';
+import {ShopError} from '../lib/commerce/config.mjs';
 
 let pg,db,auth,root;
 const accountId=randomUUID(),otherId=randomUUID();
@@ -42,7 +45,7 @@ before(async()=>{
  auth=makeAuth(db,env);
  await (await getMigrations(auth.options)).runMigrations();
  for(const name of ['002_shop.sql','005_account_support_apk.sql',
-   '008_account_notifications.sql','012_app_analysis.sql','014_account_streak.sql']){
+   '008_account_notifications.sql','012_app_analysis.sql','014_account_streak.sql','015_streak_calendar.sql']){
   const sql=await readFile(new URL('../sql/'+name,import.meta.url),'utf8');
   await pg.exec(sql);
  }
@@ -75,8 +78,8 @@ test('UTC week helpers: Monday starts the week, Sunday ends it',()=>{
 });
 
 test('unknown account reads an empty streak',async()=>{
- assert.deepEqual(await getAccountStreak(randomUUID(),{db}),emptyStreakState());
- assert.deepEqual(deriveStreakState(null),emptyStreakState());
+ assert.deepEqual(await getAccountStreak(randomUUID(),{db,today:at(MON)}),emptyStreakState(at(MON)));
+ assert.deepEqual(deriveStreakState(null,at(MON)),emptyStreakState(at(MON)));
 });
 
 test('consecutive days add up; double record on the same day does not',async()=>{
@@ -242,4 +245,104 @@ test('completeJob rejects an invalid resultSummary without changing the job',asy
  const row=(await db.query('SELECT status FROM spdecode_shop.app_analysis_jobs WHERE job_id=$1',
    [jobId])).rows[0];
  assert.equal(row.status,'QUEUED_FOR_ANALYSIS');
+});
+
+async function calendarAccount(){
+ const id=randomUUID();
+ await db.query(`INSERT INTO shop_user(id,name,email,"emailVerified","createdAt","updatedAt")
+  VALUES($1,'Calendar Test',$2,true,now(),now())`,[id,id+'@example.invalid']);
+ return id;
+}
+const hour=value=>new Date(value);
+test('local midnight follows the locked account zone, never a changed phone zone or clock',async()=>{
+ const id=await calendarAccount();
+ let state=await configureStreakTimeZone(id,'America/Tijuana',{db,today:hour('2026-11-17T07:59:00Z')});
+ assert.equal(state.today,'2026-11-16');assert.equal(state.currentStreakDays,0);
+ assert.equal(state.timeZoneLocked,true);
+ state=await recordDecodeDay(id,{db,today:hour('2026-11-17T07:59:30Z')});
+ assert.equal(state.currentStreakDays,1);assert.equal(state.completedToday,true);
+ state=await configureStreakTimeZone(id,'Pacific/Kiritimati',{db,today:hour('2026-11-17T07:59:45Z')});
+ assert.equal(state.timeZone,'America/Tijuana');assert.equal(state.today,'2026-11-16');
+ assert.equal(state.currentStreakDays,1);
+ assert.equal((await recordDecodeDay(id,{db,today:hour('2026-11-17T07:59:59Z')})).currentStreakDays,1);
+ state=await recordDecodeDay(id,{db,today:hour('2026-11-17T08:00:00Z')});
+ assert.equal(state.today,'2026-11-17');assert.equal(state.currentStreakDays,2);
+ assert.equal((await creditBalance(id,{db})).available,0);
+});
+test('daylight-saving transitions use local calendar dates, without an extra repeated day',async()=>{
+ const id=await calendarAccount();
+ await configureStreakTimeZone(id,'America/Tijuana',{db,today:hour('2026-11-01T07:30:00Z')});
+ const first=await recordDecodeDay(id,{db,today:hour('2026-11-01T08:30:00Z')});
+ const repeated=await recordDecodeDay(id,{db,today:hour('2026-11-01T09:30:00Z')});
+ assert.equal(first.today,'2026-11-01');assert.equal(repeated.today,first.today);
+ assert.equal(repeated.currentStreakDays,1);
+ assert.equal((await recordDecodeDay(id,{db,today:hour('2026-11-02T08:01:00Z')})).currentStreakDays,2);
+});
+test('105 consecutive days starting Wednesday pay 15 credits; 100 unlocks violet without capping the total',async()=>{
+ const id=await calendarAccount(),start=Date.parse('2026-01-07T20:00:00Z');
+ await configureStreakTimeZone(id,'America/Tijuana',{db,today:new Date(start)});
+ for(let n=1;n<=105;n++){
+  const clock=new Date(start+(n-1)*86400000);
+  const state=await recordDecodeDay(id,{db,today:clock});
+  assert.equal(state.currentStreakDays,n);
+  assert.equal(state.creditGranted,n%7===0);
+  assert.equal(state.rewardProgress,((n-1)%7)+1);
+  if(n===99)assert.equal(state.flameColor,'orange');
+  if(n>=100)assert.equal(state.flameColor,'violet');
+  if(n%7===0){
+   assert.equal(state.chestOpen,true);
+   const retry=await recordDecodeDay(id,{db,today:clock});
+   assert.equal(retry.creditGranted,false);assert.equal(retry.rewardClaimId,state.rewardClaimId);
+  }
+ }
+ assert.equal((await creditBalance(id,{db})).available,15);
+ const grants=(await db.query("SELECT job_id FROM spdecode_shop.credit_ledger WHERE account_id=$1 AND movement_kind='grant'",[id])).rows;
+ assert.equal(grants.length,15);assert.equal(new Set(grants.map(g=>g.job_id)).size,15);
+});
+test('a missed day resets only the active run; already awarded credits survive',async()=>{
+ const id=await calendarAccount(),start=Date.parse('2026-02-04T12:00:00Z');
+ for(let n=0;n<7;n++)await recordDecodeDay(id,{db,today:new Date(start+n*86400000)});
+ const next=await recordDecodeDay(id,{db,today:new Date(start+9*86400000)});
+ assert.equal(next.currentStreakDays,1);assert.equal(next.rewardProgress,1);
+ assert.equal(next.chestOpen,false);assert.equal((await creditBalance(id,{db})).available,1);
+});
+test('future stored dates and server clock rollback cannot add or reset earned days',async()=>{
+ const id=await calendarAccount();
+ const first=await recordDecodeDay(id,{db,today:at(WED)});
+ const old=await recordDecodeDay(id,{db,today:at(MON)});
+ assert.equal(old.currentStreakDays,0);assert.equal(old.creditGranted,false);
+ assert.equal((await getAccountStreak(id,{db,today:at(WED)})).currentStreakDays,first.currentStreakDays);
+ assert.equal((await recordDecodeDay(id,{db,today:at(THU)})).currentStreakDays,2);
+});
+test('legacy totals and credited chests migrate without an immediate or duplicate award',async()=>{
+ const id=await calendarAccount(),oldMonday='2026-11-16';
+ await db.query(`INSERT INTO spdecode_shop.account_streaks
+  (account_id,current_streak,last_active_date,week_start,week_days,last_counted_at)
+  VALUES($1,13,'2026-11-23','2026-11-23','{t,f,f,f,f,f,f}', '2026-11-23T20:00:00Z')`,[id]);
+ await db.query(`INSERT INTO spdecode_shop.credit_ledger(id,account_id,job_id,movement_kind,delta,payment_live,created_at)
+  VALUES($1,$2,$3,'grant',1,false,'2026-11-22T20:00:00Z')`,[randomUUID(),id,chestJobId(id,oldMonday)]);
+ const state=await configureStreakTimeZone(id,'America/Tijuana',{db,today:hour('2026-11-23T20:00:00Z')});
+ assert.equal(state.currentStreakDays,13);assert.equal(state.rewardProgress,1);
+ assert.equal((await creditBalance(id,{db})).available,1);
+ assert.equal((await recordDecodeDay(id,{db,today:hour('2026-11-24T20:00:00Z')})).creditGranted,false);
+ for(let n=25;n<=29;n++)await recordDecodeDay(id,{db,today:hour('2026-11-'+n+'T20:00:00Z')});
+ assert.equal((await creditBalance(id,{db})).available,2);
+});
+test('calendar setup authenticates ownership and rejects client dates, counters and claim actions',async()=>{
+ const id=await calendarAccount(),auth=async()=>({user:{id}});
+ const request=input=>new Request('http://localhost:3000/api/account/streak',{method:'POST',
+  headers:{origin:'http://localhost:3000','content-type':'application/json',date:'Wed, 01 Jan 2099 00:00:00 GMT'},body:JSON.stringify(input)});
+ for(const field of ['today','date','currentStreakDays','rewardProgress','claim','accountId']){
+  const response=await streakTimeZoneRequest(request({timeZone:'America/Tijuana',[field]:'2099-01-01'}),{db,authenticate:auth,today:at(MON)});
+  assert.equal(response.status,400,field);
+ }
+ const unauthorized=await streakTimeZoneRequest(request({timeZone:'UTC'}),{db,authenticate:async()=>{throw new ShopError('SIGN_IN_REQUIRED',401);}});
+ assert.equal(unauthorized.status,401);
+ const ok=await streakTimeZoneRequest(request({timeZone:'America/Tijuana'}),{db,authenticate:auth,today:hour('2026-11-17T01:00:00Z')});
+ assert.equal(ok.status,200);
+ const state=(await ok.json()).streak;
+ assert.equal(state.today,'2026-11-16');assert.equal(state.currentStreakDays,0);
+ assert.equal((await creditBalance(id,{db})).available,0);
+ for(const zone of ['Not/AZone','2099-01-01',123,''])assert.throws(()=>validatedTimeZone(zone));
+ assert.equal(localDayString('2026-11-17T01:00:00Z','America/Tijuana'),'2026-11-16');
 });

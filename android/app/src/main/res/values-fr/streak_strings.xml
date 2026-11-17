@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="streak_verified_date">Date vérifiée par le serveur</string>
+    <string name="streak_date_pending">Date en attente de validation</string>
+    <string name="streak_today_done">Terminé aujourd’hui</string>
+    <string name="streak_today_pending">Déchiffrez un fichier ou un texte aujourd’hui pour continuer</string>
+    <string name="streak_weekly_reward">Tous les 7 jours consécutifs</string>
+    <string name="streak_reward">+1 crédit d’analyse APK</string>
+    <string name="streak_reward_delivered">Récompense attribuée</string>
+    <string name="streak_verified_note">Les jours et les récompenses sont vérifiés par le serveur.</string>
+    <plurals name="streak_days_left">
+        <item quantity="one">Encore %1$d jour</item>
+        <item quantity="other">Encore %1$d jours</item>
+    </plurals>
+</resources>

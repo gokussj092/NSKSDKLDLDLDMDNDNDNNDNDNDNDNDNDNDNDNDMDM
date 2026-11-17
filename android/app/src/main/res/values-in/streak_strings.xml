@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="streak_verified_date">Tanggal diverifikasi server</string>
+    <string name="streak_date_pending">Menunggu verifikasi tanggal</string>
+    <string name="streak_today_done">Selesai hari ini</string>
+    <string name="streak_today_pending">Dekripsi berkas atau teks hari ini untuk melanjutkan rangkaian</string>
+    <string name="streak_weekly_reward">Setiap 7 hari berturut-turut</string>
+    <string name="streak_reward">+1 kredit analisis APK</string>
+    <string name="streak_reward_delivered">Hadiah diberikan</string>
+    <string name="streak_verified_note">Hari dan hadiah diverifikasi oleh server.</string>
+    <plurals name="streak_days_left">
+        <item quantity="one">Tersisa %1$d hari</item>
+        <item quantity="other">Tersisa %1$d hari</item>
+    </plurals>
+</resources>

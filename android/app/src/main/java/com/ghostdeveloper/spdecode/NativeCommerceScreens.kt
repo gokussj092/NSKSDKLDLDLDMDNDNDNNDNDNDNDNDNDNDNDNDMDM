@@ -21,6 +21,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.platform.LocalContext
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 import org.json.JSONObject
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -168,8 +170,13 @@ internal fun NativeCommerceScreens(start:String,onExit:()->Unit,
     var acceptedPolicies by rememberSaveable {mutableStateOf(false)}
     var accountSnapshot by remember {mutableStateOf<JSONObject?>(null)}
     var ipEdit by rememberSaveable{mutableStateOf("")}
-    LaunchedEffect(page){
-        if(page in setOf("account","orders","api","security","ad-free","profile-edit","password","gift","delete-account","notifications","activity"))
+    LaunchedEffect(page,CommerceSession.user?.id){
+        if(page=="account"){
+            while(isActive){
+                accountSnapshot=auth.account()
+                delay(30_000)
+            }
+        }else if(page in setOf("orders","api","security","ad-free","profile-edit","password","gift","delete-account","notifications","activity"))
             accountSnapshot=auth.account()
     }
     var catalog by remember {mutableStateOf<NativeStoreCatalog?>(null)}

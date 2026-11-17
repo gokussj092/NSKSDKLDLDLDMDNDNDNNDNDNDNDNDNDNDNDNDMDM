@@ -45,6 +45,14 @@ on:
       - android/app/src/main/java/com/ghostdeveloper/spdecode/CommerceNotificationCenter.kt
       - android/app/src/main/java/com/ghostdeveloper/spdecode/NativeCommerceAuth.kt
       - android/app/src/main/java/com/ghostdeveloper/spdecode/NativeCommerceScreens.kt
+      - cloud/web/lib/commerce/account-streak.mjs
+      - cloud/web/lib/commerce/streak-route.mjs
+      - cloud/web/app/api/account/streak/**
+      - cloud/web/sql/015_streak_calendar.sql
+      - cloud/web/tests/account-streak.test.mjs
+      - android/app/src/main/assets/racha-fuego-*.gif
+      - android/app/src/main/assets/cofre_*.gif
+      - android/app/src/main/res/**/streak_strings.xml
       - android/app/src/main/java/com/ghostdeveloper/spdecode/CommerceAccountPages.kt
       - cloud/web/lib/commerce/staff.mjs
       - cloud/web/lib/commerce/staff-route.mjs
@@ -284,6 +292,7 @@ jobs:
           set -euo pipefail
           npm ci --prefix cloud/web --no-audit --no-fund
           node --test cloud/web/tests/app-analysis-transfer.test.mjs cloud/web/tests/app-analysis.test.mjs cloud/web/tests/app-analysis-contract.test.mjs cloud/web/tests/app-analysis-input.test.mjs cloud/web/tests/device-security.test.mjs
+          node --test cloud/web/tests/account-streak.test.mjs
           node --test cloud/web/tests/gifts.test.mjs
           node --test cloud/web/tests/account-support-security.test.mjs
           node --test cloud/web/tests/account-notices.test.mjs
@@ -344,6 +353,15 @@ jobs:
           from zipfile import ZipFile
           with ZipFile(sys.argv[1]) as apk:
               files=set(apk.namelist())
+              import hashlib,pathlib
+              for name in ['racha-fuego-naranja.gif','racha-fuego-violeta.gif','cofre_cerrado.gif','cofre_abierto.gif']:
+                  asset='assets/'+name
+                  assert asset in files, 'Missing animated streak asset: '+name
+                  actual=apk.read(asset)
+                  expected=pathlib.Path('android/app/src/main/assets',name).read_bytes()
+                  assert hashlib.sha256(actual).digest()==hashlib.sha256(expected).digest()
+                  assert actual[:6] in (b'GIF87a',b'GIF89a')
+              print('PASS: all four streak GIFs are packaged byte-for-byte')
               assert "assets/spdecode-play-updates-enabled.marker" not in files
               assert any(x.startswith("classes") and x.endswith(".dex") for x in files)
           print("PASS: signed external APK contains dex and no Play updater marker")

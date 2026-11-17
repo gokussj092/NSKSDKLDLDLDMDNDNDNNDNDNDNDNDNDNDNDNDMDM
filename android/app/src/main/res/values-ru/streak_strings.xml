@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="streak_verified_date">Дата подтверждена сервером</string>
+    <string name="streak_date_pending">Ожидание подтверждения даты</string>
+    <string name="streak_today_done">Сегодня выполнено</string>
+    <string name="streak_today_pending">Расшифруйте файл или текст сегодня, чтобы продолжить серию</string>
+    <string name="streak_weekly_reward">Каждые 7 дней подряд</string>
+    <string name="streak_reward">+1 кредит анализа APK</string>
+    <string name="streak_reward_delivered">Награда начислена</string>
+    <string name="streak_verified_note">Дни и награды проверяются сервером.</string>
+    <plurals name="streak_days_left">
+        <item quantity="one">Осталось дней: %1$d</item>
+        <item quantity="other">Осталось дней: %1$d</item>
+    </plurals>
+</resources>

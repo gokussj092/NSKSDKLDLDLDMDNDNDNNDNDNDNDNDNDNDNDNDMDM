@@ -748,6 +748,9 @@ val prepareCloudAssets = tasks.register<Sync>("prepareCloudAssets") {
     // No encrypted vault files, generated runtime vault key, network provider
     // endpoints, profile tables or other original decoder source materials.
     from("src/main/assets/decoder_catalog.json")
+    from("src/main/assets") {
+        include("racha-fuego-naranja.gif", "racha-fuego-violeta.gif", "cofre_cerrado.gif", "cofre_abierto.gif")
+    }
     if (enablePlayAab) from("src/playUpdate/assets/spdecode-play-updates-enabled.marker")
     // Google package-name ownership proof is a temporary CI-only APK. It is
     // NEVER included in ordinary Play AABs, external beta APKs or debug APKs.
