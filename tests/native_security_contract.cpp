@@ -49,12 +49,21 @@ int main(){
     const auto play=spdecode::playNonce(std::string(43,'A'),
         "11111111-1111-1111-1111-111111111111",std::string(120,'B'));
     assert(play.size()==43);
-    bool rejected=false;
-    try{(void)spdecode::formatProof(3,"1.1.24",
-        reinterpret_cast<const unsigned char*>(data.data()),data.size(),
-        bearer,"1793380000",nonce);}
-    catch(const std::exception&){rejected=true;}
-    assert(rejected);
+    for(int op:{0,3,31}){
+        bool rejected=false;
+        try{(void)spdecode::formatProof(op,"1.1.24",
+            reinterpret_cast<const unsigned char*>(data.data()),data.size(),
+            bearer,"1793380000",nonce);}
+        catch(const std::exception&){rejected=true;}
+        assert(rejected);
+    }
+    for(int op:{25,27,29,30,31}){
+        bool rejected=false;
+        try{(void)spdecode::inlineActionBinding(op,bearer,
+            reinterpret_cast<const unsigned char*>(data.data()),data.size());}
+        catch(const std::exception&){rejected=true;}
+        assert(rejected);
+    }
     std::cout<<"PASS native V2 proof and Integrity nonce protocol\n";
 }
 

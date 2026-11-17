@@ -111,6 +111,8 @@ on:
       - android/app/src/main/java/com/ghostdeveloper/spdecode/NativeProfileRules.kt
       - android/app/src/main/cpp/spdecode_profile.cpp
       - android/app/src/main/cpp/CMakeLists.txt
+      - android/app/src/main/cpp/spdecode_security.cpp
+      - android/app/src/main/cpp/spdecode_security.h
       - android/app/src/main/java/com/ghostdeveloper/spdecode/NativeCommerceScreens.kt
       - android/app/src/main/java/com/ghostdeveloper/spdecode/NativeCommerceAuth.kt
       - android/app/src/main/java/com/ghostdeveloper/spdecode/NativeStoreCatalog.kt
