@@ -1805,7 +1805,7 @@ private fun noticeForm(
     open: (String, List<FormField>, suspend (Map<String, String>) -> Unit) -> Unit
 ) {
   open(
-      "Enviar notificación",
+      "Anuncio público para usuarios de SP-DECODE",
       listOf(
           FormField("title", "Título"),
           FormField("body", "Mensaje"),

@@ -70,3 +70,18 @@ spdecode update web feat/android-admin-panel
 ```
 
 Después de actualizar, una consulta **sin sesión** a `https://panel.spdecode.xyz/api/admin/mobile?section=orders` debe responder 401, no 404. La comprobación final consiste en iniciar sesión en la APK con una cuenta administrativa existente y revisar los datos y permisos de su cargo.
+
+
+## Avisos privados de Admin (2026-11-17)
+
+La lectura de avisos usa `/api/admin/notifications/inbox`, con sesión y destinatario
+validados por el servidor. Los anuncios públicos son una acción separada del
+propietario para usuarios de SP-DECODE. La identidad de escalación es Ghost Developer.
+
+El backend correspondiente está en `ci/unity-ads-online-qa`: actualizar esa rama
+y ejecutar `spdecode commerce migrate` (migración 016). No sustituirlo desplegando
+el backend antiguo de esta rama. La app Admin actual no integra Firebase Messaging
+y no comparte ni debe reutilizar la configuración o el topic FCM de Online.
+El servidor solo permite push Admin con un proyecto y una cuenta independientes,
+en `CLOUD_ADMIN_FCM_PROJECT_ID` y `CLOUD_ADMIN_FCM_SERVICE_ACCOUNT_JSON`. Hasta
+configurarlos e integrar su SDK en Admin, los avisos se consultan en la bandeja privada.

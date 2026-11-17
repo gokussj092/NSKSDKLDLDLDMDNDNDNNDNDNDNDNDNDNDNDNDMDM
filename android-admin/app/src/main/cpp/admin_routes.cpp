@@ -16,7 +16,7 @@ constexpr std::array routes{
     Route{"support", "/api/admin/support", "GET", 0},
     Route{"store", "/api/admin/store", "GET", 0},
     Route{"gifts", "/api/admin/gifts", "GET", 0},
-    Route{"notifications", "/api/admin/notifications", "GET", 0},
+    Route{"notifications", "/api/admin/notifications/inbox", "GET", 0},
     Route{"observability", "/api/admin/observability", "GET", 0},
     Route{"reports", "/api/admin/reports", "GET", 0}
     ,Route{"mobile", "/api/admin/mobile", "GET", 0}
