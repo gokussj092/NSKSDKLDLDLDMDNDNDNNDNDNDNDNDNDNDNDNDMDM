@@ -85,7 +85,8 @@ export default function AdminSupport(){
  [query,setQuery]=useState(''),[loading,setLoading]=useState(true),[loadError,setLoadError]=useState(''),
  [refreshError,setRefreshError]=useState(false),
  [editingTitle,setEditingTitle]=useState(false),[titleDraft,setTitleDraft]=useState(''),
- [showSuspDetail,setShowSuspDetail]=useState(false);
+ [showSuspDetail,setShowSuspDetail]=useState(false),
+ [confirmEscalate,setConfirmEscalate]=useState(false);
  const threadsRef=useRef(threads);
  useEffect(()=>{threadsRef.current=threads;},[threads]);
  const load=useCallback(async()=>{
@@ -200,15 +201,21 @@ export default function AdminSupport(){
  };
  // Escalación a Pedro (D5): solo el agente asignado o quien puede asignar
  // (owner/admin). El hilo queda marcado y en prioridad alta.
+ // Confirmación dentro del panel (no window.confirm): el diálogo nativo
+ // del navegador no se acepta en la revisión automática y el clic moría
+ // en silencio sin llegar al servidor.
  const canEscalate=!!(selected&&canWrite&&!selected.escalated_at&&
   (selected.assigned_staff_id===access?.id||access?.capabilities?.includes('support.assign')));
+ const requestEscalate=()=>{
+  if(selected&&canEscalate)setConfirmEscalate(true);
+ };
  const escalate=()=>{
   if(!selected||!canEscalate)return;
-  if(!window.confirm('¿Escalar esta conversación a Pedro? La verá marcada y en prioridad alta.'))return;
   mutate({action:'escalate',threadId:selected.id},{notice:'Conversación escalada a Pedro.'});
+  setConfirmEscalate(false);
  };
- const openThread=id=>{setActive(id);};
- const backToInbox=()=>{setActive('');};
+ const openThread=id=>{setActive(id);setConfirmEscalate(false);};
+ const backToInbox=()=>{setActive('');setConfirmEscalate(false);};
  const navigateThread=dir=>{
   if(!visible.length)return;
   const i=visible.findIndex(t=>t.id===active);
@@ -340,9 +347,12 @@ export default function AdminSupport(){
      <button className="button" type="button" disabled={busy} onClick={()=>toggleClose(false)}>
       {selected.status==='closed'?'Reabrir conversación':'Cerrar conversación'}
      </button>
-     {canEscalate&&<button className="button" type="button" disabled={busy} onClick={escalate}>
+     {canEscalate&&(confirmEscalate?<span className="muted">¿Escalar esta conversación a Pedro? La verá marcada y en prioridad alta.
+      <button className="button" type="button" disabled={busy} onClick={escalate}>Sí, escalar</button>
+      <button className="button" type="button" disabled={busy} onClick={()=>setConfirmEscalate(false)}>Cancelar</button>
+     </span>:<button className="button" type="button" disabled={busy} onClick={requestEscalate}>
       Escalar a Pedro
-     </button>}
+     </button>)}
     </footer>}
    </section>
    <p className="muted sp-chat-shortcuts">Atajos: / buscar · j/k cambiar de hilo · Esc volver a la bandeja · C cerrar o reabrir</p>
