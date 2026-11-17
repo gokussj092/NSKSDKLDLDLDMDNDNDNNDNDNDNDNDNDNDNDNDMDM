@@ -39,8 +39,8 @@
     },
     {
       "path": "scripts/apk_analysis/any_vpn_verify.py",
-      "size": 2632,
-      "git_blob_sha1": "57d312390092979d8519024209f5f5a149365fc2",
+      "size": 3150,
+      "git_blob_sha1": "7cef09ef10b87aff45ed4c9d86cec49f9616253a",
       "approval": "UNREVIEWED"
     },
     {
