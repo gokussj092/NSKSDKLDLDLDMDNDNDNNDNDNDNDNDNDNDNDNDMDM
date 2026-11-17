@@ -320,8 +320,8 @@ jobs:
           APK=android/app/build/outputs/apk/release/app-release.apk
           test -s "$APK"
           # Validate release candidate version.
-          test "$SPDECODE_VERSION_NAME" = "1.1.28"
-          test "$SPDECODE_VERSION_CODE" = "43"
+          test "$SPDECODE_VERSION_NAME" = "1.1.29"
+          test "$SPDECODE_VERSION_CODE" = "44"
           python3 scripts/ci/verify_release_signer_pins.py
           python3 scripts/android_16kb_elf_audit.py "$APK"
           python3 tests/cloud_c5_apk_audit.py "$APK" --unity-ads
@@ -345,7 +345,7 @@ jobs:
           printf 'Version: %s\nBuild: %s\nSource SHA: %s\nUnity Ads: enabled\nDistribution: release candidate, not published\n' "$SPDECODE_VERSION_NAME" "$SPDECODE_VERSION_CODE" "$GITHUB_SHA" > dist/BUILD_INFO.txt
       - uses: actions/upload-artifact@v4
         with:
-          name: SP-DECODE-ONLINE-1.1.28-b43-release-candidate
+          name: SP-DECODE-ONLINE-1.1.29-b44-release-candidate
           path: dist/
           if-no-files-found: error
           retention-days: 30
