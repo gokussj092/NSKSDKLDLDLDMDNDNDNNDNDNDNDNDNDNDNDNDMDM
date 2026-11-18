@@ -12,14 +12,15 @@ import kotlinx.coroutines.withContext
 
 /** Reuse the secure HC dialog; no URI, payload, password or HWID is persisted. */
 internal object HttpCustomCloudPrompt {
-    private data class Pending(val password:Boolean,val hwid:Boolean,
+    private data class Pending(val password:Boolean,val hwid:Boolean,val filename:String,
         val result:CompletableDeferred<HttpCustomOnlineFlow.Credentials?>)
     private val mutex=Mutex()
     private var active by mutableStateOf<Pending?>(null)
     val isShowing:Boolean get()=active!=null
 
-    suspend fun ask(password:Boolean,hwid:Boolean):HttpCustomOnlineFlow.Credentials?=mutex.withLock {
-        val pending=Pending(password,hwid,CompletableDeferred())
+    suspend fun ask(password:Boolean,hwid:Boolean,
+        filename:String="HTTP Custom Cloud.hc"):HttpCustomOnlineFlow.Credentials?=mutex.withLock {
+        val pending=Pending(password,hwid,filename,CompletableDeferred())
         withContext(Dispatchers.Main.immediate){active=pending}
         try { pending.result.await() }
         finally {
@@ -32,7 +33,7 @@ internal object HttpCustomCloudPrompt {
     @Composable fun Content(){
         val pending=active?:return
         key(pending) {
-            HcProtectedImportDialog("HTTP Custom Cloud.hc",
+            HcProtectedImportDialog(pending.filename,
                 HcHccfgPort.Requirements(passwordRequired=pending.password,
                     hwidRequired=pending.hwid,headerAuthenticated=false,schema=0,schedule="cloud"),
                 onSubmit={password,hwid->
