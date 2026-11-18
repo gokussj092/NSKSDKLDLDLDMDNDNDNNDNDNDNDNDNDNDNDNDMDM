@@ -40,6 +40,28 @@ jobs:
           node-version: '22'
       - name: Validate Nginx metadata bypass contract
         run: python3 cloud/infra/vps/tests/test_nginx_rate_isolation.py
+      - name: Check generated production Nginx syntax
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y nginx-light openssl
+          sudo mkdir -p /etc/letsencrypt/live/spdecode.xyz
+          sudo openssl req -x509 -nodes -newkey rsa:2048 -days 1 -subj '/CN=spdecode.xyz' \
+            -keyout /etc/letsencrypt/live/spdecode.xyz/privkey.pem \
+            -out /etc/letsencrypt/live/spdecode.xyz/fullchain.pem >/dev/null 2>&1
+          python3 cloud/infra/vps/nginx-config.py spdecode.xyz \
+            --api-domain api.spdecode.xyz --panel-domain panel.spdecode.xyz --www \
+            > /tmp/spdecode-vhosts.conf
+          cat > /tmp/spdecode-nginx-ci.conf <<'NGINX'
+          worker_processes 1;
+          pid /tmp/spdecode-nginx-ci.pid;
+          events { worker_connections 64; }
+          http {
+              include /etc/nginx/mime.types;
+              include /tmp/spdecode-vhosts.conf;
+          }
+          NGINX
+          sudo nginx -t -c /tmp/spdecode-nginx-ci.conf
       - name: Install Cloud unit test dependencies
         run: npm ci --prefix cloud/web --no-audit --no-fund
       - name: Validate syntax, quota isolation, signed transport and catalog watch
