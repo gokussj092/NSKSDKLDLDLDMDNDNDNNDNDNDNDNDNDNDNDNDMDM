@@ -1526,10 +1526,18 @@ class MainActivity : ComponentActivity() {
                     onlineAds?.onSavedResult(this@MainActivity,record.id,stored)
             }catch(e:CancellationException){throw e}
             catch(e:CloudDecodeClient.Failure) {
-                if(generation==importGeneration)
-                    message=if(target.provider=="ehi")
+                if(generation==importGeneration) {
+                    val explanation=if(target.provider=="ehi")
                         CloudUserErrors.httpInjectorMessage(this@MainActivity,e)
                         else CloudUserErrors.message(this@MainActivity,e)
+                    // Report only bounded error enums and HTTP status for the
+                    // newly integrated provider, never source config or keys.
+                    val safeCode=e.code.takeIf { it.matches(Regex("[A-Z][A-Z0-9_]{2,49}")) }
+                    val safeHttp=e.httpStatus.takeIf { it in 400..599 }
+                    message=if(target.provider=="hexcustom" && safeCode!=null && safeHttp!=null)
+                        "$explanation\n$safeCode / HTTP $safeHttp"
+                        else explanation
+                }
             }catch(e:HttpInjectorCloudPort.CloudException) {
                 if(generation==importGeneration)message=getString(when(e.reason) {
                     HttpInjectorCloudPort.Reason.REFERENCE->R.string.cloud_http_injector_invalid
