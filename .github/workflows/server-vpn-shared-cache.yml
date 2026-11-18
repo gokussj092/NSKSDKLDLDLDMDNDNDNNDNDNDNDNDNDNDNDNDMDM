@@ -23,6 +23,7 @@ on:
       - 'cloud/web/lib/c35-gateway.mjs'
       - 'cloud/web/tests/c35-import-security.test.mjs'
       - 'tests/test_hexcm_shared_routes.py'
+      - 'tests/test_hex_tunnel.py'
       - 'cloud/workers/python/hex_custom_bridge.py'
       - 'decoders/Python/apps/Hex_Custom/Hex_Custom_10.6.7.py'
       - 'cloud/web/instrumentation.js'
