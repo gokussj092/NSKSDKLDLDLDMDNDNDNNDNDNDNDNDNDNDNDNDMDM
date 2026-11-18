@@ -21,6 +21,9 @@ on:
       - 'android/app/src/main/java/com/ghostdeveloper/spdecode/cloud/CloudCatalogUpdates.kt'
       - 'cloud/web/tests/capacity-isolation.test.mjs'
       - 'cloud/web/lib/c35-gateway.mjs'
+      - 'cloud/workers/python/server.py'
+      - 'cloud/workers/python/test_worker_limits.py'
+      - 'cloud/infra/vps/tests/test_installer.py'
       - 'cloud/web/tests/c35-import-security.test.mjs'
       - 'tests/test_hexcm_shared_routes.py'
       - 'tests/test_hex_tunnel.py'
@@ -47,6 +50,12 @@ jobs:
           node-version: '22'
       - name: Validate Nginx metadata bypass contract
         run: python3 cloud/infra/vps/tests/test_nginx_rate_isolation.py
+      - name: Verify disconnected clients do not crash worker threads
+        run: |
+          (cd cloud/workers/python && python3 -m unittest test_worker_limits.py -v)
+          python3 -m unittest tests.test_cloud_server_vpn_transport -v
+      - name: Verify secure provider environment in Docker Compose
+        run: python3 -m unittest cloud.infra.vps.tests.test_installer.VPSInstallerTests.test_hex_custom_firestore_key_is_backend_only_and_opt_in -v
       - name: Check generated production Nginx syntax
         run: |
           set -euo pipefail
