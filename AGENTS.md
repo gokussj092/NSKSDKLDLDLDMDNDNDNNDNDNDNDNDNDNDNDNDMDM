@@ -1,5 +1,7 @@
 # Instrucciones obligatorias para asistentes y colaboradores — SP-DECODE
 
+**LECTURA OBLIGATORIA para Muse y cualquier otra IA que modifique Android Online, Cloud, HPKE V2, catálogos, cuotas o Docker:** [Incidente y guía de prevención V2/Cloud/Android del 18-11-2026](docs/cloud/INCIDENTE_V2_ANDROID_CLOUD_Y_CATALOGO_2026_11_18.md). El incidente bloqueó a todos los descifradores por un desacuerdo de esquema en la operación SESSION (2). Antes de tocar esos componentes, contrastar contratos cliente-servidor, incluir pruebas cifradas reales de las operaciones 1/2/5/7/10/12, preservar compatibilidad con APK distribuidos y nunca eludir Play Integrity, PoP, HPKE, RASP ni atestación. Distinguir tests sintéticos de producción y actualizar ambos contenedores cuando cambien motores Python.
+
 **Regla prioritaria desde 2026-11-02:** ningún nuevo método de una aplicación VPN, actualización de método o nueva compatibilidad de archivos/texto/catálogos/exportaciones se considera terminado sin **un expediente en analysis/** que conserve TODOS los scripts propios usados durante la investigación, herramientas/recetas, pruebas, evidencia verificable, versiones y limitaciones.
 
 Lea y cumpla [analysis/METHOD_EVIDENCE_POLICY.md](analysis/METHOD_EVIDENCE_POLICY.md) antes de investigar, modificar o habilitar cualquier proveedor. Los documentos previos en decoders/Python/apps/ANALYSIS.md y scripts/apk_analysis/RESTORE.md no sustituyen el expediente. Conserve compatibilidad con scripts existentes; no borre scripts de investigación.
