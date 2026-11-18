@@ -34,6 +34,17 @@ class HexCustomTunnelRouting(unittest.TestCase):
         self.assertEqual(actual["structuredJson"]["meta"]["name"], "Synthetic Hex Custom")
         self.assertEqual(actual["isPartial"], False)
 
+    def test_protected_hxs3_with_valid_and_wrong_password(self):
+        profile = {"version": 1, "server": {"host": "example.invalid", "port": 80}}
+        blob = decoder.seal(profile, password="synthetic-pass")
+        self.assertEqual(blob[:6], b"HXS3\\x03\\x01")
+        ok = decode_file("hexcm", blob, credentials={"password": "synthetic-pass"})
+        self.assertEqual(ok["structuredJson"]["server"]["host"], "example.invalid")
+        self.assertFalse(ok["isPartial"])
+        with self.assertRaises(DecodeFailure) as wrong:
+            decode_file("hexcm", blob, credentials={"password": "wrong-password"})
+        self.assertEqual(wrong.exception.code, "AUTH_FAILED")
+
     def test_protected_hxs3_without_password_requests_it_instead_of_generic_error(self):
         profile = {"version": 1, "server": {"host": "example.invalid"}}
         # No expensive Argon2 work required to prove the credential gate:
