@@ -6,6 +6,7 @@ import base64
 import hmac
 import json
 import os
+import re
 import sys
 import threading
 import urllib.parse
@@ -160,6 +161,17 @@ class WorkerHandler(BaseHTTPRequestHandler):
         except (ValueError, TypeError, base64.binascii.Error):
             return self._json(400, {"error": {"code": "INVALID_REQUEST"}})
         except DecodeFailure as error:
+            # A public allowlisted provider ID and a bounded enum-style code
+            # are safe for operator logs; NEVER log source bytes, URLs, auth
+            # headers, or decoder stderr. This lets operators pinpoint which
+            # catalog triggered DECODE_FAILED instead of blaming all files.
+            if (self.path == "/internal/v1/decode/import/server-vpn"
+                and error.code in ("DECODE_FAILED", "ENGINE_TIMEOUT", "ENGINE_UNAVAILABLE")
+                and isinstance(request.get("providerId"), str)
+                and re.fullmatch(r"[a-z0-9-]{1,48}", request["providerId"])):
+                print("catalog-worker-failure provider="
+                      + request["providerId"] + " code=" + error.code,
+                      file=sys.stderr, flush=True)
             # Stable HTTP semantics for Android 1.1.19: incompatible exporter
             # methods are expected 422 responses; bad input is 400; worker
             # outages are 503/504. Never promote a crypto failure to an outage.
