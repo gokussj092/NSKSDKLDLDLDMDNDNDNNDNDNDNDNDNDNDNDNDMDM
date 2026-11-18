@@ -351,6 +351,34 @@ test('HPKE-only RASP admission authenticates encrypted reports and rejects wire 
   assert.equal(dispatches,1);
   assert.equal((await call(6,{...body,_rasp:{...body._rasp,signals:4}},token)).status,403);
   assert.equal(dispatches,1);
+  // Production regressions: Android sends optional streak and Play tester
+  // metadata for Hex Custom Cloud; only the V1 route strips those fields.
+  // The transport must deliver the exact authenticated JSON, minus RASP.
+  f.options.dispatch=async(op,req)=>{
+    const payload=await req.json();
+    if(op===7){
+      assert.deepEqual(payload,{provider:'hexcustom',reference:'HexCustom-AbCd1234Ef',
+        consent:true,decode:true,accountToken:'synthetic-account-token-1234567890',
+        installerPackage:'com.android.vending',versionName:'1.1.29',versionCode:44});
+    }else if(op===10){
+      assert.deepEqual(payload,{knownVersion:13,catalogKey:encoded(f.key)});
+    }else{
+      assert.fail('unexpected production V2 operation: '+op);
+    }
+    dispatches++;
+    return Response.json({status:'success',rawText:'{"synthetic":true}',isPartial:false});
+  };
+  const clean={v:1,signals:0,evaluated:15,elapsedUs:111};
+  const cloud=await call(7,{provider:'hexcustom',reference:'HexCustom-AbCd1234Ef',
+    consent:true,decode:true,accountToken:'synthetic-account-token-1234567890',
+    installerPackage:'com.android.vending',versionName:'1.1.29',versionCode:44,
+    _rasp:clean},token);
+  assert.equal(cloud.status,200);
+  assert.equal(cloud.body.status,'success');
+  const catalog=await call(10,{knownVersion:13,catalogKey:encoded(f.key),_rasp:clean},token);
+  assert.equal(catalog.status,200);
+  assert.equal(catalog.body.status,'success');
+  assert.equal(dispatches,3);
 });
 
 test('compatible Play observation survives Google outage while hardware remains mandatory',async()=>{
