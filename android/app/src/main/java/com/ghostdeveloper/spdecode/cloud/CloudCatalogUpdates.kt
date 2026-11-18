@@ -101,7 +101,11 @@ internal object CloudCatalogUpdates {
                         onAvailable(remote)
                     }
                 }
-                delay(1_500)
+                // A 12-second long-poll already detects updates promptly.
+                // If the backend returns immediately (e.g. unchanged or at
+                // watch capacity), do not busy-loop an authenticated request
+                // every 1.5 seconds while the user merely views the app.
+                delay(15_000)
             }catch(error:CancellationException){throw error}
              catch(_:Exception){
                 // Rate limits and connectivity errors must never block the UI.
