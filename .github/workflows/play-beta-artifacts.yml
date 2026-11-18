@@ -19,10 +19,11 @@ env:
 
 jobs:
   signed-artifacts:
+    # Repo is public by design (free Actions minutes); the old private gate
+    # would skip this job silently. Branch list includes the live branch.
     if: >-
       github.repository == 'gokussj092/NSKSDKLDLDLDMDNDNDNNDNDNDNDNDNDNDNDNDMDM' &&
-      github.event.repository.private == true &&
-      (github.ref == 'refs/heads/fix/http-jireh-current-method' || github.ref == 'refs/heads/feat/catalog-notifications-donations' || github.ref == 'refs/heads/main') &&
+      (github.ref == 'refs/heads/fix/http-jireh-current-method' || github.ref == 'refs/heads/feat/catalog-notifications-donations' || github.ref == 'refs/heads/main' || github.ref == 'refs/heads/ci/unity-ads-online-qa') &&
       github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     timeout-minutes: 55
@@ -139,6 +140,8 @@ jobs:
       - name: Prepare optional private package-name ownership verification
         # The proof APK embeds a one-time registration token; do NOT publish
         # it as an artifact in this now-public repository.
+        # Kept gated on private on purpose: the repo is public, so this step
+        # stays skipped; the signed AAB/APK above are unaffected.
         if: ${{ github.event.repository.private == true }}
         id: ownership
         env:
