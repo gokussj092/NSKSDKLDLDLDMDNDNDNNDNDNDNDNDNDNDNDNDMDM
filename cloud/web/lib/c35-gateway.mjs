@@ -48,7 +48,10 @@ export async function externalImportRequest(request,kind,opts={}) {
     if(kind==="cloud") {
       // Old APKs omit provider and are always HTTP Injector.
       const hasProvider=Object.hasOwn(body||{},"provider");
-      if(!ownKeys(body,hasProvider?["provider","reference","consent"]:["reference","consent"]))
+      const hasDecode=Object.hasOwn(body||{},"decode");
+      if(!ownKeys(body,hasProvider?
+          (hasDecode?["provider","reference","consent","decode"]:["provider","reference","consent"]):
+          (hasDecode?["reference","consent","decode"]:["reference","consent"])))
         return failure("INVALID_REQUEST",400);
       // Never trust the app's provider field blindly: detect the provider
       // from the reference itself. A present provider is used only when it
@@ -73,7 +76,7 @@ export async function externalImportRequest(request,kind,opts={}) {
         return failure("REMOTE_NOT_CONFIGURED",503);
     }
     if(kind==="ehi" || kind==="mnr" || kind==="hc" || kind==="hexcustom") {
-      const combined=kind==="hc"&&body?.decode===true;
+      const combined=(kind==="hc"||kind==="hexcustom")&&body?.decode===true;
       if(!ownKeys(body,combined?["reference","consent","decode"]:["reference","consent"])||body.consent!==true)
         return failure("USER_CONSENT_REQUIRED",400);
       if(kind==="hc")parseHttpCustomReference(body.reference);
@@ -128,15 +131,28 @@ export async function externalImportRequest(request,kind,opts={}) {
       }finally{bytes.fill(0);}
     }
     if(kind==="hexcustom"){
-      const bytes=await importHexCustomReference(body.reference,vendor);
-      const result=await fetchWorker("file",{format:"hexcm",dataBase64:bytes.toString("base64")},settings(),opts);
-      let errorCode="";
-      if(!result.ok){try{errorCode=(await result.clone().json()).error?.code||"";}catch{}}
-      try{await recordWorkerResult(redis,result.ok?"success":"failed",{
-        kind:"file",format:"hexcm",bytes:bytes.length,errorCode,latencyMs:performance.now()-started,
-        appVersion:request.headers.get("x-spdecode-app-version"),
-      });}catch{}
-      return await withDecodeStreak(result,claims,streakToken,{...opts,tester:testerFields});
+      // Both Hex Tunnel's legacy envelope and Hex Custom HXS3 use .hexcm.
+      // Dispatch only by authenticated file bytes; the worker alone decides
+      // whether the HXS3 password is required. Never fetch the same cloud key
+      // again after asking for a password (one-use links may expire).
+      const bytes=Buffer.from(await importHexCustomReference(body.reference,vendor));
+      try {
+        const result=await fetchWorker("file",{format:"hexcm",dataBase64:bytes.toString("base64")},settings(),opts);
+        let errorCode="";
+        if(!result.ok){try{errorCode=(await result.clone().json()).error?.code||"";}catch{}}
+        try{await recordWorkerResult(redis,result.ok?"success":"failed",{
+          kind:"file",format:"hexcm",bytes:bytes.length,errorCode,latencyMs:performance.now()-started,
+          appVersion:request.headers.get("x-spdecode-app-version"),
+        });}catch{}
+        if(body.decode===true && errorCode==="PASSWORD_REQUIRED" &&
+           bytes.length>=74 && bytes.subarray(0,4).equals(Buffer.from("HXS3")) &&
+           bytes[4]===3 && (bytes[5]&1)===1) {
+          return jsonReply({apiVersion:"v1",status:"credentials_required",
+            kind:"encrypted_file",format:"hexcm",code:"PASSWORD_REQUIRED",
+            sourceBytes:bytes.length,dataBase64:bytes.toString("base64")},200);
+        }
+        return await withDecodeStreak(result,claims,streakToken,{...opts,tester:testerFields});
+      } finally { bytes.fill(0); }
     }
     if(kind==="mnr"){
       const bytes=await importMnrReference(body.reference,vendor);
