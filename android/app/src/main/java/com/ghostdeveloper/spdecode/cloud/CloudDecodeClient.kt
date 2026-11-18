@@ -547,25 +547,37 @@ internal class CloudDecodeClient(context: Context) {
             .optString("catalogTransferProtocol")=="catalog-chunks-v1"
     }
 
+    /** Retry only transient transport/capacity errors, never invalid input,
+     * authorization, integrity, or unexpected provider responses. Each retry
+     * uses a fresh HPKE request and proof; cancellation remains cooperative.
+     */
+    private suspend fun catalogMetadataRequest(operation:Int,input:JSONObject):JSONObject {
+        var retries=0
+        while(true) {
+            try {return extract(CloudNativeTransport.post(operation,input,session()))}
+            catch(error:Failure) {
+                if(retries>=3 || error.httpStatus !in setOf(429,500,502,503,504) ||
+                    error.code !in setOf("RATE_LIMITED","SERVICE_UNAVAILABLE","ENGINE_UNAVAILABLE"))
+                    throw error
+                val backoff=if(error.httpStatus==429)
+                    maxOf(10_000L,error.retryAfterMillis)
+                else 750L*(1L shl retries)
+                retries++
+                kotlinx.coroutines.delay(backoff+kotlin.random.Random.nextLong(250L))
+            }
+        }
+    }
+
     suspend fun catalogManifest(knownVersion:Int,snapshotId:String?):JSONObject = withContext(Dispatchers.IO) {
         requireLegalConsent()
         val input=JSONObject().put("knownVersion",knownVersion)
         if(snapshotId!=null)input.put("snapshotId",snapshotId)
-        extract(CloudNativeTransport.post(CloudOperation.CATALOG_MANIFEST,input,session()))
+        catalogMetadataRequest(CloudOperation.CATALOG_MANIFEST,input)
     }
 
     suspend fun catalogChunk(input:JSONObject):JSONObject = withContext(Dispatchers.IO) {
         requireLegalConsent()
-        var retries=0
-        while(true) {
-            try {return@withContext extract(CloudNativeTransport.post(CloudOperation.CATALOG_CHUNK,input,session()))}
-            catch(error:Failure) {
-                if(retries>=2 || error.httpStatus !in setOf(429,500,502,503,504) || error.code !in setOf("RATE_LIMITED","SERVICE_UNAVAILABLE"))throw error
-                val backoff=500L*(1L shl retries++)
-                kotlinx.coroutines.delay(maxOf(backoff,error.retryAfterMillis)+kotlin.random.Random.nextLong(250L))
-            }
-        }
-        @Suppress("UNREACHABLE_CODE") error("unreachable")
+        catalogMetadataRequest(CloudOperation.CATALOG_CHUNK,input)
     }
 
     suspend fun serverVpnCatalog(knownVersion:Int,
