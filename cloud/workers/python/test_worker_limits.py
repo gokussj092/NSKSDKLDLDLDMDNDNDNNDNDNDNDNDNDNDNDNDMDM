@@ -52,6 +52,30 @@ class WorkerCapacityTests(unittest.TestCase):
                 ACTIVE_JOBS.release()
             server.shutdown(); server.server_close(); thread.join(timeout=3)
 
+    def test_disconnected_http_response_is_not_a_decoder_crash(self):
+        # A reverse proxy/client can close while a job is in progress.
+        # Producing JSON must not escape as BrokenPipe from the thread.
+        for kind in (BrokenPipeError, ConnectionResetError, ConnectionAbortedError):
+            handler = object.__new__(WorkerHandler)
+            handler.send_response = Mock()
+            handler.send_header = Mock()
+            handler.end_headers = Mock()
+            handler.wfile = Mock()
+            handler.wfile.write.side_effect = kind("synthetic disconnected client")
+            handler._json(422, {"error": {"code": "DECODE_FAILED"}})
+            handler.send_response.assert_called_once_with(422)
+        handler = object.__new__(WorkerHandler)
+        handler.send_response = Mock()
+        handler.send_header = Mock()
+        handler.end_headers = Mock()
+        handler.wfile = Mock()
+        handler._json(200, {"status": "success"})
+        self.assertEqual(json.loads(handler.wfile.write.call_args.args[0]),
+                         {"status": "success"})
+        handler.wfile.write.side_effect = ValueError("unrelated coding error")
+        with self.assertRaises(ValueError):
+            handler._json(200, {"status": "success"})
+
     def test_failed_execution_releases_capacity(self):
         handler = object.__new__(WorkerHandler)
         handler.path = "/internal/v1/decode/file"
