@@ -349,8 +349,6 @@ test('HPKE-only RASP admission authenticates encrypted reports and rejects wire 
   const tampered=Buffer.from(await last.clone().arrayBuffer());tampered[tampered.length-17]^=1;
   assert.equal((await transportRequest(new Request(last.url,{method:'POST',headers:last.headers,body:tampered}),f.options)).status,400);
   assert.equal(dispatches,1);
-  assert.equal((await call(6,{...body,_rasp:{...body._rasp,signals:4}},token)).status,403);
-  assert.equal(dispatches,1);
   // Production regressions: Android sends optional streak and Play tester
   // metadata for Hex Custom Cloud; only the V1 route strips those fields.
   // The transport must deliver the exact authenticated JSON, minus RASP.
@@ -378,6 +376,10 @@ test('HPKE-only RASP admission authenticates encrypted reports and rejects wire 
   const catalog=await call(10,{knownVersion:13,catalogKey:encoded(f.key),_rasp:clean},token);
   assert.equal(catalog.status,200);
   assert.equal(catalog.body.status,'success');
+  assert.equal(dispatches,3);
+  // Enforcement revokes the signed session. Test it last, never before
+  // the subsequent production Cloud and catalog requests.
+  assert.equal((await call(6,{...body,_rasp:{...body._rasp,signals:4}},token)).status,403);
   assert.equal(dispatches,3);
 });
 
