@@ -84,8 +84,15 @@ class CloudUserErrorsContracts(unittest.TestCase):
         self.assertIn("cloudFailureMessages",generated)
         self.assertIn("cloud_failure_notice_title",generated)
         self.assertIn("CloudUserErrors.message",generated)
-        manifest=(ROOT/"android/app/src/main/AndroidManifest.xml").read_text("utf-8")
-        self.assertEqual(manifest.count("<uses-permission"),1)
+        manifest=ET.parse(ROOT/"android/app/src/main/AndroidManifest.xml").getroot()
+        android_name="{http://schemas.android.com/apk/res/android}name"
+        declared={item.attrib.get(android_name) for item in manifest.findall("uses-permission")}
+        # Permission inventory grew when secure native Cloud + biometric
+        # unlock were introduced; neither permission is a decoder route.
+        self.assertEqual(declared,{
+            "android.permission.USE_BIOMETRIC",
+            "android.permission.INTERNET",
+        })
 
     def test_server_vpn_handoff_has_no_client_decoder_work(self):
         guide=(ROOT/"docs/cloud/SERVER_VPN_NEXT_CHAT_GUIDE.md").read_text("utf-8")
