@@ -203,6 +203,14 @@ def status(lines: list[str]) -> None:
     print("Servidores VPN (catálogo):", "ENABLED" if nur else "DISABLED")
     ehi = value(lines, "CLOUD_EHI_IMPORT_ENABLED") == "true" and ehi_ready(lines)
     print("HTTP Injector Cloud:", "ENABLED" if ehi else "NOT CONFIGURED")
+    # Report only a boolean; the Firebase API key must never appear in logs.
+    # The admin provider switch is independent and still controls availability.
+    hex_key = value(lines, "HEXCUSTOM_FIREBASE_API_KEY")
+    hex_ready = bool(re.fullmatch(r"AIza[0-9A-Za-z_-]{35}", hex_key))
+    hex_enabled = value(lines, "CLOUD_HEXCUSTOM_IMPORT_ENABLED") != "false"
+    print("Hex Custom Cloud:",
+          "DISABLED" if not hex_enabled else "CONFIGURED" if hex_ready
+          else "NOT CONFIGURED")
     if not ehi_ready(lines):
         if bundled_ehi() is not None:
             print("HTTP Injector method 6.5.0/244 available in repo; use 'spdecode providers enable' to activate.")
