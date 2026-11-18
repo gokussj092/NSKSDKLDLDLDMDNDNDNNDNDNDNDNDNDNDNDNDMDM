@@ -342,6 +342,7 @@ Release workflows additionally validate Android build artifacts, signing, native
 | [Android Admin validation](android-admin/VALIDATION.md) | Test coverage and production prerequisites. |
 | [Online account and support](docs/commerce/ONLINE_QA_AUTH_SUPPORT_UPDATER.md) | Authentication, support and account integration. |
 | [Notifications and roles](docs/commerce/ONLINE_PUSH_ACTIVITY_ROLES_QA.md) | Private notifications, activity and role management. |
+| [AI maintenance incident guide (18 Nov 2026)](docs/cloud/INCIDENTE_V2_ANDROID_CLOUD_Y_CATALOGO_2026_11_18.md) | Root cause of V2 session HTTP 400, Hex Custom Cloud, quota isolation and prevention checklist for AI collaborators. |
 | [Catalog operations](docs/cloud/CATALOGS_UPDATE_RUNBOOK.md) | Catalog maintenance and deployment. |
 | [Transport security](docs/V2_HPKE_TRANSPORT.md) | Secure Online transport. |
 | [Production operations](docs/PRODUCTION_VPS_OPTIMIZATION_2026_11_14.md) | VPS resources, persistence and updater requirements. |
