@@ -44,7 +44,7 @@ export async function acceptBoundProof(redis,request,op,bytes,bearer,claims,wire
   // A finished APK analysis must not stop subsequent file decodes.
   if (analysisJobs.has(op)) {
     const id=keyId(claims.key);
-    if(!await throttle(redis,"spc2:analysis:v2:"+claims.jti,40,60) ||
+    if(!await throttle(redis,"spc2:analysis:v2:"+claims.jti,10,60) ||
        !await throttle(redis,"spc2:analysis:v2:key-day:"+id,1000,86400))
       return {rateLimited:true};
     return claims;
