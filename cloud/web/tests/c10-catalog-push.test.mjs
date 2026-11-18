@@ -67,6 +67,32 @@ test("closed/aborted watcher returns unchanged without hanging or leaking a slot
  const next=await catalogWatchRequest(makeRequest(10),{versionProvider:()=>11});
  assert.equal(next.status,200);
 });
+test("busy global watch slots return a fresh version rather than 429",async()=>{
+ const controllers=Array.from({length:MAX_OPEN_WATCHES},()=>new AbortController());
+ let markReady,release;let started=0;
+ const ready=new Promise(resolve=>{markReady=resolve;});
+ const gate=new Promise(resolve=>{release=resolve;});
+ const pending=controllers.map(ctl=>catalogWatchRequest(makeRequest(11,ctl.signal),{
+   versionProvider:async()=>{
+     started++;
+     if(started===MAX_OPEN_WATCHES)markReady();
+     return 11;
+   },
+   wait:async()=>{await gate;ctl.abort();}
+ }));
+ try{
+   await ready;
+   const extra=await catalogWatchRequest(makeRequest(11),{
+     versionProvider:async()=>11
+   });
+   assert.equal(extra.status,200);
+   assert.equal((await extra.json()).checkOnly,true);
+ }finally{
+   controllers.forEach(c=>c.abort());
+   release();
+   await Promise.all(pending);
+ }
+});
 test("invalid requests, disallowed fields, excessive bodies and wrong methods fail closed",async()=>{
  for(const payload of [{knownVersion:-1},{knownVersion:"11"},{knownVersion:11,url:"https://evil.example"},
   {knownVersion:1000000000},{}]){
