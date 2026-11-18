@@ -10,6 +10,8 @@ on:
       - android/app/src/main/java/com/ghostdeveloper/spdecode/cloud/AppAnalysisClient.kt
       - android/app/src/main/java/com/ghostdeveloper/spdecode/cloud/AppAnalysisWorker.kt
       - android/app/src/main/java/com/ghostdeveloper/spdecode/cloud/V2BoxPasswordProbe.kt
+      - android/app/src/main/java/com/ghostdeveloper/spdecode/cloud/CloudDecodeClient.kt
+      - android/app/src/main/java/com/ghostdeveloper/spdecode/cloud/CatalogSnapshotDownload.kt
       - cloud/workers/python/v2box_bridge.py
       - cloud/workers/python/Dockerfile
       - cloud/web/lib/commerce/gifts.mjs
