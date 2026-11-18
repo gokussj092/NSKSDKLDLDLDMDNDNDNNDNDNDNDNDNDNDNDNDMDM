@@ -146,7 +146,7 @@ export async function sharedCatalog(redis,config){
    await redis.set(backoffKey(ctx.id),"1",{EX:RETRY_SECONDS});
   }
   return response;
- }catch(error){if(error?.code!=="RATE_LIMITED")await redis.set(backoffKey(ctx.id),"1",{EX:RETRY_SECONDS}).catch(()=>{});throw error;}
+ }catch(error){if(!["RATE_LIMITED","ENGINE_UNAVAILABLE"].includes(error?.code))await redis.set(backoffKey(ctx.id),"1",{EX:RETRY_SECONDS}).catch(()=>{});throw error;}
  finally{await release(redis,lockKey(ctx.id),token);}
 }
 /** One background refresh at a time across processes; no cold-start bulk warming. */
@@ -180,7 +180,7 @@ export async function renewDemandedCatalog(redis,configs){
       await redis.set(backoffKey(ctx.id),"1",{EX:RETRY_SECONDS});
     }
     return true;
-   }catch(error){if(error?.code!=="RATE_LIMITED")await redis.set(backoffKey(ctx.id),"1",{EX:RETRY_SECONDS}).catch(()=>{});return true;}
+   }catch(error){if(!["RATE_LIMITED","ENGINE_UNAVAILABLE"].includes(error?.code))await redis.set(backoffKey(ctx.id),"1",{EX:RETRY_SECONDS}).catch(()=>{});return true;}
    finally{await release(redis,lockKey(ctx.id),token);}
   }
   return false;
