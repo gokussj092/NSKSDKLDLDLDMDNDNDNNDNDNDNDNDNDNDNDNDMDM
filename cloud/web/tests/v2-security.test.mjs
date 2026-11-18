@@ -174,8 +174,28 @@ test("oversized bootstrap bodies, Google outage and Redis outage fail closed",as
 test("metadata and expensive operation rate budgets remain independent",async()=>{
   const f=fixture(),{token}=await authorize(f);f.options.dispatch=async()=>Response.json({ok:true});
   for(let i=0;i<11;i++)assert.equal((await f.call(11,{id:"x"},token)).status,200);
-  for(let i=0;i<10;i++)assert.equal((await f.call(i%2?5:6,{},token)).status,200);
+  for(let i=0;i<30;i++)assert.equal((await f.call(i%2?5:6,{},token)).status,200);
   assert.equal((await f.call(12,{},token)).status,429);
+});
+test("catalog reads, telemetry, upload frames and APK analysis do not exhaust decode budgets",async()=>{
+  const f=fixture(),{token}=await authorize(f);
+  f.options.dispatch=async()=>Response.json({ok:true});
+  // More than the historical 10/min quota, without any actual decoding.
+  for(const op of [13,14,15,17,19,20,24,25,29,30]){
+    for(let i=0;i<16;i++)
+      assert.equal((await f.call(op,{knownVersion:1},token)).status,200,`metadata op=${op} item=${i}`);
+  }
+  for(const op of [22,27]){
+    for(let i=0;i<16;i++)
+      assert.equal((await f.call(op,{},token)).status,200,`upload op=${op} item=${i}`);
+  }
+  for(const op of [21,23,26,28]){
+    for(let i=0;i<5;i++)
+      assert.equal((await f.call(op,{},token)).status,200,`analysis op=${op} item=${i}`);
+  }
+  assert.equal([...f.redis.counts.keys()].filter(k=>k.startsWith("spsec:decode:v2:")).length,0);
+  assert.equal((await f.call(5,{format:"hc",dataBase64:"YWJj"},token)).status,200);
+  assert.equal([...f.redis.counts.entries()].find(([k])=>k.startsWith("spsec:decode:v2:key-day:"))?.[1],1);
 });
 test("V2 reaches real decoder only after proof and preserves existing worker validation",async()=>{
   Object.assign(process.env,env);const f=fixture(),{token}=await authorize(f);let calls=0;
