@@ -323,11 +323,12 @@ test('HPKE-only RASP admission authenticates encrypted reports and rejects wire 
     CLOUD_V2_HPKE_KEYRING:JSON.stringify([{publicKey:pub,privateKey:receiver.privateKey.export({format:'jwk'}).d}]),
     CLOUD_RASP_MODE:'enforce',CLOUD_RASP_MIN_VERSION_CODE:'35'});
   let last;
-  async function call(op,body,bearer=''){
+  async function call(op,body,bearer='',attachment=null){
     const recipientPublicKey=await suite.kem.importKey('raw',raw,true);
     const sender=await suite.createSenderContext({recipientPublicKey,info:Buffer.from('SPDECODE-V2-HPKE-TRANSPORT-1')});
-    const json=Buffer.from(JSON.stringify(body)),pt=Buffer.alloc(4+json.length);
+    const json=Buffer.from(JSON.stringify(body)),pt=Buffer.alloc(4+json.length+(attachment?.length||0));
     pt.writeUInt32BE(json.length);json.copy(pt,4);
+    if(attachment)attachment.copy(pt,4+json.length);
     const h=Buffer.alloc(71);h.write('SPH2');h[4]=1;h.writeUInt16BE(32,5);h.writeUInt16BE(1,7);h.writeUInt16BE(2,9);
     kid.copy(h,11);randomBytes(16).copy(h,19);Buffer.from(sender.enc).copy(h,35);h.writeUInt32BE(pt.length+16,67);
     const wire=Buffer.concat([h,Buffer.from(await sender.seal(pt,Buffer.concat([h,Buffer.from([op])])))]);
@@ -368,6 +369,12 @@ test('HPKE-only RASP admission authenticates encrypted reports and rejects wire 
         installerPackage:'com.android.vending',versionName:'1.1.29',versionCode:44});
     }else if(op===10){
       assert.deepEqual(payload,{knownVersion:13,catalogKey:encoded(f.key)});
+    }else if(op===12){
+      assert.deepEqual(payload,{id:'24clan-vpn-green',consent:true});
+    }else if(op===5){
+      assert.equal(payload.format,'hexcm');
+      assert.deepEqual(Buffer.from(payload.dataBase64,'base64'),Buffer.from('HXS3-synthetic'));
+      assert.equal(Object.keys(payload).sort().join(','),'dataBase64,format');
     }else{
       assert.fail('unexpected production V2 operation: '+op);
     }
@@ -384,11 +391,15 @@ test('HPKE-only RASP admission authenticates encrypted reports and rejects wire 
   const catalog=await call(10,{knownVersion:13,catalogKey:encoded(f.key),_rasp:clean},token);
   assert.equal(catalog.status,200);
   assert.equal(catalog.body.status,'success');
-  assert.equal(dispatches,3);
+  const vpn=await call(12,{id:'24clan-vpn-green',consent:true,_rasp:clean},token);
+  assert.equal(vpn.status,200);
+  const hexFile=await call(5,{format:'hexcm',_rasp:clean},token,Buffer.from('HXS3-synthetic'));
+  assert.equal(hexFile.status,200);
+  assert.equal(dispatches,5);
   // Enforcement revokes the signed session. Test it last, never before
   // the subsequent production Cloud and catalog requests.
   assert.equal((await call(6,{...body,_rasp:{...body._rasp,signals:4}},token)).status,403);
-  assert.equal(dispatches,3);
+  assert.equal(dispatches,5);
 });
 
 test('compatible Play observation survives Google outage while hardware remains mandatory',async()=>{
