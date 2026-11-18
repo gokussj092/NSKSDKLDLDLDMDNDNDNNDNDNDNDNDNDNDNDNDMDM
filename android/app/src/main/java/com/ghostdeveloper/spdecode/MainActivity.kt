@@ -1534,7 +1534,8 @@ class MainActivity : ComponentActivity() {
                     // newly integrated provider, never source config or keys.
                     val safeCode=e.code.takeIf { it.matches(Regex("[A-Z][A-Z0-9_]{2,49}")) }
                     val safeHttp=e.httpStatus.takeIf { it in 400..599 }
-                    message=if(target.provider=="hexcustom" && safeCode!=null && safeHttp!=null)
+                    message=if(target.provider=="hexcustom" && safeCode!=null && safeHttp!=null &&
+                        !explanation.contains("$safeCode / HTTP $safeHttp"))
                         "$explanation\n$safeCode / HTTP $safeHttp"
                         else explanation
                 }
