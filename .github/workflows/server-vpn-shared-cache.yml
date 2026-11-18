@@ -53,7 +53,7 @@ jobs:
       - name: Verify disconnected clients do not crash worker threads
         run: |
           (cd cloud/workers/python && python3 -m unittest test_worker_limits.py -v)
-          python3 -m unittest tests.test_cloud_server_vpn_transport -v
+          PYTHONPATH=cloud/workers/python:. python3 -m unittest tests.test_cloud_server_vpn_transport -v
       - name: Verify secure provider environment in Docker Compose
         run: python3 -m unittest cloud.infra.vps.tests.test_installer.VPSInstallerTests.test_hex_custom_firestore_key_is_backend_only_and_opt_in -v
       - name: Check generated production Nginx syntax
