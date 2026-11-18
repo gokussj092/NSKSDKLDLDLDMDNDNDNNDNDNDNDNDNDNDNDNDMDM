@@ -1,7 +1,14 @@
 # Review before use. C3 is NOT approved for public production deployment yet.
 # Replace domain, cert files, enable HTTPS, and keep port 3000 loopback-bound.
 # Do not forward untrusted X-Real-IP or X-Forwarded-For from a client.
-limit_req_zone $binary_remote_addr zone=spdecode_v2_edge:10m rate=10r/s;
+# Empty map key exempts catalog/status/notification requests from decoder edge
+# accounting; all routes retain normal application auth, replay and size checks.
+map "$uri:$http_x_sp_operation" $spdecode_expensive_key {
+    default "";
+    ~^/api/v2/transport:(4|5|6|7|8|9|12)$ $binary_remote_addr;
+    ~^/api/v1/(npvs/identity|decode/(file|text|import/cloud|import/http-custom|import/catalog/remote)|server-vpn/decode)$ $binary_remote_addr;
+}
+limit_req_zone $spdecode_expensive_key zone=spdecode_v2_edge:10m rate=10r/s;
 server {
     listen 80;
     server_name spdecode.example.com;
