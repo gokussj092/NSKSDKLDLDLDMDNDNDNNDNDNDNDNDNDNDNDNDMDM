@@ -45,6 +45,16 @@ function recordSafeHpkeFailure(op,stage,error){
   hpkeOperatorLogAt.set(key,now);
   console.error("[spdecode-hpke] op="+op+" stage="+stage+" reason="+category);
 }
+// Bootstrap diagnostics are bounded enums only; never log submitted
+// keys, challenge IDs, nonce/proof bytes, IPs, Play tokens, or device identity.
+const admissionLogAt=new Map();
+function recordAdmissionStage(op,reason) {
+  const key=op+":"+reason,now=Date.now();
+  if((admissionLogAt.get(key)||0)+60000>now)return;
+  if(admissionLogAt.size>=32)admissionLogAt.clear();
+  admissionLogAt.set(key,now);
+  console.error("[spdecode-hpke] op="+op+" stage=admission reason="+reason);
+}
 // A syntactically valid HPKE request may still fail inside the V1 route
 // validator. Only record canonical server-owned error enums for HTTP 400/422.
 const safeServerErrors=new Set(["INVALID_REQUEST","INVALID_REFERENCE","INVALID_INPUT",
@@ -162,14 +172,21 @@ async function jsonTransportCore(request,options={}) {
       if(!await throttle(redis,"spc2:challenge-rate:"+ip,240,900))return fail("RATE_LIMITED",429);
       if(!await throttle(redis,"spsec:challenge:global",300,60))return fail("RATE_LIMITED",429);
       const body=JSON.parse(bytes);
-      if(!record(body) || Object.keys(body).join(",")!=="publicKey" || !publicKey(body.publicKey))
+      if(!record(body) || Object.keys(body).join(",")!=="publicKey" || !publicKey(body.publicKey)) {
+        recordAdmissionStage(1,"CHALLENGE_SCHEMA");
         return fail("INVALID_REQUEST",400);
+      }
       const proofNonce=verifyProof(request,op,options.hpkeWireBytes||bytes,"",body.publicKey);
-      if(!proofNonce)return fail("INVALID_REQUEST",400);
+      if(!proofNonce) {
+        recordAdmissionStage(1,"CHALLENGE_PROOF");
+        return fail("INVALID_REQUEST",400);
+      }
       const keyId=sha256(body.publicKey);
       if(!await throttle(redis,"spc2:key-admission:"+keyId,20,900))return fail("RATE_LIMITED",429);
-      if(await redis.set("spc2:bootstrap:"+keyId+":"+sha256(proofNonce),"1",{EX:90,NX:true})!=="OK")
+      if(await redis.set("spc2:bootstrap:"+keyId+":"+sha256(proofNonce),"1",{EX:90,NX:true})!=="OK") {
+        recordAdmissionStage(1,"CHALLENGE_REPLAY");
         return fail("INVALID_REQUEST",400);
+      }
       const challengeId=randomUUID(),nonce=randomBytes(32).toString("base64url");
       const registered=await registeredKey(redis,body.publicKey,cfg);
       // A beta session must have a hardware-verified app version and signing identity.
@@ -213,7 +230,10 @@ async function jsonTransportCore(request,options={}) {
             !/^[A-Za-z0-9._]{1,255}$/.test(body.installerPackage))) ||
          !/^[0-9a-f-]{36}$/.test(body.challengeId) || typeof body.integrityToken!=="string" ||
          (body.integrityToken.length>16384 || (body.integrityToken!==""&&body.integrityToken.length<80) ||
-          (cfg.playIntegrityRequired&&body.integrityToken==="")))return fail("INVALID_REQUEST",400);
+          (cfg.playIntegrityRequired&&body.integrityToken===""))) {
+        recordAdmissionStage(2,"SESSION_SCHEMA");
+        return fail("INVALID_REQUEST",400);
+      }
       const raw=await redis.getDel("spc2:challenge:"+body.challengeId);
       if(!raw)return fail("EXPIRED_CHALLENGE",401);
       const challenge=JSON.parse(raw);
@@ -221,7 +241,10 @@ async function jsonTransportCore(request,options={}) {
       if(challenge.ip!==ip || Boolean(challenge.hpke)!==Boolean(options.hpkeWireBytes) ||
          Date.now()-challenge.created>120000 || challenge.created>Date.now()+5000 ||
          !verifyProof(request,op,options.hpkeWireBytes||bytes,"",sessionKey))return fail("INTEGRITY_REJECTED",403);
-      if(!challenge.hardwareNeeded&&(body.publicKey!==undefined||body.certificateChain!==undefined))return fail("INVALID_REQUEST",400);
+      if(!challenge.hardwareNeeded&&(body.publicKey!==undefined||body.certificateChain!==undefined)) {
+        recordAdmissionStage(2,"UNEXPECTED_ATTESTATION_FIELDS");
+        return fail("INVALID_REQUEST",400);
+      }
       const nonce=integrityNonce(challenge.nonce,body.challengeId,sessionKey);
       // Injection is server-test only. HTTP callers never provide verdict JSON.
        let verdict=null;
