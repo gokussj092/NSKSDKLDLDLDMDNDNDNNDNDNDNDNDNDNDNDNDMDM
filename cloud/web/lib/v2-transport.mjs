@@ -14,7 +14,7 @@ import { integrityNonce, publicKey, verifyProof, sha256 } from "./v2-proof.mjs";
 import { bindVerifiedRequest } from "./v2-bound-request.mjs";
 import { maintenanceEnabled } from "./c6-ops-store.mjs";
 import { jsonReply } from "./responses.mjs";
-import { routes,metadata,bodyLimit } from "./v2-routes.mjs";
+import { routes,metadata,bodyLimit,rateClass } from "./v2-routes.mjs";
 import { attestationChallenge,registeredKey,rememberKey,verifyHardware } from "./device-security.mjs";
 import { validBoundClaims,acceptBoundProof } from "./bound-auth.mjs";
 import { actionChallenge,verifyAction } from "./action-integrity.mjs";
@@ -98,10 +98,14 @@ async function jsonTransportCore(request,options={}) {
     const redis=await (options.storeProvider||store)();
     if(await maintenanceEnabled(redis))return fail("SERVICE_UNAVAILABLE",503);
     const ip=ipKey(request);
-    // A mobile carrier may put many devices behind one public CGNAT IP.
-    // Keep this coarse IP edge guard, but leave per-session/key quotas to
-    // authenticated PoP checks so other subscribers do not block new logins.
-    if(!await throttle(redis,"spc2:edge:"+ip,300,60))return fail("RATE_LIMITED",429);
+    // Carrier CGNAT shares public IPs across unrelated customers. Keep a high
+    // edge safety ceiling in independent namespaces: catalog polling never
+    // counts against decoder traffic or session admission.
+    const traffic=rateClass(op);
+    const ceiling=traffic==="metadata"?6000:traffic==="admission"?900:
+      traffic==="upload"?1200:traffic==="analysis"?720:600;
+    if(!await throttle(redis,"spc2:edge:v3:"+traffic+":"+ip,ceiling,60))
+      return fail("RATE_LIMITED",429);
     let bearer="",claims;
     // Reject anonymous/expired callers before buffering their large payload.
     if(op>=4) {
@@ -324,9 +328,13 @@ export async function transportRequest(request,options={}) {
   try {
     // Apply independent edge throttling before accepting large crypto payloads.
     const redis=await (options.storeProvider||store)();
-    // Pre-decryption envelope limit is intentionally coarse for shared carrier IPs.
-    // Authenticated per-key, per-session and per-operation limits still apply.
-    if(!await throttle(redis,"spc2:hpke-edge:"+ipKey(request),360,60))
+    // Untrusted ciphertext remains length-bounded before HPKE parsing; a
+    // high independent edge ceiling prevents normal metadata from exhausting
+    // the decoder's shared carrier-IP counter.
+    const traffic=rateClass(op);
+    const ceiling=traffic==="metadata"?6000:traffic==="admission"?900:
+      traffic==="upload"?1200:traffic==="analysis"?720:600;
+    if(!await throttle(redis,"spc2:hpke-edge:v3:"+traffic+":"+ipKey(request),ceiling,60))
       return fail("RATE_LIMITED",429);
     const max=op===5?HPKE_MAX_BYTES:(op===6?1024*1024+512:bodyLimit(op)+512);
     const wire=await readHpkeBytes(request,max);
