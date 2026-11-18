@@ -447,6 +447,60 @@ test("C3.5 imports require an attested bearer and user consent BEFORE any remote
   assert.equal((await ok.json()).rawText,"full decoded config\n");
   assert.equal(networkCalls,1);assert.equal(workerCalls,1);
 });
+test("Hex Custom Cloud accepts Android 1.1.29 metadata and both legacy/current reference envelopes",async()=>{
+  // Regression for mobile production: these optional fields must never leak
+  // into the strict provider schema after their authenticated extraction.
+  const saved=process.env.HEXCUSTOM_FIREBASE_API_KEY;
+  const enabled=process.env.CLOUD_HEXCUSTOM_IMPORT_ENABLED;
+  process.env.HEXCUSTOM_FIREBASE_API_KEY="AIza"+"A".repeat(35);
+  process.env.CLOUD_HEXCUSTOM_IMPORT_ENABLED="true";
+  try{
+    const redis=new FakeRedis(),bearer=await token(redis);
+    const reference="HexCustom-AbCd1234Ef";
+    const encrypted=Buffer.alloc(96,42);
+    encrypted.write("HXS3");encrypted[4]=3;encrypted[5]=0;
+    let downloads=0,decodes=0;
+    const opts={storeProvider:async()=>redis,
+      vendor:{env:process.env,download:async({url,kind})=>{
+        assert.equal(kind,"hexcustom");assert(url.includes("/archivos/"+reference+"?key="));
+        downloads++;
+        return Buffer.from(JSON.stringify({fields:{contenido:{bytesValue:encrypted.toString("base64")}}}));
+      }},
+      fetchImpl:async(url,{body})=>{
+        assert.equal(url,"http://decoder-worker:8787/internal/v1/decode/file");
+        const input=JSON.parse(body);
+        assert.deepEqual(Object.keys(input).sort(),["dataBase64","format"]);
+        assert.equal(input.format,"hexcm");
+        assert.deepEqual(Buffer.from(input.dataBase64,"base64"),encrypted);
+        decodes++;
+        return {status:200,text:async()=>JSON.stringify({
+          apiVersion:"v1",status:"success",kind:"file",format:"hexcm",
+          rawText:JSON.stringify({version:1,server:{host:"synthetic.invalid"}}),
+          structuredJson:{version:1,server:{host:"synthetic.invalid"}},
+          isPartial:false,warnings:[],sourceBytes:encrypted.length,
+        })};
+      }};
+    const actualAndroid={provider:"hexcustom",reference,consent:true,decode:true,
+      accountToken:"synthetic-account-token-1234567890",
+      installerPackage:"com.android.vending",versionName:"1.1.29",versionCode:44};
+    const response=await externalImportRequest(send(actualAndroid,bearer),"cloud",opts);
+    assert.equal(response.status,200);
+    const doc=await response.json();
+    assert.equal(doc.status,"success");
+    assert.equal(doc.structuredJson.server.host,"synthetic.invalid");
+    // Older clients omit the combined flag and the tester metadata.
+    const old=await externalImportRequest(send({reference,consent:true},bearer),"cloud",opts);
+    assert.equal(old.status,200);
+    assert.equal((await old.json()).status,"success");
+    assert.equal(downloads,2);assert.equal(decodes,2);
+  }finally{
+    if(saved===undefined)delete process.env.HEXCUSTOM_FIREBASE_API_KEY;
+    else process.env.HEXCUSTOM_FIREBASE_API_KEY=saved;
+    if(enabled===undefined)delete process.env.CLOUD_HEXCUSTOM_IMPORT_ENABLED;
+    else process.env.CLOUD_HEXCUSTOM_IMPORT_ENABLED=enabled;
+  }
+});
+
 test("Hex Custom cloud returns one authenticated HXS3 file to a secure password prompt",async()=>{
   const saved=process.env.HEXCUSTOM_FIREBASE_API_KEY;
   const enabled=process.env.CLOUD_HEXCUSTOM_IMPORT_ENABLED;
