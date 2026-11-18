@@ -447,6 +447,74 @@ test("C3.5 imports require an attested bearer and user consent BEFORE any remote
   assert.equal((await ok.json()).rawText,"full decoded config\n");
   assert.equal(networkCalls,1);assert.equal(workerCalls,1);
 });
+test("Hex Custom cloud returns one authenticated HXS3 file to a secure password prompt",async()=>{
+  const saved=process.env.HEXCUSTOM_FIREBASE_API_KEY;
+  const enabled=process.env.CLOUD_HEXCUSTOM_IMPORT_ENABLED;
+  process.env.HEXCUSTOM_FIREBASE_API_KEY="AIza"+"A".repeat(35);
+  process.env.CLOUD_HEXCUSTOM_IMPORT_ENABLED="true";
+  try{
+    const redis=new FakeRedis(),bearer=await token(redis);
+    const key="HexCustom-BoKo2Q5gQR";
+    const hxs=Buffer.alloc(96,42);
+    hxs.write("HXS3");hxs[4]=3;hxs[5]=1;
+    let downloaded=0,worked=0;
+    const vendor={env:process.env,download:async ({url,kind})=>{
+      downloaded++;
+      assert.equal(kind,"hexcustom");
+      assert(url.includes("/documents/archivos/"+key+"?key="));
+      return Buffer.from(JSON.stringify({fields:{contenido:{bytesValue:hxs.toString("base64")}}}));
+    }};
+    const fetchImpl=async (_url,{body})=>{
+      worked++;
+      const message=JSON.parse(body);
+      assert.equal(message.format,"hexcm");
+      assert.deepEqual(Buffer.from(message.dataBase64,"base64"),hxs);
+      return {status:422,text:async()=>JSON.stringify({error:{code:"PASSWORD_REQUIRED"}})};
+    };
+    const opts={vendor,fetchImpl,storeProvider:async()=>redis};
+    const denied=await externalImportRequest(send({provider:"hexcustom",reference:key,consent:true,decode:true}),"cloud",opts);
+    assert.equal(denied.status,401);
+    assert.equal(downloaded,0);
+    const wrongProvider=await externalImportRequest(send({provider:"ehi",reference:"not a cloud key",consent:true,decode:true},bearer),"cloud",opts);
+    assert.equal(wrongProvider.status,400);
+    const prompt=await externalImportRequest(send({provider:"hexcustom",reference:key,consent:true,decode:true},bearer),"cloud",opts);
+    assert.equal(prompt.status,200);
+    const response=await prompt.json();
+    assert.equal(response.status,"credentials_required");
+    assert.equal(response.format,"hexcm");
+    assert.equal(response.code,"PASSWORD_REQUIRED");
+    assert.equal(response.sourceBytes,hxs.length);
+    assert.equal(response.dataBase64,hxs.toString("base64"));
+    assert.equal(downloaded,1);
+    assert.equal(worked,1);
+  }finally{
+    if(saved===undefined)delete process.env.HEXCUSTOM_FIREBASE_API_KEY;
+    else process.env.HEXCUSTOM_FIREBASE_API_KEY=saved;
+    if(enabled===undefined)delete process.env.CLOUD_HEXCUSTOM_IMPORT_ENABLED;
+    else process.env.CLOUD_HEXCUSTOM_IMPORT_ENABLED=enabled;
+  }
+});
+
+test("Hex Custom password handoff is not exposed for arbitrary legacy hexcm bytes",async()=>{
+  const prior=process.env.HEXCUSTOM_FIREBASE_API_KEY;
+  process.env.HEXCUSTOM_FIREBASE_API_KEY="AIza"+"A".repeat(35);
+  try{
+    const redis=new FakeRedis(),bearer=await token(redis);
+    const old=Buffer.from("b2xkIGhleCB0dW5uZWwgZXhwb3J0");
+    const opts={storeProvider:async()=>redis,
+      vendor:{env:process.env,download:async()=>Buffer.from(JSON.stringify({
+        fields:{contenido:{bytesValue:old.toString("base64")}}}))},
+      fetchImpl:async()=>({status:422,text:async()=>JSON.stringify({error:{code:"PASSWORD_REQUIRED"}})})};
+    const response=await externalImportRequest(send({
+      provider:"hexcustom",reference:"HexCustom-BoKo2Q5gQR",consent:true,decode:true
+    },bearer),"cloud",opts);
+    assert.equal(response.status,422);
+    assert.equal((await response.json()).error.code,"PASSWORD_REQUIRED");
+  }finally{
+    if(prior===undefined)delete process.env.HEXCUSTOM_FIREBASE_API_KEY;
+    else process.env.HEXCUSTOM_FIREBASE_API_KEY=prior;
+  }
+});
 test("NUR catalog download endpoint never accepts client URLs or unconsented requests",async()=>{
   const redis=new FakeRedis(),bearer=await token(redis);
   let calls=0;
