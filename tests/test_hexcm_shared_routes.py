@@ -37,7 +37,7 @@ class HexCustomTunnelRouting(unittest.TestCase):
     def test_protected_hxs3_with_valid_and_wrong_password(self):
         profile = {"version": 1, "server": {"host": "example.invalid", "port": 80}}
         blob = decoder.seal(profile, password="synthetic-pass")
-        self.assertEqual(blob[:6], b"HXS3\\x03\\x01")
+        self.assertEqual(blob[:6], b"HXS3" + bytes([3, 1]))
         ok = decode_file("hexcm", blob, credentials={"password": "synthetic-pass"})
         self.assertEqual(ok["structuredJson"]["server"]["host"], "example.invalid")
         self.assertFalse(ok["isPartial"])
