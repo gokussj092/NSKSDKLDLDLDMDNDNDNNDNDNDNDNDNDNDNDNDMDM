@@ -114,6 +114,53 @@ test("attestation enforces package, signer, version, licensing, device, optional
   const value=verdict("nonce");value.tokenPayloadExternal.environmentDetails.appAccessRiskVerdict.appsDetected=["UNKNOWN_CONTROLLING"];
   assert.equal(checkIntegrityVerdict(value,{...cfg,requireAccessRisk:true}),false);
 });
+test("V2 accepts actual 1.1.29 SESSION metadata without trusting it for Play identity",async()=>{
+  for(const installer of [null,"com.android.vending"]) {
+    const f=fixture();
+    const challengeResponse=await f.call(1,{publicKey:encoded(f.key)});
+    assert.equal(challengeResponse.status,201);
+    const challenge=await challengeResponse.json();
+    f.options.decodeIntegrity=async()=>verdict(
+      integrityNonce(challenge.nonce,challenge.challengeId,encoded(f.key)));
+    // Android 1.1.29 (build 44) shipped these advisory extras even though
+    // the server formerly accepted only challengeId + integrityToken.
+    const body={challengeId:challenge.challengeId,integrityToken:"T".repeat(100),
+      versionName:"1.1.29",versionCode:44};
+    if(installer)body.installerPackage=installer;
+    const issued=await f.call(2,body);
+    assert.equal(issued.status,201,JSON.stringify(await issued.clone().json()));
+    const token=(await issued.json()).accessToken;
+    const claims=JSON.parse(Buffer.from(token.split(".")[0],"base64url").toString("utf-8"));
+    assert.equal(claims.versionCode,33); // verified Play, NOT caller's 44
+    assert.equal(claims.playIntegrityVerified,true);
+    assert.equal(claims.certificates[0],certificate);
+    assert.equal(claims.installerPackage,undefined);
+    assert.equal(claims.versionName,undefined);
+  }
+});
+
+test("V2 session metadata compatibility rejects unexpected fields and malicious values",async()=>{
+  const attempts=[
+    {versionName:"1.1.29",versionCode:44,role:"admin"},
+    {versionName:"1.1.29",versionCode:"44"},
+    {versionName:"1.1.29"},
+    {versionCode:44},
+    {installerPackage:"../com.android.vending"},
+    {installerPackage:42},
+    {versionName:"bad",versionCode:44},
+  ];
+  for(const extra of attempts){
+    const f=fixture();
+    const challenge=await(await f.call(1,{publicKey:encoded(f.key)})).json();
+    f.options.decodeIntegrity=async()=>verdict(integrityNonce(
+      challenge.nonce,challenge.challengeId,encoded(f.key)));
+    const reply=await f.call(2,{challengeId:challenge.challengeId,
+      integrityToken:"T".repeat(100),...extra});
+    assert.equal(reply.status,400,JSON.stringify(extra));
+    assert.equal((await reply.json()).error.code,"INVALID_REQUEST");
+  }
+});
+
 test("challenge binds key and IP; invalid attestation consumes it and replay fails",async()=>{
   const f=fixture(),{challenge}=await authorize(f);
   assert.equal((await f.call(2,{challengeId:challenge.challengeId,integrityToken:"T".repeat(100)})).status,401);
