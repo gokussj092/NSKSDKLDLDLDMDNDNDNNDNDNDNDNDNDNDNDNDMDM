@@ -9,6 +9,9 @@ on:
       - 'cloud/web/lib/v2-transport.mjs'
       - 'cloud/web/lib/v2-routes.mjs'
       - 'cloud/web/lib/bound-auth.mjs'
+      - 'cloud/web/lib/c3-session.mjs'
+      - 'cloud/web/lib/c3-config.mjs'
+      - 'cloud/web/tests/c3-security.test.mjs'
       - 'cloud/web/lib/c10-catalog-watch.mjs'
       - 'cloud/web/tests/v2-security.test.mjs'
       - 'cloud/web/tests/device-security.test.mjs'
@@ -43,10 +46,10 @@ jobs:
         working-directory: cloud/web
         run: |
           set -euo pipefail
-          for file in lib/server-vpn-result-cache.mjs lib/server-vpn-cache-controls.mjs lib/server-vpn-cache-refresh.mjs lib/server-vpn-gateway.mjs lib/c35-gateway.mjs lib/c10-catalog-watch.mjs lib/device-security.mjs lib/v2-routes.mjs lib/v2-transport.mjs lib/bound-auth.mjs instrumentation.js; do
+          for file in lib/server-vpn-result-cache.mjs lib/server-vpn-cache-controls.mjs lib/server-vpn-cache-refresh.mjs lib/server-vpn-gateway.mjs lib/c35-gateway.mjs lib/c10-catalog-watch.mjs lib/device-security.mjs lib/v2-routes.mjs lib/v2-transport.mjs lib/bound-auth.mjs lib/c3-session.mjs lib/c3-config.mjs instrumentation.js; do
             node --check "$file"
           done
-          node --test tests/server-vpn-result-cache.test.mjs tests/capacity-isolation.test.mjs tests/c10-catalog-push.test.mjs tests/v2-security.test.mjs tests/device-security.test.mjs
+          node --test tests/server-vpn-result-cache.test.mjs tests/capacity-isolation.test.mjs tests/c10-catalog-push.test.mjs tests/v2-security.test.mjs tests/device-security.test.mjs tests/c3-security.test.mjs
       - name: Validate Docker Compose
         run: docker compose -f cloud/compose.yaml config --quiet
       - name: Build web image (including instrumentation and volume)
