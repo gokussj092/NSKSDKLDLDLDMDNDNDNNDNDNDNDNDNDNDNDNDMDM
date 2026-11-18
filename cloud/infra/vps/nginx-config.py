@@ -214,6 +214,20 @@ def generate(domain: str, api: str, panel: str, www: bool) -> str:
         limit_req_status 429;
 {common_headers().replace("proxy_read_timeout 35s;", "proxy_read_timeout 155s;")}
     }}
+    # Legacy V1 VPN catalogs may legitimately use the worker's 120-second
+    # isolated decode budget. Only this exact endpoint gets the longer wait;
+    # other text/file/metadata requests keep the existing short timeout.
+    location = /api/v1/server-vpn/decode {{
+{v1_auth()}
+        try_files /__spdecode_v1_dispatch_9f41b__ @spdecode_v1_server_vpn;
+    }}
+    location @spdecode_v1_server_vpn {{
+        access_log off;
+        limit_conn spdecode_uploads 12;
+        limit_req zone=spdecode_v2_edge burst=60 nodelay;
+        limit_req_status 429;
+{common_headers().replace("proxy_read_timeout 35s;", "proxy_read_timeout 155s;")}
+    }}
     location ^~ /api/v1/ {{
 {v1_auth()}
         try_files /__spdecode_v1_dispatch_9f41b__ @spdecode_v1_general;
