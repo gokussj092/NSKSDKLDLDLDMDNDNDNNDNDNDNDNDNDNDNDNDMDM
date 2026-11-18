@@ -2,7 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import {readFileSync} from "node:fs";
 import {generateKeyPairSync,randomBytes,sign as ecSign,createHash} from "node:crypto";
-import {transportRequest} from "../lib/v2-transport.mjs";
+import {transportRequest,classifyHpkeFailure} from "../lib/v2-transport.mjs";
 import {v2Settings,legacyApiRetired} from "../lib/v2-config.mjs";
 import {integrityNonce,proofMessage,verifyProof} from "../lib/v2-proof.mjs";
 import {sign,requireSession} from "../lib/c3-session.mjs";
@@ -56,6 +56,14 @@ async function authorize(f) {
   assert.equal(result.status,201);
   return {token:(await result.json()).accessToken,challenge,nonce};
 }
+test("HPKE diagnostics never echo secrets or arbitrary exception messages",()=>{
+  assert.equal(classifyHpkeFailure(new Error("HPKE_UNKNOWN_KEY")),"CLIENT_PIN_MISMATCH");
+  assert.equal(classifyHpkeFailure(new Error("HPKE_UNCONFIGURED")),"KEYRING_CONFIGURATION");
+  assert.equal(classifyHpkeFailure(new Error("HPKE_INVALID")),"INVALID_ENVELOPE");
+  assert.equal(classifyHpkeFailure(new Error("INPUT_TOO_LARGE")),"WIRE_TOO_LARGE");
+  assert.equal(classifyHpkeFailure(new Error("bearer=secret url=private")),"OTHER");
+  assert.equal(classifyHpkeFailure(null),"OTHER");
+});
 test("V2 fails closed on missing signer, invalid version/epoch and beta-only Google setup",()=>{
   assert(v2Settings(env).configured);
   for(const change of [{CLOUD_PLAY_CERT_SHA256:""},{CLOUD_PLAY_CERT_SHA256:"bad"},{CLOUD_MIN_ANDROID_VERSION_CODE:"32"},
