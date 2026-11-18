@@ -68,8 +68,11 @@ export async function rememberKey(redis, key, level, cfg, versionCode=null) {
 export async function workBudget(redis, claims) {
   if (claims.key) {
     const id=keyId(claims.key);
-    if (!await throttle(redis,"spsec:work:key-minute:"+id,10,60) ||
-        !await throttle(redis,"spsec:work:key-day:"+id,300,86400)) return false;
+    // V2 namespace intentionally discards old mixed-operation counters, which
+    // wrongly charged APK uploads, status checks and feedback as decoding.
+    // Bound throughput remains finite without a restrictive 300/day lockout.
+    if (!await throttle(redis,"spsec:decode:v2:key-minute:"+id,30,60) ||
+        !await throttle(redis,"spsec:decode:v2:key-day:"+id,2000,86400)) return false;
   }
   // A global budget shared by unrelated devices must never be reported as
   // personal abuse (429). Preserve the budget; surface temporary capacity (503).
