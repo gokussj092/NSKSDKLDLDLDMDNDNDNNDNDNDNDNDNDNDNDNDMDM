@@ -71,5 +71,9 @@ export async function workBudget(redis, claims) {
     if (!await throttle(redis,"spsec:work:key-minute:"+id,10,60) ||
         !await throttle(redis,"spsec:work:key-day:"+id,300,86400)) return false;
   }
-  return throttle(redis,"spsec:work:global",120,60);
+  // A global budget shared by unrelated devices must never be reported as
+  // personal abuse (429). Preserve the budget; surface temporary capacity (503).
+  if (!await throttle(redis,"spsec:work:global",120,60))
+    throw Object.assign(new Error("Global decoder budget exhausted"),{code:"ENGINE_UNAVAILABLE"});
+  return true;
 }
