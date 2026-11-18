@@ -43,7 +43,8 @@ test('upload session/key/IP/global/day limits remain enforced across new session
    scope==='ip'?'spc2:upload:ip:'+ipKey(r.req):'spc2:upload:global';
   redis.counts.set(key,scope==='ip'?128:scope==='global'?256:scope==='key-day'?3600:96);
   if(scope.startsWith('key-'))d.claims.jti='renewed-session';
-  assert.deepEqual(await call(redis,27,d),{rateLimited:true},scope);
+  if(scope==="global")await assert.rejects(call(redis,27,d),{code:"ENGINE_UNAVAILABLE"});
+  else assert.deepEqual(await call(redis,27,d),{rateLimited:true},scope);
  }
 });
 test('invalid or replayed proofs cannot enter the upload budget',async()=>{
