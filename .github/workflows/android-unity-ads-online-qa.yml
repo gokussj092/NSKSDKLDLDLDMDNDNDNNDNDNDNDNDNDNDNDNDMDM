@@ -11,6 +11,11 @@ on:
       - android/app/src/main/java/com/ghostdeveloper/spdecode/cloud/AppAnalysisWorker.kt
       - android/app/src/main/java/com/ghostdeveloper/spdecode/cloud/V2BoxPasswordProbe.kt
       - android/app/src/main/java/com/ghostdeveloper/spdecode/cloud/CloudDecodeClient.kt
+      - android/app/src/main/java/com/ghostdeveloper/spdecode/cloud/CloudCredentialPolicy.kt
+      - android/app/src/main/java/com/ghostdeveloper/spdecode/cloud/HttpCustomCloudPrompt.kt
+      - tests/test_hexcm_shared_routes.py
+      - cloud/workers/python/hex_custom_bridge.py
+      - decoders/Python/apps/Hex_Custom/Hex_Custom_10.6.7.py
       - android/app/src/main/java/com/ghostdeveloper/spdecode/cloud/CatalogSnapshotDownload.kt
       - android/app/src/test/java/com/ghostdeveloper/spdecode/cloud/CloudOnlineReferenceTest.kt
       - cloud/workers/python/v2box_bridge.py
