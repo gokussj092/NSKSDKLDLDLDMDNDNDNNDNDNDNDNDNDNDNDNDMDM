@@ -43,8 +43,8 @@ export const limits = Object.freeze({
   maxJsonBodyBytes: 11 * 1024 * 1024,
   challengeTtlSeconds: 120,
   sessionTtlSeconds: 300,
-  requestsPerSessionMinute: 10,
-  requestsPerIpWindow: 20,
+  requestsPerSessionMinute: 30,
+  requestsPerIpWindow: 120,
   maxActivePerSession: 2,
 });
 
