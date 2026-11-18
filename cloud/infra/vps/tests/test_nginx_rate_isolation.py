@@ -6,6 +6,23 @@ from pathlib import Path
 GEN = Path(__file__).resolve().parents[1] / "nginx-config.py"
 
 class NginxRateIsolation(unittest.TestCase):
+    def test_only_exact_legacy_vpn_catalog_gets_long_proxy_timeout(self):
+        config = runpy.run_path(str(GEN))["generate"](
+            "spdecode.xyz", "api.spdecode.xyz", "panel.spdecode.xyz", False
+        )
+        api = config.split("server_name api.spdecode.xyz;", 1)[1].split(
+            "server_name panel.spdecode.xyz;", 1
+        )[0]
+        route = api.split("location = /api/v1/server-vpn/decode {", 1)[1].split("}", 1)[0]
+        self.assertIn("auth_request /_spdecode_v1_gate;", route)
+        self.assertIn("@spdecode_v1_server_vpn", route)
+        self.assertNotIn("proxy_pass", route)
+        long_proxy = api.split("location @spdecode_v1_server_vpn {", 1)[1].split("}", 1)[0]
+        self.assertIn("proxy_read_timeout 155s;", long_proxy)
+        self.assertIn("limit_req zone=spdecode_v2_edge", long_proxy)
+        ordinary = api.split("location @spdecode_v1_general {", 1)[1].split("}", 1)[0]
+        self.assertIn("proxy_read_timeout 35s;", ordinary)
+
     def test_generated_proxy_isolates_decode_from_info(self):
         result = runpy.run_path(str(GEN))["generate"](
             "spdecode.xyz", "api.spdecode.xyz", "panel.spdecode.xyz", False
