@@ -11,6 +11,9 @@ on:
       - android/app/src/main/java/com/ghostdeveloper/spdecode/cloud/AppAnalysisWorker.kt
       - android/app/src/main/java/com/ghostdeveloper/spdecode/cloud/V2BoxPasswordProbe.kt
       - android/app/src/main/java/com/ghostdeveloper/spdecode/cloud/CloudDecodeClient.kt
+      - android/app/src/main/java/com/ghostdeveloper/spdecode/cloud/CloudUserErrors.kt
+      - android/app/src/main/java/com/ghostdeveloper/spdecode/MainActivity.kt
+      - tests/test_cloud_c8_user_errors.py
       - android/app/src/main/java/com/ghostdeveloper/spdecode/cloud/CloudCredentialPolicy.kt
       - android/app/src/main/java/com/ghostdeveloper/spdecode/cloud/HttpCustomCloudPrompt.kt
       - tests/test_hexcm_shared_routes.py
@@ -246,7 +249,7 @@ jobs:
           python3 scripts/android_s3_security_audit.py
           python3 scripts/android_s4_provisioning_audit.py
           # Normal production pacing; dashboard must remain in test mode for QA.
-          python3 -m unittest tests.test_android_unity_release_contract -v
+          python3 -m unittest tests.test_android_unity_release_contract tests.test_cloud_c8_user_errors -v
           python3 -m unittest tests.test_catalog_entry_prompt -v
           python3 -m unittest tests.test_android_ssh_accounts_ui -v
           python3 -m unittest tests.test_android_support_chat_design -v
