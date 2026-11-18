@@ -511,6 +511,70 @@ internal class CloudDecodeClient(context: Context) {
         }finally{bytes.fill(0)}
     }
 
+    /**
+     * Hex Custom 10.6.7 online: download once on the server and decode there.
+     * A password-protected HXS3 container is returned encrypted in RAM only,
+     * then sent with the entered password to the same .hexcm worker route.
+     * The old Hex Tunnel .hexcm variant needs no password and also works.
+     */
+    private suspend fun decodeHexCustomReference(reference:String,
+        onPhase:suspend (TransferPhase)->Unit = {}):String {
+        lastDiagnostic=null
+        require(BuildConfig.SPDECODE_CLOUD_ENABLED)
+        requireLegalConsent()
+        val payload=JSONObject().put("provider","hexcustom")
+            .put("reference",reference.trim()).put("consent",true).put("decode",true)
+        val streakAuth=NativeCommerceAuth(app)
+        val streakAccount=streakAuth.cachedAccountId()
+        streakAuth.sessionToken()?.let{payload.put("accountToken",it)}
+        installSource()?.let{payload.put("installerPackage",it)}
+        payload.put("versionName",BuildConfig.VERSION_NAME)
+        payload.put("versionCode",BuildConfig.VERSION_CODE)
+        onPhase(TransferPhase.SENDING)
+        val bearer=session()
+        onPhase(TransferPhase.PROCESSING)
+        val reply=withContext(Dispatchers.IO) {
+            requireLegalConsent()
+            extract(protectedPost(CloudOperation.IMPORT_CLOUD,payload,bearer))
+        }
+        coroutineContext.ensureActive()
+        onPhase(TransferPhase.DOWNLOADING_RESULTS)
+        if(reply.optString("status")=="success") {
+            val decoded=decodedResponse(CloudOperation.IMPORT_CLOUD,payload,reply)
+            runCatching{streakAccount?.let{StreakReminders.sync(app,it,reply.optJSONObject("streak"))}}
+            return decoded.rawText
+        }
+        if(reply.optString("status")!="credentials_required" ||
+            reply.optString("kind")!="encrypted_file" ||
+            reply.optString("format")!="hexcm" ||
+            reply.optString("code")!="PASSWORD_REQUIRED")
+            throw IOException("CLOUD_INVALID_JSON")
+        val encoded=reply.getString("dataBase64")
+        if(encoded.isEmpty() || encoded.length>4*((MAX_INPUT+2)/3) ||
+            encoded.length%4!=0 || !encoded.matches(Regex("[A-Za-z0-9+/]+={0,2}")))
+            throw IOException("CLOUD_INVALID_INPUT")
+        val bytes=try{Base64.decode(encoded,Base64.NO_WRAP)}
+            catch(_:IllegalArgumentException){throw IOException("CLOUD_INVALID_INPUT")}
+        if(bytes.isEmpty() || bytes.size>MAX_INPUT || bytes.size!=reply.optInt("sourceBytes") ||
+            bytes.size<74 || !bytes.copyOfRange(0,4).contentEquals("HXS3".toByteArray(Charsets.US_ASCII)) ||
+            bytes[4]!=3.toByte() || (bytes[5].toInt() and 1)==0 ||
+            Base64.encodeToString(bytes,Base64.NO_WRAP)!=encoded) {
+            bytes.fill(0)
+            throw IOException("CLOUD_INVALID_INPUT")
+        }
+        try {
+            val credentials=HttpCustomCloudPrompt.ask(true,false,"Hex Custom Cloud.hexcm")
+                ?:throw CancellationException("Cloud import cancelled")
+            try {
+                val password=credentials.password?:throw IOException("CLOUD_CREDENTIALS_NOT_ALLOWED")
+                return decodeFile("hexcm",bytes,password=password,onPhase=onPhase)
+            }catch(failure:Failure){
+                throw Failure(failure.code,failure.httpStatus,
+                    credentials.password!=null,false)
+            }finally{ credentials.password?.fill(0) }
+        }finally{ bytes.fill(0) }
+    }
+
     suspend fun decodeHttpInjectorCloud(reference: String,
         onPhase:suspend (TransferPhase)->Unit = {}): String =
         decode(CloudOperation.IMPORT_CLOUD,
@@ -521,6 +585,7 @@ internal class CloudDecodeClient(context: Context) {
         onPhase:suspend (TransferPhase)->Unit = {}):String =
         when(provider) {
             "hc" -> decodeHttpCustomReference(reference,onPhase)
+            "hexcustom" -> decodeHexCustomReference(reference,onPhase)
             "ehi" -> decodeHttpInjectorCloud(reference,onPhase)
             else -> decode(CloudOperation.IMPORT_CLOUD,JSONObject()
                 .put("provider",provider).put("reference",reference)
