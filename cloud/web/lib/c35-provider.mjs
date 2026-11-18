@@ -16,6 +16,8 @@ export const EHI_ENDPOINT = "https://www.ehi.tools/httpinjector/import_config";
 export const NUR_ALLOWED_HOST = "strongteam.co";
 export const EHI_ALLOWED_HOST = "www.ehi.tools";
 export const MNR_ALLOWED_HOST = "firebasestorage.googleapis.com";
+export const HEXCUSTOM_ALLOWED_HOST = "firestore.googleapis.com";
+export const HEXCUSTOM_PROJECT = "hexcustom-d3bc9";
 export const HC_HOST = "cloudvpn.mrfrankofc.com";
 export const HC_SHORT_HOST = "link.playsmarty.uk";
 export const MNR_BUCKET = "hamovpn.firebasestorage.app";
@@ -37,6 +39,7 @@ const ERRORS = Object.freeze({
   REMOTE_NOT_CONFIGURED: 503,
   REMOTE_NETWORK_DENIED: 502,
   REMOTE_PROVIDER_UNAVAILABLE: 502,
+  REMOTE_FORBIDDEN: 403, // vendor denied this key/collection (Hex Custom Firestore rules)
   REMOTE_CONFIG_UNAVAILABLE: 410, // remote link consumed, expired or removed
   REMOTE_RESPONSE_INVALID: 502,
   REMOTE_INTEGRITY_FAILED: 422,
@@ -100,6 +103,9 @@ export function parseMnrReference(value) {
   const match=/^(?:mnrtunneludp:\/\/)?([A-Za-z0-9]{10})$/.exec(value.trim());
   if(!match)fail("INVALID_REFERENCE");
   return match[1];
+}
+export function isMnrReference(value) {
+  try{parseMnrReference(value);return true;}catch{return false;}
 }
 export function mnrReferenceUrl(value) {
   // Firebase StorageReference.child() collapses the doubled slash in ://.
@@ -167,13 +173,71 @@ export async function importHttpCustomReference(reference,options={}) {
   return bytes;
 }
 
+/** Hex Custom cloud: a bare Firestore document key, never a URL. The key is
+ * the document ID in collection "archivos" of project hexcustom-d3bc9; the
+ * document's "contenido" field holds the .hexcm bytes (base64). The Firebase
+ * web API key is server configuration only (HEXCUSTOM_FIREBASE_API_KEY); it
+ * is never accepted from the client and never leaves the server.
+ */
+export function parseHexCustomReference(value) {
+  if(typeof value!=="string" || value.length>64)fail("INVALID_REFERENCE");
+  const match=/^(HexCustom-[A-Za-z0-9]{10})$/.exec(value.trim());
+  if(!match)fail("INVALID_REFERENCE");
+  return match[1];
+}
+export function isHexCustomReference(value) {
+  try{parseHexCustomReference(value);return true;}catch{return false;}
+}
+export function hexCustomReferenceUrl(value, apiKey=process.env.HEXCUSTOM_FIREBASE_API_KEY) {
+  const key=parseHexCustomReference(value);
+  if(typeof apiKey!=="string" || !/^AIza[0-9A-Za-z_-]{35}$/.test(apiKey))
+    fail("REMOTE_NOT_CONFIGURED");
+  return "https://"+HEXCUSTOM_ALLOWED_HOST+"/v1/projects/"+HEXCUSTOM_PROJECT+
+    "/databases/(default)/documents/archivos/"+key+"?key="+apiKey;
+}
+export function hexCustomConfigured(env=process.env) {
+  return env.CLOUD_HEXCUSTOM_IMPORT_ENABLED!=="false" &&
+    typeof env.HEXCUSTOM_FIREBASE_API_KEY==="string" &&
+    /^AIza[0-9A-Za-z_-]{35}$/.test(env.HEXCUSTOM_FIREBASE_API_KEY);
+}
+export async function importHexCustomReference(reference,options={}) {
+  const key=parseHexCustomReference(reference);
+  const env=options.env||process.env;
+  if(!hexCustomConfigured(env))fail("REMOTE_NOT_CONFIGURED");
+  const url=hexCustomReferenceUrl(key,env.HEXCUSTOM_FIREBASE_API_KEY);
+  const raw=await (options.download||downloadApproved)(
+    {url,kind:"hexcustom",maxBytes:MAX_REMOTE_BYTES},options);
+  if(!Buffer.isBuffer(raw)||!raw.length||raw.length>MAX_REMOTE_BYTES)
+    fail("REMOTE_RESPONSE_INVALID");
+  let doc;
+  try{doc=JSON.parse(new TextDecoder("utf-8",{fatal:true}).decode(raw));}
+  catch{fail("REMOTE_RESPONSE_INVALID");}
+  const encoded=doc?.fields?.contenido?.bytesValue;
+  if(typeof encoded!=="string"||!encoded)fail("REMOTE_RESPONSE_INVALID");
+  // strictBase64 enforces canonical base64 and the size cap; the worker
+  // dispatches the bytes by content (HXS3 v3 -> Hex Custom 10.6.7).
+  return strictBase64(encoded,MAX_REMOTE_BYTES);
+}
+
 /* Only hardcoded vendor destinations are accepted. No user URLs, custom ports,
  * userinfo, IP literals or aliases. MNR media has one generated token query.
  */
-export function approvedUrl(address, kind) {
+export function approvedUrl(address, kind, env=process.env) {
   if(kind==="hc") {
     let result;
     try{result=parseHttpCustomReference(address);}catch{fail("REMOTE_NETWORK_DENIED");}
+    if(result!==address)fail("REMOTE_NETWORK_DENIED");
+    return new URL(result);
+  }
+  if(kind==="hexcustom") {
+    // Exact Firestore document URL only: fixed project/collection/key and
+    // exactly ?key=<the configured Firebase API key>, nothing else.
+    let result;
+    try{
+      const match=/^https:\/\/firestore\.googleapis\.com\/v1\/projects\/hexcustom-d3bc9\/databases\/\(default\)\/documents\/archivos\/(HexCustom-[A-Za-z0-9]{10})\?key=(AIza[0-9A-Za-z_-]{35})$/.exec(address);
+      if(!match)fail("REMOTE_NETWORK_DENIED");
+      result=hexCustomReferenceUrl(match[1],env.HEXCUSTOM_FIREBASE_API_KEY);
+    }catch{fail("REMOTE_NETWORK_DENIED");}
     if(result!==address)fail("REMOTE_NETWORK_DENIED");
     return new URL(result);
   }
@@ -213,7 +277,7 @@ export function publicIpv4(address) {
 
 export async function pinnedAddresses(host, resolver = dns.lookup) {
   // The only legal hosts come from approvedUrl; never accept raw user host.
-  if (![EHI_ALLOWED_HOST, NUR_ALLOWED_HOST, MNR_ALLOWED_HOST, HC_HOST, HC_SHORT_HOST].includes(host)) fail("REMOTE_NETWORK_DENIED");
+  if (![EHI_ALLOWED_HOST, NUR_ALLOWED_HOST, MNR_ALLOWED_HOST, HEXCUSTOM_ALLOWED_HOST, HC_HOST, HC_SHORT_HOST].includes(host)) fail("REMOTE_NETWORK_DENIED");
   let answers;
   try { answers = await resolver(host, {all:true, family:4, verbatim:true}); }
   catch { fail("REMOTE_NETWORK_DENIED"); }
@@ -229,11 +293,11 @@ export async function pinnedAddresses(host, resolver = dns.lookup) {
  * automatic redirect handling; EHI rejects all redirects as before.
  */
 export async function downloadApproved({url,kind,method="GET",body,headers={},maxBytes=MAX_REMOTE_BYTES},
-    {resolve = dns.lookup, request = https.request} = {}) {
-  const initial=approvedUrl(url,kind);
+    {resolve = dns.lookup, request = https.request, env = process.env} = {}) {
+  const initial=approvedUrl(url,kind,env);
   const upperLimit=kind==="nur" ? MAX_NUR_BYTES : MAX_REMOTE_BYTES;
   if (!Number.isSafeInteger(maxBytes) || maxBytes<1 || maxBytes>upperLimit ||
-      (!["GET","POST"].includes(method) || kind==="hc" && (method!=="GET" || body!==undefined)))
+      (!["GET","POST"].includes(method) || ["hc","hexcustom"].includes(kind) && (method!=="GET" || body!==undefined)))
     fail("REMOTE_NETWORK_DENIED");
 
   const timeout=kind==="nur" ? NUR_TIMEOUT_MS : CONNECT_TIMEOUT_MS;
@@ -256,7 +320,7 @@ export async function downloadApproved({url,kind,method="GET",body,headers={},ma
   for(let hops=0;hops<=NUR_REDIRECT_LIMIT;hops++){
     if(visited.has(address))failTransport("REMOTE_PROVIDER_UNAVAILABLE","REDIRECT_LIMIT");
     visited.add(address);
-    const destination=approvedUrl(address,kind);
+    const destination=approvedUrl(address,kind,env);
     // DNS re-checked on every redirect and bound to the same HTTPS socket.
     const resolved=await pinnedAddresses(destination.hostname,resolve);
     // Python urllib tries the next resolved address after a socket failure.
@@ -313,7 +377,7 @@ export async function downloadApproved({url,kind,method="GET",body,headers={},ma
                 if(typeof target!=="string" || target.length>2048)
                   throw new Error("missing redirect");
                 next=new URL(target,destination);
-                approvedUrl(next.href,kind);
+                approvedUrl(next.href,kind,env);
                 // NUR stays same-host; HC can cross only to its other fixed reference host.
                 if(kind==="nur" && next.hostname!==initial.hostname)
                   throw new Error("cross-host redirect denied");
@@ -322,7 +386,9 @@ export async function downloadApproved({url,kind,method="GET",body,headers={},ma
               }
               return accept({redirect:next.href});
             }
-            if(["ehi","mnr","hc"].includes(kind) && [404,410].includes(status))
+            if(kind==="hexcustom" && status===403)
+              return reject("REMOTE_FORBIDDEN");
+            if(["ehi","mnr","hc","hexcustom"].includes(kind) && [404,410].includes(status))
               return reject("REMOTE_CONFIG_UNAVAILABLE");
             return reject("REMOTE_PROVIDER_UNAVAILABLE","HTTP_"+String(status));
           }

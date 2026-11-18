@@ -432,6 +432,36 @@
       "name": "STR VIP Proxy",
       "suffix": "isc",
       "kind": "text"
+    },
+    {
+      "prefix": "nm-xray-json://",
+      "name": "NetModSyna Xray JSON",
+      "suffix": "nm-xray-json",
+      "kind": "text"
+    },
+    {
+      "prefix": "zivpn://",
+      "name": "ZiVPN Tunnel",
+      "suffix": "zivpn",
+      "kind": "text"
+    },
+    {
+      "prefix": "httptweak://",
+      "name": "HTTP Tweak",
+      "suffix": "httptweak",
+      "kind": "text"
+    },
+    {
+      "prefix": "acvpn://",
+      "name": "AC Tunnel VPN",
+      "suffix": "acvpn",
+      "kind": "text"
+    },
+    {
+      "prefix": "eut://",
+      "name": "EUT VPN",
+      "suffix": "eut",
+      "kind": "text"
     }
   ]
 }

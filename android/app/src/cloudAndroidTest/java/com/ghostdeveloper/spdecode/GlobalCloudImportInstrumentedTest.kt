@@ -34,6 +34,27 @@ class GlobalCloudImportInstrumentedTest {
             CloudOnlineReference.resolve("hccloud://playsmarty/Ab12Cd","hc",published)?.reference)
     }
 
+    @Test fun hexCustomKeysAndMnrReferencesResolveToTheirOwnProviders() {
+        val hex=CloudOnlineReference.resolve("HexCustom-BoKo2Q5gQR","auto",published)
+        assertEquals("hexcustom",hex?.provider)
+        assertEquals("HexCustom-BoKo2Q5gQR",hex?.reference)
+        assertEquals("Hex Custom Cloud",hex?.name)
+        assertEquals("hexcm",hex?.suffix)
+        assertEquals("HexCustom-KHrIQs3HfI",
+            CloudOnlineReference.resolve("HexCustom-KHrIQs3HfI","hexcustom",published)?.reference)
+        val mnr=CloudOnlineReference.resolve("mnrtunneludp://AABBCCDDDD","auto",published)
+        assertEquals("mnr",mnr?.provider)
+        assertEquals("mnrtunneludp://AABBCCDDDD",mnr?.reference)
+        assertEquals("stp",mnr?.suffix)
+        // A Hex Custom key never crosses to another provider, and malformed
+        // keys (wrong length, lowercase prefix) resolve to nothing.
+        assertNull(CloudOnlineReference.resolve("HexCustom-BoKo2Q5gQR","hc",published))
+        assertNull(CloudOnlineReference.resolve("HexCustom-BoKo2Q5gQ","auto",published))
+        assertNull(CloudOnlineReference.resolve("HexCustom-BoKo2Q5gQR1","auto",published))
+        assertNull(CloudOnlineReference.resolve("hexcustom-BoKo2Q5gQR","auto",published))
+        assertNull(CloudOnlineReference.resolve("mnrtunneludp://AABBCCDDD","auto",published))
+    }
+
     @Test fun explicitProviderNeverSilentlyCrossesToAnotherService() {
         assertNull(CloudOnlineReference.resolve("https://ehi.link/TEST1234","hc",published))
         assertNull(CloudOnlineReference.resolve("https://link.playsmarty.uk/Test-Only","ehi",published))

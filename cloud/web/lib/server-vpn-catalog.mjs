@@ -7,7 +7,7 @@ import {providerEnabled} from "./server-vpn-provider.mjs";
 import {SUPPLIED_CATALOG_ITEMS,suppliedProviderConfigured} from "./supplied-integrations.mjs";
 import {catalogDefaultEnabled} from "./catalog-provider-policy.mjs";
 
-export const CATALOG_VERSION = 88; // Icon patch refresh; persistent panel overrides.
+export const CATALOG_VERSION = 89; // Text formats + Hex Custom cloud; persistent panel overrides.
 export const RECHECK_SECONDS = 15 * 60; // Version-only recovery; full download occurs on version change.
 
 /** Monotonic deployment version. Bump this override for ANY metadata, icon

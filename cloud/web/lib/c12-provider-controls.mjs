@@ -7,13 +7,13 @@ import {readFile,open,rename,unlink,access} from "node:fs/promises";
 import {join} from "node:path";
 import {randomUUID,createHash} from "node:crypto";
 import {providerIds,providerEnabled} from "./server-vpn-provider.mjs";
-import {ehiConfigured,nurConfigured} from "./c35-provider.mjs";
+import {ehiConfigured,nurConfigured,hexCustomConfigured} from "./c35-provider.mjs";
 import {activeCatalogVersion,catalog,SERVER_VPN_METHODS} from "./server-vpn-catalog.mjs";
 import {SUPPLIED_CATALOG_ITEMS} from "./supplied-integrations.mjs";
 import {PENDING_CATALOGS,catalogDefaultEnabled} from "./catalog-provider-policy.mjs";
 
 const ROOT="/app/provider-control";
-const BROKER_IDS=new Set(["ehi-cloud","hc-cloud","nur-tunnel",...providerIds()]);
+const BROKER_IDS=new Set(["ehi-cloud","hc-cloud","hexcustom-cloud","nur-tunnel",...providerIds()]);
 const IDS=Object.freeze([...new Set([...BROKER_IDS,...SERVER_VPN_METHODS.map(x=>x.id)])]);
 export const PUBLIC_PROVIDER_IDS=IDS;
 const LABELS=Object.freeze({
@@ -72,6 +72,7 @@ const LABELS=Object.freeze({
   "v2ray-tunnel-plus":"V2ray Tunnel Plus",
   "ehi-cloud":"HTTP Injector Cloud",
   "hc-cloud":"HTTP Custom Cloud",
+  "hexcustom-cloud":"Hex Custom Cloud",
   "nur-tunnel":"Servidores VPN",
   "http-wakko":"HTTP Wakko",
   "http-socketclay":"HTTP SocketClay",
@@ -188,6 +189,7 @@ export function providerPrerequisite(id,env=process.env){
   if(!IDS.includes(id))throw Error("INVALID_PROVIDER");
   if(env.CLOUD_API_ENABLED!=="true")return false;
   if(id==="hc-cloud")return env.CLOUD_HTTP_CUSTOM_IMPORT_ENABLED!=="false";
+  if(id==="hexcustom-cloud")return hexCustomConfigured(env);
   if(id==="ehi-cloud")return ehiConfigured(env);
   if(id==="nur-tunnel")return nurConfigured(env);
   return providerEnabled(id,env);

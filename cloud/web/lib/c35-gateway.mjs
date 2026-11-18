@@ -15,6 +15,8 @@ import {
   isExternalImportError, parseEhiReference, ehiConfigured, nurConfigured,
   importEhiReference, downloadNur,
   parseMnrReference, importMnrReference, parseHttpCustomReference, importHttpCustomReference,
+  isHttpCustomReference, parseHexCustomReference, importHexCustomReference,
+  hexCustomConfigured, isHexCustomReference, isMnrReference,
 } from "./c35-provider.mjs";
 const ownKeys=(value,expected)=> value && typeof value==="object" && !Array.isArray(value)
   && Object.keys(value).length===expected.length && expected.every(key=>Object.hasOwn(value,key));
@@ -48,21 +50,36 @@ export async function externalImportRequest(request,kind,opts={}) {
       const hasProvider=Object.hasOwn(body||{},"provider");
       if(!ownKeys(body,hasProvider?["provider","reference","consent"]:["reference","consent"]))
         return failure("INVALID_REQUEST",400);
-      kind=hasProvider?body.provider:"ehi";
-      if(!["ehi","hc"].includes(kind))return failure("INVALID_REQUEST",400);
+      // Never trust the app's provider field blindly: detect the provider
+      // from the reference itself. A present provider is used only when it
+      // matches the reference; otherwise the detected provider wins.
+      // Order mirrors the app (hc, hexcustom, mnr, ehi): mnr is checked
+      // before ehi because a bare 10-char id also fits the injector key
+      // alphabet, while mnrtunneludp:// never parses as ehi.
+      const detected=isHexCustomReference(body.reference)?"hexcustom"
+        :isMnrReference(body.reference)?"mnr"
+        :isHttpCustomReference(body.reference)?"hc"
+        :(()=>{try{parseEhiReference(body.reference);return "ehi";}catch{return null;}})();
+      if(hasProvider && !["ehi","hc","hexcustom","mnr"].includes(body.provider))
+        return failure("INVALID_REQUEST",400);
+      kind=detected||(hasProvider?body.provider:"ehi");
       delete body.provider;
       if(kind==="ehi"&&!ehiConfigured())return failure("REMOTE_NOT_CONFIGURED",503);
-      if(await serviceMaintenanceEnabled(redis,kind==="hc"?"files":"httpInjector"))
+      if(kind==="hexcustom"&&!hexCustomConfigured())return failure("REMOTE_NOT_CONFIGURED",503);
+      if(await serviceMaintenanceEnabled(redis,
+        kind==="hc"||kind==="hexcustom"?"files":kind==="mnr"?"serverVpn":"httpInjector"))
         return failure("SERVICE_MAINTENANCE",503);
-      if(!await providerAllowed(kind==="hc"?"hc-cloud":"ehi-cloud"))
+      if(!await providerAllowed(kind==="hc"?"hc-cloud":kind==="hexcustom"?"hexcustom-cloud":kind==="mnr"?"mnr-tunnel-plus":"ehi-cloud"))
         return failure("REMOTE_NOT_CONFIGURED",503);
     }
-    if(kind==="ehi" || kind==="mnr" || kind==="hc") {
+    if(kind==="ehi" || kind==="mnr" || kind==="hc" || kind==="hexcustom") {
       const combined=kind==="hc"&&body?.decode===true;
       if(!ownKeys(body,combined?["reference","consent","decode"]:["reference","consent"])||body.consent!==true)
         return failure("USER_CONSENT_REQUIRED",400);
       if(kind==="hc")parseHttpCustomReference(body.reference);
-      else if(kind==="mnr")parseMnrReference(body.reference);else parseEhiReference(body.reference);
+      else if(kind==="mnr")parseMnrReference(body.reference);
+      else if(kind==="hexcustom")parseHexCustomReference(body.reference);
+      else parseEhiReference(body.reference);
     }else if(kind==="nur") {
       if(!ownKeys(body,["consent"])||body.consent!==true)
         return failure("USER_CONSENT_REQUIRED",400);
@@ -110,6 +127,17 @@ export async function externalImportRequest(request,kind,opts={}) {
           sourceBytes:bytes.length,dataBase64:bytes.toString("base64")},200);
       }finally{bytes.fill(0);}
     }
+    if(kind==="hexcustom"){
+      const bytes=await importHexCustomReference(body.reference,vendor);
+      const result=await fetchWorker("file",{format:"hexcm",dataBase64:bytes.toString("base64")},settings(),opts);
+      let errorCode="";
+      if(!result.ok){try{errorCode=(await result.clone().json()).error?.code||"";}catch{}}
+      try{await recordWorkerResult(redis,result.ok?"success":"failed",{
+        kind:"file",format:"hexcm",bytes:bytes.length,errorCode,latencyMs:performance.now()-started,
+        appVersion:request.headers.get("x-spdecode-app-version"),
+      });}catch{}
+      return await withDecodeStreak(result,claims,streakToken,{...opts,tester:testerFields});
+    }
     if(kind==="mnr"){
       const bytes=await importMnrReference(body.reference,vendor);
       const result=await fetchWorker("file",{format:"stp",dataBase64:bytes.toString("base64")},settings(),opts);
@@ -137,7 +165,7 @@ export async function externalImportRequest(request,kind,opts={}) {
     // Count provider/download failures after authorization, without storing URLs.
     if(redis && lease){
       try{await recordWorkerResult(redis,"failed",{
-        kind:kind==="nur"?"catalog":["mnr","hc"].includes(kind)?"file":"ehi",format:kind==="hc"?"hc":kind==="mnr"?"stp":undefined,bytes:0,
+        kind:kind==="nur"?"catalog":["mnr","hc","hexcustom"].includes(kind)?"file":"ehi",format:kind==="hc"?"hc":kind==="mnr"?"stp":kind==="hexcustom"?"hexcm":undefined,bytes:0,
         errorCode:typeof error?.code==="string"?error.code:"SERVICE_UNAVAILABLE",
         latencyMs:started===null?null:performance.now()-started,
         appVersion:request.headers.get("x-spdecode-app-version"),

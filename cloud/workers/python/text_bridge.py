@@ -26,6 +26,9 @@ HANDLERS = (
     ("decoders.Python.xor_family", "decode_text"),
     ("decoders.Python.falcon_links", "decode_text"),
     ("decoders.Python.npvt_links", "decode_text"),
+    # HAPP RSA links: decode_text matches the HANDLERS contract (str -> str|None)
+    # and is a no-op without SPDECODE_HAPP_KEYS_JSON configured locally.
+    ("decoders.Python.happ_links", "decode_text"),
 )
 
 def dispatch(text: str, *, password: str | None = None) -> str | None:
@@ -75,6 +78,35 @@ def dispatch(text: str, *, password: str | None = None) -> str | None:
         result = module.decode_text(value)
         if result is not None:
             return result
+    # Secondary text schemes wired from existing repo codecs only; no new
+    # decryption logic. A malformed payload is an undecodable link (None),
+    # never a fallback to another format.
+    if lowered.startswith("httptweak://"):
+        # Payload is the bare Base64 .ht blob; config_prefix is confirmed in
+        # the decrypted config, but no real httptweak:// link has been seen
+        # yet, so the payload shape is the repo's encode_text round-trip.
+        module = importlib.import_module("decoders.Python.apps.HTTP_Tweak.HTTP_Tweak_archivos")
+        try:
+            result = module.decode_text(value[len("httptweak://"):])
+        except Exception:
+            return None
+        return json.dumps(result, ensure_ascii=False, indent=2) if isinstance(result, (dict, list)) else result
+    if lowered.startswith("eut://"):
+        # sza blob; EUT_VPN_archivos.import_text strips the eut:// prefix
+        # itself (sza_decrypt) and falls back from eut-payload:// to sza.
+        module = importlib.import_module("decoders.Python.apps.EUT_VPN.EUT_VPN_archivos")
+        _kind, obj = module.import_text(value)
+        if obj is not None:
+            return json.dumps(obj, ensure_ascii=False, indent=2) if isinstance(obj, (dict, list)) else obj
+        return None
+    if lowered.startswith("acvpn://"):
+        # Decodes only the cloud reference identifier offline; the profile
+        # itself is not downloaded (profileDownloaded is False by design).
+        module = importlib.import_module("decoders.Python.apps.AC_TUNNEL_VPN.file_decoder")
+        try:
+            return module.render(module.cloud_reference(value.encode("utf-8")))
+        except Exception:
+            return None
     # C8 isolated original application codecs. These prefixes are unambiguous.
     c8_links = (
         ("bdnet://", "decoders.Python.apps.BD_NET_VPN.file_decoder"),
