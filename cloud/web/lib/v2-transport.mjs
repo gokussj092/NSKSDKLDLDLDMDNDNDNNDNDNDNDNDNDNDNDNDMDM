@@ -45,6 +45,25 @@ function recordSafeHpkeFailure(op,stage,error){
   hpkeOperatorLogAt.set(key,now);
   console.error("[spdecode-hpke] op="+op+" stage="+stage+" reason="+category);
 }
+// A syntactically valid HPKE request may still fail inside the V1 route
+// validator. Only record canonical server-owned error enums for HTTP 400/422.
+const safeServerErrors=new Set(["INVALID_REQUEST","INVALID_REFERENCE","INVALID_INPUT",
+  "INVALID_BASE64","USER_CONSENT_REQUIRED","UNSUPPORTED_FORMAT","UNSUPPORTED_VERSION",
+  "REMOTE_RESPONSE_INVALID","REMOTE_INTEGRITY_FAILED"]);
+async function recordSafeHpkeRejection(op,response){
+  if(response.status!==400&&response.status!==422)return;
+  let category="OTHER";
+  try{
+    const parsed=await response.clone().json();
+    const code=parsed?.error?.code;
+    if(safeServerErrors.has(code))category=code;
+  }catch{}
+  const key="dispatch:"+op+":"+response.status+":"+category,now=Date.now();
+  if((hpkeOperatorLogAt.get(key)||0)+60000>now)return;
+  if(hpkeOperatorLogAt.size>=128)hpkeOperatorLogAt.clear();
+  hpkeOperatorLogAt.set(key,now);
+  console.error("[spdecode-hpke] op="+op+" stage=dispatch status="+response.status+" reason="+category);
+}
 // Public protocol IDs, never caller-supplied executable routes.
 
 async function readBytes(request,max) {
@@ -374,6 +393,7 @@ export async function transportRequest(request,options={}) {
     const internal=new Request(request.url,{method:"POST",headers,body:decoded,signal:request.signal});
     stage="dispatch";
     const response=await jsonTransportRequest(internal,{...options,hpkeWireBytes:wire});
+    await recordSafeHpkeRejection(op,response);
     // TEMPORARY diagnostic (preflight failure, 2026-11-16): op + status only.
     if(op>=25&&op<=30)console.error('[spdecode-diag] transport op='+op+' status='+response.status);
     stage="reply";
