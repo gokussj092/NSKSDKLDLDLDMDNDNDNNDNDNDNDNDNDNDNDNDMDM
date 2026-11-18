@@ -4,7 +4,7 @@ import pathlib
 import tempfile
 import unittest
 
-ROOT = pathlib.Path(__file__).resolve().parents[3]
+ROOT = pathlib.Path(__file__).resolve().parents[4]
 AUDIT = ROOT / "cloud/infra/vps/hpke-client-pin-audit.py"
 spec = importlib.util.spec_from_file_location("hpke_client_pin_audit", AUDIT)
 audit = importlib.util.module_from_spec(spec)
