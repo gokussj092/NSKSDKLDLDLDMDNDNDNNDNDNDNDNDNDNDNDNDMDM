@@ -8,6 +8,7 @@ import {v2DevicePolicyStatus} from "./v2-device-admission-policy.mjs";
 import {v2PlayPolicyStatus} from "./v2-play-policy.mjs";
 import {v1ProtectionRequired,v1PolicyStatus} from "./v1-protection-policy.mjs";
 import { workBudget } from "./device-security.mjs";
+import { routes, metadata, uploads, analysisJobs } from "./v2-routes.mjs";
 import { checkIntegrityVerdict, verifyPlayToken } from "./c3-integrity.mjs";
 import { consumeChallenge, ipKey, rememberSession, reserveChallenge, sessionExists, throttle } from "./c3-store.mjs";
 const json = object => Buffer.from(JSON.stringify(object)).toString("base64url");
@@ -115,8 +116,21 @@ export async function requireSession(redis, request, cfg) {
   if (!claims || (claims.channel && claims.channel!=="qa") ||
       (claims.channel==="qa" && !cfg.qaActive) ||
       !await sessionExists(redis,claims.jti)) return null;
+  const path=new URL(request.url).pathname.replace(/^\/api\/v1\//,"");
+  const op=Number(Object.keys(routes).find(k=>routes[k]===path));
+  // Older signed V1 clients must not spend decoder capacity on status,
+  // catalogs, feedback, telemetry or results polling either.
+  if(metadata.has(op))
+    return await throttle(redis,"spc3:metadata:v2:"+claims.jti,1200,60)?
+      claims:{rateLimited:true};
+  if(uploads.has(op))
+    return await throttle(redis,"spc3:upload:v2:"+claims.jti,96,60)?
+      claims:{rateLimited:true};
+  if(analysisJobs.has(op))
+    return await throttle(redis,"spc3:analysis:v2:"+claims.jti,40,60)?
+      claims:{rateLimited:true};
   const ip = ipKey(request);
-  const sessionRate = await throttle(redis,"spc3:request-limit:"+claims.jti,limits.requestsPerSessionMinute,60);
-  const networkRate = await throttle(redis,"spc3:network-limit:"+ip,limits.requestsPerIpWindow,60);
+  const sessionRate = await throttle(redis,"spc3:decode:v2:"+claims.jti,limits.requestsPerSessionMinute,60);
+  const networkRate = await throttle(redis,"spc3:decode-network:v2:"+ip,limits.requestsPerIpWindow,60);
   return sessionRate && networkRate && await workBudget(redis,claims) ? claims : {rateLimited:true};
 }
