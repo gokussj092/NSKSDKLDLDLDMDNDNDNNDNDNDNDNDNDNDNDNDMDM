@@ -4,6 +4,10 @@ on:
     branches: [ci/unity-ads-online-qa]
     paths:
       - 'cloud/web/lib/server-vpn*'
+      - 'cloud/web/lib/c3-store.mjs'
+      - 'cloud/web/lib/device-security.mjs'
+      - 'cloud/web/lib/v2-transport.mjs'
+      - 'cloud/web/tests/capacity-isolation.test.mjs'
       - 'cloud/web/lib/c35-gateway.mjs'
       - 'cloud/web/instrumentation.js'
       - 'cloud/web/tests/server-vpn-result-cache.test.mjs'
@@ -29,7 +33,7 @@ jobs:
           for file in lib/server-vpn-result-cache.mjs lib/server-vpn-cache-controls.mjs lib/server-vpn-cache-refresh.mjs lib/server-vpn-gateway.mjs lib/c35-gateway.mjs instrumentation.js; do
             node --check "$file"
           done
-          node --test tests/server-vpn-result-cache.test.mjs
+          node --test tests/server-vpn-result-cache.test.mjs tests/capacity-isolation.test.mjs
       - name: Validate Docker Compose
         run: docker compose -f cloud/compose.yaml config --quiet
       - name: Build web image (including instrumentation and volume)
