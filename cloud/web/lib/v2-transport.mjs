@@ -248,6 +248,7 @@ async function jsonTransportCore(request,options={}) {
     bindVerifiedRequest(internal,{...claims,hpke:Boolean(options.hpkeWireBytes)});
     return await (options.dispatch||dispatch)(op,internal);
   } catch(error) {
+    if(error?.code==="ENGINE_UNAVAILABLE")return fail("ENGINE_UNAVAILABLE",503);
     if(error?.message==="INPUT_TOO_LARGE")return fail("INPUT_TOO_LARGE",413);
     if(error?.message==="INVALID_REQUEST")return fail("INVALID_REQUEST",400);
     return fail("SERVICE_UNAVAILABLE",503);
