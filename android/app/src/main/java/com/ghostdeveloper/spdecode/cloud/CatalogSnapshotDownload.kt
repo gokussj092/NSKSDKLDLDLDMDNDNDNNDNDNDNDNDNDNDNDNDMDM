@@ -52,6 +52,10 @@ internal class CatalogSnapshotDownload(private val client:CloudDecodeClient,priv
         vault.write("chunk-journal",JSONObject().put("snapshotId",id).put("validUntil",manifest.getLong("validUntil")).toString().toByteArray())
         var verified=0L;onTransfer?.invoke(0L,pendingBytes)
         var metadata:JSONObject?=null
+        // Each icon/object may require its own authenticated request. A full
+        // catalog can exceed the server\'s 120-chunks/minute limit if sent in
+        // a tight loop; pace only actual network misses, not cached fragments.
+        var lastNetworkChunkAt=0L
         for(plan in plans) {
             currentCoroutineContext().ensureActive()
             val obj=plan.doc;val sha=obj.getString("sha256");val length=obj.getInt("byteLength")
@@ -64,6 +68,12 @@ internal class CatalogSnapshotDownload(private val client:CloudDecodeClient,priv
                     var part=vault.read(cacheKey)?.takeIf{it.size==size&&hash(it)==expected}
                     if(part==null) {
                         val request=JSONObject().put("snapshotId",id).put("manifestHash",id).put("objectHash",sha).put("chunkIndex",i)
+                        val elapsed=android.os.SystemClock.elapsedRealtime()
+                        if(lastNetworkChunkAt>0L) {
+                            val remaining=700L-(elapsed-lastNetworkChunkAt)
+                            if(remaining>0L)kotlinx.coroutines.delay(remaining)
+                        }
+                        lastNetworkChunkAt=android.os.SystemClock.elapsedRealtime()
                         var response:JSONObject
                         try{response=client.catalogChunk(request)}catch(e:CloudDecodeClient.Failure) {
                             if(e.code!="CATALOG_LEASE_EXPIRED")throw e
