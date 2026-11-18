@@ -138,8 +138,19 @@ internal object CloudUserErrors {
         val text=context.getString(id)
         // Expected credential/compatibility notices contain exactly the
         // localized guidance, even in QA builds (no error/report UI).
-        if(isInformational(cause,format,passwordSubmitted,hwidSubmitted) ||
-            !BuildConfig.SPDECODE_QA_BUILD)return text
+        if(isInformational(cause,format,passwordSubmitted,hwidSubmitted))return text
+        // During release operation, a bounded enum + HTTP status is essential
+        // to distinguish malformed HPKE/admission from invalid provider data.
+        // It contains no reference, auth token, URL, key material, or config.
+        if(!BuildConfig.SPDECODE_QA_BUILD) {
+            val safe=(cause as? CloudDecodeClient.Failure)
+            if(safe!=null && safe.code in setOf(
+                    "INVALID_REQUEST","INVALID_INPUT","INVALID_BASE64","INVALID_REFERENCE",
+                    "ENCRYPTED_TRANSPORT_REQUIRED","RATE_LIMITED") &&
+                safe.httpStatus in 400..599)
+                return "$text\n${safe.code} / HTTP ${safe.httpStatus}"
+            return text
+        }
         // QA diagnostics contain only bounded, local enum-like values.
         val code=when(cause) {
             is CloudDecodeClient.Failure -> cause.code
