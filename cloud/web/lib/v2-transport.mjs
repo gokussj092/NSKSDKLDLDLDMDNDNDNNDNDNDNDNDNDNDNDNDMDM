@@ -98,6 +98,9 @@ async function jsonTransportCore(request,options={}) {
     const redis=await (options.storeProvider||store)();
     if(await maintenanceEnabled(redis))return fail("SERVICE_UNAVAILABLE",503);
     const ip=ipKey(request);
+    // A mobile carrier may put many devices behind one public CGNAT IP.
+    // Keep this coarse IP edge guard, but leave per-session/key quotas to
+    // authenticated PoP checks so other subscribers do not block new logins.
     if(!await throttle(redis,"spc2:edge:"+ip,300,60))return fail("RATE_LIMITED",429);
     let bearer="",claims;
     // Reject anonymous/expired callers before buffering their large payload.
@@ -111,7 +114,7 @@ async function jsonTransportCore(request,options={}) {
     }
     const bytes=await readBytes(request,bodyLimit(op));
     if(op===1) {
-      if(!await throttle(redis,"spc2:challenge-rate:"+ip,15,900))return fail("RATE_LIMITED",429);
+      if(!await throttle(redis,"spc2:challenge-rate:"+ip,240,900))return fail("RATE_LIMITED",429);
       if(!await throttle(redis,"spsec:challenge:global",300,60))return fail("RATE_LIMITED",429);
       const body=JSON.parse(bytes);
       if(!record(body) || Object.keys(body).join(",")!=="publicKey" || !publicKey(body.publicKey))
@@ -138,7 +141,7 @@ async function jsonTransportCore(request,options={}) {
         ...(hardwareNeeded?{attestationChallenge:attestationChallenge(nonce,challengeId,body.publicKey)}:{})},201);
     }
     if(op===2) {
-      if(!await throttle(redis,"spc2:admission-rate:"+ip,20,900))return fail("RATE_LIMITED",429);
+      if(!await throttle(redis,"spc2:admission-rate:"+ip,240,900))return fail("RATE_LIMITED",429);
       const body=JSON.parse(bytes);
       if(!record(body) || !["challengeId,integrityToken","certificateChain,challengeId,integrityToken,publicKey"].includes(Object.keys(body).sort().join(",")) ||
          !/^[0-9a-f-]{36}$/.test(body.challengeId) || typeof body.integrityToken!=="string" ||
@@ -321,7 +324,9 @@ export async function transportRequest(request,options={}) {
   try {
     // Apply independent edge throttling before accepting large crypto payloads.
     const redis=await (options.storeProvider||store)();
-    if(!await throttle(redis,"spc2:hpke-edge:"+ipKey(request),180,60))
+    // Pre-decryption envelope limit is intentionally coarse for shared carrier IPs.
+    // Authenticated per-key, per-session and per-operation limits still apply.
+    if(!await throttle(redis,"spc2:hpke-edge:"+ipKey(request),360,60))
       return fail("RATE_LIMITED",429);
     const max=op===5?HPKE_MAX_BYTES:(op===6?1024*1024+512:bodyLimit(op)+512);
     const wire=await readHpkeBytes(request,max);
