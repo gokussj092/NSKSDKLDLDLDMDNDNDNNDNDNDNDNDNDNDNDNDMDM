@@ -130,6 +130,8 @@ test("renewing a session cannot reset a key budget or spend global capacity afte
   const f=fixture({CLOUD_ACTION_INTEGRITY_REQUIRED:"false"});
   const token=(await(await enroll(f)).json()).accessToken;
   for(let i=0;i<30;i++)assert.equal((await f.call(5,{text:"synthetic"},token)).status,200);
+  assert.equal(f.redis.counts.get("spsec:decode:v2:key-minute:"+keyId(encode(f.key))),30);
+  assert.equal(f.redis.counts.get("spsec:decode:v2:key-day:"+keyId(encode(f.key))),30);
   const challenge=await(await f.call(1,{publicKey:encode(f.key)})).json();
   assert.equal(challenge.keyAttestationRequired,false);
   f.options.decodeIntegrity=async()=>verdict(integrityNonce(challenge.nonce,challenge.challengeId,encode(f.key)));
