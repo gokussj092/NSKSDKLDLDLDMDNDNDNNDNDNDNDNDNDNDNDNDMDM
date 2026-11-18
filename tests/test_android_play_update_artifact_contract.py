@@ -9,7 +9,7 @@ class TestPlayUpdateDistribution(unittest.TestCase):
         gradle = (ROOT / "android/app/build.gradle.kts").read_text()
         self.assertIn('val enablePlayAab=providers.gradleProperty("spdecodePlayAab")', gradle)
         self.assertIn('if (enablePlayAab) from("src/playUpdate/java")', gradle)
-        self.assertIn('if (enablePlayAab) {\n        implementation("com.google.android.play:app-update:2.1.0")', gradle)
+        self.assertIn('if (enablePlayAab) {\n            implementation("com.google.android.play:app-update:2.1.0")', gradle)
         self.assertIn('if (enablePlayAab) from("src/playUpdate/assets/', gradle)
 
     def test_play_only_workflow(self):

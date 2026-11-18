@@ -68,8 +68,13 @@ class AndroidPlayCompatibility(unittest.TestCase):
         self.assertIsNotNone(version)
         self.assertIsNotNone(code)
         self.assertGreaterEqual(int(code.group(1)), 30)
-        self.assertIn(f"versionName='{version.group(1)}'", flow)
-        self.assertIn(f"versionCode='{code.group(1)}'", flow)
+        # The workflow never hardcodes the version: current_android_contracts.py
+        # reads versionName/versionCode from build.gradle.kts into
+        # $SPDECODE_VERSION_NAME/$SPDECODE_VERSION_CODE, and the workflow then
+        # verifies the built artifact's badging against those variables.
+        self.assertIn("current_android_contracts.py", flow)
+        self.assertIn("grep -F \"versionName='$SPDECODE_VERSION_NAME'\"", flow)
+        self.assertIn("grep -F \"versionCode='$SPDECODE_VERSION_CODE'\"", flow)
 
     def test_play_signing_certificate_is_mandatory(self):
         flow = (ROOT / ".github/workflows/play-beta-artifacts.yml").read_text("utf-8")
