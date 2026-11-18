@@ -35,7 +35,7 @@ export async function acceptBoundProof(redis,request,op,bytes,bearer,claims,wire
   }
   const lightweight=metadata.has(op), ip=ipKey(request);
   if (!await throttle(redis,"spc2:"+(lightweight?"metadata:":"work:")+claims.jti,lightweight?180:10,60) ||
-      (!lightweight && (!await throttle(redis,"spc2:work-ip:"+ip,20,60) || !await workBudget(redis,claims))))
+      (!lightweight && (!await throttle(redis,"spc2:work-ip:"+ip,100,60) || !await workBudget(redis,claims))))
     return {rateLimited:true};
   return claims;
 }
