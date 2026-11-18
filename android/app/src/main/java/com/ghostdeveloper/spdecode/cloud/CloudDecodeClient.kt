@@ -145,14 +145,10 @@ internal class CloudDecodeClient(context: Context) {
         } else ""
         coroutineContext.ensureActive()
         val operation = CloudOperation.SESSION
+        // Session admission uses only the authenticated challenge, proof and
+        // Play/Keystore verdict. Installer/version metadata is sent only on
+        // decode requests; it must never change the strict admission schema.
         val body = JSONObject().put("challengeId",challengeId).put("integrityToken",verdict)
-            // Tester detection (optional for the server): install origin plus
-            // the app version, sent only when this session is registered.
-            // Same field names as the decode payloads (installerPackage /
-            // versionName / versionCode) so the server reads one contract.
-            .put("versionName",BuildConfig.VERSION_NAME)
-            .put("versionCode",BuildConfig.VERSION_CODE)
-        installSource()?.let { body.put("installerPackage",it) }
         if (certificates != null) body.put("publicKey", CloudRequestProof.publicKey()).put("certificateChain", certificates)
         val reply=withContext(Dispatchers.IO) {
             extract(CloudNativeTransport.post(operation,body))
