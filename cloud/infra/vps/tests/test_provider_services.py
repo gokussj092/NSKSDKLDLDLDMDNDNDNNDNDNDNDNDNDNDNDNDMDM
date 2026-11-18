@@ -54,6 +54,22 @@ class ProviderServiceTests(unittest.TestCase):
         self.env.write_text("\n".join(lines) + "\n")
         self.env.chmod(0o600)
 
+    def test_hex_custom_status_reports_only_safe_configuration_state(self):
+        import contextlib
+        import io
+        key = "AIza" + "Z" * 35
+        for extras, expected in (
+            ([], "NOT CONFIGURED"),
+            (["HEXCUSTOM_FIREBASE_API_KEY=" + key], "CONFIGURED"),
+            (["HEXCUSTOM_FIREBASE_API_KEY=" + key,
+              "CLOUD_HEXCUSTOM_IMPORT_ENABLED=false"], "DISABLED"),
+        ):
+            out = io.StringIO()
+            with contextlib.redirect_stdout(out):
+                providers.status(providers.current_lines() + extras)
+            self.assertIn("Hex Custom Cloud: " + expected, out.getvalue())
+            self.assertNotIn(key, out.getvalue())
+
     def test_enabling_persists_flags_and_bumps_catalog(self):
         with mock.patch.object(providers, "compose"), mock.patch.object(providers, "healthy", return_value=True):
             providers.apply("enable", providers.current_lines())
