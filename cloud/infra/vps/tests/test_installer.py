@@ -250,8 +250,8 @@ class VPSInstallerTests(unittest.TestCase):
             self.assertNotIn(word,worker)
     def test_hex_custom_firestore_key_is_backend_only_and_opt_in(self):
         yml = (ROOT / "cloud/compose.yaml").read_text()
-        web = yml.split("\\n  web:", 1)[1].split("\\n  apk-qa:", 1)[0]
-        worker = yml.split("\\n  decoder-worker:", 1)[1].split("\\nvolumes:", 1)[0]
+        web = yml.split("\n  web:", 1)[1].split("\n  apk-qa:", 1)[0]
+        worker = yml.split("\n  decoder-worker:", 1)[1].split("\nvolumes:", 1)[0]
         self.assertIn("HEXCUSTOM_FIREBASE_API_KEY: ${HEXCUSTOM_FIREBASE_API_KEY:-}", web)
         self.assertIn("CLOUD_HEXCUSTOM_IMPORT_ENABLED: ${CLOUD_HEXCUSTOM_IMPORT_ENABLED:-true}", web)
         self.assertNotIn("HEXCUSTOM_FIREBASE_API_KEY:", worker)
