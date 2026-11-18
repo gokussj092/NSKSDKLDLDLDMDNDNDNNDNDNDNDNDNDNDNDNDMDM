@@ -7,6 +7,15 @@ on:
       - 'cloud/web/lib/c3-store.mjs'
       - 'cloud/web/lib/device-security.mjs'
       - 'cloud/web/lib/v2-transport.mjs'
+      - 'cloud/web/lib/v2-routes.mjs'
+      - 'cloud/web/lib/bound-auth.mjs'
+      - 'cloud/web/lib/c10-catalog-watch.mjs'
+      - 'cloud/web/tests/v2-security.test.mjs'
+      - 'cloud/web/tests/device-security.test.mjs'
+      - 'cloud/web/tests/c10-catalog-push.test.mjs'
+      - 'cloud/infra/vps/nginx-config.py'
+      - 'cloud/infra/vps/tests/test_nginx_rate_isolation.py'
+      - 'android/app/src/main/java/com/ghostdeveloper/spdecode/cloud/CloudCatalogUpdates.kt'
       - 'cloud/web/tests/capacity-isolation.test.mjs'
       - 'cloud/web/lib/c35-gateway.mjs'
       - 'cloud/web/instrumentation.js'
@@ -26,14 +35,18 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Validate syntax, private JSON cache, concurrency and renewal
+      - name: Validate Nginx metadata bypass contract
+        run: python3 cloud/infra/vps/tests/test_nginx_rate_isolation.py
+      - name: Install Cloud unit test dependencies
+        run: npm ci --prefix cloud/web --no-audit --no-fund
+      - name: Validate syntax, quota isolation, signed transport and catalog watch
         working-directory: cloud/web
         run: |
           set -euo pipefail
-          for file in lib/server-vpn-result-cache.mjs lib/server-vpn-cache-controls.mjs lib/server-vpn-cache-refresh.mjs lib/server-vpn-gateway.mjs lib/c35-gateway.mjs instrumentation.js; do
+          for file in lib/server-vpn-result-cache.mjs lib/server-vpn-cache-controls.mjs lib/server-vpn-cache-refresh.mjs lib/server-vpn-gateway.mjs lib/c35-gateway.mjs lib/c10-catalog-watch.mjs lib/device-security.mjs lib/v2-routes.mjs lib/v2-transport.mjs lib/bound-auth.mjs instrumentation.js; do
             node --check "$file"
           done
-          node --test tests/server-vpn-result-cache.test.mjs tests/capacity-isolation.test.mjs
+          node --test tests/server-vpn-result-cache.test.mjs tests/capacity-isolation.test.mjs tests/c10-catalog-push.test.mjs tests/v2-security.test.mjs tests/device-security.test.mjs
       - name: Validate Docker Compose
         run: docker compose -f cloud/compose.yaml config --quiet
       - name: Build web image (including instrumentation and volume)
