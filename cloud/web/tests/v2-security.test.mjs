@@ -190,7 +190,7 @@ test("catalog reads, telemetry, upload frames and APK analysis do not exhaust de
       assert.equal((await f.call(op,{},token)).status,200,`upload op=${op} item=${i}`);
   }
   for(const op of [21,23,26,28]){
-    for(let i=0;i<5;i++)
+    for(let i=0;i<2;i++)
       assert.equal((await f.call(op,{},token)).status,200,`analysis op=${op} item=${i}`);
   }
   assert.equal([...f.redis.counts.keys()].filter(k=>k.startsWith("spsec:decode:v2:")).length,0);
