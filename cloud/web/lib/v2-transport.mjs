@@ -23,6 +23,28 @@ import { openHpkeRequest, unpackHpkeBody, sealHpkeReply, isHpkeEnabled, requires
 const fail=(code,status)=>jsonReply({error:{code}},status);
 const record=value=>value && typeof value==="object" && !Array.isArray(value);
 const audience="spdecode-android-v2";
+// Fixed, sanitized diagnostic vocabulary; no key IDs, request bodies,
+// bearer tokens, IPs, reference IDs, headers or HPKE bytes are ever logged.
+// This distinguishes real key mismatch from generic malformed requests.
+export function classifyHpkeFailure(error) {
+  const reason=error?.message;
+  if(reason==="HPKE_UNKNOWN_KEY")return "CLIENT_PIN_MISMATCH";
+  if(reason==="HPKE_UNCONFIGURED"||reason==="HPKE_KEYRING_INVALID")return "KEYRING_CONFIGURATION";
+  if(reason==="HPKE_INVALID")return "INVALID_ENVELOPE";
+  if(reason==="INPUT_TOO_LARGE")return "WIRE_TOO_LARGE";
+  if(reason==="HPKE_REPLY_TOO_LARGE")return "REPLY_TOO_LARGE";
+  if(reason==="HPKE_REPLY_INVALID")return "REPLY_AUTH_ERROR";
+  return "OTHER";
+}
+const hpkeOperatorLogAt=new Map();
+function recordSafeHpkeFailure(op,stage,error){
+  // Limit each process to one diagnostic per class and operation per minute.
+  const category=classifyHpkeFailure(error),key=op+":"+stage+":"+category,now=Date.now();
+  if((hpkeOperatorLogAt.get(key)||0)+60000>now)return;
+  if(hpkeOperatorLogAt.size>=128)hpkeOperatorLogAt.clear();
+  hpkeOperatorLogAt.set(key,now);
+  console.error("[spdecode-hpke] op="+op+" stage="+stage+" reason="+category);
+}
 // Public protocol IDs, never caller-supplied executable routes.
 
 async function readBytes(request,max) {
@@ -324,7 +346,7 @@ export async function transportRequest(request,options={}) {
   const op=Number(name);
   if(op>=4 && !(request.headers.get("authorization")||"").startsWith("Bearer "))
     return fail("UNAUTHORIZED",401);
-  let opened;
+  let opened,stage="edge";
   try {
     // Apply independent edge throttling before accepting large crypto payloads.
     const redis=await (options.storeProvider||store)();
@@ -337,25 +359,34 @@ export async function transportRequest(request,options={}) {
     if(!await throttle(redis,"spc2:hpke-edge:v3:"+traffic+":"+ipKey(request),ceiling,60))
       return fail("RATE_LIMITED",429);
     const max=op===5?HPKE_MAX_BYTES:(op===6?1024*1024+512:bodyLimit(op)+512);
+    stage="read";
     const wire=await readHpkeBytes(request,max);
+    stage="open";
     opened=await openHpkeRequest(wire,op,env);
+    stage="replay";
     if(await redis.set("spc2:hpke-replay:"+opened.replayId,"1",{EX:150,NX:true})!=="OK")
       return fail("INVALID_REQUEST",400);
+    stage="unpack";
     const decoded=unpackHpkeBody(opened.plaintext,op);
     const headers=new Headers(request.headers);
     headers.set("content-type","application/json");
     headers.delete("content-length");headers.delete("content-encoding");
     const internal=new Request(request.url,{method:"POST",headers,body:decoded,signal:request.signal});
+    stage="dispatch";
     const response=await jsonTransportRequest(internal,{...options,hpkeWireBytes:wire});
     // TEMPORARY diagnostic (preflight failure, 2026-11-16): op + status only.
     if(op>=25&&op<=30)console.error('[spdecode-diag] transport op='+op+' status='+response.status);
+    stage="reply";
     const responseBytes=await boundedReply(response);
+    stage="seal";
     const ciphertext=sealHpkeReply(opened,response.status,responseBytes);
     return new Response(ciphertext,{status:response.status,headers:{
       "Content-Type":"application/octet-stream","Content-Length":String(ciphertext.length),"Cache-Control":"no-store","X-Content-Type-Options":"nosniff"
     }});
   }catch(error) {
+    recordSafeHpkeFailure(op,stage,error);
     // Do not disclose key IDs, invalid tags, keyring state or parsing exceptions.
+    // Public HTTP response semantics stay unchanged for untrusted clients.
     return fail(error?.message==="INPUT_TOO_LARGE"?"INPUT_TOO_LARGE":"INVALID_REQUEST",
       error?.message==="INPUT_TOO_LARGE"?413:400);
   }finally {
