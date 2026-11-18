@@ -648,10 +648,9 @@ val prepareCloudHistoryUiSource = tasks.register("prepareCloudHistoryUiSource") 
         )""",
             """if(cloudExpanded) GlobalCloudImportPanel(
             enabled=!busy,
-            routes=cloudTextFormats,
-            onDecode={provider,input->
+            onDecode={input->
                 awaitingCloudResult=true
-                onDecodeCloud(provider,input)
+                onDecodeCloud("auto",input)
             },
         )""")
         app = replaceOnce(app,
