@@ -396,7 +396,11 @@ test('HPKE-only RASP admission authenticates encrypted reports and rejects wire 
   const c=await call(1,{publicKey:encoded(f.key)});assert.equal(c.status,201);
   f.options.decodeIntegrity=async()=>{const v=verdict(integrityNonce(c.body.nonce,c.body.challengeId,encoded(f.key)));
     v.tokenPayloadExternal.appIntegrity.versionCode='35';return v;};
-  const session=await call(2,{challengeId:c.body.challengeId,integrityToken:'T'.repeat(100)});
+  // Exercise actual 1.1.29 Android encrypted admission. These signed
+  // advisory fields were rejected as INVALID_REQUEST before the fix.
+  const session=await call(2,{challengeId:c.body.challengeId,
+    integrityToken:'T'.repeat(100),versionName:'1.1.29',versionCode:44,
+    installerPackage:'com.android.vending'});
   assert.equal(session.status,201);const token=session.body.accessToken;
   let dispatches=0;f.options.dispatch=async(_op,req)=>{dispatches++;assert.deepEqual(await req.json(),{text:'fixture'});return Response.json({ok:true});};
   const body={text:'fixture',_rasp:{v:1,signals:0,evaluated:15,elapsedUs:111}};
