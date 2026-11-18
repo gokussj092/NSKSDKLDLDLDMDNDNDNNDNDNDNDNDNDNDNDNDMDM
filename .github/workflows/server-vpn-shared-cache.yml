@@ -77,7 +77,9 @@ jobs:
           done
           node --test tests/server-vpn-result-cache.test.mjs tests/capacity-isolation.test.mjs tests/c10-catalog-push.test.mjs tests/v2-security.test.mjs tests/device-security.test.mjs tests/c3-security.test.mjs tests/c35-import-security.test.mjs
       - name: Verify Hex Custom and Hex Tunnel share only the suffix, not the decoder
-        run: python3 -m unittest tests.test_hexcm_shared_routes -v
+        run: |
+          python3 -m pip install --user pycryptodome==3.23.0 argon2-cffi==25.1.0
+          python3 -m unittest tests.test_hexcm_shared_routes -v
       - name: Validate Docker Compose
         run: docker compose -f cloud/compose.yaml config --quiet
       - name: Build web image (including instrumentation and volume)
