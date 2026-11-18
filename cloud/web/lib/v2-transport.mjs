@@ -188,7 +188,29 @@ async function jsonTransportCore(request,options={}) {
     if(op===2) {
       if(!await throttle(redis,"spc2:admission-rate:"+ip,240,900))return fail("RATE_LIMITED",429);
       const body=JSON.parse(bytes);
-      if(!record(body) || !["challengeId,integrityToken","certificateChain,challengeId,integrityToken,publicKey"].includes(Object.keys(body).sort().join(",")) ||
+      // Android 1.1.29 shipped with optional installer/version metadata on
+      // signed SESSION requests. Previous exact-key comparison rejected those
+      // legitimate logins with HTTP 400. Explicitly permit bounded fields for
+      // already installed APKs, but NEVER use these caller-supplied values for
+      // access policy: Play and hardware attestation remain authoritative.
+      const sessionAllowed=new Set(["challengeId","integrityToken","publicKey",
+        "certificateChain","versionName","versionCode","installerPackage"]);
+      const keys=record(body)?Object.keys(body):[];
+      const hardwarePair=Object.hasOwn(body||{},"publicKey")===
+        Object.hasOwn(body||{},"certificateChain");
+      const versionPair=Object.hasOwn(body||{},"versionName")===
+        Object.hasOwn(body||{},"versionCode");
+      if(!record(body) || keys.some(key=>!sessionAllowed.has(key)) ||
+         !Object.hasOwn(body,"challengeId") || !Object.hasOwn(body,"integrityToken") ||
+         !hardwarePair || !versionPair ||
+         (Object.hasOwn(body,"versionName") &&
+           (typeof body.versionName!=="string" ||
+            !/^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$/.test(body.versionName) ||
+            !Number.isSafeInteger(body.versionCode) || body.versionCode<1 ||
+            body.versionCode>2147483647)) ||
+         (Object.hasOwn(body,"installerPackage") &&
+           (typeof body.installerPackage!=="string" ||
+            !/^[A-Za-z0-9._]{1,255}$/.test(body.installerPackage))) ||
          !/^[0-9a-f-]{36}$/.test(body.challengeId) || typeof body.integrityToken!=="string" ||
          (body.integrityToken.length>16384 || (body.integrityToken!==""&&body.integrityToken.length<80) ||
           (cfg.playIntegrityRequired&&body.integrityToken==="")))return fail("INVALID_REQUEST",400);
