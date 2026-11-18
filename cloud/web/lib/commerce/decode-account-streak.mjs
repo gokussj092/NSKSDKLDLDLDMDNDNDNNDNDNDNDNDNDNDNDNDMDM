@@ -1,5 +1,6 @@
 import {requireAccount} from './auth.mjs';
 import {recordDecodeDay} from './account-streak.mjs';
+import {recordPlayTesterActivity} from './play-testers.mjs';
 
 // Account credentials belong only to the encrypted transport envelope. Never
 // forward them to a decoder, provider, telemetry, or use a client account ID.
@@ -11,7 +12,7 @@ export function takeStreakAccountToken(payload,claims){
   typeof token==='string'&&token.length>=24&&token.length<=1024&&!/\s/.test(token)?token:null;
 }
 export async function withDecodeStreak(response,claims,token,
- {streakDb,streakToday,streakAuthenticate=requireAccount}={}){
+ {streakDb,streakToday,streakAuthenticate=requireAccount,tester}={}){
  if(!token||claims?.hpke!==true||claims.scope!=='decode'||!response.ok)return response;
  try{
   const body=await response.clone().json();
@@ -19,6 +20,13 @@ export async function withDecodeStreak(response,claims,token,
   const session=await streakAuthenticate({headers:new Headers({authorization:'Bearer '+token})});
   if(!session?.user?.id||!session.user.emailVerified)return response;
   const streak=await recordDecodeDay(session.user.id,{db:streakDb,today:streakToday});
+  // Closed Play test observation: first-seen install origin/version + the
+  // same local day the streak counted. Best effort only — a tester-storage
+  // outage never discards a valid decode or its streak.
+  if(tester!==undefined){
+   try{await recordPlayTesterActivity(session.user.id,tester,streak.today,{db:streakDb});}
+   catch{/* Tester observation never breaks the decode. */}
+  }
   const headers=new Headers(response.headers);headers.delete('content-length');
   return new Response(JSON.stringify({...body,streak}),{status:response.status,headers});
  }catch{return response;} // Session/reward outages never discard a valid decode.

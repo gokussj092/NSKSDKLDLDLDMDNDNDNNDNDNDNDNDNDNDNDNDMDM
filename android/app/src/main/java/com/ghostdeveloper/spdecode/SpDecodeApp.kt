@@ -31,6 +31,7 @@ import com.ghostdeveloper.spdecode.cloud.CloudTextRoute
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -1068,8 +1069,13 @@ private fun ServerVpnScreen(
         verticalArrangement=Arrangement.spacedBy(12.dp)) {
         Text(stringResource(R.string.server_vpn),fontSize=24.sp,
             fontWeight=FontWeight.Bold,color=White)
-        Text(stringResource(R.string.server_vpn_description),fontSize=13.sp,
-            lineHeight=20.sp,color=Secondary)
+        // Header shows only the section title and how many apps the
+        // downloaded catalog holds; no app names are listed here.
+        // While the catalog is still empty (loading or unavailable) no
+        // count is shown, so a transient 0 is never presented as a total.
+        if(apps.isNotEmpty()) Text(
+            pluralStringResource(R.plurals.server_vpn_app_count,apps.size,apps.size),
+            fontSize=13.sp,lineHeight=20.sp,color=Secondary)
         if(BuildConfig.SPDECODE_CLOUD_ENABLED) {
             OutlinedTextField(
                 value=query,onValueChange={query=it},

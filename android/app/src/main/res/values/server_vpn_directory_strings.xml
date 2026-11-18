@@ -21,4 +21,8 @@
     <string name="server_vpn_updated_badge">Updated</string>
     <string name="server_vpn_maintenance_badge">Under maintenance</string>
     <string name="server_vpn_maintenance_detail">Method temporarily under maintenance</string>
+    <plurals name="server_vpn_app_count">
+        <item quantity="one">%1$d app available</item>
+        <item quantity="other">%1$d apps available</item>
+    </plurals>
 </resources>

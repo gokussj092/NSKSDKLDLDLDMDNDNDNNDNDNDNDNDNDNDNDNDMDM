@@ -662,9 +662,9 @@ val prepareCloudHistoryUiSource = tasks.register("prepareCloudHistoryUiSource") 
         // updater host and the suppression of Telegram's external APK prompt.
         if (enablePlayAab) {
             app=replaceOnce(app,
-                "    onFeedbackSubmit:suspend (FeedbackDraft)->String={throw IllegalStateException(\"FEEDBACK_UNAVAILABLE\")},",
-                "    onModalVisible:(Boolean)->Unit={},\n" +
-                    "    onFeedbackSubmit:suspend (FeedbackDraft)->String={throw IllegalStateException(\"FEEDBACK_UNAVAILABLE\")},")
+                "    onUsageAnalytics:(Boolean)->Unit={},",
+                "    onUsageAnalytics:(Boolean)->Unit={},\n" +
+                    "    onModalVisible:(Boolean)->Unit={},")
             app=replaceOnce(app,
                 "    var dialog by remember{mutableStateOf<String?>(null)}",
                 "    var dialog by remember{mutableStateOf<String?>(null)}\n" +
@@ -675,8 +675,8 @@ val prepareCloudHistoryUiSource = tasks.register("prepareCloudHistoryUiSource") 
                     "    private var playUpdateVisible by mutableStateOf(false)\n" +
                     "    private var internalDialogVisible by mutableStateOf(false)")
             activity=replaceOnce(activity,
-                "                onFeedbackSubmit={draft-> cloudClient.submitFeedback(draft)},",
-                "                onFeedbackSubmit={draft-> cloudClient.submitFeedback(draft)},\n" +
+                "                cloudWhatsNew=cloudWhatsNew,",
+                "                cloudWhatsNew=cloudWhatsNew,\n" +
                     "                onModalVisible={internalDialogVisible=it},")
             activity=replaceOnce(activity,
                 "                availableAppUpdate=availableAppUpdate,",

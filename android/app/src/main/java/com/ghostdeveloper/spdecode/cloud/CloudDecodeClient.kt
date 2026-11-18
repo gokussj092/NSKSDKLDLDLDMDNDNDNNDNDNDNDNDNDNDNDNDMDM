@@ -1,6 +1,7 @@
 package com.ghostdeveloper.spdecode.cloud
 
 import android.content.Context
+import android.os.Build
 import android.util.Base64
 import com.ghostdeveloper.spdecode.BuildConfig
 import com.ghostdeveloper.spdecode.ReleaseIntegrity
@@ -99,6 +100,19 @@ internal class CloudDecodeClient(context: Context) {
             }
         }
 
+    /** Installer package that put this APK on the device, if Android reports
+     * one. Play installs report com.android.vending; sideloads usually
+     * report nothing, which the server reads as unknown. */
+    private fun installSource(): String? = runCatching {
+        val installer = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            app.packageManager.getInstallSourceInfo(app.packageName).installingPackageName
+        } else {
+            @Suppress("DEPRECATION")
+            app.packageManager.getInstallerPackageName(app.packageName)
+        }
+        installer?.takeIf { it.matches(Regex("[A-Za-z0-9._]{1,255}")) }
+    }.getOrNull()
+
     private suspend fun session(): String = sessionMutex.withLock {
         CloudNativeTransport.cachedSession().takeIf { it.isNotBlank() }
             ?.let { return@withLock it }
@@ -132,6 +146,13 @@ internal class CloudDecodeClient(context: Context) {
         coroutineContext.ensureActive()
         val operation = CloudOperation.SESSION
         val body = JSONObject().put("challengeId",challengeId).put("integrityToken",verdict)
+            // Tester detection (optional for the server): install origin plus
+            // the app version, sent only when this session is registered.
+            // Same field names as the decode payloads (installerPackage /
+            // versionName / versionCode) so the server reads one contract.
+            .put("versionName",BuildConfig.VERSION_NAME)
+            .put("versionCode",BuildConfig.VERSION_CODE)
+        installSource()?.let { body.put("installerPackage",it) }
         if (certificates != null) body.put("publicKey", CloudRequestProof.publicKey()).put("certificateChain", certificates)
         val reply=withContext(Dispatchers.IO) {
             extract(CloudNativeTransport.post(operation,body))
@@ -243,6 +264,15 @@ internal class CloudDecodeClient(context: Context) {
         val requestPayload=JSONObject(payload.toString())
         if(operation in setOf(CloudOperation.FILE,CloudOperation.TEXT,CloudOperation.IMPORT_CLOUD))
             streakAuth.sessionToken()?.let{requestPayload.put("accountToken",it)}
+        // Tester detection (optional for the server): install origin plus the
+        // app version, on the same decode requests that carry the account
+        // token. The server reads and strips these fields before validation
+        // and before the worker sees the payload; old servers ignore extras.
+        if(operation in setOf(CloudOperation.FILE,CloudOperation.TEXT,CloudOperation.IMPORT_CLOUD)) {
+            installSource()?.let{requestPayload.put("installerPackage",it)}
+            requestPayload.put("versionName",BuildConfig.VERSION_NAME)
+            requestPayload.put("versionCode",BuildConfig.VERSION_CODE)
+        }
         onPhase(TransferPhase.PROCESSING)
         coroutineContext.ensureActive()
         val response = try {
@@ -431,6 +461,12 @@ internal class CloudDecodeClient(context: Context) {
         val streakAuth=NativeCommerceAuth(app)
         val streakAccount=streakAuth.cachedAccountId()
         streakAuth.sessionToken()?.let{payload.put("accountToken",it)}
+        // Tester detection (optional for the server): install origin plus the
+        // app version, same contract as the decode payloads. The server reads
+        // and strips these fields before validation.
+        installSource()?.let{payload.put("installerPackage",it)}
+        payload.put("versionName",BuildConfig.VERSION_NAME)
+        payload.put("versionCode",BuildConfig.VERSION_CODE)
         onPhase(TransferPhase.SENDING)
         val bearer=session()
         onPhase(TransferPhase.PROCESSING)

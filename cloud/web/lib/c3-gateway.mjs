@@ -13,6 +13,7 @@ import {admissionPolicy} from "./c11-play-admission.mjs";
 import {publicFormats} from "./file-format-catalog.mjs";
 import {allowsHcPartial} from "./hc-partial-result.mjs";
 import {takeStreakAccountToken,withDecodeStreak} from "./commerce/decode-account-streak.mjs";
+import {takePlayTesterFields} from "./commerce/play-testers.mjs";
 import {SUPPLIED_CATALOG_ITEMS} from "./supplied-integrations.mjs";
 const suppliedCatalogIds=new Set(SUPPLIED_CATALOG_ITEMS.map(x=>x.id));
 
@@ -550,6 +551,7 @@ export async function decodeRequest(request,kind,options={}) {
     const max=kind==="text"?1024*1024:limits.maxJsonBodyBytes;
     const payload=await boundedBody(request,max);
     const streakToken=takeStreakAccountToken(payload,claims);
+    const testerFields=takePlayTesterFields(payload,claims);
     validatePayload(kind,payload);
     const requestedExport=kind==="file"&&payload.compatibleExport!==undefined;
     let workerPayload=payload,exportUnavailable=null;
@@ -623,7 +625,7 @@ export async function decodeRequest(request,kind,options={}) {
     recorded=true;
     // The transport key is not the account's biometric/deletion key. Resolve
     // ownership from the authenticated account session inside HPKE instead.
-    return await withDecodeStreak(clientOutcome,claims,streakToken,options);
+    return await withDecodeStreak(clientOutcome,claims,streakToken,{...options,tester:testerFields});
   }catch(error){
     if(telemetry && !recorded && redis && lease){
       try{await recordWorkerResult(redis,"failed",{...telemetry,errorCode:isExternalImportError(error)?error.code:"ENGINE_UNAVAILABLE",

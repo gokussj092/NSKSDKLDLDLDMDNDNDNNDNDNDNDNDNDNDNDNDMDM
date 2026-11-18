@@ -21,4 +21,8 @@
     <string name="server_vpn_updated_badge">Actualizado</string>
     <string name="server_vpn_maintenance_badge">En mantenimiento</string>
     <string name="server_vpn_maintenance_detail">Método temporalmente en mantenimiento</string>
+    <plurals name="server_vpn_app_count">
+        <item quantity="one">%1$d aplicación disponible</item>
+        <item quantity="other">%1$d aplicaciones disponibles</item>
+    </plurals>
 </resources>
