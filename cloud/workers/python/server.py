@@ -42,13 +42,19 @@ class WorkerHandler(BaseHTTPRequestHandler):
 
     def _json(self, status: int, body: dict) -> None:
         response = json.dumps(body, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
-        self.send_response(status)
-        self.send_header("Content-Type", "application/json; charset=utf-8")
-        self.send_header("Content-Length", str(len(response)))
-        self.send_header("Cache-Control", "no-store")
-        self.send_header("X-Content-Type-Options", "nosniff")
-        self.end_headers()
-        self.wfile.write(response)
+        try:
+            self.send_response(status)
+            self.send_header("Content-Type", "application/json; charset=utf-8")
+            self.send_header("Content-Length", str(len(response)))
+            self.send_header("Cache-Control", "no-store")
+            self.send_header("X-Content-Type-Options", "nosniff")
+            self.end_headers()
+            self.wfile.write(response)
+        except (BrokenPipeError, ConnectionResetError, ConnectionAbortedError):
+            # The upstream client/proxy closed before a slow job completed.
+            # This is not a decoder failure; suppress noisy socket tracebacks.
+            # The enclosing do_POST finally still releases all worker slots.
+            return
 
     def _authorized(self) -> bool:
         expected = os.environ.get("CLOUD_WORKER_TOKEN", "")
