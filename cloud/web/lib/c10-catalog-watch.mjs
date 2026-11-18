@@ -26,8 +26,17 @@ export async function catalogWatchRequest(request,{versionProvider=async()=> {if
     input.knownVersion<0||input.knownVersion>999999999)return json({error:{code:"INVALID_REQUEST"}},400);
   knownVersion=input.knownVersion;
  }catch{return json({error:{code:"INVALID_REQUEST"}},400);}
- if(activeWatches>=MAX_OPEN_WATCHES)
-  return json({error:{code:"RATE_LIMITED"}},429);
+ // Capacity only limits *long-lived* watches, never lightweight version
+ // checks. Return a fresh one-shot version when all watch slots are taken.
+ // This avoids falsely blaming an unrelated user for global concurrency.
+ if(activeWatches>=MAX_OPEN_WATCHES){
+  try{
+   const current=await versionProvider();
+   return json({apiVersion:"v1",catalogVersion:current,
+    changed:current>knownVersion,checkOnly:true,
+    ...(chunksEnabled()?{catalogTransferProtocol:"catalog-chunks-v1"}:{})});
+  }catch{return json({error:{code:"SERVICE_UNAVAILABLE"}},503);}
+ }
  activeWatches++;
  try{
   const start=Date.now();
