@@ -105,6 +105,10 @@ services:
       CLOUD_APK_QA_INTERNAL_TOKEN: ${CLOUD_APK_QA_INTERNAL_TOKEN:-}
       # C3.5 provider secrets are strictly backend-only; never NEXT_PUBLIC_*.
       CLOUD_HTTP_CUSTOM_IMPORT_ENABLED: ${CLOUD_HTTP_CUSTOM_IMPORT_ENABLED:-true}
+      # Hex Custom Firestore document imports; backend-only credentials.
+      # No NEXT_PUBLIC_ exposure, no worker or Android secret propagation.
+      CLOUD_HEXCUSTOM_IMPORT_ENABLED: ${CLOUD_HEXCUSTOM_IMPORT_ENABLED:-true}
+      HEXCUSTOM_FIREBASE_API_KEY: ${HEXCUSTOM_FIREBASE_API_KEY:-}
       CLOUD_EHI_IMPORT_ENABLED: ${CLOUD_EHI_IMPORT_ENABLED:-false}
       CLOUD_EHI_SIGN_KEY: ${CLOUD_EHI_SIGN_KEY:-}
       CLOUD_EHI_RESPONSE_KEY: ${CLOUD_EHI_RESPONSE_KEY:-}
