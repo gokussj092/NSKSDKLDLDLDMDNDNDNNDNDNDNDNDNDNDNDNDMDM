@@ -14,6 +14,7 @@ internal object CloudOnlineReference {
         val builtIn=listOf(Provider("ehi","HTTP Injector Cloud"),
             Provider("hc","HTTP Custom Cloud"),
             Provider("hexcustom","Hex Custom Cloud"),
+            Provider("tunneltweak","Tunneltweak Cloud"),
             Provider("mnr","MNR Tunnel Plus"))
         val declared=routes.asSequence().filter {
             it.kind=="cloud" && it.prefix.startsWith("https://",ignoreCase=true) &&
@@ -52,6 +53,16 @@ internal object CloudOnlineReference {
     private fun mnrReference(value:String):String? =
         value.takeIf { Regex("^mnrtunneludp://[A-Za-z0-9]{10}$").matches(it) }
 
+    /** UUIDs are not provider-identifying. Tunneltweak is the only explicitly
+     * configured Cloud UUID broker today; never form arbitrary URLs here.
+     * A namespaced reference remains unambiguous if other UUID apps are added. */
+    private fun tunneltweakReference(value:String):String? {
+        val bare=if(value.startsWith("tunneltweak://",ignoreCase=true))
+            value.substring("tunneltweak://".length) else value
+        val pattern=Regex("[0-9a-fA-F]{8}(?:-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}")
+        return bare.takeIf(pattern::matches)?.lowercase(Locale.ROOT)
+    }
+
     private fun declaredRemote(value:String,routes:List<CloudTextRoute>):CloudTextRoute? {
         val input=try{URI(value)}catch(_:Exception){return null}
         if(input.scheme!="https" || input.host.isNullOrBlank() ||
@@ -77,13 +88,15 @@ internal object CloudOnlineReference {
         val hc=httpCustom(value)
         val hex=if(hc==null)hexCustomReference(value) else null
         val mnr=if(hc==null&&hex==null)mnrReference(value) else null
-        val ehi=if(hc==null&&hex==null&&mnr==null)injector(value) else null
-        val remote=if(hc==null&&hex==null&&mnr==null&&ehi==null)declaredRemote(value,routes) else null
+        val tweak=if(hc==null&&hex==null&&mnr==null)tunneltweakReference(value) else null
+        val ehi=if(hc==null&&hex==null&&mnr==null&&tweak==null)injector(value) else null
+        val remote=if(hc==null&&hex==null&&mnr==null&&tweak==null&&ehi==null)declaredRemote(value,routes) else null
         val selected=when(choice){
-            "auto" -> when {hc!=null->"hc";hex!=null->"hexcustom";mnr!=null->"mnr";ehi!=null->"ehi";remote!=null->remote.suffix;else->return null}
+            "auto" -> when {hc!=null->"hc";hex!=null->"hexcustom";mnr!=null->"mnr";tweak!=null->"tunneltweak";ehi!=null->"ehi";remote!=null->remote.suffix;else->return null}
             "hc" -> if(hc!=null)"hc" else return null
             "hexcustom" -> if(hex!=null)"hexcustom" else return null
             "mnr" -> if(mnr!=null)"mnr" else return null
+            "tunneltweak" -> if(tweak!=null)"tunneltweak" else return null
             "ehi" -> if(injector(value)!=null)"ehi" else return null
             else -> if(remote?.suffix==choice && options(routes).any{it.id==choice})choice else return null
         }
@@ -91,6 +104,8 @@ internal object CloudOnlineReference {
             "hc" -> Resolved("hc",hc!!,"HTTP Custom Cloud","hc","http-custom-cloud.hc")
             "hexcustom" -> Resolved("hexcustom",hex!!,"Hex Custom Cloud","hexcm","hex-custom-cloud.hexcm")
             "mnr" -> Resolved("mnr",mnr!!,"MNR Tunnel Plus","stp","mnr-tunnel-plus.stp")
+            "tunneltweak" -> Resolved("tunneltweak",tweak!!,
+                "Tunneltweak Cloud","tut","tunneltweak-cloud.tut")
             "ehi" -> Resolved("ehi",injector(value)!!,"HTTP Injector Cloud","ehi","http-injector-cloud.ehi")
             else -> Resolved(selected,value,remote!!.name,remote.suffix,
                 "cloud-"+remote.suffix+"."+remote.suffix)
