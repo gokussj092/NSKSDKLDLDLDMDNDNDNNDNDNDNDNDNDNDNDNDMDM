@@ -108,7 +108,7 @@ test("only NUR catalog worker requests receive extended timeout; other formats r
   }
 });
 test("Tunneltweak UUID broker accepts only canonical fixed-host references",async()=>{
-  const uuid="12e583dd-4cdf-41de-a1a8-74d7e12ca0db";
+  const uuid="00000000-0000-4000-8000-000000000001";
   assert.equal(parseTunneltweakReference(uuid),uuid);
   assert.equal(parseTunneltweakReference("TUNNELTWEAK://"+uuid.toUpperCase()),uuid);
   assert.equal(isTunneltweakReference(uuid),true);
@@ -160,7 +160,7 @@ test("signed Tunneltweak Cloud UUID downloads once, dispatches a .tut worker, an
   process.env.CLOUD_SERVER_VPN_ENABLED="true";
   try{
     const redis=new FakeRedis(),bearer=await token(redis);
-    const uuid="12e583dd-4cdf-41de-a1a8-74d7e12ca0db";
+    const uuid="00000000-0000-4000-8000-000000000001";
     const envelope=Buffer.from(JSON.stringify({
       config:"TTPBE1:synthetic-test-only",expiresAt:"test",opaque:{unknown:true},
     }));
