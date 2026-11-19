@@ -21,6 +21,14 @@ on:
       - 'android/app/src/main/java/com/ghostdeveloper/spdecode/cloud/CloudCatalogUpdates.kt'
       - 'cloud/web/tests/capacity-isolation.test.mjs'
       - 'cloud/web/lib/c35-gateway.mjs'
+      - 'cloud/web/lib/c35-provider.mjs'
+      - 'decoders/Python/apps/Tunneltweak/**'
+      - 'decoders/Python/apps/M_Light/**'
+      - 'cloud/web/content/supplied-integrations.json'
+      - 'cloud/web/content/file-formats.json'
+      - 'cloud/web/content/text-formats.json'
+      - 'cloud/web/tests/supplied-integrations.test.mjs'
+      - 'tests/test_tunneltweak.py'
       - 'cloud/workers/python/server.py'
       - 'cloud/workers/python/test_worker_limits.py'
       - 'cloud/infra/vps/tests/test_installer.py'
@@ -88,10 +96,10 @@ jobs:
         working-directory: cloud/web
         run: |
           set -euo pipefail
-          for file in lib/server-vpn-result-cache.mjs lib/server-vpn-cache-controls.mjs lib/server-vpn-cache-refresh.mjs lib/server-vpn-gateway.mjs lib/c35-gateway.mjs lib/c10-catalog-watch.mjs lib/device-security.mjs lib/v2-routes.mjs lib/v2-transport.mjs lib/bound-auth.mjs lib/c3-session.mjs lib/c3-config.mjs instrumentation.js; do
+          for file in lib/server-vpn-result-cache.mjs lib/server-vpn-cache-controls.mjs lib/server-vpn-cache-refresh.mjs lib/server-vpn-gateway.mjs lib/c35-gateway.mjs lib/c35-provider.mjs lib/c10-catalog-watch.mjs lib/device-security.mjs lib/v2-routes.mjs lib/v2-transport.mjs lib/bound-auth.mjs lib/c3-session.mjs lib/c3-config.mjs instrumentation.js; do
             node --check "$file"
           done
-          node --test tests/server-vpn-result-cache.test.mjs tests/capacity-isolation.test.mjs tests/c10-catalog-push.test.mjs tests/v2-security.test.mjs tests/device-security.test.mjs tests/c3-security.test.mjs tests/c35-import-security.test.mjs
+          node --test tests/server-vpn-result-cache.test.mjs tests/capacity-isolation.test.mjs tests/c10-catalog-push.test.mjs tests/v2-security.test.mjs tests/device-security.test.mjs tests/c3-security.test.mjs tests/c35-import-security.test.mjs tests/supplied-integrations.test.mjs
       - name: Verify no-secret Hex Custom VPS configuration diagnostics
         run: python3 -m unittest discover -s cloud/infra/vps/tests -p 'test_provider_services.py' -v
       - name: Verify Hex Custom and Hex Tunnel share only the suffix, not the decoder
@@ -100,7 +108,11 @@ jobs:
           /tmp/spdecode-hexcm-venv/bin/pip install pycryptodome==3.23.0 argon2-cffi==25.1.0
           # Child decoder processes inherit the same interpreter; isolated
           # HOME/TMPDIR cannot conceal packages installed in a venv.
-          /tmp/spdecode-hexcm-venv/bin/python -m unittest tests.test_hexcm_shared_routes tests.test_hex_tunnel -v
+          /tmp/spdecode-hexcm-venv/bin/python -m unittest tests.test_hexcm_shared_routes tests.test_hex_tunnel tests.test_tunneltweak -v
+      - name: Validate PausaVPN catalog and .pausa synthetic self-tests
+        run: |
+          python3 decoders/Python/apps/M_Light/M_Light.py --self-test
+          python3 decoders/Python/apps/M_Light/M_Light_archivos.py --self-test
       - name: Validate Docker Compose
         run: docker compose -f cloud/compose.yaml config --quiet
       - name: Build web image (including instrumentation and volume)
