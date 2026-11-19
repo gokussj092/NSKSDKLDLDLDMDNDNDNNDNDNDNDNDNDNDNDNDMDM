@@ -203,8 +203,11 @@ test("signed Tunneltweak Cloud UUID downloads once, dispatches a .tut worker, an
     assert.equal(ok.status,200);
     assert.equal((await ok.json()).structuredJson.config.config_version,7);
     locked=true;
+    // Same signed metadata contract as the real Android 1.1.29 client.
+    // Metadata is stripped before checking the broker's strict body schema.
     const protectedResult=await externalImportRequest(send({reference:"tunneltweak://"+uuid,
-      consent:true},bearer),"cloud",opts);
+      consent:true,provider:"tunneltweak",accountToken:"synthetic-not-a-real-token",
+      installerPackage:"com.android.vending",versionName:"1.1.29",versionCode:44},bearer),"cloud",opts);
     assert.equal(protectedResult.status,200);
     const gate=await protectedResult.json();
     assert.equal(gate.status,"credentials_required");
