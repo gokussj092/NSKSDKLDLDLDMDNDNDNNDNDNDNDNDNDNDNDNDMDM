@@ -582,6 +582,15 @@ internal class CloudDecodeClient(context: Context) {
         requireLegalConsent()
         val payload=JSONObject().put("provider","tunneltweak")
             .put("reference",reference.trim()).put("consent",true)
+        // Keep the established decode-only account/streak/tester contract.
+        // These fields are stripped by the server after authenticated HPKE;
+        // they are NEVER attached to op 1/2 admission.
+        val streakAuth=NativeCommerceAuth(app)
+        val streakAccount=streakAuth.cachedAccountId()
+        streakAuth.sessionToken()?.let{payload.put("accountToken",it)}
+        installSource()?.let{payload.put("installerPackage",it)}
+        payload.put("versionName",BuildConfig.VERSION_NAME)
+        payload.put("versionCode",BuildConfig.VERSION_CODE)
         onPhase(TransferPhase.SENDING)
         val bearer=session()
         onPhase(TransferPhase.PROCESSING)
@@ -591,8 +600,11 @@ internal class CloudDecodeClient(context: Context) {
         }
         coroutineContext.ensureActive()
         onPhase(TransferPhase.DOWNLOADING_RESULTS)
-        if(reply.optString("status")=="success")
-            return decodedResponse(CloudOperation.IMPORT_CLOUD,payload,reply).rawText
+        if(reply.optString("status")=="success") {
+            val decoded=decodedResponse(CloudOperation.IMPORT_CLOUD,payload,reply)
+            runCatching{streakAccount?.let{StreakReminders.sync(app,it,reply.optJSONObject("streak"))}}
+            return decoded.rawText
+        }
         if(reply.optString("status")!="credentials_required" ||
            reply.optString("kind")!="encrypted_file" ||
            reply.optString("format")!="tut" ||
