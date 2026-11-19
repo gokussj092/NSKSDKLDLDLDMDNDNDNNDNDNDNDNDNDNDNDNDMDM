@@ -1,4 +1,8 @@
-"""1FTunnel 0.6.99: authenticated 1FT1 envelopes and complete CFG1 documents.
+"""1FTunnel 0.6.99-0.7.3: authenticated 1FT1 envelopes and complete CFG1 documents.
+
+CFG1 v1-v6 (v6 adds the SlowDNS section); same KDF/ROOT_KEY/labels as 1FTunnel.py.
+The server worker (file_decoder.py) uses this codec, so it must accept every
+payload version the app can export.
 
 Offline reader reconstructed from liboneftunnel-security.so and u2.f. No network,
 Android environment emulation, password search, or execution of profile values.
@@ -21,6 +25,8 @@ SIGNATURES = frozenset({
     "0c7718166c0b60cb09229dfc5f8c02f2567ea41fb75f7c7b792111c65dfaf937",
 })
 TYPES = ("SSH", "VMESS", "VLESS", "TROJAN")
+SLOWDNS_RECORD_TYPES = ("AUTO", "TXT", "NULL", "NS", "CNAME", "MX", "SRV",
+                        "A", "AAAA")
 
 
 class DecodeError(ValueError):
@@ -135,7 +141,7 @@ def parse_config(data: bytes) -> dict:
     r = Reader(data)
     require(r.take(4) == b"CFG1")
     version = r.number("B")
-    require(version in range(1, 6), "UNSUPPORTED_PAYLOAD_VERSION")
+    require(version in range(1, 7), "UNSUPPORTED_PAYLOAD_VERSION")
     out = {"payloadVersion": version, "id": r.string(), "name": r.string(),
            "createdAt": r.number("q"), "message": r.string(nullable=True)}
     require(bool(out["id"]) and bool(out["name"]))
@@ -144,7 +150,8 @@ def parse_config(data: bytes) -> dict:
     out["fieldLockMask"] = None if mask == -1 else mask
     out["ssh"] = ({"host": r.string(), "port": r.number("i"), "username": r.string(),
                    "password": r.string()} if r.boolean() else None)
-    out["inject"] = ({"mode": r.choice(("DIRECT", "SSH_PAYLOAD", "PROXY", "PROXY_SNI", "WILDCARD")),
+    out["inject"] = ({"mode": r.choice(("DIRECT", "SSH_PAYLOAD", "PROXY", "PROXY_SNI", "WILDCARD",
+                                      "SLOWDNS")),
                       "payload": r.string(nullable=True), "proxyHost": r.string(nullable=True),
                       "proxyPort": r.number("i"), "sni": r.string(nullable=True),
                       "wildcardHost": r.string(nullable=True)} if r.boolean() else None)
@@ -165,6 +172,16 @@ def parse_config(data: bytes) -> dict:
             xray[key] = r.string(nullable=True) if version >= 4 else None
         xray["mode"] = r.string(nullable=True) if version >= 5 else None
     out["xray"] = xray
+    if version >= 6:
+        # Only v6 files carry the SlowDNS section. The key is emitted only
+        # for v6 on purpose: v1-v5 outputs keep the exact JSON contract
+        # pinned by tests/golden/oneftunnel_vectors.json (no "slowDns" key).
+        slow_dns = None
+        if r.boolean():
+            slow_dns = {"resolver": r.string(), "nameserver": r.string(),
+                        "publicKey": r.string(),
+                        "recordType": r.choice(SLOWDNS_RECORD_TYPES)}
+        out["slowDns"] = slow_dns
     r.end()
     return out
 
