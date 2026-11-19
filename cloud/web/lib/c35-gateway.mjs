@@ -17,6 +17,7 @@ import {
   parseMnrReference, importMnrReference, parseHttpCustomReference, importHttpCustomReference,
   isHttpCustomReference, parseHexCustomReference, importHexCustomReference,
   hexCustomConfigured, isHexCustomReference, isMnrReference,
+  isTunneltweakReference, parseTunneltweakReference, importTunneltweakReference,
 } from "./c35-provider.mjs";
 const ownKeys=(value,expected)=> value && typeof value==="object" && !Array.isArray(value)
   && Object.keys(value).length===expected.length && expected.every(key=>Object.hasOwn(value,key));
@@ -56,32 +57,37 @@ export async function externalImportRequest(request,kind,opts={}) {
       // Never trust the app's provider field blindly: detect the provider
       // from the reference itself. A present provider is used only when it
       // matches the reference; otherwise the detected provider wins.
-      // Order mirrors the app (hc, hexcustom, mnr, ehi): mnr is checked
-      // before ehi because a bare 10-char id also fits the injector key
-      // alphabet, while mnrtunneludp:// never parses as ehi.
+      // Order mirrors Android. A bare UUID has no intrinsic provider identity:
+      // the only UUID broker we currently authorize is Tunneltweak. If
+      // another app adds UUID imports, require explicit provider selection.
+      // The original MNR/EHI/HC/Hex Custom reference routes stay unchanged.
       const detected=isHexCustomReference(body.reference)?"hexcustom"
         :isMnrReference(body.reference)?"mnr"
         :isHttpCustomReference(body.reference)?"hc"
+        :isTunneltweakReference(body.reference)?"tunneltweak"
         :(()=>{try{parseEhiReference(body.reference);return "ehi";}catch{return null;}})();
-      if(hasProvider && !["ehi","hc","hexcustom","mnr"].includes(body.provider))
+      if(hasProvider && !["ehi","hc","hexcustom","mnr","tunneltweak"].includes(body.provider))
         return failure("INVALID_REQUEST",400);
       kind=detected||(hasProvider?body.provider:"ehi");
       delete body.provider;
       if(kind==="ehi"&&!ehiConfigured())return failure("REMOTE_NOT_CONFIGURED",503);
       if(kind==="hexcustom"&&!hexCustomConfigured())return failure("REMOTE_NOT_CONFIGURED",503);
+      if(kind==="tunneltweak"&&process.env.CLOUD_SERVER_VPN_ENABLED!=="true")
+        return failure("REMOTE_NOT_CONFIGURED",503);
       if(await serviceMaintenanceEnabled(redis,
-        kind==="hc"||kind==="hexcustom"?"files":kind==="mnr"?"serverVpn":"httpInjector"))
+        kind==="hc"||kind==="hexcustom"||kind==="tunneltweak"?"files":kind==="mnr"?"serverVpn":"httpInjector"))
         return failure("SERVICE_MAINTENANCE",503);
-      if(!await providerAllowed(kind==="hc"?"hc-cloud":kind==="hexcustom"?"hexcustom-cloud":kind==="mnr"?"mnr-tunnel-plus":"ehi-cloud"))
+      if(!await providerAllowed(kind==="hc"?"hc-cloud":kind==="hexcustom"?"hexcustom-cloud":kind==="mnr"?"mnr-tunnel-plus":kind==="tunneltweak"?"tunneltweak":"ehi-cloud"))
         return failure("REMOTE_NOT_CONFIGURED",503);
     }
-    if(kind==="ehi" || kind==="mnr" || kind==="hc" || kind==="hexcustom") {
+    if(kind==="ehi" || kind==="mnr" || kind==="hc" || kind==="hexcustom" || kind==="tunneltweak") {
       const combined=(kind==="hc"||kind==="hexcustom")&&body?.decode===true;
       if(!ownKeys(body,combined?["reference","consent","decode"]:["reference","consent"])||body.consent!==true)
         return failure("USER_CONSENT_REQUIRED",400);
       if(kind==="hc")parseHttpCustomReference(body.reference);
       else if(kind==="mnr")parseMnrReference(body.reference);
       else if(kind==="hexcustom")parseHexCustomReference(body.reference);
+      else if(kind==="tunneltweak")parseTunneltweakReference(body.reference);
       else parseEhiReference(body.reference);
     }else if(kind==="nur") {
       if(!ownKeys(body,["consent"])||body.consent!==true)
@@ -154,6 +160,30 @@ export async function externalImportRequest(request,kind,opts={}) {
         return await withDecodeStreak(result,claims,streakToken,{...opts,tester:testerFields});
       } finally { bytes.fill(0); }
     }
+    if(kind==="tunneltweak") {
+      // One fixed-host download, then a private isolated .tut worker. If the
+      // Cloud config is TTPBE1-protected, return exactly the downloaded
+      // wrapper via HPKE for the existing RAM-only Android password dialog.
+      // Never request the vendor UUID a second time.
+      const bytes=Buffer.from(await importTunneltweakReference(body.reference,vendor));
+      try {
+        const result=await fetchWorker("file",{format:"tut",
+          dataBase64:bytes.toString("base64")},settings(),opts);
+        let errorCode="";
+        if(!result.ok){try{errorCode=(await result.clone().json()).error?.code||"";}catch{}}
+        try{await recordWorkerResult(redis,result.ok?"success":"failed",{
+          kind:"file",format:"tut",bytes:bytes.length,errorCode,
+          latencyMs:performance.now()-started,
+          appVersion:request.headers.get("x-spdecode-app-version"),
+        });}catch{}
+        if(errorCode==="PASSWORD_REQUIRED") {
+          return jsonReply({apiVersion:"v1",status:"credentials_required",
+            kind:"encrypted_file",format:"tut",code:"PASSWORD_REQUIRED",
+            sourceBytes:bytes.length,dataBase64:bytes.toString("base64")},200);
+        }
+        return await withDecodeStreak(result,claims,streakToken,{...opts,tester:testerFields});
+      }finally{bytes.fill(0);}
+    }
     if(kind==="mnr"){
       const bytes=await importMnrReference(body.reference,vendor);
       const result=await fetchWorker("file",{format:"stp",dataBase64:bytes.toString("base64")},settings(),opts);
@@ -181,7 +211,7 @@ export async function externalImportRequest(request,kind,opts={}) {
     // Count provider/download failures after authorization, without storing URLs.
     if(redis && lease){
       try{await recordWorkerResult(redis,"failed",{
-        kind:kind==="nur"?"catalog":["mnr","hc","hexcustom"].includes(kind)?"file":"ehi",format:kind==="hc"?"hc":kind==="mnr"?"stp":kind==="hexcustom"?"hexcm":undefined,bytes:0,
+        kind:kind==="nur"?"catalog":["mnr","hc","hexcustom","tunneltweak"].includes(kind)?"file":"ehi",format:kind==="hc"?"hc":kind==="mnr"?"stp":kind==="hexcustom"?"hexcm":kind==="tunneltweak"?"tut":undefined,bytes:0,
         errorCode:typeof error?.code==="string"?error.code:"SERVICE_UNAVAILABLE",
         latencyMs:started===null?null:performance.now()-started,
         appVersion:request.headers.get("x-spdecode-app-version"),
