@@ -84,11 +84,19 @@ class TunneltweakTests(unittest.TestCase):
             self.assertNotIn("fake-private-input", str(error.exception))
 
     def test_invalid_versions_padding_and_base64_are_rejected(self):
-        for version in (True, "6", 5, 7, None):
+        for version in (True, "6", 5, 8, None):
             with self.assertRaises(codec.DecodeError):
                 files.run(cbc(json.dumps(dict(V["profile"], config_version=version))))
         for raw in (b"bad", b"", b"TTPBE1:YWJj", b"<html/>", V["profileCbc"].encode()[:-12]):
             with self.assertRaises(codec.DecodeError): files.run(raw)
+
+    def test_config_version_7_opens_like_6(self):
+        # Live provider serves config_version 7 for Cloud UUIDs (verified
+        # 2026-11-19); the decoder must accept 6 and 7, nothing else.
+        profile7 = dict(V["profile"], config_version=7)
+        self.assertEqual(json.loads(files.run(cbc(json.dumps(profile7)))), profile7)
+        obj = {"config": cbc(json.dumps(profile7)).decode(), "expiresAt": "test"}
+        self.assertEqual(json.loads(files.decode_cloud_response(json.dumps(obj).encode())), dict(obj, config=profile7))
 
     def test_duplicate_nonfinite_surrogate_and_deep_json_are_rejected(self):
         texts = ['{"config_version":6,"config_version":6}', '{"config_version":6,"n":NaN}',
@@ -137,6 +145,9 @@ class TunneltweakTests(unittest.TestCase):
             self.assertIsNone(seen[0].get_header("X-api-key"))
             self.assertEqual(seen[1].get_header("X-api-key"), "test-key")
             self.assertIsNone(seen[2].get_header("X-api-key"))
+            # Cloud download must carry the app UA: the provider returns 403
+            # to Python-urllib's default User-Agent (verified 2026-11-19).
+            self.assertEqual(seen[2].get_header("User-agent"), "TunnelTweak/1.0 (Android)")
             for value in ("../private", "https://example.invalid/", uuid+"?a=b", "", "x\nheader"):
                 with self.assertRaises(codec.DecodeError): network.download(cloud_id=value)
             for data in (b"", b"<html/>", b"x" * (codec.MAX_BYTES+1)):

@@ -118,8 +118,8 @@ def decode_profile(data: bytes, *, password: str | None = None) -> dict:
             if clear is None:
                 clear = bytes(x ^ 90 for x in raw).decode("utf-8")
         obj = parse(clear)
-        if type(obj.get("config_version")) is not int or obj["config_version"] != 6:
-            raise DecodeError("Versión de archivo incompatible; se esperaba config_version 6.")
+        if type(obj.get("config_version")) is not int or obj["config_version"] not in (6, 7):
+            raise DecodeError("Versión de archivo incompatible; se esperaban config_version 6 o 7.")
         # Do not remove config_version/message, reset expiry, coerce values or
         # apply Android device/root policies: this reader returns the source JSON.
         return obj

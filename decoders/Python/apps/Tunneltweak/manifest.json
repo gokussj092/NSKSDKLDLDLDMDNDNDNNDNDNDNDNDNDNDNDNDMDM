@@ -16,7 +16,8 @@
       "tut"
     ],
     "configVersions": [
-      6
+      6,
+      7
     ],
     "formats": [
       "Base64(IV16+AES128CBC ciphertext), PKCS5",
@@ -73,7 +74,7 @@
     "source": "fixed /api/cloudconfig/<UUID> GET",
     "cliOption": "--cloud-id",
     "format": "same .tut; config field decoded with envelope preserved",
-    "validation": "synthetic response only; real UUID not supplied"
+    "validation": "real UUID validated 2026-11-19 (live config_version 7; cloud download requires app User-Agent, provider returns 403 to Python-urllib UA)"
   },
   "icon": {
     "file": "Tunneltweak.png",

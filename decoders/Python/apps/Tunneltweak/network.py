@@ -13,6 +13,10 @@ else:
 
 CATALOG_URL = "https://tunneltweak.com/api/servers"
 CLOUD_BASE_URL = "https://tunneltweak.com/api/cloudconfig/"
+# The provider returns 403 to Python-urllib's default User-Agent (verified
+# 2026-11-19 with a real Cloud UUID); the cloud download needs the app UA,
+# same as the catalog route.
+CLOUD_HEADERS = {"User-Agent": "TunnelTweak/1.0 (Android)"}
 CATALOG_HEADERS = {"User-Agent": "TunnelTweak/1.0 (Android)", "ngrok-skip-browser-warning": "true", "x-app-version": str(builds.seed()['auto']['build']), "x-cfg-keyed": "1"}
 
 
@@ -25,7 +29,7 @@ def download(*, cloud_id: str | None = None, api_key: str | None = None, state_p
     if cloud_id is not None:
         if not isinstance(cloud_id, str) or not re.fullmatch(r"[0-9a-fA-F]{8}(?:-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}", cloud_id):
             raise DecodeError("Se requiere un UUID válido de configuración Cloud.")
-        url, headers = CLOUD_BASE_URL + cloud_id, {}
+        url, headers = CLOUD_BASE_URL + cloud_id, dict(CLOUD_HEADERS)
     else:
         url, headers = CATALOG_URL, dict(CATALOG_HEADERS)
         if api_key is not None:
