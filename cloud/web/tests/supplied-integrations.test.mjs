@@ -9,6 +9,8 @@ import {spawnSync} from "node:child_process";
 import {createHash} from "node:crypto";
 import {SUPPLIED_INTEGRATIONS,SUPPLIED_CATALOG_ITEMS,suppliedRequests} from "../lib/supplied-integrations.mjs";
 import {catalog,iconFor} from "../lib/server-vpn-catalog.mjs";
+import {publicFormats} from "../lib/file-format-catalog.mjs";
+import {publicTextFormats} from "../lib/text-format-catalog.mjs";
 import {providerIds,providerEnabled,downloadVpnCatalog} from "../lib/server-vpn-provider.mjs";
 import {PUBLIC_PROVIDER_IDS} from "../lib/c12-provider-controls.mjs";
 import {loadServerVpnResult} from "../lib/server-vpn-gateway.mjs";
@@ -33,6 +35,25 @@ function network(t,answer=()=>({body:Buffer.from("synthetic encrypted response")
  };
  t.mock.method(https,"request",request);t.mock.method(http,"request",request);return calls;
 }
+test("PausaVPN (M Light) is discoverable without changing m-light or .pausa routes",()=>{
+ const card=catalog().apps.find(x=>x.id==="m-light");
+ assert(card);
+ assert.equal(card.name,"PausaVPN (M Light)");
+ assert.equal(card.decodeEnabled,false); // no env flag; card still exists
+ assert.equal(catalog().catalogVersion,93);
+ const supplied=SUPPLIED_INTEGRATIONS.find(x=>x.id==="m-light");
+ assert(supplied);
+ assert.equal(supplied.name,card.name);
+ assert.deepEqual(supplied.extensions,["pausa"]);
+ assert.deepEqual(supplied.textPrefixes,["pausa://"]);
+ assert.equal(publicFormats().find(x=>x.suffix==="pausa")?.name,
+    "PausaVPN (M Light) 3.1.55");
+ assert.equal(publicTextFormats().find(x=>x.prefix==="pausa://")?.name,
+    "PausaVPN (M Light)");
+ assert.equal(supplied.catalogModule,"M_Light.py");
+ assert.equal(supplied.fileModule,"M_Light_archivos.py");
+});
+
 test("all supplied catalog methods reach pinned fixed sources and operator controls",async t=>{
  environment(t,{SPDECODE_DTUNNEL_REQUEST_ID:"synthetic-authorized-account",SPDECODE_FMT_VPN_GITHUB_TOKEN:"synthetic-fmt-github-token",SPDECODE_RH_TUNNEL_GITHUB_TOKEN:"synthetic-rh-github-token"});const calls=network(t);
  assert.equal(SUPPLIED_INTEGRATIONS.length,82);
