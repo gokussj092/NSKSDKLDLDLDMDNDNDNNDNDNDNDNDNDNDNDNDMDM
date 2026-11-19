@@ -1,73 +1,121 @@
 {
-  "schema_version": 1,
-  "package_name": "dev.hexasoftware.v2box",
-  "version_code": 88,
   "app_name": "V2Box",
-  "version_name": "6.2.3",
-  "status": "PARTIAL",
-  "source_category": "owner-supplied repository code",
-  "authorization_note": "Owner explicitly requested connection of all supplied methods on ci/unity-ads-online-qa; no service credentials or attestation fabrication authorized.",
-  "targets": [
+  "authorization_note": "Owner explicitly requested connection of all supplied methods on ci/unity-ads-online-qa and sent the real .v2box file for diagnosis; no service credentials or attestation fabrication authorized. Real file values are never stored in Git.",
+  "code_paths": [
+    "decoders/Python/apps/V2Box/V2Box_archivos.py",
+    "decoders/Python/apps/V2Box/V2Box.py",
+    "decoders/Python/v2box_export.py",
+    "cloud/workers/python/v2box_bridge.py",
+    "cloud/workers/python/supplied_bridge.py",
+    "cloud/workers/python/engine.py"
+  ],
+  "connection_authentication": {
+    "scope": "AES-256-GCM authenticates the exported file itself (tag verifies with the fixed/derived key). No transport HMAC or VPN connection authentication was observed in this material; none is claimed.",
+    "status": "NOT_OBSERVED"
+  },
+  "dependencies": [
     {
-      "kind": "catalog",
-      "status": "USER_SUBSCRIPTIONS_ONLY"
-    },
-    {
-      "kind": "files",
-      "extensions": [
-        "v2box"
-      ]
-    },
-    {
-      "kind": "text",
-      "prefixes": [
-        "v2box://locked=",
-        "v2box://install-config",
-        "v2box://install-sub"
-      ]
+      "lockfile": "analysis/dev.hexasoftware.v2box/88/dependencies.lock.json",
+      "purpose": "Pinned inventory for this dossier (stdlib only for the production decoder; PyCryptodome 4.5.0 for worker tests only)"
     }
+  ],
+  "evidence_refs": [
+    "analysis/dev.hexasoftware.v2box/88/ANALYSIS.md",
+    "analysis/dev.hexasoftware.v2box/88/RESULTS.md",
+    "analysis/dev.hexasoftware.v2box/88/REPRODUCE.md",
+    "analysis/dev.hexasoftware.v2box/88/tests/test_v2box_aad_fix.py",
+    "tests/test_v2box_aad.py",
+    "tests/test_v2box_password.py"
   ],
   "inputs": [
     {
       "path": "decoders/Python/apps/V2Box/V2Box.py",
       "sha256": "3b098ac93adbe6b919d363294dd55adda956097e33cb3c87400a08ea8716a337"
+    },
+    {
+      "name": "TheBestVIP_Free_MF____v_box__________0_cp2p.v2box",
+      "sha256": "3130faa92b3c4ccad963f7ef080e8e73e936207b76ace59aefa4116c832dd250",
+      "size_bytes": 1736,
+      "structure": "magic v2box_export, version 2, header {createdAt: 1794572716, kdf: none, v: 2}, nonce 12 B, tag 16 B, ciphertext 1164 B",
+      "type": "real export file (outside Git, never committed)"
+    },
+    {
+      "name": "dev.hexasoftware.v2box 6.2.3 build 88 (APKPure XAPK)",
+      "note": "Fixed-key obfuscated bytes re-verified present in classes.dex at offset 3734104; derived key matches the dossier.",
+      "type": "APK (outside Git)"
+    }
+  ],
+  "integration_review": {
+    "record": "analysis/platform/supplied-integrations/2026-11-14/MANIFEST.json",
+    "scope": "Connection only; existing algorithm evidence/status preserved, plus the 2026-11-19 AAD correction verified against a real file.",
+    "status": "PARTIAL"
+  },
+  "limitations": [
+    "No real .v2box v1 file, no real v2 pbkdf2-sha256 file, no real v2 ecdh-p256 file, no real v2box://locked= link yet.",
+    "The header-bytes AAD fallback is kept for compatibility; it is NOT verified against any real file (static DEX reading only).",
+    "See supplied README and central per-app integration matrix. No new live service validation asserted beyond the 2026-11-19 runs in RESULTS.md."
+  ],
+  "observed_at": "2026-11-19",
+  "package_name": "dev.hexasoftware.v2box",
+  "schema_version": 1,
+  "source_category": "owner-supplied repository code + owner-supplied real export file (outside Git)",
+  "status": "PARTIAL",
+  "targets": [
+    {
+      "kind": "catalog",
+      "note": "No vendor catalog: app-settings returns promotions only (verified live 2026-11-14: HTTP 200, 3 promotions, 0 servers).",
+      "status": "USER_SUBSCRIPTIONS_ONLY"
+    },
+    {
+      "extensions": [
+        "v2box"
+      ],
+      "kind": "files",
+      "versions": [
+        {
+          "format": "v1",
+          "note": "Real v1 file still pending.",
+          "status": "VERIFIED_SYNTHETIC"
+        },
+        {
+          "format": "v2 kdf none",
+          "note": "Real file 2026-11-13 opens after the 2026-11-19 AAD fix (aad header-b64).",
+          "status": "VERIFIED_REAL"
+        },
+        {
+          "format": "v2 kdf pbkdf2-sha256",
+          "note": "Real file still pending; AAD header-b64 already used by the legacy decoder.",
+          "status": "VERIFIED_SYNTHETIC"
+        },
+        {
+          "format": "v2 kdf ecdh-p256",
+          "note": "Real file needs the recipient P-256 private key (Keystore, non-exportable).",
+          "status": "VERIFIED_SYNTHETIC"
+        }
+      ]
+    },
+    {
+      "kind": "text",
+      "note": "Real v2box://locked= link still pending.",
+      "prefixes": [
+        "v2box://locked=",
+        "v2box://install-config",
+        "v2box://install-sub"
+      ],
+      "status": "VERIFIED_SYNTHETIC"
     }
   ],
   "tooling": [
     {
-      "path": "analysis/platform/supplied-integrations/2026-11-14/tools/verify_provider.py",
-      "command": "python analysis/platform/supplied-integrations/2026-11-14/tools/verify_provider.py v2box"
-    }
-  ],
-  "dependencies": [
-    {
-      "lockfile": "requirements.txt",
-      "purpose": "Existing pinned server codec dependencies"
+      "command": "python3 analysis/dev.hexasoftware.v2box/88/tools/verify_aad_candidates.py <archivo.v2box>",
+      "path": "analysis/dev.hexasoftware.v2box/88/tools/verify_aad_candidates.py",
+      "purpose": "AAD/key hypothesis battery against a real .v2box (structure/codes only, never values)"
     },
     {
-      "lockfile": "cloud/web/package-lock.json",
-      "purpose": "Existing pinned Node broker/build dependencies"
+      "command": "python analysis/platform/supplied-integrations/2026-11-14/tools/verify_provider.py v2box",
+      "path": "analysis/platform/supplied-integrations/2026-11-14/tools/verify_provider.py"
     }
   ],
-  "code_paths": [
-    "cloud/web/lib/server-vpn-catalog.mjs",
-    "cloud/web/lib/server-vpn-gateway.mjs",
-    "cloud/web/lib/server-vpn-provider.mjs",
-    "cloud/web/lib/supplied-integrations.mjs",
-    "cloud/workers/python/catalog_vpn_bridge.py",
-    "cloud/workers/python/supplied_bridge.py",
-    "decoders/Python/apps/V2Box/V2Box.py"
-  ],
-  "limitations": [
-    "See supplied README and central per-app integration matrix. No new live service validation asserted."
-  ],
-  "connection_authentication": {
-    "status": "UNCONFIRMED",
-    "scope": "No new VPN connection-authentication research; existing methods only."
-  },
-  "integration_review": {
-    "scope": "Connection only; existing algorithm evidence/status preserved.",
-    "record": "analysis/platform/supplied-integrations/2026-11-14/MANIFEST.json",
-    "status": "PARTIAL"
-  }
+  "version_code": 88,
+  "version_name": "6.2.3"
 }

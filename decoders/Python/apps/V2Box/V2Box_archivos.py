@@ -24,8 +24,20 @@ ciegas del repo: el repo cubría 6.1.2 y solo tenía el formato v1):
     Base64 estándar. header (decodificado) es un JSON (ah2):
     {v, kdf, salt, iterations, expiresAt, deviceIds, recipients,
     createdAt}. El payload va cifrado con AES-256-GCM con una clave de
-    archivo aleatoria de 32 B, nonce de 12 B y AAD = los bytes exactos
-    del JSON del header. El texto plano es un JSON Payload (eh2):
+    archivo aleatoria de 32 B, nonce de 12 B y AAD = la cadena Base64
+    del header tal como aparece en el sobre (los bytes ASCII del
+    campo `header`), NO los bytes JSON decodificados. CORRECCIÓN
+    2026-11-19: la primera versión de este script usaba como AAD los
+    bytes JSON del header (lectura estática del DEX 6.2.3/88, nunca
+    verificada contra un archivo real) y todo archivo v2 real daba
+    TAG_MISMATCH. El decodificador antiguo del repo
+    (decoders/Python/v2box_export.py, 6.1.2, dg2.java) ya usaba
+    `cipher.update(encoded_header.encode("ascii"))`, y un archivo
+    .v2box v2 real con kdf "none" creado el 2026-11-13 abre con la
+    clave fija v1 + AAD = cadena Base64 del header (tag GCM verificado;
+    la clave fija NO rotó). Por compatibilidad se prueba primero ese
+    AAD y después, como fallback no verificado, los bytes JSON del
+    header. El texto plano es un JSON Payload (eh2):
     {configs: [{name, profile, raw, type, value}], subscription,
     locked, lockMessage}; cada config tiene type "profile" (value =
     ProfileItem JSON), "link" (value = enlace vmess:// etc.) o "json"
@@ -677,8 +689,30 @@ def _decode_v2(envelope, password, device_key, warnings):
             "(kdf desconocido: %r)" % (kdf,))
 
     try:
-        plain = _aes_gcm_decrypt(file_key, nonce, ciphertext, tag,
-                                 aad=header_bytes)
+        plain = None
+        aad_used = None
+        # AAD verificado contra un archivo v2 real (2026-11-13): la
+        # cadena Base64 del header tal como aparece en el sobre. El
+        # fallback (bytes JSON del header) es la lectura estática del
+        # DEX 6.2.3/88, nunca verificada contra un archivo real; se
+        # conserva por compatibilidad. Un AAD incorrecto solo falla el
+        # tag GCM (128 bits): probar ambos no admite falsos positivos.
+        header_b64 = envelope.get("header", "")
+        aad_candidates = []
+        if isinstance(header_b64, str) and header_b64:
+            aad_candidates.append((header_b64.encode("ascii"),
+                                   "header-b64"))
+        aad_candidates.append((header_bytes, "header-bytes"))
+        for aad, aad_name in aad_candidates:
+            try:
+                plain = _aes_gcm_decrypt(file_key, nonce, ciphertext, tag,
+                                         aad=aad)
+                aad_used = aad_name
+                break
+            except ValueError:
+                continue
+        if plain is None:
+            raise ValueError("GCM tag mismatch")
     except ValueError:
         raise DecodeError("TAG_MISMATCH",
                           "El tag GCM no verifica: contraseña incorrecta, "
@@ -696,6 +730,7 @@ def _decode_v2(envelope, password, device_key, warnings):
         "format": "v2box_export",
         "version": 2,
         "kdf": kdf,
+        "aad": aad_used,
         "header": header,
         "payload": payload,
         "configs": norm["configs"],
@@ -774,7 +809,7 @@ def _selftest_encrypt_v1(payload, password=None):
 
 
 def _selftest_encrypt_v2(payload, password=None, recipients_pub=(),
-                         device_scalar=None):
+                         device_scalar=None, aad_raw_bytes=False):
     header = {"v": 2, "kdf": "none", "salt": None, "iterations": None,
               "expiresAt": None, "deviceIds": None, "recipients": None,
               "createdAt": 1790000000}
@@ -804,10 +839,15 @@ def _selftest_encrypt_v2(payload, password=None, recipients_pub=(),
     else:
         file_key = V2BOX_KEY
     header_bytes = json.dumps(header, ensure_ascii=False).encode("utf-8")
+    header_b64 = _b64e(header_bytes)
     nonce = bytes(range(12, 24))
+    # La app usa como AAD la cadena Base64 del header (verificado
+    # contra un archivo v2 real 2026-11-13); `aad_raw_bytes=True`
+    # cifra con los bytes JSON del header para probar el fallback.
+    aad = header_bytes if aad_raw_bytes else header_b64.encode("ascii")
     ct, tag = _aes_gcm_encrypt(file_key, nonce, json.dumps(
-        payload, ensure_ascii=False).encode("utf-8"), aad=header_bytes)
-    env = {"magic": MAGIC, "version": 2, "header": _b64e(header_bytes),
+        payload, ensure_ascii=False).encode("utf-8"), aad=aad)
+    env = {"magic": MAGIC, "version": 2, "header": header_b64,
            "nonce": _b64e(nonce), "ciphertext": _b64e(ct), "tag": _b64e(tag)}
     return json.dumps(env).encode("utf-8")
 
@@ -865,13 +905,51 @@ def self_test():
                        and r["profiles"][0]["type"] == "link"))
     except Exception as exc:
         checks.append(("v2 pbkdf2-sha256", "ERROR: %s" % exc))
-    # 5. v2 kdf none (clave fija).
+    # 5. v2 kdf none (clave fija). El cifrador del self-test usa el
+    # AAD real de la app (cadena Base64 del header); el resultado debe
+    # decir aad == "header-b64".
     try:
         r = decode_file(_selftest_encrypt_v2(p2))
         checks.append(("v2 kdf none", r["status"] == "ok"
-                       and r["kdf"] == "none"))
+                       and r["kdf"] == "none"
+                       and r.get("aad") == "header-b64"))
     except Exception as exc:
         checks.append(("v2 kdf none", "ERROR: %s" % exc))
+    # 5b. v2 kdf none con AAD = bytes JSON del header (variante del
+    # DEX 6.2.3/88, no verificada contra archivo real): abre por el
+    # fallback y reporta aad == "header-bytes".
+    try:
+        r = decode_file(_selftest_encrypt_v2(p2, aad_raw_bytes=True))
+        checks.append(("v2 kdf none (fallback aad header-bytes)",
+                       r["status"] == "ok"
+                       and r.get("aad") == "header-bytes"))
+    except Exception as exc:
+        checks.append(("v2 kdf none (fallback aad header-bytes)",
+                       "ERROR: %s" % exc))
+    # 5c. v2 kdf none con un AAD distinto de los dos candidatos:
+    # TAG_MISMATCH (el archivo real 2026-11-13 daba exactamente esto
+    # antes de la corrección).
+    try:
+        header = {"v": 2, "kdf": "none", "salt": None, "iterations": None,
+                  "expiresAt": None, "deviceIds": None, "recipients": None,
+                  "createdAt": 1790000000}
+        hb = json.dumps(header, ensure_ascii=False).encode("utf-8")
+        ct, tag = _aes_gcm_encrypt(V2BOX_KEY, bytes(range(12, 24)),
+                                   json.dumps(p2, ensure_ascii=False).encode("utf-8"),
+                                   aad=b"aad-que-no-es-ningun-candidato")
+        blob = json.dumps({"magic": MAGIC, "version": 2,
+                           "header": _b64e(hb),
+                           "nonce": _b64e(bytes(range(12, 24))),
+                           "ciphertext": _b64e(ct), "tag": _b64e(tag)}).encode("utf-8")
+        try:
+            decode_file(blob)
+            ok = False
+        except DecodeError as exc:
+            ok = exc.code == "TAG_MISMATCH"
+        checks.append(("v2 kdf none (aad incorrecto -> TAG_MISMATCH)", ok))
+    except Exception as exc:
+        checks.append(("v2 kdf none (aad incorrecto -> TAG_MISMATCH)",
+                       "ERROR: %s" % exc))
     # 6. v2 ecdh-p256: destinatario con escalar conocido.
     try:
         scalar = 0xabcdef123456789

@@ -29,7 +29,16 @@ El repo solo cubría V2Box en `decoders/Python/v2box.py`
   `{magic, version: 2, header, nonce, ciphertext, tag}`. El header trae
   `kdf`, `salt`, `iterations`, `expiresAt`, `deviceIds`, `recipients`.
   El payload es AES-256-GCM con clave de archivo aleatoria de 32 B y
-  **AAD = bytes exactos del header JSON**. Clave de archivo según `kdf`:
+  **AAD = la cadena Base64 del header tal como aparece en el sobre**
+  (bytes ASCII del campo `header`). CORRECCIÓN 2026-11-19: la primera
+  versión del decodificador 6.2.3 usaba como AAD los bytes JSON del
+  header (lectura estática del DEX, nunca verificada contra un archivo
+  real) y todo archivo v2 real daba TAG_MISMATCH. Un archivo .v2box v2
+  real con kdf "none" creado el 2026-11-13 abre con la clave fija v1 +
+  AAD = cadena Base64 del header (el decodificador antiguo 6.1.2 ya
+  usaba ese AAD); la clave fija NO rotó y Play sigue en 6.2.3. El
+  decodificador prueba primero ese AAD y después, como fallback, los
+  bytes JSON del header. Clave de archivo según `kdf`:
   - `pbkdf2-sha256`: PBKDF2-HMAC-SHA256 (contraseña NFC, salt 16 B,
     600.000 iteraciones por defecto, 32 B).
   - `ecdh-p256`: cada recipient `{kid, epk, key}`; `kid` =
@@ -80,7 +89,7 @@ python3 V2Box_archivos.py --file export.v2box --device-key <base64>
 
 # Pruebas
 python3 V2Box.py --self-test            # 8/8 (incluye app-settings en vivo)
-python3 V2Box_archivos.py --self-test   # 7/7 (v1 y v2, ida y vuelta)
+python3 V2Box_archivos.py --self-test   # 9/9 (v1 y v2, ida y vuelta; incluye AAD header-b64, fallback header-bytes y AAD incorrecto -> TAG_MISMATCH)
 ```
 
 ## Verificación
@@ -90,17 +99,29 @@ python3 V2Box_archivos.py --self-test   # 7/7 (v1 y v2, ida y vuelta)
   suscripción en Base64 entera, `v2box://locked=`, config V2Ray JSON,
   `app-settings` en vivo (3 promociones, 0 servidores),
   `subscription-userinfo`.
-- `V2Box_archivos.py --self-test`: 7/7 OK — v1 sin/con contraseña (y
+- `V2Box_archivos.py --self-test`: 9/9 OK — v1 sin/con contraseña (y
   contraseña incorrecta → `TAG_MISMATCH`), v2 `pbkdf2-sha256`, v2
-  `none`, v2 `ecdh-p256` (sin clave → `RECIPIENT_KEY_REQUIRED`; con la
-  clave correcta abre; con otra clave no coincide el `kid`), magic
-  inválido. El GCM se verificó además contra `cryptography` AESGCM.
+  `none` (AAD header-b64), v2 `none` con AAD header-bytes (fallback),
+  v2 `none` con AAD incorrecto → `TAG_MISMATCH`, v2 `ecdh-p256` (sin
+  clave → `RECIPIENT_KEY_REQUIRED`; con la clave correcta abre; con
+  otra clave no coincide el `kid`), magic inválido. El GCM se verificó
+  además contra `cryptography` AESGCM.
 - `--url https://services.hexasoftware.dev/app-settings` en vivo:
   3 promociones, 0 servidores, `updated_at 2026-10-31T23:22:32+00:00`.
+- **Archivo .v2box v2 real (kdf "none", creado 2026-11-13, 1.736 B):
+  VERIFICADO 2026-11-19.** Antes de la corrección del AAD daba
+  `TAG_MISMATCH` con el decodificador 6.2.3; tras la corrección abre
+  completo (status ok, 1 config tipo profile, locked true, sin
+  suscripción, sin avisos) por el decodificador directo y por la vía
+  del servidor (`supplied_bridge.file_decode("v2box", ...)`). La
+  clave fija v1 NO rotó; Play sigue en 6.2.3. Estructura y códigos en
+  el expediente `analysis/dev.hexasoftware.v2box/88/`; el archivo real
+  y sus valores NO se guardan en Git.
 
 ## Pendiente
 
-Un `.v2box` real exportado (v1 o v2) y un enlace `v2box://locked=` real
-cerrarían la verificación extremo a extremo (hoy solo round-trip contra
-la spec recuperada del APK). Un archivo v2 `ecdh-p256` real necesita
-además la clave privada P-256 del dispositivo destinatario.
+Un `.v2box` real exportado v1 y un enlace `v2box://locked=` real
+cerrarían la verificación extremo a extremo de esas vías (hoy solo
+round-trip contra la spec recuperada del APK). Un archivo v2
+`ecdh-p256` real necesita además la clave privada P-256 del
+dispositivo destinatario.

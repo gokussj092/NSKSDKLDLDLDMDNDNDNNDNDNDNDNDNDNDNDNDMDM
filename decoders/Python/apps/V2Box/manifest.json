@@ -30,6 +30,7 @@
     "payloads": 0,
     "note": "app-settings solo devuelve promociones (verificado en vivo 2026-11-14: HTTP 200, 932 B, 3 promociones, 0 servidores). Cliente V2Ray generico: el usuario aporta sus URLs de suscripcion."
   },
-  "realSampleVerified": false,
+  "realSampleVerified": true,
+  "realSampleNote": "Archivo .v2box v2 real (kdf none, creado 2026-11-13, 1736 B, SHA-256 en el expediente analysis/dev.hexasoftware.v2box/88/) verificado 2026-11-19: abre con la correccion del AAD (header-b64). Valores del archivo NUNCA en Git.",
   "deployment": "pending"
 }
