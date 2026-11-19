@@ -458,6 +458,18 @@
       "kind": "text"
     },
     {
+      "prefix": "7net://",
+      "name": "7NET VPN",
+      "suffix": "7net",
+      "kind": "text"
+    },
+    {
+      "prefix": "7netvpn://",
+      "name": "7NET VPN",
+      "suffix": "7net",
+      "kind": "text"
+    },
+    {
       "prefix": "eut://",
       "name": "EUT VPN",
       "suffix": "eut",

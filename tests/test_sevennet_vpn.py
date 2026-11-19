@@ -28,6 +28,39 @@ class SevenNETSmoke(unittest.TestCase):
         for invalid in [b'',b'<html/>',b'x'*(codec.MAX_BYTES+1),self.raw[:-5],self.v['invalidFieldCatalog'].encode()]:
             with self.subTest(length=len(invalid)),self.assertRaises(codec.DecodeError):catalog.run(invalid)
         with self.assertRaises(codec.DecodeError):catalog._NoRedirect().redirect_request(None,None,None,None,None,None)
+    def test_alternate_credential_key_names_decode(self):
+        # 7NET 5.6 exports may use User/Pass or user/pwd instead of
+        # Username/Password; the decoder must return them in clear.
+        # Typed fallback: a short alphanumeric credential must not be
+        # rejected for "looking like Base64".
+        import hashlib
+        from Crypto.Cipher import AES
+        from Crypto.Util.Padding import pad
+        from tests.test_renz_family import profile_fixture, xxtea_encrypt
+        from tests.test_renz_legacy_types import legacy_encrypt
+        src = renz.RENZ_KEYS["7net"]
+        key32 = hashlib.pbkdf2_hmac("sha256", src["KEY_SEED"], src["FIXED_SALT"], 100000, 32)
+        nonce = bytes(range(16))
+        def enc(plain):
+            ct = AES.new(key32, AES.MODE_CBC, nonce).encrypt(pad(plain.encode(), 16))
+            return base64.b64encode(xxtea_encrypt(nonce + ct, key32)).decode()
+        for cfg, want in (
+            ({"User": enc("test-user"), "Pass": enc("test-password")},
+             {"User": "test-user", "Pass": "test-password"}),
+            ({"user": enc("test-user"), "pwd": enc("test-password")},
+             {"user": "test-user", "pwd": "test-password"}),
+        ):
+            out = json.loads(renz.decode_file(profile_fixture("7net", cfg), ".7net"))["config"]
+            for k, v in want.items():
+                self.assertEqual(out.get(k), v)
+        key2 = renz.renz_get_pbkdf2_key()
+        inner = json.dumps({"Username": enc("test1234")}).encode()
+        iv = bytes(range(16))
+        stage = iv + AES.new(key2, AES.MODE_CBC, iv).encrypt(pad(inner, 16))
+        ct2 = base64.b64encode(legacy_encrypt(stage, key2[:16]))
+        out = json.loads(renz.decode_file(ct2, ".7net"))["config"]
+        self.assertEqual(out.get("Username"), "test1234")
+
     def test_existing_file_text_routes_and_historical_data(self):
         raw=self.v['file'].encode()
         self.assertEqual(json.loads(file_decoder.run(raw))['config'],self.v['expectedFile'])

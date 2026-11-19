@@ -854,6 +854,24 @@ def renz_decrypt_sensitive(data_b64: str, vpn: str):
         decrypted = ""
     return decrypted
 
+# Short credential key names used by 7NET 5.6 exports alongside the canonical
+# Username/Password pair (verified 2026-11-19 with synthetic mode-2 vectors;
+# real key names still pending a real .7net sample). Exact-match only and
+# scoped per app: a mode-2 decrypt with the wrong key yields non-empty
+# garbage, so a generic attempt on any field would corrupt non-credential
+# values. The isprintable() guard in the caller rejects that garbage.
+RENZ_CREDENTIAL_KEYS: dict[str, tuple[str, ...]] = {
+    "7net": ("user", "pass", "pwd"),
+}
+
+
+def _renz_is_credential_key(key: str, variant: str | None) -> bool:
+    lowered = key.lower()
+    if "username" in lowered or "password" in lowered:
+        return True
+    return bool(variant) and lowered in RENZ_CREDENTIAL_KEYS.get(variant, ())
+
+
 def renz_recursive_decrypt_main(data, vpn):
     if isinstance(data, dict):
         for k, v in data.items():
@@ -874,6 +892,10 @@ def renz_recursive_decrypt_main(data, vpn):
                     elif "username" in k.lower() or "password" in k.lower():
                         dec = renz_decrypt_sensitive(v, vpn)
                         if dec:
+                            data[k] = dec
+                    elif _renz_is_credential_key(k, vpn):
+                        dec = renz_decrypt_sensitive(v, vpn)
+                        if dec and dec.isprintable():
                             data[k] = dec
                     else:
                         dec = renz_decrypt_main(v.encode(), vpn)
@@ -951,7 +973,7 @@ def renz_decrypt_type3(payload: bytes) -> bytes:
     return renz_aes256_cbc_prefixed_iv(payload, renz_get_hkdf_key())
 
 # ========== دوال فك التشفير العميقة (المتداخلة) ==========
-def renz_try_decrypt_field(value: str, decryptors) -> str:
+def renz_try_decrypt_field(value: str, decryptors, *, is_credential_key: bool = False) -> str:
     """محاولة فك تشفير حقل نصي باستخدام كل الأنواع المتاحة"""
     for kind, func in decryptors.items():
         # المحاولة على النص الخام
@@ -960,7 +982,10 @@ def renz_try_decrypt_field(value: str, decryptors) -> str:
             txt = dec.decode('utf-8')
             if txt and len(txt) > 5:
                 # إذا كان النص يبدو وكأنه نص عادي (لا يحتوي على base64 طويل)
-                if not re.match(r'^[A-Za-z0-9+/=]+$', txt.strip()):
+                # Las credenciales cortas alfanumericas SON texto valido: no
+                # rechazarlas por "parecer Base64" cuando la clave es de
+                # credencial (username/password o lista RENZ_CREDENTIAL_KEYS).
+                if is_credential_key or not re.match(r'^[A-Za-z0-9+/=]+$', txt.strip()):
                     return txt
         except:
             pass
@@ -969,25 +994,28 @@ def renz_try_decrypt_field(value: str, decryptors) -> str:
             b64 = renz_base64_decode_android(value)
             dec = func(b64)
             txt = dec.decode('utf-8')
-            if txt and len(txt) > 5 and not re.match(r'^[A-Za-z0-9+/=]+$', txt.strip()):
+            if txt and len(txt) > 5 and (is_credential_key or
+                    not re.match(r'^[A-Za-z0-9+/=]+$', txt.strip())):
                 return txt
         except:
             pass
     return value
 
-def renz_decrypt_nested(obj, decryptors, path=""):
+def renz_decrypt_nested(obj, decryptors, path="", variant=None):
     """تعديل الكائن في المكان: فك تشفير كل الحقول النصية"""
     if isinstance(obj, dict):
         for k, v in list(obj.items()):
             if isinstance(v, str) and len(v) > 10:
-                decrypted = renz_try_decrypt_field(v, decryptors)
+                decrypted = renz_try_decrypt_field(
+                    v, decryptors,
+                    is_credential_key=_renz_is_credential_key(k, variant))
                 if decrypted != v:
                     obj[k] = decrypted
             elif isinstance(v, (dict, list)):
-                renz_decrypt_nested(v, decryptors, f"{path}.{k}" if path else k)
+                renz_decrypt_nested(v, decryptors, f"{path}.{k}" if path else k, variant)
     elif isinstance(obj, list):
         for i, item in enumerate(obj):
-            renz_decrypt_nested(item, decryptors, f"{path}[{i}]")
+            renz_decrypt_nested(item, decryptors, f"{path}[{i}]", variant)
 
 
 # Only file suffixes routed through RENZ in 66.py's document handler.
@@ -1047,7 +1075,7 @@ def _decode_typed_7net(payload: bytes) -> object | None:
                 if isinstance(config, (dict, list)):
                     funcs = {0: renz_decrypt_type0, 1: renz_decrypt_type1,
                              2: renz_decrypt_type2, 3: renz_decrypt_type3}
-                    renz_decrypt_nested(config, funcs)
+                    renz_decrypt_nested(config, funcs, variant="7net")
                     return config
             except (ValueError, TypeError, KeyError, UnicodeDecodeError, RENZError):
                 pass
@@ -1058,7 +1086,7 @@ def _decode_typed_7net(payload: bytes) -> object | None:
             if isinstance(config, (dict, list)):
                 funcs = {0: renz_decrypt_type0, 1: renz_decrypt_type1,
                          2: renz_decrypt_type2, 3: renz_decrypt_type3}
-                renz_decrypt_nested(config, funcs)
+                renz_decrypt_nested(config, funcs, variant="7net")
                 return config
         except (ValueError, TypeError, KeyError, UnicodeDecodeError, RENZError):
             pass

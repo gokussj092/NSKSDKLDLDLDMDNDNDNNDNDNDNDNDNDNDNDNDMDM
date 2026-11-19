@@ -154,7 +154,7 @@ test('older Cloud APKs can paste hccloud:// in the existing text editor, no APK 
  }
  const c=catalog();
  assert(c.textFormats.some(x=>x.prefix==='hccloud://' && x.suffix==='hc' && x.kind==='cloud'));
- assert.equal(c.textCount,77);
+ assert.equal(c.textCount,79); // 77 + 7net:// + 7netvpn:// (2026-11-19)
 });
 
 test('legacy aliases reject foreign domains and cannot be used as an unrestricted proxy',()=>{
