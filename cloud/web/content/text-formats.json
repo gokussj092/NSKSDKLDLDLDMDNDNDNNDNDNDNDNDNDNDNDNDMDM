@@ -423,7 +423,7 @@
     },
     {
       "prefix": "pausa://",
-      "name": "M Light",
+      "name": "PausaVPN (M Light)",
       "suffix": "pausa",
       "kind": "text"
     },
