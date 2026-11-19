@@ -17,6 +17,9 @@ export const NUR_ALLOWED_HOST = "strongteam.co";
 export const EHI_ALLOWED_HOST = "www.ehi.tools";
 export const MNR_ALLOWED_HOST = "firebasestorage.googleapis.com";
 export const HEXCUSTOM_ALLOWED_HOST = "firestore.googleapis.com";
+export const TUNNELTWEAK_ALLOWED_HOST = "tunneltweak.com";
+const TUNNELTWEAK_CLOUD_PATH = "/api/cloudconfig/";
+const TUNNELTWEAK_UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 export const HEXCUSTOM_PROJECT = "hexcustom-d3bc9";
 export const HC_HOST = "cloudvpn.mrfrankofc.com";
 export const HC_SHORT_HOST = "link.playsmarty.uk";
@@ -222,7 +225,55 @@ export async function importHexCustomReference(reference,options={}) {
 /* Only hardcoded vendor destinations are accepted. No user URLs, custom ports,
  * userinfo, IP literals or aliases. MNR media has one generated token query.
  */
+/** A UUID shape alone cannot identify its original application. This
+ * parser is called only when dispatching to the explicitly allowlisted
+ * Tunneltweak broker; the client never supplies hosts or HTTP headers. */
+export function parseTunneltweakReference(value) {
+  if(typeof value!=="string" || value.length>64)fail("INVALID_REFERENCE");
+  const input=value.trim();
+  const id=input.replace(/^tunneltweak:\/\//i,"");
+  if(!TUNNELTWEAK_UUID.test(id))fail("INVALID_REFERENCE");
+  return id.toLowerCase();
+}
+export function isTunneltweakReference(value) {
+  try { parseTunneltweakReference(value); return true; }catch{return false;}
+}
+export function tunneltweakReferenceUrl(value) {
+  return "https://"+TUNNELTWEAK_ALLOWED_HOST+TUNNELTWEAK_CLOUD_PATH+
+    parseTunneltweakReference(value);
+}
+export async function importTunneltweakReference(reference,options={}) {
+  const url=tunneltweakReferenceUrl(reference);
+  const bytes=await (options.download||downloadApproved)({
+    url,kind:"tunneltweak",method:"GET",maxBytes:MAX_REMOTE_BYTES,
+    headers:{"User-Agent":"TunnelTweak/1.0 (Android)"},
+  },options);
+  if(!Buffer.isBuffer(bytes) || !bytes.length || bytes.length>MAX_REMOTE_BYTES ||
+     bytes.subarray(0,256).toString("utf8").trimStart().startsWith("<"))
+    fail("REMOTE_RESPONSE_INVALID");
+  // Validate the fixed-source response shape before handing opaque encrypted
+  // profile data to Python. Never parse/decrypt vendor credentials in Node.
+  let obj;
+  try{obj=JSON.parse(new TextDecoder("utf-8",{fatal:true}).decode(bytes));}
+  catch{fail("REMOTE_RESPONSE_INVALID");}
+  if(!obj || typeof obj!=="object" || Array.isArray(obj) ||
+     typeof obj.config!=="string" || !obj.config || obj.config.length>MAX_REMOTE_BYTES)
+    fail("REMOTE_RESPONSE_INVALID");
+  return bytes;
+}
 export function approvedUrl(address, kind, env=process.env) {
+  if(kind==="tunneltweak") {
+    let parsed;
+    try{parsed=new URL(address);}catch{fail("REMOTE_NETWORK_DENIED");}
+    if(parsed.protocol!=="https:" || parsed.hostname!==TUNNELTWEAK_ALLOWED_HOST ||
+       parsed.port || parsed.username || parsed.password || parsed.search ||
+       parsed.hash || parsed.href!==address ||
+       !parsed.pathname.startsWith(TUNNELTWEAK_CLOUD_PATH) ||
+       parsed.href!==tunneltweakReferenceUrl(
+         parsed.pathname.slice(TUNNELTWEAK_CLOUD_PATH.length)))
+      fail("REMOTE_NETWORK_DENIED");
+    return parsed;
+  }
   if(kind==="hc") {
     let result;
     try{result=parseHttpCustomReference(address);}catch{fail("REMOTE_NETWORK_DENIED");}
@@ -277,7 +328,8 @@ export function publicIpv4(address) {
 
 export async function pinnedAddresses(host, resolver = dns.lookup) {
   // The only legal hosts come from approvedUrl; never accept raw user host.
-  if (![EHI_ALLOWED_HOST, NUR_ALLOWED_HOST, MNR_ALLOWED_HOST, HEXCUSTOM_ALLOWED_HOST, HC_HOST, HC_SHORT_HOST].includes(host)) fail("REMOTE_NETWORK_DENIED");
+  if (![EHI_ALLOWED_HOST, NUR_ALLOWED_HOST, MNR_ALLOWED_HOST, HEXCUSTOM_ALLOWED_HOST,
+    TUNNELTWEAK_ALLOWED_HOST, HC_HOST, HC_SHORT_HOST].includes(host)) fail("REMOTE_NETWORK_DENIED");
   let answers;
   try { answers = await resolver(host, {all:true, family:4, verbatim:true}); }
   catch { fail("REMOTE_NETWORK_DENIED"); }
@@ -297,7 +349,7 @@ export async function downloadApproved({url,kind,method="GET",body,headers={},ma
   const initial=approvedUrl(url,kind,env);
   const upperLimit=kind==="nur" ? MAX_NUR_BYTES : MAX_REMOTE_BYTES;
   if (!Number.isSafeInteger(maxBytes) || maxBytes<1 || maxBytes>upperLimit ||
-      (!["GET","POST"].includes(method) || ["hc","hexcustom"].includes(kind) && (method!=="GET" || body!==undefined)))
+      (!["GET","POST"].includes(method) || ["hc","hexcustom","tunneltweak"].includes(kind) && (method!=="GET" || body!==undefined)))
     fail("REMOTE_NETWORK_DENIED");
 
   const timeout=kind==="nur" ? NUR_TIMEOUT_MS : CONNECT_TIMEOUT_MS;
@@ -388,7 +440,7 @@ export async function downloadApproved({url,kind,method="GET",body,headers={},ma
             }
             if(kind==="hexcustom" && status===403)
               return reject("REMOTE_FORBIDDEN");
-            if(["ehi","mnr","hc","hexcustom"].includes(kind) && [404,410].includes(status))
+            if(["ehi","mnr","hc","hexcustom","tunneltweak"].includes(kind) && [404,410].includes(status))
               return reject("REMOTE_CONFIG_UNAVAILABLE");
             return reject("REMOTE_PROVIDER_UNAVAILABLE","HTTP_"+String(status));
           }
