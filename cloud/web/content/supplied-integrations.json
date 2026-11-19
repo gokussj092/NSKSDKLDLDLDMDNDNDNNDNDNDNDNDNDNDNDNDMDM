@@ -1853,7 +1853,7 @@
     {
       "id": "m-light",
       "appDir": "M_Light",
-      "name": "M Light",
+      "name": "PausaVPN (M Light)",
       "package": "com.pausatotal.mlight",
       "versionCode": 80,
       "versionName": "3.1.55",
