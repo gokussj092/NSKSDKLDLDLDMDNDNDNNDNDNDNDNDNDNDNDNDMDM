@@ -5,7 +5,7 @@ import json
 from pathlib import Path
 import sys
 from decoders.Python import generic_des
-from decoders.Python.apps.Tunneltweak import codec
+from decoders.Python.apps.Tunneltweak import codec, file_decoder
 
 
 def main() -> int:
@@ -19,6 +19,20 @@ def main() -> int:
         password = credentials.get("password")
         if password is not None:
             codec._password(password)
+        # A Tunneltweak Cloud UUID returns JSON {config: <encrypted .tut>,
+        # ...metadata}. Recognize that specific envelope before the legacy
+        # generic-DES fallback, preserving the source's other fields and
+        # supporting the authenticated TTPBE1 password challenge in RAM.
+        # A normal .tut file is unchanged and cannot trigger network access.
+        if data.lstrip(b"\xef\xbb\xbf \t\r\n").startswith(b"{"):
+            try:
+                envelope = json.loads(data.decode("utf-8-sig"))
+            except (ValueError, UnicodeError):
+                envelope = None
+            if isinstance(envelope, dict) and "config" in envelope:
+                sys.stdout.write(file_decoder.decode_cloud_response(
+                    data, password=password) + "\n")
+                return 0
         # Preserve raw/Base64 DES and dot-separated generic GCM byte for byte.
         # The authenticated TTPBE1 format never reaches historical decoders.
         if not data.lstrip(b"\xef\xbb\xbf \t\r\n").startswith(b"TTPBE1:"):
