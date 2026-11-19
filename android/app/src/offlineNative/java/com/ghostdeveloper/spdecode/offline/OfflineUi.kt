@@ -211,20 +211,25 @@ private fun BottomTabs(active:Int,onTab:(Int)->Unit,language:String,p:OfflinePal
         Triple("history",Icons.Outlined.History,1),
         Triple("settings",Icons.Outlined.Settings,2),
     )
-    HorizontalDivider(color=p.line)
-    Row(Modifier.fillMaxWidth().heightIn(min=65.dp).padding(bottom=2.dp),
-        verticalAlignment=Alignment.CenterVertically){
-        tabs.forEach{(key,icon,index)->
-            val selected=active==index
-            Column(Modifier.weight(1f).clickable{onTab(index)}
-                    .padding(vertical=9.dp),
-                horizontalAlignment=Alignment.CenterHorizontally,
-                verticalArrangement=Arrangement.spacedBy(4.dp)){
-                Icon(icon,txt(key,language),
-                    tint=if(selected)p.ink else p.subdued,modifier=Modifier.size(21.dp))
-                Text(txt(key,language),fontSize=11.sp,
-                    color=if(selected)p.ink else p.subdued,
-                    maxLines=1,overflow=TextOverflow.Ellipsis)
+    // Edge-to-edge (targetSdk 36): the Scaffold bottomBar sits at the window
+    // edge, under the system navigation bar. Lift it above the phone's own
+    // bar, like the online app does with safeDrawingPadding().
+    Column(Modifier.navigationBarsPadding()) {
+        HorizontalDivider(color=p.line)
+        Row(Modifier.fillMaxWidth().heightIn(min=65.dp).padding(bottom=2.dp),
+            verticalAlignment=Alignment.CenterVertically){
+            tabs.forEach{(key,icon,index)->
+                val selected=active==index
+                Column(Modifier.weight(1f).clickable{onTab(index)}
+                        .padding(vertical=9.dp),
+                    horizontalAlignment=Alignment.CenterHorizontally,
+                    verticalArrangement=Arrangement.spacedBy(4.dp)){
+                    Icon(icon,txt(key,language),
+                        tint=if(selected)p.ink else p.subdued,modifier=Modifier.size(21.dp))
+                    Text(txt(key,language),fontSize=11.sp,
+                        color=if(selected)p.ink else p.subdued,
+                        maxLines=1,overflow=TextOverflow.Ellipsis)
+                }
             }
         }
     }
