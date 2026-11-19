@@ -571,6 +571,59 @@ internal class CloudDecodeClient(context: Context) {
         }finally{ bytes.fill(0) }
     }
 
+    /** Tunneltweak Cloud UUID: authenticate with V2, download once via the
+     * allowlisted VPS broker, and decode the Cloud wrapper in Python.
+     * TTPBE1 password prompts reuse the existing RAM-only .tut path.
+     * No vendor host, decrypted profile, or secret is stored in Android. */
+    private suspend fun decodeTunneltweakReference(reference:String,
+        onPhase:suspend (TransferPhase)->Unit = {}):String {
+        lastDiagnostic=null
+        require(BuildConfig.SPDECODE_CLOUD_ENABLED)
+        requireLegalConsent()
+        val payload=JSONObject().put("provider","tunneltweak")
+            .put("reference",reference.trim()).put("consent",true)
+        onPhase(TransferPhase.SENDING)
+        val bearer=session()
+        onPhase(TransferPhase.PROCESSING)
+        val reply=withContext(Dispatchers.IO) {
+            requireLegalConsent()
+            extract(protectedPost(CloudOperation.IMPORT_CLOUD,payload,bearer))
+        }
+        coroutineContext.ensureActive()
+        onPhase(TransferPhase.DOWNLOADING_RESULTS)
+        if(reply.optString("status")=="success")
+            return decodedResponse(CloudOperation.IMPORT_CLOUD,payload,reply).rawText
+        if(reply.optString("status")!="credentials_required" ||
+           reply.optString("kind")!="encrypted_file" ||
+           reply.optString("format")!="tut" ||
+           reply.optString("code")!="PASSWORD_REQUIRED")
+            throw IOException("CLOUD_INVALID_JSON")
+        val encoded=reply.getString("dataBase64")
+        if(encoded.isEmpty() || encoded.length>4*((MAX_INPUT+2)/3) ||
+           encoded.length%4!=0 || !encoded.matches(Regex("[A-Za-z0-9+/]+={0,2}")))
+            throw IOException("CLOUD_INVALID_INPUT")
+        val bytes=try{Base64.decode(encoded,Base64.NO_WRAP)}
+            catch(_:IllegalArgumentException){throw IOException("CLOUD_INVALID_INPUT")}
+        if(bytes.isEmpty() || bytes.size>MAX_INPUT || bytes.size!=reply.optInt("sourceBytes") ||
+           Base64.encodeToString(bytes,Base64.NO_WRAP)!=encoded) {
+            bytes.fill(0)
+            throw IOException("CLOUD_INVALID_INPUT")
+        }
+        try {
+            val wrapper=runCatching{JSONObject(bytes.toString(Charsets.UTF_8))}.getOrNull()
+            if(wrapper==null || wrapper.optString("config").isBlank())
+                throw IOException("CLOUD_INVALID_JSON")
+            val credentials=HttpCustomCloudPrompt.ask(true,false,"Tunneltweak Cloud.tut")
+                ?:throw CancellationException("Cloud import cancelled")
+            try {
+                val password=credentials.password?:throw IOException("CLOUD_CREDENTIALS_NOT_ALLOWED")
+                return decodeFile("tut",bytes,password=password,onPhase=onPhase)
+            }catch(failure:Failure){
+                throw Failure(failure.code,failure.httpStatus,credentials.password!=null,false)
+            }finally{credentials.password?.fill(0)}
+        }finally{bytes.fill(0)}
+    }
+
     suspend fun decodeHttpInjectorCloud(reference: String,
         onPhase:suspend (TransferPhase)->Unit = {}): String =
         decode(CloudOperation.IMPORT_CLOUD,
@@ -582,6 +635,7 @@ internal class CloudDecodeClient(context: Context) {
         when(provider) {
             "hc" -> decodeHttpCustomReference(reference,onPhase)
             "hexcustom" -> decodeHexCustomReference(reference,onPhase)
+            "tunneltweak" -> decodeTunneltweakReference(reference,onPhase)
             "ehi" -> decodeHttpInjectorCloud(reference,onPhase)
             else -> decode(CloudOperation.IMPORT_CLOUD,JSONObject()
                 .put("provider",provider).put("reference",reference)
