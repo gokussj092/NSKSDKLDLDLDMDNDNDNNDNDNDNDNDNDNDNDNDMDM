@@ -7,7 +7,7 @@ import {providerEnabled} from "./server-vpn-provider.mjs";
 import {SUPPLIED_CATALOG_ITEMS,suppliedProviderConfigured} from "./supplied-integrations.mjs";
 import {catalogDefaultEnabled} from "./catalog-provider-policy.mjs";
 
-export const CATALOG_VERSION = 92; // GCP VPN 1.1 cloud catalog (gcp-vpn, Version 3304 live, 90 servers / 334 networks); resto sin cambios.
+export const CATALOG_VERSION = 93; // PausaVPN (M Light) public naming + Tunneltweak Cloud UUID integration; one catalog revision for this batch.
 export const RECHECK_SECONDS = 15 * 60; // Version-only recovery; full download occurs on version change.
 
 /** Monotonic deployment version. Bump this override for ANY metadata, icon
