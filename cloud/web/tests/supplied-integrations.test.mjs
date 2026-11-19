@@ -35,11 +35,12 @@ function network(t,answer=()=>({body:Buffer.from("synthetic encrypted response")
  };
  t.mock.method(https,"request",request);t.mock.method(http,"request",request);return calls;
 }
-test("PausaVPN (M Light) is discoverable without changing m-light or .pausa routes",()=>{
+test("PausaVPN (M Light) is discoverable without changing m-light or .pausa routes",t=>{
+ environment(t);
  const card=catalog().apps.find(x=>x.id==="m-light");
  assert(card);
  assert.equal(card.name,"PausaVPN (M Light)");
- assert.equal(card.decodeEnabled,false); // no env flag; card still exists
+ assert.equal(card.decodeEnabled,true); // enabled provider with unchanged id and remote
  assert.equal(catalog().catalogVersion,93);
  const supplied=SUPPLIED_INTEGRATIONS.find(x=>x.id==="m-light");
  assert(supplied);
