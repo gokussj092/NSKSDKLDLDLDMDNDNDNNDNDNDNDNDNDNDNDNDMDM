@@ -14,6 +14,35 @@ class CloudOnlineReferenceTest {
         assertEquals("hex-custom-cloud.hexcm",found.filename)
     }
 
+    @Test fun detectTunneltweakCloudUuidAndExplicitReference() {
+        val id="12e583dd-4cdf-41de-a1a8-74d7e12ca0db"
+        for(input in listOf(id,"tunneltweak://"+id,"TUNNELTWEAK://"+id.uppercase())) {
+            val result=CloudOnlineReference.resolve(input,"auto",emptyList())
+            assertNotNull(result)
+            assertEquals("tunneltweak",result!!.provider)
+            assertEquals(id,result.reference)
+            assertEquals("tut",result.suffix)
+            assertEquals("tunneltweak-cloud.tut",result.filename)
+        }
+        val explicit=CloudOnlineReference.resolve(id,"tunneltweak",emptyList())
+        assertEquals("tunneltweak",explicit!!.provider)
+        assertTrue(CloudOnlineReference.options(emptyList()).any{
+            it.id=="tunneltweak" && it.name=="Tunneltweak Cloud"
+        })
+    }
+
+    @Test fun malformedAndUnknownCloudUuidsDoNotSelectOtherProviders() {
+        val id="12e583dd-4cdf-41de-a1a8-74d7e12ca0db"
+        for(input in listOf(id.dropLast(1),id+"?next=http://127.0.0.1",
+            "https://tunneltweak.com/api/cloudconfig/"+id,
+            "tunneltweak://../"+id,"tunneltweak://"+id+"/secret",
+            "00000000-0000-0000-0000-00000000000g")) {
+            assertNull(CloudOnlineReference.resolve(input,"auto",emptyList()))
+        }
+        assertNull(CloudOnlineReference.resolve(id,"ehi",emptyList()))
+        assertNull(CloudOnlineReference.resolve(id,"hc",emptyList()))
+    }
+
     @Test fun malformedHexCustomIdsDoNotCallTheServer() {
         assertNull(CloudOnlineReference.resolve("HexCustom-AbCd1234E","auto",emptyList()))
         assertNull(CloudOnlineReference.resolve("HexCustom-AbCd1234Ef!","auto",emptyList()))
