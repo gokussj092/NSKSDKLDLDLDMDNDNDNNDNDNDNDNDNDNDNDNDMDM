@@ -266,5 +266,7 @@ test("decodeServerVpn without a deviceId still serves the public list",async t=>
 });
 
 test("catalog version marks the variant B contract",()=>{
-  assert.equal(CATALOG_VERSION,91);
+  // 91 was the OpenTunnel variant B contract; 92 adds the GCP VPN cloud
+  // catalog (gcp-vpn) without changing variant B.
+  assert.equal(CATALOG_VERSION,92);
 });

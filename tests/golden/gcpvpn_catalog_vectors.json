@@ -1,0 +1,36 @@
+{
+  "catalog": "D02j6/gl3UnqZgcKLsOV4R7+DUeN+VDpIeJPUZH6JVyY/4MSTj8+IXeZeyMi5NvF12eFMUrm3hxeomwXALYgCz901bBho5ALNs+UFKbTon49Qrdc90oUnkfbJJ8p6Iq23vQ31mf7UAO1HoD2JNHQU2CpzHu7U4FZit8LjYUbt4NZ0AVZKnHCUJ/pCQGAl9v5Ahdbhlgz85YL+Lo3kNUHutVv1gjyBBlcr3GxuFIfmkPaYMRQUsjwzQ209IpjJ/zLWgI2gg9RpKL0wLE/xZPBMx50CciuAZUkN5WpnmlOaFEuEsgTo2dKTx596ZQ20hXMA4c2iiXmSjsRc+04HZxnlQckq48cw3TmE9dXX+9a8bjQgWsTQPxqdHvJqREYZZxS1fjHjcKZeSQWkforrnrhMizpLG1/auTwvi60KiiUJfpLAwveEfFkrDg/M0kVcCqkWx9ag7gjg4SbIiPFPZim/vvG4rQ2IIvLw5cRoTWdEN//E8OXlvk3uSJalsHPLFmTftEOjCx2X4kNIjBvZe6Wqz3eNG/mMlmh0RF/CmhBb6uGv8zeyitc83gETRGulYxOa8ZT9NVIeVrbIxhJtXKkHBJyQveLDkuqXCMJD6PsVmMTWjf/tycU0UFVbx3Van2/PQnImBoUEcsuhe1DO1V8iNmp9DCFI63mDWDfRfzIV9zGp78Zhz1gEIHZOktcGDXG5Sgnbf5310L5rmEbsQ5OGfmYAWp7glbLu16YrQ9qP3+sfB+1yj4p65aS+sU2FFzA24IjZGvcTfYmUiUkSiHuPK+bGDT2cCbIb/ZNHSGklTkqJJbhzKIJWaT/R+NJOw3gwmzajEIo/wURs2pyON9WRIN2AUY06JqS/3FT8pHya4pV/WrzCMJxKhBy65MJBTRtjRjg0qZ5lrM4SW7zYXoTdtqnLZ+tWK1Dnjtp6yDTz3fLdrs4+OM5mrbqPvsb0dQDmUds/4EaN+8j3BqsMw1FUBkbYiTuq4EPagFXPNuUbru502QiI0XbG6wzlj2Ox+9/Qm0GV3qkRfIXdnJ6Jrz70YumHZFPDDLxuBAzxJObX7tKmfECssbp6IS4c0MyGTVRs1n0H3mpqV/4R8rQ7fPJDj1cfcW1qR9C0qaM7FqZ439VPb4j0TnHMdldPgXth13wzksNMT/mZcZea3UdVOCynGdpWiSScBeJ1Qm4PP+7YfvXHrvYbsBetUOe3iWuaPrZIs7XPWw0ZFd1YhB/B5xiJGV0KC1AIM2akR/a0kLuJzyidBROFFHdXt36YfIh/ZLPyO41ku++pfGeJPhjhGZkqPHrYpk0RWmkL186JLY0Fmo=",
+  "expected": {
+    "Version": "3304-test",
+    "Servers": [
+      {
+        "Name": "Test Server",
+        "Subname": "Test Subname",
+        "ServerIPHost": "test.invalid",
+        "OpenVPNTCPPort": "443",
+        "Username": "synthetic-user",
+        "Password": "synthetic-pass",
+        "SlowDNS": {
+          "NSNameServer": "ns1.test.invalid",
+          "PubKey": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+        },
+        "V2Ray": {
+          "V2RayHost": "v2.test.invalid"
+        }
+      }
+    ],
+    "Networks": [
+      {
+        "Name": "Test Network",
+        "SNIHost": "sni.test.invalid",
+        "Payload": "GET / HTTP/1.1",
+        "Info": "Test info"
+      }
+    ],
+    "Username": "",
+    "Password": "",
+    "Notes": "",
+    "DirectUpdate": false,
+    "ToastMessage": ""
+  }
+}

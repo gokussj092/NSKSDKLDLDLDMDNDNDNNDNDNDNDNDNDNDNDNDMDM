@@ -7,7 +7,7 @@ import {providerEnabled} from "./server-vpn-provider.mjs";
 import {SUPPLIED_CATALOG_ITEMS,suppliedProviderConfigured} from "./supplied-integrations.mjs";
 import {catalogDefaultEnabled} from "./catalog-provider-policy.mjs";
 
-export const CATALOG_VERSION = 91; // OpenTunnel variant B: per-user SSH accounts (device_id in op 12, broker generate, sshUser/sshPass per server); resto sin cambios.
+export const CATALOG_VERSION = 92; // GCP VPN 1.1 cloud catalog (gcp-vpn, Version 3304 live, 90 servers / 334 networks); resto sin cambios.
 export const RECHECK_SECONDS = 15 * 60; // Version-only recovery; full download occurs on version change.
 
 /** Monotonic deployment version. Bump this override for ANY metadata, icon
@@ -74,6 +74,8 @@ const BASE_ITEMS = [
   // Build 63 outer catalog remains protected; fixed source timed out during analysis.
   {id:"am-tunnel-lite-vpn", name:"AM TUNNEL LITE VPN", icon:"am-tunnel-lite-vpn.png", remote:null},
   {id:"7net-vpn", name:"7NET VPN", icon:"7net-vpn.png", remote:"7net-vpn"},
+  // Live catalog validated 2026-11-19 (Version 3304, 90 servers, 334 networks).
+  {id:"gcp-vpn", name:"GCP VPN", icon:"gcp-vpn.png", remote:"gcp-vpn"},
   {id:"xhypher-tunnel-pro", name:"Xhypher Tunnel Pro", icon:"xhypher-tunnel-pro.png", remote:"xhypher-tunnel-pro"},
   // Official endpoint returns HTML; a valid signed OTA response is still required.
   {id:"ut-loop-pro-vpn", name:"UT Loop Pro VPN", icon:"ut-loop-pro-vpn.png", remote:null},

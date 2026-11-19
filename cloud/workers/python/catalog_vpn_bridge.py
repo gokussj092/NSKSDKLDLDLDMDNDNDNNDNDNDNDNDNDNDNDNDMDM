@@ -84,6 +84,7 @@ PROVIDERS = {
     "royal-tunnel": "decoders.Python.apps.Royal_Tunnel_VPN.server_catalog_decoder",
     "trv-tunnel": "decoders.Python.apps.TRV_TUNNEL.server_catalog_decoder",
     "4u-tunnel-lite": "decoders.Python.apps.4U_TUNNEL_LITE.server_catalog_decoder",
+    "gcp-vpn": "decoders.Python.apps.GCP_VPN.server_catalog_decoder",
 }
 
 def decode(provider_id: str, payload: bytes) -> str:

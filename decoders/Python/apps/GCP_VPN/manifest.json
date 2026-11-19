@@ -1,0 +1,94 @@
+{
+  "analysisLimit": "No field-mode table recovered from the APK; the catalog decoder reuses the verified generic RENZ route instead of inventing one. HMAC connection authentication NOT_OBSERVED (see dossier VERIFY_DECODERS.md section 4).",
+  "analysisTools": [
+    "analysis/com.gcpvpn.net/11/tools/inspect_apk.py",
+    "analysis/com.gcpvpn.net/11/tools/dex_strings.py",
+    "analysis/com.gcpvpn.net/11/tools/verify_catalog.py"
+  ],
+  "analyzedBaseCommit": "dc639d73",
+  "branch": "ci/unity-ads-online-qa",
+  "catalog": {
+    "authenticatedCiphertext": false,
+    "deploymentEnabledByDefault": false,
+    "entrypoint": "server_catalog_decoder.py",
+    "providerId": "gcp-vpn",
+    "publicCatalogVersion": 92,
+    "remoteAuthorization": "User-authorized fixed public catalog read",
+    "remoteBlobBytes": 505176,
+    "remoteBlobSha256": "fff27a6d2a7bdb23275fdcd3bd947baaddc70dda73e89921e1421c156fb8044e",
+    "remoteFieldsDecrypted": 2736,
+    "remoteFieldsUndecrypted": 51,
+    "remoteNetworksObserved": 334,
+    "remoteServersObserved": 90,
+    "remoteUndecryptedNote": "51 short presentation fields (Servers[].Name/Subname, Networks[].Info) served as-is; SlowDNS.PubKey (10) DOES open with the generic main mode to a 64-char hex key -- see codec.py. No field-mode table invented: no APK evidence for one.",
+    "remoteValidated": true,
+    "remoteVersion": "3304",
+    "runtimeValidation": {
+      "completeLiveCliEqual": true,
+      "completeRealWorkerEqual": false,
+      "completeStdinCliEqual": true,
+      "note": "Synthetic catalog round-trips through codec, stdin CLI and the isolated worker (tests/test_gcpvpn.py). Live catalog decodes end to end through the same codec in 1-2 s (worker cap 120 s for catalogs); the live run is not stored in Git."
+    },
+    "source": "https://raw.githubusercontent.com/kiranoble/config/refs/heads/main/gcpvpn2026",
+    "sourceEvidence": [
+      {
+        "bytes": 505176,
+        "completeJdkEqual": false,
+        "networks": 334,
+        "note": "Live HTTPS read + shared RENZ route; no JDK oracle for this catalog. Structure and counts only; no decrypted values stored.",
+        "servers": 90,
+        "sha256": "fff27a6d2a7bdb23275fdcd3bd947baaddc70dda73e89921e1421c156fb8044e",
+        "source": "download-live-2026-11-19",
+        "version": "3304"
+      }
+    ],
+    "testScope": "New GCP VPN Python tests plus the full RENZ regression suites (see TESTING.md); Node broker + gateway tests in cloud/web/tests/gcpvpn-remote.test.mjs.",
+    "validatedOn": "2026-11-19",
+    "validation": "Live catalog opens with the current renz.py keys (no rotation); synthetic catalog fixtures verify every nested mode (main / speciale / sensitive) plus rejection of corrupt, truncated, HTML and wrong-profile input. No real .gcpvpn export or real gcpvpn:// link has been supplied yet."
+  },
+  "compatibleVersions": [
+    "1.1"
+  ],
+  "dependencies": {
+    "pycryptodome": "3.23.0",
+    "python": ">=3.10",
+    "sharedSourceNote": "Working-tree hash at integration time; renz.py carries the uncommitted 7NET credential-keys change from 2026-11-19. No GCP change was made to renz.py (the proposed recursive-fallback diff was evaluated and REVERTED -- see INTEGRATION_CLOUD.md).",
+    "sharedSourceSha256": {
+      "../../renz.py": "2acf2c07545fa2c68f5635a7b51e2db959d530ebf670c88de4e61d65320ebb21"
+    },
+    "supportFiles": [
+      "../../renz.py"
+    ]
+  },
+  "engine": "python-renz-aes128cbc-xxtea-byteoffset-threefish256-pbkdf2-aes256cbc",
+  "engineVersion": 1,
+  "files": {
+    "canonicalScript": "../../renz.py",
+    "confirmedScheme": "gcpvpn://",
+    "entrypoint": "file_decoder.py",
+    "exporterCertified": false,
+    "extensions": [
+      "gcpvpn"
+    ],
+    "historicalAliasesRetained": [],
+    "newRouteRegistered": false,
+    "realExportSupplied": false,
+    "supported": true,
+    "validation": "Existing canonical RENZ route; synthetic fixtures 10/10 file + 8/8 text through the real worker path (see dossier VERIFY_DECODERS.md). No independent real export or Android roundtrip."
+  },
+  "icon": {
+    "file": "GCP_VPN.png",
+    "height": 240,
+    "pngBytes": 2863,
+    "pngSha256": "d65fec4b2cf0bf4325235b7a676c913b587e5f438a8313342fbbd1560a040a3a",
+    "policy": "Exact original PNG bytes; no redraw, conversion or resize. The 512x512 gcpvpn.png found in ~/workspace/catalogs/gcpvpn/ does NOT match any PNG in the APK splits and was NOT used.",
+    "source": "com.gcpvpn.net.apk:res/i/ca.png (androguard launcher icon)",
+    "width": 240
+  },
+  "id": "gcp-vpn",
+  "name": "GCP VPN",
+  "package": "com.gcpvpn.net",
+  "sourceApksSha256": "ef1932292e49cba77d610b65e5abb5361187f932a996b60255ad88c5f96b4082",
+  "sourceBaseApkSha256": "79538a4a5e78c4a1e013095b1802ffcf05a2239a2a2a044ea69c9386ba5adf75",
+  "versionCode": 11
+}

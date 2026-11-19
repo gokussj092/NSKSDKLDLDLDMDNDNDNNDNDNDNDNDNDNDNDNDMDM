@@ -679,3 +679,45 @@ bytes, SHA-256 `2ae4ed0b2b96fdf3dfbd0cc96ae0bd69ec0e0d983fd35bf5fd37d08b63217bf3
 No se sustituye por iconos genéricos del APK. Ver receta, evidencias, pruebas,
 limitaciones y comandos en README/ANALYSIS/TESTING de la app. 19 Python y 50
 Node; `.crev` real pendiente, sin despliegue/Android/C11.
+
+## GCP VPN 1.1 (11) — catálogo en la nube, versión pública 92
+
+Proveedor fijo `gcp-vpn`, paquete `com.gcpvpn.net`, versionCode 11.
+Carpeta `decoders/Python/apps/GCP_VPN/` con `server_catalog_decoder.py`,
+`codec.py`, `file_decoder.py`, PNG original, manifest, README y TESTING.
+Sigue el patrón 7NET (broker HTTPS fijo, worker aislado, contrato de
+documento completo, control administrativo individual, gateway
+enriquecido), pero **sin codec propio por campo**: no hay evidencia del
+APK para una tabla de modos propia, y la ruta RENZ genérica de
+`decoders/Python/renz.py` (perfil `gcpvpn`) ya descifra el catálogo en
+vivo. El sobre exterior es Base64 → AES-128-CBC → XXTEA propio →
+restar 2 por byte; los campos anidados usan el pase recursivo genérico
+(hosts Threefish/HKDF, credenciales PBKDF2-XXTEA-AES, resto modo
+principal). La ruta `.gcpvpn` / `gcpvpn://` es la canónica RENZ y no
+cambia.
+
+Lectura pública autorizada del 2026-11-19: HTTP 200,
+**505176 bytes, SHA-256
+`fff27a6d2a7bdb23275fdcd3bd947baaddc70dda73e89921e1421c156fb8044e`,
+Version 3304, 90 servidores / 334 redes**, 2736 campos descifrados por
+el pase recursivo; 81/90 servidores traen credenciales que abren con
+el modo sensible. Los 51 campos cortos de presentación
+(`Servers[].Name`/`Subname`, `Networks[].Info`) se sirven como están.
+`SlowDNS.PubKey` (10) abre con el modo principal a una clave hex de
+64 caracteres — el mismo despacho que el codec 7NET documenta para
+ese campo — y **no** con speciale (que devuelve basura no imprimible);
+el diff de fallback propuesto en el dossier se evaluó con el catálogo
+en vivo y se **revirtió** por diagnóstico incorrecto (ver
+`INTEGRATION_CLOUD.md`). Sin rotación de claves. HMAC de autenticación
+de conexión: `NOT_OBSERVED`.
+
+PNG original exacto del icono launcher `res/i/ca.png`: 240×240,
+2863 bytes, SHA-256
+`d65fec4b2cf0bf4325235b7a676c913b587e5f438a8313342fbbd1560a040a3a`.
+Catálogo mínimo **92**; conserva switches y versión persistente.
+**4 tests Python y 6 web nuevos aprobados**; regresión RENZ completa
+sin cambios salvo 1 fallo preexistente (`wyrvpn://`, verificado en
+HEAD limpio) y suite Node completa con solo fallos preexistentes /
+uno flaky (DTunnel, pasa aislado). No se aportó una exportación real
+independiente (`.gcpvpn` real o `gcpvpn://` real pendientes); estado
+`VERIFIED_SYNTHETIC`. Sin despliegue, fusión ni cambios Android.
