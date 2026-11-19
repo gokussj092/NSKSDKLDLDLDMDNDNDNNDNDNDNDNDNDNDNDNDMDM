@@ -172,6 +172,31 @@ class TunneltweakTests(unittest.TestCase):
         self.assertEqual(result["structuredJson"], V["expectedWrapper"])
         self.assertFalse(result["isPartial"])
 
+    def test_uuid_cloud_wrapper_decodes_through_isolated_tut_worker_with_password_challenge(self):
+        from cloud.workers.python import engine
+        clear = {"config_version": 7, "server": "synthetic.invalid", "config_expiry": 123456789}
+        payload = cbc(json.dumps(clear)).decode()
+        wrapper = {"config": payload, "expiresAt": "2027-01-01", "unknown": [False, 0, None]}
+        reply = engine.decode_file("tut", json.dumps(wrapper).encode())
+        self.assertEqual(reply["structuredJson"], dict(wrapper, config=clear))
+        self.assertFalse(reply["isPartial"])
+
+        protected = {**wrapper, "config": V["profilePbe"]}
+        with self.assertRaises(engine.DecodeFailure) as missing:
+            engine.decode_file("tut", json.dumps(protected).encode())
+        self.assertEqual(missing.exception.code, "PASSWORD_REQUIRED")
+        with self.assertRaises(engine.DecodeFailure) as wrong:
+            engine.decode_file("tut", json.dumps(protected).encode(),
+                               credentials={"password": "wrong"})
+        self.assertEqual(wrong.exception.code, "AUTH_FAILED")
+        unlocked = engine.decode_file("tut", json.dumps(protected).encode(),
+                                      credentials={"password": V["testPassword"]})
+        self.assertEqual(unlocked["structuredJson"], dict(protected, config=V["profile"]))
+        self.assertFalse(unlocked["isPartial"])
+        # Normal file exports are still handled by the existing .tut codec.
+        normal = engine.decode_file("tut", V["profileCbc"].encode())
+        self.assertEqual(normal["structuredJson"], V["profile"])
+
     def test_worker_never_tries_legacy_on_failed_pbe_tag(self):
         from decoders.Python.apps.Tunneltweak import worker_bridge
         with tempfile.TemporaryDirectory() as tmp:
