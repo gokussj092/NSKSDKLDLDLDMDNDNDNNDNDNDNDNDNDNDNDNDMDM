@@ -15,7 +15,7 @@ class CloudOnlineReferenceTest {
     }
 
     @Test fun detectTunneltweakCloudUuidAndExplicitReference() {
-        val id="12e583dd-4cdf-41de-a1a8-74d7e12ca0db"
+        val id="00000000-0000-4000-8000-000000000001"
         for(input in listOf(id,"tunneltweak://"+id,"TUNNELTWEAK://"+id.uppercase())) {
             val result=CloudOnlineReference.resolve(input,"auto",emptyList())
             assertNotNull(result)
@@ -32,7 +32,7 @@ class CloudOnlineReferenceTest {
     }
 
     @Test fun malformedAndUnknownCloudUuidsDoNotSelectOtherProviders() {
-        val id="12e583dd-4cdf-41de-a1a8-74d7e12ca0db"
+        val id="00000000-0000-4000-8000-000000000001"
         for(input in listOf(id.dropLast(1),id+"?next=http://127.0.0.1",
             "https://tunneltweak.com/api/cloudconfig/"+id,
             "tunneltweak://../"+id,"tunneltweak://"+id+"/secret",
