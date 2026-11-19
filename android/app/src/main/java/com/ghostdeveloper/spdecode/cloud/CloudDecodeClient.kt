@@ -673,8 +673,28 @@ internal class CloudDecodeClient(context: Context) {
     suspend fun decodeServerVpnProvider(id:String,
         onPhase:suspend (TransferPhase)->Unit = {}): Decoded {
         require(id.matches(Regex("[a-z0-9-]{1,48}")))
-        return decode(CloudOperation.DECODE_SERVER,
-            JSONObject().put("id",id).put("consent",true),onPhase=onPhase)
+        val body=JSONObject().put("id",id).put("consent",true)
+        // OpenTunnel variant B: the server generates this device's own SSH
+        // account only when it receives the device identity (UUID v3 of
+        // ANDROID_ID, exactly as the official OpenTunnel app derives its
+        // device_id). Without it the public list is served unchanged, so
+        // old servers and old APKs keep working. Never stored or logged.
+        if(id=="opentunnel-ssh") openTunnelDeviceId()?.let{body.put("deviceId",it)}
+        return decode(CloudOperation.DECODE_SERVER,body,onPhase=onPhase)
+    }
+
+    /** UUID v3 of ANDROID_ID, mirroring the official OpenTunnel device_id.
+     * Falls back to the same all-zero seed the official app uses when
+     * ANDROID_ID is unavailable. Returns null only if the value cannot be
+     * derived or validated; the caller then sends no deviceId. */
+    private fun openTunnelDeviceId():String? = runCatching {
+        val androidId=android.provider.Settings.Secure.getString(
+            app.contentResolver,android.provider.Settings.Secure.ANDROID_ID)
+            ?.takeIf{it.isNotBlank()} ?: "000000000000000"
+        java.util.UUID.nameUUIDFromBytes(
+            androidId.toByteArray(Charsets.UTF_8)).toString()
+    }.getOrNull()?.takeIf{
+        it.matches(Regex("[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"))
     }
 
     suspend fun serverVpnIcon(id:String): JSONObject {

@@ -750,9 +750,32 @@ def decode_provider_catalog(provider_id: str, contents: bytes) -> dict:
             "providerId":provider_id,"rawText":raw_text,
             "structuredJson":structured,
             "isPartial":supplied_partial or (provider_id=="mkk-hyper" and isinstance(structured,dict) and structured.get("complete") is False),
-            "warnings":["ENCRYPTED_FIELDS_PENDING"] if supplied_partial else (["PARTIAL_SOURCE_FAILURE"] if provider_id=="mkk-hyper" and isinstance(structured,dict) and structured.get("complete") is False else (["El listado público de OpenTunnel contiene hosts SSH; el usuario y la contraseña se generan por cuenta en la aplicación oficial."] if provider_id=="opentunnel-ssh" else [])),
+            "warnings":["ENCRYPTED_FIELDS_PENDING"] if supplied_partial else (["PARTIAL_SOURCE_FAILURE"] if provider_id=="mkk-hyper" and isinstance(structured,dict) and structured.get("complete") is False else (_opentunnel_warnings(structured) if provider_id=="opentunnel-ssh" else [])),
             "exporterCertified":False,
         }
+
+def _opentunnel_warnings(structured):
+    """Variant B (2026-11-19): the broker merges per-user sshUser/sshPass
+    into the catalog BEFORE the worker. The old unconditional warning
+    would lie once credentials are present, so it depends on the document
+    the worker actually received. isPartial stays False (the gateway
+    requires it for opentunnel-ssh); a partial result is signalled with
+    the warning plus credentialsMissing per server."""
+    current = ["El listado público de OpenTunnel contiene hosts SSH; el usuario y la contraseña se generan por cuenta en la aplicación oficial."]
+    if not isinstance(structured, dict):
+        return current
+    servers = structured.get("servers")
+    if not isinstance(servers, list) or not servers:
+        return current
+    with_creds = [s for s in servers if isinstance(s, dict)
+                  and isinstance(s.get("sshUser"), str) and s.get("sshUser")
+                  and isinstance(s.get("sshPass"), str) and s.get("sshPass")]
+    if len(with_creds) == len(servers):
+        return []
+    if with_creds:
+        return ["Algunos servidores de OpenTunnel no trajeron usuario y contraseña; los demás sí los incluyen."]
+    return current
+
 
 def decode_b64(suffix: str, encoded: str) -> dict:
     """Base64 strictly decoded; no unrelated extension/key fallback."""

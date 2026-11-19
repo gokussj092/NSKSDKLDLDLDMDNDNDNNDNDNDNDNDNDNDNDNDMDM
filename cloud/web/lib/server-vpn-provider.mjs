@@ -17,6 +17,9 @@ import {ALFAISAL_SOURCE,ALFAISAL_METADATA,alfaisalConfigured,alfaisalRequest} fr
 import {HALCON_SOURCE,halconConfigured,halconRequest} from "./halcon-protocol.mjs";
 import {publicIpv4} from "./c35-provider.mjs";
 import {suppliedProviderIds,suppliedProviderConfigured,suppliedRequests,packSuppliedCatalog} from "./supplied-integrations.mjs";
+import {OPENTUNNEL_GENERATE_URL,buildGenerateBody,inventOpentunnelCredentials,
+  isValidOpentunnelDeviceId,markOpentunnelCredentialsMissing,
+  mergeOpentunnelGenerateResult,packOpentunnelCatalog} from "./opentunnel-credentials.mjs";
 const SUPPLIED_IDS=new Set(suppliedProviderIds());
 
 const ABOWAGED_SOURCES=Object.freeze({
@@ -409,6 +412,83 @@ async function downloadTunneltweak(provider){
   }
 }
 
+async function downloadOpentunnelPublic(provider,deadline){
+  // Single fixed GET, same pinned transport as the generic path. This id
+  // never follows redirects (see the deny list in downloadVpnCatalog).
+  const dest=new URL(provider.url);
+  const addresses=await vettedIpv4(dest.hostname);
+  const attempts=addresses.length===1?[addresses[0],addresses[0]]:addresses;
+  for(const ip of attempts){
+    const remaining=deadline-Date.now();
+    if(remaining<=0)fail("REMOTE_PROVIDER_UNAVAILABLE");
+    let answer;
+    try{answer=await pinnedRequest(dest.href,ip,provider.agent,Math.min(CONNECT_MS,remaining),{});}
+    catch(error){
+      if(error instanceof VpnProviderError){if(!error.retryable)throw error;continue;}
+      if(!RETRY_CODES.has(error?.code))fail("REMOTE_PROVIDER_UNAVAILABLE");
+      continue;
+    }
+    if(Object.hasOwn(answer,"redirect"))fail("REMOTE_NETWORK_DENIED");
+    if(!Buffer.isBuffer(answer.data)||!answer.data.length||answer.data.length>MAX_BYTES)
+      fail("REMOTE_RESPONSE_INVALID");
+    return answer.data;
+  }
+  fail("REMOTE_PROVIDER_UNAVAILABLE");
+}
+
+// OpenTunnel variant B (Pedro, 2026-11-19): the app sends the user's own
+// device_id in the op 12 request; the broker invents that device's pair
+// (spdecode-... / spdecode-...), registers it with ONE POST generate for
+// the whole catalog, and merges sshUser/sshPass per server BEFORE the
+// worker, so rawText==structuredJson parity still holds. No deviceId (old
+// APK) serves the public list byte-identical to before: a single GET, no
+// POST, no account generation. The GET pre-check (?username=) is skipped
+// on purpose: the broker invents a fresh pair per load, so there is
+// nothing stored to pre-check. A failed generate never fails the catalog:
+// the public list is served with every server marked credentialsMissing.
+async function downloadOpentunnel(provider,{deviceId=null}={}){
+  // One shared 30 s budget for the GET plus the generate POST, like the
+  // generic path: a slow GET must not grant the POST a fresh deadline.
+  const deadline=Date.now()+DEADLINE_MS;
+  const publicBytes=await downloadOpentunnelPublic(provider,deadline);
+  if(!deviceId)return publicBytes;
+  if(!isValidOpentunnelDeviceId(deviceId))fail("INVALID_REQUEST");
+  let doc;
+  try{doc=JSON.parse(publicBytes.toString("utf8"));}catch{fail("REMOTE_RESPONSE_INVALID");}
+  if(!doc||typeof doc!=="object"||Array.isArray(doc)||!Array.isArray(doc.servers)||
+     !doc.servers.length)fail("REMOTE_RESPONSE_INVALID");
+  const credentials=inventOpentunnelCredentials();
+  let merged;
+  try{
+    const remaining=deadline-Date.now();
+    if(remaining<=0)fail("REMOTE_PROVIDER_UNAVAILABLE");
+    const addresses=await vettedIpv4(new URL(OPENTUNNEL_GENERATE_URL).hostname);
+    const body=buildGenerateBody(deviceId,credentials);
+    const payload=Buffer.from(JSON.stringify(body),"utf8");
+    let answer;
+    const budget=deadline-Date.now();
+    if(budget<=0)fail("REMOTE_PROVIDER_UNAVAILABLE");
+    try{answer=await pinnedRequest(OPENTUNNEL_GENERATE_URL,addresses[0],provider.agent,
+      Math.min(CONNECT_MS,budget),{"Content-Type":"application/json; charset=UTF-8"},
+      {method:"POST",body:payload});}
+    catch(error){
+      // Never retry a generation POST: a timed-out POST may already have
+      // registered the pair server-side. One attempt, then degrade.
+      if(error instanceof VpnProviderError)throw error;
+      fail("REMOTE_PROVIDER_UNAVAILABLE");
+    }
+    if(!answer)fail("REMOTE_PROVIDER_UNAVAILABLE");
+    if(Object.hasOwn(answer,"redirect"))fail("REMOTE_NETWORK_DENIED");
+    if(!Buffer.isBuffer(answer.data)||!answer.data.length)fail("REMOTE_RESPONSE_INVALID");
+    merged=mergeOpentunnelGenerateResult(doc,answer.data.toString("utf8"),credentials);
+  }catch(error){
+    if(error instanceof VpnProviderError&&error.code==="INVALID_REQUEST")throw error;
+    merged=markOpentunnelCredentialsMissing(doc);
+  }
+  try{return packOpentunnelCatalog(merged);}
+  catch(error){fail(error.message);}
+}
+
 async function downloadCatnet(provider){
   const headers=catnetHeaders(),deadline=Date.now()+DEADLINE_MS;
   async function get(url,maxBytes){
@@ -472,6 +552,10 @@ export async function downloadVpnCatalog(id,source=id==="jyfast-vpn-ultra"?"free
   if(id==="alfaisal-tunnel-plus"){
     if(source!=="servers")fail("UNSUPPORTED_FORMAT");
     return downloadAlfaisal(provider);
+  }
+  if(id==="opentunnel-ssh"){
+    if(source!=="servers")fail("UNSUPPORTED_FORMAT");
+    return downloadOpentunnel(provider,options);
   }
   // Read the secret per request, only for the fixed VIP updater. Never expose it
   // in the public catalog, worker payload, provider switches or error messages.

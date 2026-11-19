@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Full public OpenTunnel SSH host list; credentials are per-account, not public."""
+"""Full public OpenTunnel SSH host list; credentials are generated per
+user account by the broker and merged before this decoder runs."""
 import argparse,sys
 from pathlib import Path
 from urllib.request import Request,build_opener,HTTPRedirectHandler

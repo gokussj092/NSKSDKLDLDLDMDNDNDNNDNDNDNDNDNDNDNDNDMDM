@@ -7,7 +7,7 @@ import {providerEnabled} from "./server-vpn-provider.mjs";
 import {SUPPLIED_CATALOG_ITEMS,suppliedProviderConfigured} from "./supplied-integrations.mjs";
 import {catalogDefaultEnabled} from "./catalog-provider-policy.mjs";
 
-export const CATALOG_VERSION = 90; // 7NET text formats (7net://, 7netvpn://) + user/pass key fix; persistent panel overrides.
+export const CATALOG_VERSION = 91; // OpenTunnel variant B: per-user SSH accounts (device_id in op 12, broker generate, sshUser/sshPass per server); resto sin cambios.
 export const RECHECK_SECONDS = 15 * 60; // Version-only recovery; full download occurs on version change.
 
 /** Monotonic deployment version. Bump this override for ANY metadata, icon

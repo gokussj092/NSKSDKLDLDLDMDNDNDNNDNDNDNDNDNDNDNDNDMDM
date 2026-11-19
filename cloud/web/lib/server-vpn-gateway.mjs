@@ -6,6 +6,7 @@ import {requireSession} from "./c3-session.mjs";
 import {enabled,notEnabled,failure,boundedBody,fetchWorker} from "./c3-gateway.mjs";
 import {maintenanceEnabled,serviceMaintenanceEnabled,recordWorkerResult} from "./c6-ops-store.mjs";
 import {providerEnabled,downloadVpnCatalog,mkkSourceIds,VpnProviderError} from "./server-vpn-provider.mjs";
+import {isValidOpentunnelDeviceId} from "./opentunnel-credentials.mjs";
 import {providerAllowed} from "./c12-provider-controls.mjs";
 import {packPairedVpnCatalogs} from "./paired-vpn-catalogs.mjs";
 import {packMkkSources} from "./mkk-source-bundle.mjs";
@@ -24,8 +25,17 @@ export async function decodeServerVpn(request,opts={}){
     if(claims.rateLimited)return failure("RATE_LIMITED",429);
     const payload=await boundedBody(request,1024);
     if(!payload||typeof payload!=="object"||Array.isArray(payload)||
-       Object.keys(payload).length!==2||typeof payload.id!=="string"||
-       payload.consent!==true)return failure("INVALID_REQUEST",400);
+       typeof payload.id!=="string"||payload.consent!==true)return failure("INVALID_REQUEST",400);
+    // Variant B (OpenTunnel): the app may send its own device_id so the
+    // broker generates that device's SSH account. Old APKs send exactly
+    // {id,consent} and keep working; a deviceId is only accepted for
+    // opentunnel-ssh and only as a canonical lowercase UUID.
+    const keys=Object.keys(payload);
+    const deviceId=payload.deviceId;
+    if(deviceId!==undefined){
+      if(keys.length!==3||payload.id!=="opentunnel-ssh"||
+         !isValidOpentunnelDeviceId(deviceId))return failure("INVALID_REQUEST",400);
+    }else if(keys.length!==2)return failure("INVALID_REQUEST",400);
     providerId=payload.id;
     if(!providerEnabled(providerId) || !await providerAllowed(providerId))
       return failure("REMOTE_NOT_CONFIGURED",503);
@@ -38,7 +48,7 @@ export async function decodeServerVpn(request,opts={}){
         return failure("RATE_LIMITED",429);
       }
       started=performance.now();
-      const response=await loadServerVpnResult(providerId,opts,n=>{downloadedBytes=n;});
+      const response=await loadServerVpnResult(providerId,opts,n=>{downloadedBytes=n;},deviceId??null);
     try{
       let errorCode="",outcome=response.ok?"success":"failed";
       const result=await response.clone().json();
@@ -87,7 +97,7 @@ export async function decodeServerVpn(request,opts={}){
 }
 
 /** Shared fixed-provider loader used by authenticated requests and the internal scheduler. */
-export async function loadServerVpnResult(providerId,opts={},onBytes=()=>{}){
+export async function loadServerVpnResult(providerId,opts={},onBytes=()=>{},deviceId=null){
     let bytes,httpConexionRefreshed=false;
     if(providerId==="mkk-hyper"){
       // A single api_server.json call silently omitted static users and
@@ -120,6 +130,12 @@ export async function loadServerVpnResult(providerId,opts={},onBytes=()=>{}){
         if(!(error instanceof VpnProviderError)||!["REMOTE_PROVIDER_UNAVAILABLE","REMOTE_RESPONSE_INVALID"].includes(error.code))throw error;
         bytes=await downloadVpnCatalog(providerId,"servers",{forceRefresh:true});httpConexionRefreshed=true;
       }
+    }else if(providerId==="opentunnel-ssh"){
+      // Variant B: the user's device_id flows to the broker so generate
+      // registers that device's own account. Without it (old APKs, the
+      // scheduler) the public list is served unchanged.
+      bytes=await downloadVpnCatalog(providerId,"servers",
+        deviceId?{deviceId}:{});
     }else{
       bytes=await downloadVpnCatalog(providerId);
     }

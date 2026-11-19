@@ -47,6 +47,28 @@ class OpenTunnelTests(unittest.TestCase):
         raw=json.dumps(HOSTS).encode();self.assertEqual(catalog.decode_catalog(raw),HOSTS)
         r=decode_provider_catalog('opentunnel-ssh',raw);self.assertEqual(r['structuredJson'],HOSTS);self.assertFalse(r['isPartial']);self.assertTrue(r['warnings'])
         self.assertNotIn('username',r['structuredJson']['servers'][0])
+    def test_enriched_ssh_list_keeps_per_user_credentials_and_drops_warning(self):
+        # Variant B (broker merges sshUser/sshPass BEFORE the worker): the
+        # worker passes the enriched document verbatim and the old warning
+        # must not lie once credentials are present.
+        from cloud.workers.python.engine import decode_provider_catalog
+        enriched={**HOSTS,'servers':[{**HOSTS['servers'][0],'sshUser':'spdecode-synthetic1','sshPass':'spdecode-synthetic2'}]}
+        raw=json.dumps(enriched).encode();self.assertEqual(catalog.decode_catalog(raw),enriched)
+        r=decode_provider_catalog('opentunnel-ssh',raw);self.assertEqual(r['structuredJson'],enriched);self.assertFalse(r['isPartial']);self.assertEqual(r['warnings'],[])
+    def test_partial_ssh_list_keeps_explicit_warning_without_partial_flag(self):
+        # The gateway requires isPartial===False for opentunnel-ssh, so a
+        # partial result is signalled with the warning only, never partial.
+        from cloud.workers.python.engine import decode_provider_catalog
+        partial={'status':200,'count':2,'servers':[
+            {**HOSTS['servers'][0],'sshUser':'spdecode-synthetic1','sshPass':'spdecode-synthetic2'},
+            {'hostname':'ssh2.example.invalid','credentialsMissing':True}]}
+        raw=json.dumps(partial).encode();self.assertEqual(catalog.decode_catalog(raw),partial)
+        r=decode_provider_catalog('opentunnel-ssh',raw);self.assertEqual(r['structuredJson'],partial);self.assertFalse(r['isPartial'])
+        self.assertEqual(r['warnings'],["Algunos servidores de OpenTunnel no trajeron usuario y contraseña; los demás sí los incluyen."])
+    def test_public_ssh_list_keeps_original_warning_text(self):
+        from cloud.workers.python.engine import decode_provider_catalog
+        r=decode_provider_catalog('opentunnel-ssh',json.dumps(HOSTS).encode())
+        self.assertEqual(r['warnings'],["El listado público de OpenTunnel contiene hosts SSH; el usuario y la contraseña se generan por cuenta en la aplicación oficial."])
     def test_ssh_schema_html_duplicates_and_mismatched_count_fail(self):
         for data in [b'<html/>',b'{"status":200,"count":0,"count":1,"servers":[]}',json.dumps({**HOSTS,'count':2}).encode(),json.dumps({**HOSTS,'status':True}).encode(),json.dumps({**HOSTS,'servers':[{'hostname':None}]}).encode()]:
             with self.assertRaises(ValueError):catalog.decode_catalog(data)
