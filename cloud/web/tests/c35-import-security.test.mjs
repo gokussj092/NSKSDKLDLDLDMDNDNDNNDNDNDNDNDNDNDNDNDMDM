@@ -8,6 +8,8 @@ import {
   parseEhiReference, approvedUrl, publicIpv4, pinnedAddresses,
   downloadApproved, buildEhiRequest, unwrapEhiResponse,
   importEhiReference, downloadNur, ehiConfigured, nurConfigured, EHI_ENDPOINT,
+  parseTunneltweakReference, isTunneltweakReference, tunneltweakReferenceUrl,
+  importTunneltweakReference,
 } from "../lib/c35-provider.mjs";
 import { externalImportRequest } from "../lib/c35-gateway.mjs";
 import { classifyWorkerOutcome, safeErrorCode } from "../lib/c6-ops-store.mjs";
@@ -105,6 +107,118 @@ test("only NUR catalog worker requests receive extended timeout; other formats r
     else process.env.WORKER_INTERNAL_URL=previous;
   }
 });
+test("Tunneltweak UUID broker accepts only canonical fixed-host references",async()=>{
+  const uuid="12e583dd-4cdf-41de-a1a8-74d7e12ca0db";
+  assert.equal(parseTunneltweakReference(uuid),uuid);
+  assert.equal(parseTunneltweakReference("TUNNELTWEAK://"+uuid.toUpperCase()),uuid);
+  assert.equal(isTunneltweakReference(uuid),true);
+  const url="https://tunneltweak.com/api/cloudconfig/"+uuid;
+  assert.equal(tunneltweakReferenceUrl(uuid),url);
+  assert.equal(approvedUrl(url,"tunneltweak").href,url);
+  assert.deepEqual(await pinnedAddresses("tunneltweak.com",
+    async()=>[{address:"8.8.8.8",family:4}]),["8.8.8.8"]);
+  for(const value of ["../etc/passwd",uuid+"?x=1",uuid+"/2",
+    "https://tunneltweak.com/api/cloudconfig/"+uuid,
+    "tunneltweak://localhost/"+uuid,"tunneltweak://"+uuid+"?url=http://127.0.0.1",
+    "invalid",uuid.slice(0,-1)+"g"]){
+    assert.throws(()=>parseTunneltweakReference(value),{code:"INVALID_REFERENCE"},value);
+  }
+  for(const bad of ["http://tunneltweak.com/api/cloudconfig/"+uuid,
+    "https://tunneltweak.com@127.0.0.1/api/cloudconfig/"+uuid,
+    url+"?url=https://127.0.0.1",url+"/../private",
+    "https://tunneltweak.com:444/api/cloudconfig/"+uuid,
+    "https://tunneltweak.com.evil.example/api/cloudconfig/"+uuid]){
+    assert.throws(()=>approvedUrl(bad,"tunneltweak"),{code:"REMOTE_NETWORK_DENIED"},bad);
+  }
+  let called=0;
+  const bytes=Buffer.from(JSON.stringify({config:"TTPBE1:synthetic",expiresAt:"synthetic"}));
+  const download=async req=>{
+    called++;
+    assert.equal(req.kind,"tunneltweak");
+    assert.equal(req.method,"GET");
+    assert.equal(req.url,url);
+    assert.equal(req.headers["User-Agent"],"TunnelTweak/1.0 (Android)");
+    return bytes;
+  };
+  assert.deepEqual(await importTunneltweakReference(uuid,{download}),bytes);
+  assert.equal(called,1);
+  await assert.rejects(()=>importTunneltweakReference(uuid,{download:async()=>Buffer.from("<html>")}),
+    {code:"REMOTE_RESPONSE_INVALID"});
+  await assert.rejects(()=>importTunneltweakReference(uuid,{download:async()=>Buffer.from('{"notConfig":"x"}')}),
+    {code:"REMOTE_RESPONSE_INVALID"});
+  await assert.rejects(()=>downloadApproved({url,kind:"tunneltweak",method:"POST",body:"evil"},
+    {resolve:async()=>[{address:"8.8.8.8",family:4}],request:fakeTransport()}),
+    {code:"REMOTE_NETWORK_DENIED"});
+  await assert.rejects(()=>downloadApproved({url,kind:"tunneltweak"},
+    {resolve:async()=>[{address:"8.8.8.8",family:4}],
+      request:fakeTransport(302,Buffer.alloc(0),{location:"https://evil.example/secret"})}),
+    {code:"REMOTE_PROVIDER_UNAVAILABLE"});
+});
+
+test("signed Tunneltweak Cloud UUID downloads once, dispatches a .tut worker, and handoffs protected configs",async()=>{
+  const prev=process.env.CLOUD_SERVER_VPN_ENABLED;
+  process.env.CLOUD_SERVER_VPN_ENABLED="true";
+  try{
+    const redis=new FakeRedis(),bearer=await token(redis);
+    const uuid="12e583dd-4cdf-41de-a1a8-74d7e12ca0db";
+    const envelope=Buffer.from(JSON.stringify({
+      config:"TTPBE1:synthetic-test-only",expiresAt:"test",opaque:{unknown:true},
+    }));
+    let downloads=0,workers=0,locked=false;
+    const opts={storeProvider:async()=>redis,
+      vendor:{download:async req=>{
+        assert.equal(req.url,tunneltweakReferenceUrl(uuid));
+        assert.equal(req.kind,"tunneltweak");
+        downloads++;
+        return Buffer.from(envelope);
+      }},
+      fetchImpl:async(url,request)=>{
+        assert.equal(url,"http://decoder-worker:8787/internal/v1/decode/file");
+        const input=JSON.parse(request.body);
+        assert.deepEqual(Object.keys(input).sort(),["dataBase64","format"]);
+        assert.equal(input.format,"tut");
+        assert.deepEqual(Buffer.from(input.dataBase64,"base64"),envelope);
+        workers++;
+        return locked?{status:422,text:async()=>JSON.stringify({
+          apiVersion:"v1",status:"error",error:{code:"PASSWORD_REQUIRED"},
+        })}:{status:200,text:async()=>JSON.stringify({
+          apiVersion:"v1",status:"success",kind:"file",format:"tut",
+          rawText:JSON.stringify({config:{config_version:7},expiresAt:"test"}),
+          structuredJson:{config:{config_version:7},expiresAt:"test"},
+          sourceBytes:envelope.length,isPartial:false,warnings:[],
+        })};
+      }};
+    const unauth=await externalImportRequest(send({provider:"tunneltweak",
+      reference:uuid,consent:true}),"cloud",opts);
+    assert.equal(unauth.status,401);
+    const noConsent=await externalImportRequest(send({provider:"tunneltweak",
+      reference:uuid,consent:false},bearer),"cloud",opts);
+    assert.equal(noConsent.status,400);
+    const invalid=await externalImportRequest(send({provider:"tunneltweak",
+      reference:"https://evil.example/"+uuid,consent:true},bearer),"cloud",opts);
+    assert.equal(invalid.status,400);
+    assert.equal(downloads,0);assert.equal(workers,0);
+    const ok=await externalImportRequest(send({provider:"tunneltweak",
+      reference:uuid,consent:true},bearer),"cloud",opts);
+    assert.equal(ok.status,200);
+    assert.equal((await ok.json()).structuredJson.config.config_version,7);
+    locked=true;
+    const protectedResult=await externalImportRequest(send({reference:"tunneltweak://"+uuid,
+      consent:true},bearer),"cloud",opts);
+    assert.equal(protectedResult.status,200);
+    const gate=await protectedResult.json();
+    assert.equal(gate.status,"credentials_required");
+    assert.equal(gate.code,"PASSWORD_REQUIRED");
+    assert.equal(gate.format,"tut");
+    assert.equal(gate.sourceBytes,envelope.length);
+    assert.deepEqual(Buffer.from(gate.dataBase64,"base64"),envelope);
+    assert.equal(downloads,2);assert.equal(workers,2);
+  }finally{
+    if(prev===undefined)delete process.env.CLOUD_SERVER_VPN_ENABLED;
+    else process.env.CLOUD_SERVER_VPN_ENABLED=prev;
+  }
+});
+
 test("only exact EHI reference formats are accepted, including the Android emoji vector",()=>{
   for(const value of ["TEST1234","https://ehi.link/TEST1234","ehi://ehi.link/TEST1234",
     "💉😩😘😩😧😩😗😘🙌😠🙍😤😐🚀"]){
