@@ -104,7 +104,20 @@ private val translated:Map<String,Map<String,String>> = mapOf(
     "export_success" to "JSON exported",
     "export_failed" to "Could not export",
     "open_link_failed" to "No app can open this link",
-    "history_unavailable" to "Unable to access encrypted history"
+    "history_unavailable" to "Unable to access encrypted history",
+    "recent" to "Recent",
+    "select" to "Select",
+    "all_formats" to "All formats",
+    "sort" to "Sort",
+    "sort_newest" to "Newest",
+    "sort_oldest" to "Oldest",
+    "sort_name" to "Name",
+    "history_matches" to "%d matches",
+    "delete_selected" to "Delete selected",
+    "delete_selected_confirm" to "Delete %d selected results permanently?",
+    "select_all" to "Select all",
+    "deselect_all" to "Deselect all",
+    "selected_count" to "%d selected"
 ),
 "es" to mapOf(
     "splash_subtitle" to "Decodificador de configuraciones",
@@ -188,7 +201,20 @@ private val translated:Map<String,Map<String,String>> = mapOf(
     "export_success" to "JSON exportado",
     "export_failed" to "No se pudo exportar",
     "open_link_failed" to "No hay ninguna aplicación para abrir el enlace",
-    "history_unavailable" to "No se pudo acceder al historial cifrado"
+    "history_unavailable" to "No se pudo acceder al historial cifrado",
+    "recent" to "Recientes",
+    "select" to "Seleccionar",
+    "all_formats" to "Todos los formatos",
+    "sort" to "Ordenar",
+    "sort_newest" to "Más recientes",
+    "sort_oldest" to "Más antiguos",
+    "sort_name" to "Nombre",
+    "history_matches" to "%d resultados",
+    "delete_selected" to "Eliminar seleccionados",
+    "delete_selected_confirm" to "¿Eliminar permanentemente %d resultados seleccionados?",
+    "select_all" to "Seleccionar todo",
+    "deselect_all" to "Deseleccionar todo",
+    "selected_count" to "%d seleccionados"
 ),
 "pt-BR" to mapOf(
     "splash_subtitle" to "Decodificador de configurações",

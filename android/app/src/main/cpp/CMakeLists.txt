@@ -94,6 +94,7 @@ if(SPDECODE_OFFLINE_NATIVE)
     spdecode_http_injector.cpp
     spdecode_dark_tunnel.cpp
     spdecode_hat_tunnel.cpp
+    spdecode_zivpn.cpp
     spdecode_npv_text.cpp
     spdecode_npv_whitebox.cpp
     spdecode_npv_signed.cpp

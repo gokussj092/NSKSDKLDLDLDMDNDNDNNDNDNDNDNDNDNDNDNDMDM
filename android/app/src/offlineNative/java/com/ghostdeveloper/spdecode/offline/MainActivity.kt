@@ -14,7 +14,6 @@ import android.os.Looper
 import android.os.SystemClock
 import android.os.PersistableBundle
 import android.provider.OpenableColumns
-import android.view.View
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.mutableStateOf
@@ -46,7 +45,7 @@ class MainActivity : ComponentActivity() {
 
     private val supportedFiles=setOf(
         "hc","ehi","nm","npv","npv4","npvt","npvs",
-        "dark","dt","dtunnel","darktunnel","hat"
+        "dark","dt","dtunnel","darktunnel","hat","ziv"
     )
 
     private val importer=registerForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
@@ -103,9 +102,6 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         // Screen capture and recording are intentionally unrestricted in Offline.
         storage=OfflineSecureStore(applicationContext)
-        ui.theme=settings.getString("theme","amoled")?.takeIf {
-            it in setOf("amoled","dark","light")
-        }?:"amoled"
         ui.language=settings.getString("language","system")?.takeIf {
             key->supportedOfflineLanguages.any{it.first==key}
         }?:"system"
@@ -143,6 +139,7 @@ class MainActivity : ComponentActivity() {
                     ui.extension=item.extension;ui.tab=0;ui.message=null
                 },
                 deleteHistory={item->deleteHistory(item)},
+                deleteSelected={ids->deleteHistoryItems(ids)},
                 clearHistory={clearHistory()},
                 favoriteHistory={item->toggleFavorite(item)},
                 createIdentity={generateIdentity()},
@@ -155,11 +152,6 @@ class MainActivity : ComponentActivity() {
                 },
                 deleteIdentity={deleteIdentity()},
                 copyValue={value->copy(value)},
-                setTheme={mode->
-                    ui.theme=mode
-                    settings.edit().putString("theme",mode).apply()
-                    setBars()
-                },
                 setLanguage={lang->
                     ui.language=lang
                     settings.edit().putString("language",lang).apply()
@@ -257,17 +249,13 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun setBars() {
+        // Single AMOLED theme: bars are always black.
         @Suppress("DEPRECATION")
-        window.statusBarColor=if(ui.theme=="light")android.graphics.Color.rgb(248,249,251)
-            else if(ui.theme=="dark")android.graphics.Color.rgb(17,19,22)
-            else android.graphics.Color.BLACK
+        window.statusBarColor=android.graphics.Color.BLACK
         @Suppress("DEPRECATION")
-        window.navigationBarColor=if(ui.theme=="light")android.graphics.Color.WHITE
-            else android.graphics.Color.BLACK
+        window.navigationBarColor=android.graphics.Color.BLACK
         @Suppress("DEPRECATION")
-        window.decorView.systemUiVisibility=if(ui.theme=="light")
-            View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
-        else 0
+        window.decorView.systemUiVisibility=0
     }
 
     private fun nameOf(uri:Uri):String {
@@ -309,15 +297,16 @@ class MainActivity : ComponentActivity() {
         val first=value.substringBefore("://").lowercase()
         val npv=first in setOf("npvt","npvt-ssh","npvt-vless","npvt-vmess","npv")
         val dark=first in setOf("dt","dtunnel","dark","darktunnel","dark-tunnel")
+        val zivpn=first=="zivpn"
         val netmod=first.startsWith("nm-") || !value.contains("://")
-        if(!npv && !netmod && !dark){
+        if(!npv && !netmod && !dark && !zivpn){
             ui.error=readableDecodeError("UNSUPPORTED_TEXT","",ui.language);return
         }
         pendingFile=null
         pendingText=if(first.startsWith("nm-")&&value.contains("://"))
             value.substringAfter("://").trim() else value
-        pendingName=when {npv->"NPV text";dark->"Dark Tunnel text";else->"NetMod text"}
-        pendingSuffix=when {npv->"npv";dark->"dark";else->"autotext"}
+        pendingName=when {npv->"NPV text";dark->"Dark Tunnel text";zivpn->"ZIVPN text";else->"NetMod text"}
+        pendingSuffix=when {npv->"npv";dark->"dark";zivpn->"zivpn";else->"autotext"}
         ui.pendingPrompt=null
         decodeAttempt()
     }
@@ -428,6 +417,19 @@ class MainActivity : ComponentActivity() {
     private fun deleteHistory(item:OfflineRecord) {
         Thread {
             val result=runCatching{storage.delete(item.id);storage.load()}
+            runOnUiThread{
+                result.onSuccess{ui.history=it}
+                    .onFailure{ui.message=txt("history_unavailable",ui.language)}
+            }
+        }.start()
+    }
+
+    private fun deleteHistoryItems(ids:Set<String>) {
+        Thread {
+            val result=runCatching{
+                ids.forEach{storage.delete(it)}
+                storage.load()
+            }
             runOnUiThread{
                 result.onSuccess{ui.history=it}
                     .onFailure{ui.message=txt("history_unavailable",ui.language)}

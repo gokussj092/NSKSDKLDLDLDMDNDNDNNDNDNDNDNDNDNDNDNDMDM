@@ -3,6 +3,7 @@
 #include "spdecode_http_injector.h"
 #include "spdecode_dark_tunnel.h"
 #include "spdecode_hat_tunnel.h"
+#include "spdecode_zivpn.h"
 #include "spdecode_npv_text.h"
 #include "spdecode_npv_signed.h"
 #include "spdecode_npv_legacy.h"
@@ -237,6 +238,12 @@ Java_com_ghostdeveloper_spdecode_offline_NativeOffline_decodeNative(
         }else if(format=="hat") {
             const std::string clear=spdecode::offline::decodeHatTunnel(source);
             decoded.assign(clear.begin(),clear.end());
+        }else if(format=="ziv") {
+            const std::string clear=spdecode::offline::decodeZiv(source);
+            decoded.assign(clear.begin(),clear.end());
+        }else if(format=="zivpn") {
+            const std::string clear=spdecode::offline::decodeZivpnText(source);
+            decoded.assign(clear.begin(),clear.end());
         }else if(format=="nm") {
             decoded=decryptNm(source);
         }else if(format=="nmtext" || format=="autotext") {
@@ -274,7 +281,7 @@ Java_com_ghostdeveloper_spdecode_offline_NativeOffline_decodeNative(
     } catch(const Failure& problem){raise(env,problem.what());return nullptr;}
       catch(const std::exception& error){
         const std::string kind=error.what();
-        if(kind.rfind("HC_",0)==0||kind.rfind("EHI_",0)==0||kind.rfind("NPV_",0)==0||kind.rfind("DARK_",0)==0||kind.rfind("HAT_",0)==0||kind=="AUTH_FAILED"||
+        if(kind.rfind("HC_",0)==0||kind.rfind("EHI_",0)==0||kind.rfind("NPV_",0)==0||kind.rfind("DARK_",0)==0||kind.rfind("HAT_",0)==0||kind.rfind("ZIV_",0)==0||kind=="AUTH_FAILED"||
            kind=="PRIVATE_KEY_REQUIRED"||kind=="RECIPIENT_MISMATCH"||
            kind=="PASSWORD_REQUIRED"||kind=="HWID_REQUIRED"||
            kind=="HWID_PASSWORD_REQUIRED")raise(env,kind.c_str());

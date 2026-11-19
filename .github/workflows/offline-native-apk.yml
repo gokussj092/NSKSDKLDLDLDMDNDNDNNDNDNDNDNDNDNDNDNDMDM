@@ -30,6 +30,10 @@ on:
       - android/app/src/main/cpp/spdecode_dark_tunnel.h
       - android/app/src/main/cpp/spdecode_hat_tunnel.cpp
       - android/app/src/main/cpp/spdecode_hat_tunnel.h
+      - android/app/src/main/cpp/spdecode_zivpn.cpp
+      - android/app/src/main/cpp/spdecode_zivpn.h
+      - tests/native_zivpn_cli.cpp
+      - tests/test_offline_zivpn_native_parity.py
       - tests/native_hat_tunnel_cli.cpp
       - tests/test_offline_hat_native_parity.py
       - tests/test_offline_share_ui_contract.py
@@ -187,9 +191,35 @@ jobs:
       - name: Verify sharing, error messages and UI privacy
         run: python3 tests/test_offline_share_ui_contract.py
 
+  zivpn-cpp-parity:
+    name: Native ZIVPN .ziv and zivpn:// parity
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Install native ZIVPN C++ test dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends g++ libmbedtls-dev nlohmann-json3-dev python3-venv
+      - name: Compile ZIVPN isolated native decoder
+        run: |
+          set -euo pipefail
+          g++ -O2 -std=c++17 -Wall -Wextra -Werror \
+            tests/native_zivpn_cli.cpp \
+            android/app/src/main/cpp/spdecode_zivpn.cpp \
+            -lmbedcrypto -o /tmp/spdecode-zivpn-native
+      - name: Verify ZIVPN file and text fixtures
+        run: |
+          set -euo pipefail
+          python3 -m venv /tmp/spdecode-zivpn-test
+          /tmp/spdecode-zivpn-test/bin/pip install --disable-pip-version-check pycryptodome==3.23.0
+          /tmp/spdecode-zivpn-test/bin/python tests/test_offline_zivpn_native_parity.py /tmp/spdecode-zivpn-native
+
   build:
     if: github.repository == 'gokussj092/NSKSDKLDLDLDMDNDNDNNDNDNDNDNDNDNDNDNDMDM' && github.ref == 'refs/heads/feat/version-offline-apk'
-    needs: [hc-cpp-parity, ehi-cpp-parity, npv-cpp-parity, dark-cpp-parity, hat-cpp-parity]
+    needs: [hc-cpp-parity, ehi-cpp-parity, npv-cpp-parity, dark-cpp-parity, hat-cpp-parity, zivpn-cpp-parity]
     runs-on: ubuntu-latest
     timeout-minutes: 70
     env:

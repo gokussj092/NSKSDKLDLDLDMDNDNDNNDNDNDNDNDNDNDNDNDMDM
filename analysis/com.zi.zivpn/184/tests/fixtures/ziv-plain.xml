@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+<comment>Configuration File</comment>
+<entry key="alpha">0</entry>
+<entry key="beta">0</entry>
+<entry key="file.appVersionCode">184</entry>
+<entry key="file.askLogin">0</entry>
+<entry key="gamma">0</entry>
+<entry key="sshPort">443</entry>
+<entry key="sshPortaLocal">1080</entry>
+<entry key="sshServer">ssh-test.example</entry>
+<entry key="tunnelType">4</entry>
+<entry key="udpserver">udp-test.example</entry>
+</properties>

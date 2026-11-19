@@ -1,0 +1,150 @@
+{
+  "app_name": "ZIVPN Tunnel",
+  "authorization_note": "Public store listing check and reuse of the repo's own server-side reference decoders. No service credentials, no attestation fabrication, no account access, no APK download (the format did not change since the 2026-11-14 dossier, so no new APK was needed).",
+  "code_paths": [
+    "android/app/src/main/cpp/spdecode_zivpn.h (new: native ZIVPN decoder interface)",
+    "android/app/src/main/cpp/spdecode_zivpn.cpp (new: .ziv + zivpn:// decoder, Mbed TLS + nlohmann json)",
+    "android/app/src/main/cpp/spdecode_offline_native.cpp (wiring: 'ziv' and 'zivpn' dispatch, ZIV_ error passthrough)",
+    "android/app/src/main/cpp/CMakeLists.txt (wiring: spdecode_zivpn.cpp in the offdecode library)",
+    "android/app/src/offlineNative/java/com/ghostdeveloper/spdecode/offline/MainActivity.kt (wiring: 'ziv' in supportedFiles, 'zivpn' text route)",
+    "tests/native_zivpn_cli.cpp (new: host CLI for the repo parity test)",
+    "tests/test_offline_zivpn_native_parity.py (new: differential parity test, 11 tests)",
+    ".github/workflows/offline-native-apk.yml (new zivpn-cpp-parity job, paths trigger, build needs)"
+  ],
+  "connection_authentication": {
+    "catalog_integrity_hmac": "NOT_OBSERVED",
+    "connection_authentication_hmac": "NOT_OBSERVED",
+    "files_integrity_hmac": "NOT_OBSERVED",
+    "key_derivation_hmac": "NOT_OBSERVED",
+    "note": "Integrity in .ziv is provided by the AES-GCM tag (AEAD), not by an HMAC; the zivpn:// link has no MAC (AES-CBC + XML/JSON parse). PBKDF2-HMAC-SHA256 is a local key derivation, not connection authentication. No HMAC was traced to a connection-authentication purpose in the material reviewed (reference decoders + dossier). The connection_authentication field is NOT_OBSERVED per policy §2.2: that describes only the coverage reviewed, not a universal absence.",
+    "rule": "The mere presence of an HMAC library or a Mac.init call confirms nothing. No key values and no hook inputs/outputs are stored in this dossier.",
+    "vpn_transport_hmac": "UNCONFIRMED",
+    "status": "NOT_OBSERVED"
+  },
+  "dependencies": {
+    "lockfile": "dependencies.lock.json",
+    "note": "See DEPENDENCIES.md. Versions marked UNKNOWN were not recorded in the source research notes; they are not invented here."
+  },
+  "evidence_refs": [
+    "Dossier tests: tests/test_method.py (unittest, offline, synthetic vectors)",
+    "Dossier verifier: tools/verify.py (FIPS vectors via OpenSSL, round-trips, negatives, optional C++ harness run)",
+    "Host harness: tools/host_zivpn_test.cpp + tools/build_host_harness.sh (production C++ unchanged, Mbed TLS 3.6.7, 19 checks)",
+    "Repo parity: tests/test_offline_zivpn_native_parity.py via tests/native_zivpn_cli.cpp (11 tests, Mbed TLS 3.6.7 and 2.28.8)",
+    "Fixtures: tests/fixtures/ (synthetic .ziv / XML / zivpn:// + expected JSON, SHA-256 in RESULTS.md)"
+  ],
+  "inputs": [
+    {
+      "note": "Fetched 2026-11-19 00:11 UTC: ZIVPN Tunnel (SSH/DNS/UDP) VPN, ZI Applications, latest 2.2.5, updated 2026-10-26, 1,000,000+ installs. Same version as the 2026-11-14 dossier; no format change indicated, so no APK download was needed.",
+      "path": "https://www.appbrain.com/app/zivpn-tunnel-ssh-dns-vpn/com.zi.zivpn",
+      "sha256": null,
+      "type": "play_listing"
+    },
+    {
+      "note": "Reference for the .ziv format (LF1 + DES + Properties XML, export/import asymmetry). Cross-checked: this dossier's oracle reproduces its frozen golden vector byte-for-byte and opens its fixtures identically.",
+      "path": "decoders/Python/apps/ZIVPN/ZIVPN_archivos.py (online branch, read-only)",
+      "sha256": null,
+      "type": "reference_decoder_files"
+    },
+    {
+      "note": "Reference for the zivpn:// text format (AES-256-CBC, SHA256 password, zero IV). Cross-checked: this dossier's oracle decodes the same tokens identically (tests/test_text_extra_legacy.py proves the same logic synthetically on the server side).",
+      "path": "decoders/Python/text_legacy_protocols.py (online branch, read-only)",
+      "sha256": null,
+      "type": "reference_decoder_text"
+    },
+    {
+      "note": "2026-11-14/15 dossier this one is adapted from. Its catalog findings are NOT carried over as offline evidence (catalog is out of scope here).",
+      "path": "analysis/com.zi.zivpn/184/ (online branch, read-only)",
+      "sha256": null,
+      "type": "reference_dossier"
+    }
+  ],
+  "limitations": [
+    "No real .ziv file exported by app 2.2.5 (confirms the method and the export/import DES asymmetry end to end).",
+    "No real zivpn:// link observed; the scheme is from legacy text handlers, not from the app manifest (the 2026-11-14 dossier found no own URI scheme in the APK).",
+    "The offline APK itself was NOT built in this VM (no Android SDK/NDK/Gradle toolchain here); the production C++ was verified on the host against Mbed TLS 3.6.7 and 2.28.8, and the Gradle build is covered by the offline-native-apk CI workflow. No emulator/device test was run.",
+    "The legacy Kotlin ZivPort (src/main/java, non-distributed baseline) still lacks the DES inner layer: it opens export-style .ziv only and fails legacy (DES-layered) files. It is NOT compiled into the offline APK; the native decoder is the offline implementation. Fixing it is a separate follow-up.",
+    "The offline app's visible supported-text label still lists only NPV Tunnel, NetMod Syna and Dark Tunnel (OfflineText.kt, untouched: no UI/design changes in this task)."
+  ],
+  "manual_steps": [
+    "Real .ziv file exported by app 2.2.5 (confirms the method and the export/import asymmetry end to end).",
+    "Real zivpn:// link shared by a user or observed in the app (confirms the text scheme exists in the wild).",
+    "Install the rebuilt offline APK on a real phone and import a .ziv file + paste a zivpn:// link (device QA pending)."
+  ],
+  "network_requirements": "No network is needed by the offline decoders or by the dossier tests, except the one-time pinned downloads of the Mbed TLS 3.6.7 archive and the nlohmann json 3.11.3 single header for the host harness (both SHA-256 verified; skipped when SPDECODE_MBEDTLS_ARCHIVE points at a local copy, as CI does).",
+  "observed_at": "2026-11-18/19",
+  "package_name": "com.zi.zivpn",
+  "schema_version": 1,
+  "source_category": "Google Play listing (verified live via AppBrain mirror 2026-11-19 00:11 UTC: version 2.2.5, updated 2026-10-26); server-side reference decoders and dossier from the online branch (read-only); synthetic fixtures sealed by the dossier oracle",
+  "status": "PARTIAL",
+  "targets": [
+    {
+      "kind": "files",
+      "note": "Native offline decoder (spdecode_zivpn.cpp) opens legacy DES-layered .ziv, export-style LF1-only .ziv, both known passwords, plain Properties XML and the frozen golden vector; 19/19 host-harness checks and 11/11 repo parity tests. No real .ziv exported by the app yet, so this is synthetic verification, not real-app compatibility.",
+      "status": "VERIFIED_SYNTHETIC"
+    },
+    {
+      "kind": "text",
+      "note": "Native offline zivpn:// decoder (AES-256-CBC, SHA256 password, zero IV) opens XML and JSON links and bare tokens; 19/19 host-harness checks and 11/11 repo parity tests. The scheme comes from the legacy text handlers (66.py lineage), NOT from the app manifest (the 2026-11-14 dossier found no own URI scheme in the APK); no real zivpn:// link has been observed, so this is synthetic verification only.",
+      "status": "VERIFIED_SYNTHETIC"
+    },
+    {
+      "kind": "catalog",
+      "note": "OUT OF SCOPE for the offline app by task decision: no remote profiles.json catalog is added to the offline app. The server-side catalog decoder (ZIVPN.py) remains online-branch only.",
+      "status": "OUT_OF_SCOPE"
+    },
+    {
+      "kind": "export",
+      "note": "PENDING: a real .ziv exported by app 2.2.5 and a real zivpn:// link are still missing; they would confirm the method and the LF1/DES asymmetry end to end.",
+      "status": "PENDING"
+    }
+  ],
+  "tooling": [
+    {
+      "name": "Python",
+      "purpose": "Runtime of the dossier oracle, fixture generator and tests.",
+      "version": "3.12.3"
+    },
+    {
+      "name": "PyCryptodome",
+      "purpose": "Independent crypto oracle for the dossier reference and the repo parity test (PBKDF2/GCM/DES/AES-CBC). Test-only; not used by the production C++.",
+      "version": "4.5.0"
+    },
+    {
+      "name": "OpenSSL",
+      "purpose": "Independent oracle for the FIPS DES/AES known-answer vectors in tools/verify.py (DES via the legacy provider).",
+      "version": "3.0.13"
+    },
+    {
+      "name": "g++",
+      "purpose": "Host compiler for the C++ harness and the repo parity CLI (host x86_64, -std=c++17 -Wall -Wextra -Werror).",
+      "version": "13.3.0"
+    },
+    {
+      "name": "CMake",
+      "purpose": "Build of the Mbed TLS crypto library for the host harness.",
+      "version": "3.28.3"
+    },
+    {
+      "name": "Mbed TLS",
+      "purpose": "Crypto used by the production native decoder (Android build pin) and by the host harness. Pinned archive SHA-256 verified by tools/build_host_harness.sh.",
+      "version": "3.6.7"
+    },
+    {
+      "name": "Mbed TLS",
+      "purpose": "Second line verified for the CI host-parity path (system libmbedtls-dev line on ubuntu-latest). Production code carries a version branch for its PBKDF2/SHA-256 entry points.",
+      "version": "2.28.8"
+    },
+    {
+      "name": "nlohmann json",
+      "purpose": "JSON used by the production native decoder (commit pinned by CMakeLists.txt) and by the host harness (single header, SHA-256 verified).",
+      "version": "3.11.3"
+    }
+  ],
+  "unresolved_questions": [
+    "Real .ziv file exported by app 2.2.5 (confirms the method and the export/import asymmetry end to end).",
+    "Real zivpn:// link (confirms the text scheme exists in the wild).",
+    "Whether the legacy Kotlin ZivPort should also gain the DES layer (non-distributed baseline only)."
+  ],
+  "version_code": 184,
+  "version_name": "2.2.5"
+}
