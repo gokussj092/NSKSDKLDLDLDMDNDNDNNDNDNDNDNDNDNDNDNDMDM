@@ -22,7 +22,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -513,9 +516,96 @@ private fun ResultCard(state:OfflineUiState,action:OfflineActions,p:OfflinePalet
     }
 }
 
+/** JSON syntax colors, same as the online result view (ContinuousJsonView):
+ * keys blue, strings green, numbers orange, booleans purple, null pink,
+ * punctuation white. The document is pretty-printed, so each value sits on
+ * its own line: one cheap pass per line, no full-document parse. */
+private fun highlightJson(content:String,ink:Color):AnnotatedString {
+    val key=Color(0xFF7CB7F9)
+    val str=Color(0xFF98D9A0)
+    val num=Color(0xFFE8B66D)
+    val bool=Color(0xFFC9A0F3)
+    val nul=Color(0xFFE7A5B4)
+    return buildAnnotatedString {
+        content.split('\n').forEachIndexed { index,line ->
+            if(index>0) append("\n")
+            highlightJsonLine(line,ink,key,str,num,bool,nul)
+        }
+    }
+}
+
+private fun AnnotatedString.Builder.highlightJsonLine(line:String,ink:Color,
+    key:Color,str:Color,num:Color,bool:Color,nul:Color) {
+    var i=0
+    while(i<line.length && line[i]==' ') i++
+    if(i>0) withStyle(SpanStyle(color=ink)) { append(line.substring(0,i)) }
+    if(i>=line.length) return
+    val rest=line.substring(i)
+    if(rest.startsWith('"')) {
+        val end=jsonStringEnd(rest,0)
+        var j=end
+        while(j<rest.length && rest[j]==' ') j++
+        if(j<rest.length && rest[j]==':') {
+            withStyle(SpanStyle(color=key)) { append(rest.substring(0,end)) }
+            var k=j+1
+            while(k<rest.length && rest[k]==' ') k++
+            withStyle(SpanStyle(color=ink)) { append(rest.substring(end,k)) }
+            appendJsonValue(rest.substring(k),ink,str,num,bool,nul)
+            return
+        }
+    }
+    appendJsonValue(rest,ink,str,num,bool,nul)
+}
+
+private fun AnnotatedString.Builder.appendJsonValue(value:String,ink:Color,
+    str:Color,num:Color,bool:Color,nul:Color) {
+    if(value.isEmpty()) return
+    when {
+        value.startsWith('"') -> {
+            val end=jsonStringEnd(value,0).coerceAtLeast(1)
+            withStyle(SpanStyle(color=str)) { append(value.substring(0,end)) }
+            if(end<value.length) withStyle(SpanStyle(color=ink)) { append(value.substring(end)) }
+        }
+        value.startsWith("true") -> {
+            withStyle(SpanStyle(color=bool)) { append("true") }
+            if(value.length>4) withStyle(SpanStyle(color=ink)) { append(value.substring(4)) }
+        }
+        value.startsWith("false") -> {
+            withStyle(SpanStyle(color=bool)) { append("false") }
+            if(value.length>5) withStyle(SpanStyle(color=ink)) { append(value.substring(5)) }
+        }
+        value.startsWith("null") -> {
+            withStyle(SpanStyle(color=nul)) { append("null") }
+            if(value.length>4) withStyle(SpanStyle(color=ink)) { append(value.substring(4)) }
+        }
+        value[0].isDigit() || value[0]=='-' -> {
+            var e=0
+            while(e<value.length && (value[e].isDigit() || value[e] in ".eE+-")) e++
+            withStyle(SpanStyle(color=num)) { append(value.substring(0,e)) }
+            if(e<value.length) withStyle(SpanStyle(color=ink)) { append(value.substring(e)) }
+        }
+        else -> withStyle(SpanStyle(color=ink)) { append(value) }
+    }
+}
+
+/** Index just past the closing quote of the JSON string starting at [from]
+ * (honors backslash escapes); the string length if unterminated. */
+private fun jsonStringEnd(s:String,from:Int):Int {
+    var i=from+1
+    while(i<s.length) {
+        when(s[i]) {
+            '\\' -> i+=2
+            '"' -> return i+1
+            else -> i++
+        }
+    }
+    return s.length
+}
+
 @Composable
 private fun CompleteJsonViewer(content:String,p:OfflinePalette,language:String) {
     val numberCount=remember(content) { content.count { it=='\n' } + 1 }
+    val highlighted=remember(content) { highlightJson(content,p.ink) }
     val gutter=remember(numberCount) { (1..numberCount).joinToString("\n") }
     val rowScroll=rememberScrollState()
     // Height is measured from actual font scale. Up to 150 rows fit without
@@ -532,7 +622,7 @@ private fun CompleteJsonViewer(content:String,p:OfflinePalette,language:String) 
                 fontFamily=FontFamily.Monospace,fontSize=11.sp,lineHeight=18.sp,
                 softWrap=false)
             SelectionContainer {
-                Text(content,color=p.ink,modifier=Modifier.padding(7.dp),
+                Text(highlighted,modifier=Modifier.padding(7.dp),
                     fontFamily=FontFamily.Monospace,fontSize=11.sp,
                     lineHeight=18.sp,softWrap=false)
             }
