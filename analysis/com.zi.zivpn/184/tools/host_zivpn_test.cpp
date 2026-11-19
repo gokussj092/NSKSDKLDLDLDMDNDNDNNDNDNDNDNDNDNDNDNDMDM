@@ -177,6 +177,9 @@ int main(int argc, char** argv) {
     expectFile(dir, "ziv-legacy-password.ziv", "ziv-legacy-password.expected.json");
     expectFile(dir, "ziv-golden.ziv", "ziv-golden.expected.json");
     expectFile(dir, "ziv-plain.xml", "ziv-plain.expected.json");
+    // file.msg with emoji written as surrogate-pair numeric references
+    // (java.util.Properties style, as in a real app export).
+    expectFile(dir, "ziv-emoji.ziv", "ziv-emoji.expected.json");
     expectText(dir, "zivpn-link.txt", "zivpn-link.expected.json");
     expectText(dir, "zivpn-json-link.txt", "zivpn-json-link.expected.json");
     // Same text link without the scheme prefix must also decode.
@@ -197,6 +200,7 @@ int main(int argc, char** argv) {
 
     expectFileFails(dir, "ziv-wrong-password.ziv", "wrong password");
     expectFileFails(dir, "ziv-tampered-tag.ziv", "tampered GCM tag");
+    expectFileFails(dir, "ziv-lone-surrogate.ziv", "lone surrogate");
     expectFileFailsRaw("empty", "");
     expectFileFailsRaw("not a profile", "NOT A PROFILE");
     expectFileFailsRaw("two parts", "AAAA.AAAA");

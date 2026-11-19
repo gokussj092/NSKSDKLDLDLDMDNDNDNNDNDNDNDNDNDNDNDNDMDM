@@ -1,0 +1,22 @@
+{
+  "CONFIGS": [
+    {
+      "e": "SSC synthetic profile",
+      "l": "example.org",
+      "m": 443,
+      "o": "dummy-user",
+      "p": "dummy-not-a-real-secret",
+      "g": "GET http://example.org/ HTTP/1.1[crlf]Host: example.org[crlf]",
+      "j": "SSH",
+      "r": "TCP",
+      "v": "8.8.8.8",
+      "s": "4.3.13",
+      "q": 30,
+      "y": true,
+      "z": 1080
+    }
+  ],
+  "NOTE": "Two-layer test",
+  "EXPIRY DATE": "2027-01-01",
+  "VERSION": "4.3.13"
+}

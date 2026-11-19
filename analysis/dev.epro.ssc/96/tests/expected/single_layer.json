@@ -1,0 +1,25 @@
+{
+  "CONFIGS": [
+    {
+      "CONFIGNAME": "SSC synthetic profile",
+      "ADDRESS": "example.org",
+      "PORT": 443,
+      "USERNAME": "dummy-user",
+      "PASSWORD": "dummy-not-a-real-secret",
+      "PAYLOAD": "GET http://example.org/ HTTP/1.1[crlf]Host: example.org[crlf]",
+      "TYPE": "SSH",
+      "PROTOCOL": "TCP",
+      "DNS": "8.8.8.8",
+      "VERSION": "4.3.13",
+      "TIMEOUT": 30,
+      "ISDEFAULT": true,
+      "LOCALPORT": 1080
+    },
+    {
+      "CONFIGNAME": "SSC minimal",
+      "ADDRESS": "example.org",
+      "PORT": 80
+    }
+  ],
+  "NOTE": "Offline test"
+}

@@ -1,0 +1,95 @@
+{
+  "positive": {
+    "tls-profile1.tls": {
+      "match": true,
+      "profile": 1
+    },
+    "tls-profile2.tls": {
+      "match": true,
+      "profile": 2
+    },
+    "tls-profile3.tls": {
+      "match": true,
+      "profile": 3
+    },
+    "tls-profile4.tls": {
+      "match": true,
+      "profile": 4
+    },
+    "tls-profile5.tls": {
+      "match": true,
+      "profile": 5
+    },
+    "tls-profile6-legacy.tls": {
+      "match": true,
+      "profile": 6
+    },
+    "tls-link.txt": {
+      "match": true,
+      "profile": 1
+    },
+    "tls-short.tls": {
+      "match": true,
+      "profile": 1
+    },
+    "tls-profile3-bad-inner-b64.tls": {
+      "match": true,
+      "profile": 3
+    }
+  },
+  "negative": {
+    "tls-tampered.tls": {
+      "match": true,
+      "expected_code": "TLS_AUTH_FAILED",
+      "oracle": [
+        "ORACLE_ERROR",
+        "Ninguna clave TLS conocida autentica el archivo"
+      ],
+      "got": [
+        "HARNESS_ERROR",
+        "TLS_AUTH_FAILED"
+      ]
+    },
+    "tls-truncated.tls": {
+      "match": true,
+      "expected_code": "TLS_CONTAINER_TOO_SHORT",
+      "oracle": [
+        "ORACLE_ERROR",
+        "Contenedor TLS demasiado corto"
+      ],
+      "got": [
+        "HARNESS_ERROR",
+        "TLS_CONTAINER_TOO_SHORT"
+      ]
+    },
+    "tls-garbage.tls": {
+      "match": true,
+      "expected_code": "TLS_INVALID_BASE64",
+      "oracle": [
+        "ORACLE_ERROR",
+        "Base64 TLS inválido"
+      ],
+      "got": [
+        "HARNESS_ERROR",
+        "TLS_INVALID_BASE64"
+      ]
+    },
+    "tls-empty.tls": {
+      "match": true,
+      "expected_code": "TLS_EMPTY_INPUT",
+      "oracle": [
+        "ORACLE_ERROR",
+        "Payload TLS vacío"
+      ],
+      "got": [
+        "HARNESS_ERROR",
+        "TLS_EMPTY_INPUT"
+      ]
+    }
+  },
+  "summary": {
+    "passed": 13,
+    "total": 13,
+    "failures": 0
+  }
+}

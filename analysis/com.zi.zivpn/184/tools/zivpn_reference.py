@@ -31,6 +31,7 @@ import base64
 import binascii
 import hashlib
 import json
+import re
 import xml.etree.ElementTree as ET
 
 from Crypto.Cipher import AES, DES
@@ -115,13 +116,40 @@ def _des_encrypt(data):
     return DES.new(DES_KEY[:8], DES.MODE_ECB).encrypt(pad(data, 8))
 
 
+_SURROGATE_PAIR_RE = re.compile(
+    r"&#(x[0-9A-Fa-f]+|[0-9]+);&#(x[0-9A-Fa-f]+|[0-9]+);")
+
+
+def _combine_surrogate_pairs(text):
+    """Combine adjacent UTF-16 surrogate-pair character references.
+
+    java.util.Properties writes astral characters (e.g. emoji) as a pair
+    of numeric references to the UTF-16 surrogates ("&#55356;&#56808;"
+    for U+1F608). Those references are invalid in strict XML 1.0, so
+    ElementTree rejects them; combine each adjacent high+low pair into
+    the single code point first. A lone surrogate is left untouched and
+    still fails to parse, matching the native decoder.
+    """
+    def _num(token):
+        return int(token[1:], 16) if token[:1] in "xX" else int(token)
+
+    def _repl(match):
+        hi = _num(match.group(1))
+        lo = _num(match.group(2))
+        if 0xD800 <= hi <= 0xDBFF and 0xDC00 <= lo <= 0xDFFF:
+            return "&#%d;" % (0x10000 + ((hi - 0xD800) << 10) + (lo - 0xDC00))
+        return match.group(0)
+
+    return _SURROGATE_PAIR_RE.sub(_repl, text)
+
+
 def parse_properties_xml(xml_bytes):
     try:
         text = xml_bytes.decode("utf-8")
     except UnicodeDecodeError as exc:
         raise DecodeError("ZIV_UTF8", "Interior is not UTF-8.") from exc
     try:
-        root = ET.fromstring(text)
+        root = ET.fromstring(_combine_surrogate_pairs(text))
     except ET.ParseError as exc:
         raise DecodeError("ZIV_XML", "Properties XML does not parse.") from exc
     props = {}

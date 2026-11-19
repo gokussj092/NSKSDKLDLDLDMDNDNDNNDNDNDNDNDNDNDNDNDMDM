@@ -64,6 +64,22 @@ def _write(name, data):
     print("wrote %s (%d bytes)" % (name, len(data)))
 
 
+def _java_escape_astral(xml_bytes):
+    """Mimic java.util.Properties: write astral characters (emoji) as
+    surrogate-pair numeric references ("&#55356;&#56808;") instead of raw
+    UTF-8, the shape seen in a real app export (file.msg)."""
+    out = []
+    for ch in xml_bytes.decode("utf-8"):
+        cp = ord(ch)
+        if cp > 0xFFFF:
+            cp -= 0x10000
+            out.append("&#%d;&#%d;" % (0xD800 + (cp >> 10),
+                                       0xDC00 + (cp & 0x3FF)))
+        else:
+            out.append(ch)
+    return "".join(out).encode("utf-8")
+
+
 def main():
     os.makedirs(FIXTURES, exist_ok=True)
     xml_bytes = ref.properties_xml(PROPS)
@@ -91,6 +107,26 @@ def main():
            ref.seal_zivpn_text(xml_bytes.decode("utf-8")))
     _write("zivpn-json-link.txt",
            ref.seal_zivpn_text(json.dumps(JSON_PROPS)))
+
+    # Emoji fixture: file.msg holds astral characters written the way
+    # java.util.Properties writes them — surrogate-pair numeric references
+    # (&#55356;&#56808;), as seen in a real app export. Export-style
+    # (LF1 only), like the real file.
+    emoji_props = dict(PROPS)
+    emoji_props["file.msg"] = "test flag \U0001F1E8\U0001F1F2 ok"
+    _write("ziv-emoji.ziv",
+           ref.lf1_encrypt(_java_escape_astral(ref.properties_xml(emoji_props)),
+                           fixed, SALT, IV))
+    _write("ziv-emoji.expected.json",
+           json.dumps(emoji_props, ensure_ascii=False, indent=2,
+                      sort_keys=True) + "\n")
+    # Negative: a lone high surrogate with no low partner must still fail.
+    lone_props = dict(PROPS)
+    lone_xml = ref.properties_xml(lone_props).decode("utf-8").replace(
+        "</properties>",
+        '<entry key="file.msg">test &#55356; lone</entry>\n</properties>')
+    _write("ziv-lone-surrogate.ziv",
+           ref.lf1_encrypt(lone_xml.encode("utf-8"), fixed, SALT, IV))
 
     # Negative fixtures (must FAIL to decode).
     _write("ziv-wrong-password.ziv",
@@ -121,6 +157,19 @@ def main():
             props, _xml, info = ref.open_ziv(fh.read())
         assert props == expected, name
         print("verified %s des_layer=%s" % (name, info["des_layer"]))
+    with open(os.path.join(FIXTURES, "ziv-emoji.ziv"), encoding="utf-8") as fh:
+        props, _xml, info = ref.open_ziv(fh.read())
+    assert props == emoji_props and info["des_layer"] is False
+    print("verified ziv-emoji.ziv des_layer=False")
+    with open(os.path.join(FIXTURES, "ziv-lone-surrogate.ziv"),
+              encoding="utf-8") as fh:
+        lone = fh.read()
+    try:
+        ref.open_ziv(lone)
+    except ref.DecodeError:
+        print("verified ziv-lone-surrogate.ziv rejected")
+    else:
+        raise AssertionError("lone surrogate accepted")
     with open(os.path.join(FIXTURES, "ziv-plain.xml"), "rb") as fh:
         props, _xml = ref.parse_properties_xml(fh.read())
     assert props == expected

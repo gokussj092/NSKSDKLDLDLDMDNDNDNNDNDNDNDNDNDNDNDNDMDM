@@ -76,6 +76,24 @@ class TestMethod(unittest.TestCase):
         self.assertEqual(props.get("tunnelType"), "4")
         self.assertEqual(props.get("udpserver"), "udpsg1.zivpn.com")
 
+    def test_emoji_fixture_opens(self):
+        # Real-app shape: emoji in file.msg written as surrogate-pair
+        # numeric references (java.util.Properties style).
+        with open(os.path.join(FIXTURES, "ziv-emoji.ziv"),
+                  encoding="utf-8") as fh:
+            props, _xml, info = ref.open_ziv(fh.read())
+        with open(os.path.join(FIXTURES, "ziv-emoji.expected.json"),
+                  encoding="utf-8") as fh:
+            self.assertEqual(props, json.load(fh))
+        self.assertFalse(info["des_layer"])
+
+    def test_lone_surrogate_rejected(self):
+        with open(os.path.join(FIXTURES, "ziv-lone-surrogate.ziv"),
+                  encoding="utf-8") as fh:
+            sealed = fh.read()
+        with self.assertRaises(ref.DecodeError):
+            ref.open_ziv(sealed)
+
     def test_zivpn_text_roundtrip(self):
         xml = ref.properties_xml(v.PROPS).decode("utf-8")
         token = ref.seal_zivpn_text(xml)

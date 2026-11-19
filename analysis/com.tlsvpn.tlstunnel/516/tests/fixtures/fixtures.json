@@ -1,0 +1,61 @@
+{
+  "tls-profile1.tls": {
+    "profile": 1,
+    "sha256": "f048f530983c2a33eef20cf6928c02212044124cf4ce49235bbb84cc248c69d7",
+    "plaintext_fields": 28
+  },
+  "tls-profile2.tls": {
+    "profile": 2,
+    "sha256": "a2c2748b22eef8f7d7cea6ad610743f6adf90a3a614f0de2c629448226c51c07",
+    "plaintext_fields": 28
+  },
+  "tls-profile3.tls": {
+    "profile": 3,
+    "sha256": "aad4b4a3297ce28f667c70ab119ac6d9818da0fdaea95abc2e2b83277ad84777",
+    "plaintext_fields": 28
+  },
+  "tls-profile4.tls": {
+    "profile": 4,
+    "sha256": "523c21b6153748c0923bac3293c94a4c9a2ec2bfc8b6db5b1caf236c7fbbad16",
+    "plaintext_fields": 28
+  },
+  "tls-profile5.tls": {
+    "profile": 5,
+    "sha256": "a6238a9dd7cc65ea73665d4c412edea4004e8969ae00586946fed58f5f00ebc5",
+    "plaintext_fields": 28
+  },
+  "tls-profile6-legacy.tls": {
+    "profile": 6,
+    "sha256": "2c56ce29787f1fe372f1bcbc6bc0bf95c6e7b1b169af97143d80f4a46fdf4787",
+    "plaintext_fields": 28
+  },
+  "tls-link.txt": {
+    "profile": 1,
+    "sha256": "a1fc86dbcff9a512f138da8f484bb1eb9ebbc0320ed5f5bef1b799f607c45fe7"
+  },
+  "tls-short.tls": {
+    "profile": 1,
+    "sha256": "87b90619ee62b93896e9ed93b66de309cc2224b1e804045d47d964214ec48215",
+    "plaintext_fields": 5
+  },
+  "tls-profile3-bad-inner-b64.tls": {
+    "profile": 3,
+    "sha256": "626294ebea3d4a2483bcf81025ae281961314bb217adfd0781b1f62f5ef1799f"
+  },
+  "tls-tampered.tls": {
+    "negative": "tampered ciphertext, expect TLS_AUTH_FAILED",
+    "sha256": "e3f014eb7820cd982ee5cbfae7e687db768c9a016107599ed1c09ab7ab9b0273"
+  },
+  "tls-truncated.tls": {
+    "negative": "truncated container, expect TLS_CONTAINER_TOO_SHORT",
+    "sha256": "f0a2fb80ac0699075fb6c7b0ee2bcc204a1d909ee3149571216ec9cc1d4b9f8e"
+  },
+  "tls-garbage.tls": {
+    "negative": "not base64, expect TLS_INVALID_BASE64",
+    "sha256": "013e43bec03192a87b280d05e0369c77f3508b8b8afb5fef1df23a2feb6236ba"
+  },
+  "tls-empty.tls": {
+    "negative": "empty input, expect TLS_EMPTY_INPUT",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}

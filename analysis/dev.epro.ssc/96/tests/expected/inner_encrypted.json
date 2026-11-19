@@ -1,0 +1,23 @@
+{
+  "CONFIGS": [
+    {
+      "CONFIGNAME": "SSC synthetic profile",
+      "ADDRESS": "example.org",
+      "PORT": 443,
+      "USERNAME": "dummy-user",
+      "PASSWORD": "dummy-not-a-real-secret",
+      "PAYLOAD": "GET http://example.org/ HTTP/1.1[crlf]Host: example.org[crlf]",
+      "TYPE": "SSH",
+      "PROTOCOL": "TCP",
+      "DNS": "fff423207c7e4a",
+      "VERSION": "4.3.13",
+      "TIMEOUT": 30,
+      "ISDEFAULT": true,
+      "LOCALPORT": 1080,
+      "NOTE": "00112233445566778899aabbccddeeff",
+      "PROXY": "f6ea353e6a605c87",
+      "NSSERVER": "fef422207d7e4b"
+    }
+  ],
+  "NOTE": "Inner-encrypted test"
+}

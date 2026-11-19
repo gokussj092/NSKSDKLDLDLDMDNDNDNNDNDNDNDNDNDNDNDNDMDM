@@ -40,7 +40,7 @@ ones really used; unknown versions are marked UNKNOWN, never invented.
 - The PBKDF2/SHA-256 version branch exists because 2.28 only has the
   `mbedtls_md_context_t` PBKDF2 entry point while 3.x deprecates it in
   favour of `mbedtls_pkcs5_pbkdf2_hmac_ext`; both compute the same
-  PBKDF2-HMAC-SHA256, and both lines are host-tested 19/19.
+  PBKDF2-HMAC-SHA256, and both lines are host-tested 21/21.
 - No network is needed by the decoders or the dossier tests, except the
   one-time pinned downloads for the host harness (Mbed TLS 3.6.7 archive
   + nlohmann json 3.11.3 single header, both SHA-256 verified).

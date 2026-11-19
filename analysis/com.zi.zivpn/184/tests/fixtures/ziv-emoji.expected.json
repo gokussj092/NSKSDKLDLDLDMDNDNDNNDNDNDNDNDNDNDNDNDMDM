@@ -1,0 +1,13 @@
+{
+  "alpha": "0",
+  "beta": "0",
+  "file.appVersionCode": "184",
+  "file.askLogin": "0",
+  "file.msg": "test flag 🇨🇲 ok",
+  "gamma": "0",
+  "sshPort": "443",
+  "sshPortaLocal": "1080",
+  "sshServer": "ssh-test.example",
+  "tunnelType": "4",
+  "udpserver": "udp-test.example"
+}

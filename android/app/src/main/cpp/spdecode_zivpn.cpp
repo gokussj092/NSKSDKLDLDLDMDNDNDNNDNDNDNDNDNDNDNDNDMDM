@@ -208,54 +208,86 @@ Bytes desEcbDecrypt(const Bytes& data) {
 }
 
 std::string xmlUnescape(const std::string& value) {
+    // Parses a numeric character reference "&#...;" (decimal or hex) at
+    // value[pos] ('&' at pos) and returns its code point plus the ';'
+    // position. Throws ZIV_INVALID_XML on any malformed reference.
+    auto parseCharRef = [&value](size_t pos, unsigned long& cp, size_t& semiOut) {
+        const size_t semi = value.find(';', pos);
+        require(semi != std::string::npos && semi - pos <= 10, "ZIV_INVALID_XML");
+        const std::string entity = value.substr(pos + 1, semi - pos - 1);
+        require(entity.size() > 1 && entity[0] == '#', "ZIV_INVALID_XML");
+        cp = 0;
+        if (entity[1] == 'x' || entity[1] == 'X') {
+            require(entity.size() > 2, "ZIV_INVALID_XML");
+            for (size_t k = 2; k < entity.size(); k++) {
+                const char c = entity[k];
+                require((c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') ||
+                        (c >= 'A' && c <= 'F'), "ZIV_INVALID_XML");
+                cp = cp * 16 + static_cast<unsigned long>(
+                    c <= '9' ? c - '0' : (c <= 'F' ? c - 'A' + 10 : c - 'a' + 10));
+                require(cp <= 0x10FFFF, "ZIV_INVALID_XML");
+            }
+        } else {
+            for (size_t k = 1; k < entity.size(); k++) {
+                require(entity[k] >= '0' && entity[k] <= '9', "ZIV_INVALID_XML");
+                cp = cp * 10 + static_cast<unsigned long>(entity[k] - '0');
+                require(cp <= 0x10FFFF, "ZIV_INVALID_XML");
+            }
+        }
+        semiOut = semi;
+    };
+
     std::string out;
     out.reserve(value.size());
     for (size_t i = 0; i < value.size(); i++) {
         if (value[i] != '&') { out.push_back(value[i]); continue; }
-        const size_t semi = value.find(';', i);
-        require(semi != std::string::npos && semi - i <= 10, "ZIV_INVALID_XML");
-        const std::string entity = value.substr(i + 1, semi - i - 1);
-        if (entity == "amp") out.push_back('&');
-        else if (entity == "lt") out.push_back('<');
-        else if (entity == "gt") out.push_back('>');
-        else if (entity == "quot") out.push_back('"');
-        else if (entity == "apos") out.push_back('\'');
-        else if (entity.size() > 1 && entity[0] == '#') {
-            unsigned long cp = 0;
-            if (entity[1] == 'x' || entity[1] == 'X') {
-                require(entity.size() > 2, "ZIV_INVALID_XML");
-                for (size_t k = 2; k < entity.size(); k++) {
-                    const char c = entity[k];
-                    require((c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') ||
-                            (c >= 'A' && c <= 'F'), "ZIV_INVALID_XML");
-                    cp = cp * 16 + static_cast<unsigned long>(
-                        c <= '9' ? c - '0' : (c <= 'F' ? c - 'A' + 10 : c - 'a' + 10));
-                    require(cp <= 0x10FFFF, "ZIV_INVALID_XML");
-                }
+        unsigned long cp = 0;
+        size_t semi = 0;
+        if (i + 1 < value.size() && value[i + 1] == '#') {
+            parseCharRef(i, cp, semi);
+            if (cp >= 0xD800 && cp <= 0xDBFF) {
+                // High surrogate: java.util.Properties writes astral
+                // characters (e.g. emoji) as a pair of numeric references,
+                // "&#55356;&#56808;" for U+1F608. A lone surrogate is not a
+                // valid XML 1.0 character, so it still fails; a matched
+                // pair combines into the single code point.
+                const size_t next = semi + 1;
+                require(next + 1 < value.size() && value[next] == '&' &&
+                        value[next + 1] == '#', "ZIV_INVALID_XML");
+                unsigned long lo = 0;
+                size_t semi2 = 0;
+                parseCharRef(next, lo, semi2);
+                require(lo >= 0xDC00 && lo <= 0xDFFF, "ZIV_INVALID_XML");
+                cp = 0x10000UL + ((cp - 0xD800) << 10) + (lo - 0xDC00);
+                semi = semi2;
             } else {
-                for (size_t k = 1; k < entity.size(); k++) {
-                    require(entity[k] >= '0' && entity[k] <= '9', "ZIV_INVALID_XML");
-                    cp = cp * 10 + static_cast<unsigned long>(entity[k] - '0');
-                    require(cp <= 0x10FFFF, "ZIV_INVALID_XML");
-                }
-            }
-            require(cp > 0 && !(cp >= 0xD800 && cp <= 0xDFFF), "ZIV_INVALID_XML");
-            if (cp < 0x80) out.push_back(static_cast<char>(cp));
-            else if (cp < 0x800) {
-                out.push_back(static_cast<char>(0xC0 | (cp >> 6)));
-                out.push_back(static_cast<char>(0x80 | (cp & 0x3F)));
-            } else if (cp < 0x10000) {
-                out.push_back(static_cast<char>(0xE0 | (cp >> 12)));
-                out.push_back(static_cast<char>(0x80 | ((cp >> 6) & 0x3F)));
-                out.push_back(static_cast<char>(0x80 | (cp & 0x3F)));
-            } else {
-                out.push_back(static_cast<char>(0xF0 | (cp >> 18)));
-                out.push_back(static_cast<char>(0x80 | ((cp >> 12) & 0x3F)));
-                out.push_back(static_cast<char>(0x80 | ((cp >> 6) & 0x3F)));
-                out.push_back(static_cast<char>(0x80 | (cp & 0x3F)));
+                require(cp > 0 && !(cp >= 0xD800 && cp <= 0xDFFF), "ZIV_INVALID_XML");
             }
         } else {
+            const size_t semiPos = value.find(';', i);
+            require(semiPos != std::string::npos && semiPos - i <= 10, "ZIV_INVALID_XML");
+            const std::string entity = value.substr(i + 1, semiPos - i - 1);
+            if (entity == "amp") { out.push_back('&'); i = semiPos; continue; }
+            if (entity == "lt") { out.push_back('<'); i = semiPos; continue; }
+            if (entity == "gt") { out.push_back('>'); i = semiPos; continue; }
+            if (entity == "quot") { out.push_back('"'); i = semiPos; continue; }
+            if (entity == "apos") { out.push_back('\''); i = semiPos; continue; }
             throw ZivFailure("ZIV_INVALID_XML");
+        }
+        // Emit cp as UTF-8 (cp > 0, not a lone surrogate, <= 0x10FFFF).
+        if (cp < 0x80) out.push_back(static_cast<char>(cp));
+        else if (cp < 0x800) {
+            out.push_back(static_cast<char>(0xC0 | (cp >> 6)));
+            out.push_back(static_cast<char>(0x80 | (cp & 0x3F)));
+        } else if (cp < 0x10000) {
+            out.push_back(static_cast<char>(0xE0 | (cp >> 12)));
+            out.push_back(static_cast<char>(0x80 | ((cp >> 6) & 0x3F)));
+            out.push_back(static_cast<char>(0x80 | (cp & 0x3F)));
+        } else {
+            out.push_back(static_cast<char>(0xF0 | (cp >> 18)));
+            out.push_back(static_cast<char>(0x80 | ((cp >> 12) & 0x3F)));
+            out.push_back(static_cast<char>(0x80 | ((cp >> 6) & 0x3F)));
+            out.push_back(static_cast<char>(0x80 | (cp & 0x3F)));
         }
         i = semi;
     }

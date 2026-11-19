@@ -95,16 +95,22 @@ change is indicated and **no APK was downloaded** for this work. No real
   `text_legacy_protocols.decode_zivpn`.
 - Host harness (`tools/host_zivpn_test.cpp`, production
   `spdecode_zivpn.cpp` compiled unchanged, `-Wall -Wextra -Werror`):
-  19/19 checks against Mbed TLS 3.6.7 (the Android pin) and 19/19
-  against Mbed TLS 2.28.8 (the CI host-parity line), including FIPS
+  21/21 checks against Mbed TLS 3.6.7 (the Android pin) and 21/21
+  against Mbed TLS 2.28.8 (the CI host-parity line, built with
+  `-Wno-error=deprecated-declarations` — see RESULTS.md §4 for the
+  pre-existing `sha256()` deprecation warning), including FIPS
   46-3 DES and FIPS 197 AES-128 known answers.
 - Repo parity (`tests/test_offline_zivpn_native_parity.py` via
-  `tests/native_zivpn_cli.cpp`): 11/11 tests on both Mbed TLS lines,
+  `tests/native_zivpn_cli.cpp`): 13/13 tests on both Mbed TLS lines,
   with fixtures sealed by the independent PyCryptodome oracle.
-- Dossier tests (`tests/test_method.py` + `tools/verify.py`): 7/7
+- Dossier tests (`tests/test_method.py` + `tools/verify.py`): 9/9
   unittest tests, including the OpenSSL FIPS oracle checks.
+- A real `.ziv` exported by the app (2,778 B, export-style LF1-only)
+  now opens in the native decoder and the oracle (47 properties, full
+  agreement); its `file.msg` emoji exposed the surrogate-pair issue,
+  fixed in `xmlUnescape` and in the oracle (RESULTS.md §9).
 - NOT verified: the Gradle/Android build (no SDK/NDK in this VM), an
-  emulator/device run, a real exported `.ziv`, a real `zivpn://` link.
+  emulator/device run, a real `zivpn://` link.
   The Gradle build is covered by the `offline-native-apk` CI workflow
   (new `zivpn-cpp-parity` job added; the APK `build` job needs it).
 
@@ -130,14 +136,16 @@ of scope; see the 2026-11-14/15 dossier for its live evidence.
 
 ## 6. Real scope
 
-- What works is stated per route in RESULTS.md (VERIFIED_SYNTHETIC vs
-  PENDING / OUT_OF_SCOPE).
+- What works is stated per route in RESULTS.md (VERIFIED_REAL /
+  VERIFIED_SYNTHETIC vs PENDING / OUT_OF_SCOPE).
 - A synthetic fixture proves the implemented logic, NOT compatibility
-  with a real app build. The golden vector is the strongest evidence
-  available: it is the online reference's frozen vector, reproduced
-  byte-for-byte by this dossier's oracle and opened by the native
-  decoder.
-- Pending items (real exported files, real links, device QA) are listed
+  with a real app build. The golden vector is the strongest synthetic
+  evidence available: it is the online reference's frozen vector,
+  reproduced byte-for-byte by this dossier's oracle and opened by the
+  native decoder. Real-app compatibility for `.ziv` files is now
+  confirmed separately by the real export (RESULTS.md §1, §9); the real
+  file itself is kept out of the repo (user credentials).
+- Pending items (real `zivpn://` link, device QA) are listed
   in MANIFEST.json `limitations` and in RESULTS.md; they are not hidden.
 
 ## 7. Changes vs previous builds

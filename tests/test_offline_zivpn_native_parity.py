@@ -4,9 +4,10 @@
 Seals synthetic .ziv files and zivpn:// links with PyCryptodome (the
 independent oracle) and compares them against the native CLI built from
 android/app/src/main/cpp/spdecode_zivpn.cpp. These are generated
-fixtures, NOT proof of compatibility with every real vendor export: no
-real .ziv file exported by the app and no real zivpn:// link has been
-supplied yet (see analysis/com.zi.zivpn/184/RESULTS.md). No network.
+fixtures, NOT proof of compatibility with every real vendor export: a
+real .ziv file exported by the app was supplied 2026-11-18 and opens in
+the CLI (see analysis/com.zi.zivpn/184/RESULTS.md, section 9), but no
+real zivpn:// link has been supplied yet. No network.
 
 Usage: python3 tests/test_offline_zivpn_native_parity.py /tmp/spdecode-zivpn-native
 """
@@ -57,8 +58,7 @@ def properties_xml(props: dict) -> bytes:
     return ("\n".join(lines) + "\n").encode("utf-8")
 
 
-def seal_ziv(props: dict, password: str, legacy: bool) -> bytes:
-    xml = properties_xml(props)
+def seal_ziv_xml(xml: bytes, password: str, legacy: bool) -> bytes:
     inner = DES.new(DES_KEY[:8], DES.MODE_ECB).encrypt(pad(xml, 8)) if legacy else xml
     key = PBKDF2(password.encode(), SALT, dkLen=16, count=1000,
                  hmac_hash_module=SHA256)
@@ -67,6 +67,25 @@ def seal_ziv(props: dict, password: str, legacy: bool) -> bytes:
     parts = (base64.b64encode(SALT), base64.b64encode(IV),
              base64.b64encode(ct + tag))
     return b".".join(parts)
+
+
+def seal_ziv(props: dict, password: str, legacy: bool) -> bytes:
+    return seal_ziv_xml(properties_xml(props), password, legacy)
+
+
+def java_escape_astral(xml: str) -> str:
+    """java.util.Properties writes astral characters (emoji) as
+    surrogate-pair numeric references (&#55356;&#56808;) instead of raw
+    UTF-8 — the shape a real app export takes in file.msg."""
+    out = []
+    for ch in xml:
+        cp = ord(ch)
+        if cp > 0xFFFF:
+            cp -= 0x10000
+            out.append("&#%d;&#%d;" % (0xD800 + (cp >> 10), 0xDC00 + (cp & 0x3FF)))
+        else:
+            out.append(ch)
+    return "".join(out)
 
 
 def seal_zivpn_text(plain: str) -> bytes:
@@ -100,6 +119,23 @@ class NativeZivpnParity(unittest.TestCase):
     def test_legacy_password_fallback(self):
         self.assertEqual(
             self.run_cli(seal_ziv(PROPS, LEGACY_PASSWORD, legacy=False)), PROPS)
+
+    def test_emoji_surrogate_pair_references(self):
+        # file.msg with emoji written as surrogate-pair numeric references,
+        # the way java.util.Properties writes them in a real export.
+        props = dict(PROPS)
+        props["file.msg"] = "test flag \U0001F1E8\U0001F1F2 ok"
+        xml = java_escape_astral(properties_xml(props).decode("utf-8"))
+        self.assertEqual(
+            self.run_cli(seal_ziv_xml(xml.encode(), FIXED_PASSWORD, False)),
+            props)
+
+    def test_lone_surrogate_rejected(self):
+        xml = properties_xml(PROPS).decode("utf-8").replace(
+            "</properties>",
+            '<entry key="file.msg">test &#55356; lone</entry>\n</properties>')
+        self.run_cli(seal_ziv_xml(xml.encode(), FIXED_PASSWORD, False),
+                     succeeds=False)
 
     def test_plain_properties_xml(self):
         self.assertEqual(self.run_cli(properties_xml(PROPS)), PROPS)

@@ -93,7 +93,8 @@ def check_roundtrips():
 
 def check_fixtures():
     for name in ("ziv-legacy.ziv", "ziv-export.ziv",
-                 "ziv-legacy-password.ziv", "ziv-golden.ziv"):
+                 "ziv-legacy-password.ziv", "ziv-golden.ziv",
+                 "ziv-emoji.ziv"):
         with open(os.path.join(FIXTURES, name), encoding="utf-8") as fh:
             props, _xml, info = ref.open_ziv(fh.read())
         expected_name = name.replace(".ziv", ".expected.json")
@@ -121,12 +122,16 @@ def check_negatives():
     sealed = ref.seal_ziv(PROPS, ref.LF1_PASSWORDS[0], SALT, IV, legacy=False)
     tampered = sealed.split(".")
     tampered[2] = ("A" if tampered[2][0] != "A" else "B") + tampered[2][1:]
+    with open(os.path.join(FIXTURES, "ziv-lone-surrogate.ziv"),
+              encoding="utf-8") as fh:
+        lone_surrogate = fh.read()
     for label, fn in (
             ("wrong password", lambda: ref.open_ziv(
                 ref.seal_ziv(PROPS, "wrong-password-test", SALT, IV, legacy=False))),
             ("tampered GCM tag", lambda: ref.open_ziv(".".join(tampered))),
             ("two-part envelope", lambda: ref.open_ziv("AAAA.AAAA")),
             ("bad base64", lambda: ref.open_ziv("!!!.!!!.!!!")),
+            ("lone surrogate", lambda: ref.open_ziv(lone_surrogate)),
     ):
         try:
             fn()

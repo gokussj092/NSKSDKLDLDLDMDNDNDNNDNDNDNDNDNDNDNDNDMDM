@@ -12,7 +12,7 @@ python3 -m unittest tests.test_method -v
 python3 tools/verify.py
 ```
 
-Expected: all tests pass (7 unittest tests; `VERIFY OK`). They use
+Expected: all tests pass (9 unittest tests; `VERIFY OK`). They use
 synthetic vectors only and never touch the network.
 
 Regenerate the fixtures (deterministic — fixed salt/iv):
@@ -35,7 +35,7 @@ and the nlohmann json 3.11.3 single header at the commit pinned by the
 same CMakeLists (SHA-256 verified), builds `libmbedcrypto`, compiles
 `tools/host_zivpn_test.cpp` — which includes the production
 `spdecode_zivpn.cpp` unchanged — with `-Wall -Wextra -Werror`, and runs
-it against `tests/fixtures/`. Expected: `19 passed, 0 failed`.
+it against `tests/fixtures/`. Expected: `21 passed, 0 failed`.
 
 Run the harness through the dossier verifier as well:
 
@@ -58,7 +58,7 @@ g++ -O2 -std=c++17 -Wall -Wextra -Werror \
 python3 tests/test_offline_zivpn_native_parity.py /tmp/spdecode-zivpn-native
 ```
 
-Expected: `Ran 11 tests ... OK`. In CI the same test compiles against
+Expected: `Ran 13 tests ... OK`. In CI the same test compiles against
 the system `libmbedtls-dev` (2.28 line); the production code carries a
 version branch for the PBKDF2/SHA-256 entry points that differ between
 2.28 and 3.x (see `spdecode_zivpn.cpp`, `pbkdf2Sha256` / `sha256`).
@@ -69,6 +69,8 @@ version branch for the PBKDF2/SHA-256 entry points that differ between
   CI (`.github/workflows/offline-native-apk.yml`, `zivpn-cpp-parity`
   job + `build` job).
 - An emulator/device run of the offline APK.
-- A real exported `.ziv` file or a real `zivpn://` link (none supplied;
-  see RESULTS.md).
+- A real `zivpn://` link (none supplied; see RESULTS.md). A real
+  exported `.ziv` file WAS supplied (2026-11-18) and now opens in the
+  native decoder and the oracle; it is kept out of the repo because it
+  contains user credentials (RESULTS.md §9).
 - A live catalog download (out of scope for the offline app).

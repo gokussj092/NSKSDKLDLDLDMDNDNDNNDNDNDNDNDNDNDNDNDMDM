@@ -45,7 +45,7 @@ class MainActivity : ComponentActivity() {
 
     private val supportedFiles=setOf(
         "hc","ehi","nm","npv","npv4","npvt","npvs",
-        "dark","dt","dtunnel","darktunnel","hat","ziv"
+        "dark","dt","dtunnel","darktunnel","hat","ziv","tls","ssc"
     )
 
     private val importer=registerForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
@@ -298,15 +298,17 @@ class MainActivity : ComponentActivity() {
         val npv=first in setOf("npvt","npvt-ssh","npvt-vless","npvt-vmess","npv")
         val dark=first in setOf("dt","dtunnel","dark","darktunnel","dark-tunnel")
         val zivpn=first=="zivpn"
+        val tls=first=="tls"
+        val ssc=first=="ssc"
         val netmod=first.startsWith("nm-") || !value.contains("://")
-        if(!npv && !netmod && !dark && !zivpn){
+        if(!npv && !netmod && !dark && !zivpn && !tls && !ssc){
             ui.error=readableDecodeError("UNSUPPORTED_TEXT","",ui.language);return
         }
         pendingFile=null
         pendingText=if(first.startsWith("nm-")&&value.contains("://"))
             value.substringAfter("://").trim() else value
-        pendingName=when {npv->"NPV text";dark->"Dark Tunnel text";zivpn->"ZIVPN text";else->"NetMod text"}
-        pendingSuffix=when {npv->"npv";dark->"dark";zivpn->"zivpn";else->"autotext"}
+        pendingName=when {npv->"NPV text";dark->"Dark Tunnel text";zivpn->"ZIVPN text";tls->"TLS Tunnel text";ssc->"SSC Custom text";else->"NetMod text"}
+        pendingSuffix=when {npv->"npv";dark->"dark";zivpn->"zivpn";tls->"tls";ssc->"ssc";else->"autotext"}
         ui.pendingPrompt=null
         decodeAttempt()
     }

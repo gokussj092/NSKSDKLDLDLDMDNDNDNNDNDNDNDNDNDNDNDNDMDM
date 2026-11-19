@@ -59,14 +59,13 @@
     }
   ],
   "limitations": [
-    "No real .ziv file exported by app 2.2.5 (confirms the method and the export/import DES asymmetry end to end).",
+    "A real .ziv file exported by app 2.2.5 was supplied 2026-11-18 and now opens in the native decoder and the oracle (47 properties, export-style LF1-only); it is kept OUT of the repo because it contains user credentials, so only its property-key list was recorded (RESULTS.md section 9).",
     "No real zivpn:// link observed; the scheme is from legacy text handlers, not from the app manifest (the 2026-11-14 dossier found no own URI scheme in the APK).",
     "The offline APK itself was NOT built in this VM (no Android SDK/NDK/Gradle toolchain here); the production C++ was verified on the host against Mbed TLS 3.6.7 and 2.28.8, and the Gradle build is covered by the offline-native-apk CI workflow. No emulator/device test was run.",
     "The legacy Kotlin ZivPort (src/main/java, non-distributed baseline) still lacks the DES inner layer: it opens export-style .ziv only and fails legacy (DES-layered) files. It is NOT compiled into the offline APK; the native decoder is the offline implementation. Fixing it is a separate follow-up.",
     "The offline app's visible supported-text label still lists only NPV Tunnel, NetMod Syna and Dark Tunnel (OfflineText.kt, untouched: no UI/design changes in this task)."
   ],
   "manual_steps": [
-    "Real .ziv file exported by app 2.2.5 (confirms the method and the export/import asymmetry end to end).",
     "Real zivpn:// link shared by a user or observed in the app (confirms the text scheme exists in the wild).",
     "Install the rebuilt offline APK on a real phone and import a .ziv file + paste a zivpn:// link (device QA pending)."
   ],
@@ -79,12 +78,12 @@
   "targets": [
     {
       "kind": "files",
-      "note": "Native offline decoder (spdecode_zivpn.cpp) opens legacy DES-layered .ziv, export-style LF1-only .ziv, both known passwords, plain Properties XML and the frozen golden vector; 19/19 host-harness checks and 11/11 repo parity tests. No real .ziv exported by the app yet, so this is synthetic verification, not real-app compatibility.",
-      "status": "VERIFIED_SYNTHETIC"
+      "note": "Native offline decoder (spdecode_zivpn.cpp) opens legacy DES-layered .ziv, export-style LF1-only .ziv, both known passwords, plain Properties XML and the frozen golden vector; 21/21 host-harness checks and 13/13 repo parity tests. VERIFIED_REAL: a real .ziv exported by app 2.2.5 (2,778 B, LF1-only) opens with 47 properties, oracle and native in full agreement; its file.msg emoji (surrogate-pair references) is handled since the 2026-11-19 fix (RESULTS.md section 9). The real file is kept out of the repo (user credentials).",
+      "status": "VERIFIED_REAL"
     },
     {
       "kind": "text",
-      "note": "Native offline zivpn:// decoder (AES-256-CBC, SHA256 password, zero IV) opens XML and JSON links and bare tokens; 19/19 host-harness checks and 11/11 repo parity tests. The scheme comes from the legacy text handlers (66.py lineage), NOT from the app manifest (the 2026-11-14 dossier found no own URI scheme in the APK); no real zivpn:// link has been observed, so this is synthetic verification only.",
+      "note": "Native offline zivpn:// decoder (AES-256-CBC, SHA256 password, zero IV) opens XML and JSON links and bare tokens; 21/21 host-harness checks and 13/13 repo parity tests. The scheme comes from the legacy text handlers (66.py lineage), NOT from the app manifest (the 2026-11-14 dossier found no own URI scheme in the APK); no real zivpn:// link has been observed, so this is synthetic verification only.",
       "status": "VERIFIED_SYNTHETIC"
     },
     {
@@ -94,7 +93,7 @@
     },
     {
       "kind": "export",
-      "note": "PENDING: a real .ziv exported by app 2.2.5 and a real zivpn:// link are still missing; they would confirm the method and the LF1/DES asymmetry end to end.",
+      "note": "PARTIAL: a real .ziv exported by app 2.2.5 now opens (see files target); a real zivpn:// link is still missing.",
       "status": "PENDING"
     }
   ],
@@ -141,7 +140,6 @@
     }
   ],
   "unresolved_questions": [
-    "Real .ziv file exported by app 2.2.5 (confirms the method and the export/import asymmetry end to end).",
     "Real zivpn:// link (confirms the text scheme exists in the wild).",
     "Whether the legacy Kotlin ZivPort should also gain the DES layer (non-distributed baseline only)."
   ],

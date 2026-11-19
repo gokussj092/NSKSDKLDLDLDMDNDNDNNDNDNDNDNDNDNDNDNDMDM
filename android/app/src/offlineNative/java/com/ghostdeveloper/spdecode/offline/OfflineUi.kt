@@ -390,7 +390,7 @@ private fun Home(state:OfflineUiState,action:OfflineActions,p:OfflinePalette) {
             onDismissRequest={showImportFormats=false},
             title={Text(txt("import_config",state.language))},
             text={Text(txt("import_description",state.language)+
-                "\n\n.hc · .ehi · .nm · .npv · .npvs · .npvt · .npv4* · .dark · .dt · .hat")},
+                "\n\n.hc · .ehi · .nm · .npv · .npvs · .npvt · .npv4* · .dark · .dt · .hat · .ziv · .tls · .ssc")},
             confirmButton={TextButton(onClick={showImportFormats=false;action.importFile()}){
                 Text(txt("import_file",state.language))
             }},
