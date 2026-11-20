@@ -147,6 +147,9 @@ _C8_FILE_ENGINES = {
     "wsuiou": ("decoders/Python/apps/Click_Tunnel/Click_Tunnel_archivos.py", "Click Tunnel 1.0"),
     "fxt": ("decoders/Python/apps/Fx_Tunnel/Fx_Tunnel_archivos.py", "Fx Tunnel 4.8"),
     "pausa": ("decoders/Python/apps/M_Light/M_Light_archivos.py", "M Light 3.1.55"),
+    # C8 (2026-11-20 integration): NetFlux VPN 1.1 is a separate provider
+    # that shares the RENZ method and catalog with GCP VPN 1.1.
+    "netflux": ("decoders/Python/apps/NETFLUX_VPN/file_decoder.py", "NetFlux VPN 1.1"),
 }
 
 def load_runtime_file_engines() -> dict[str, dict[str, str]]:
@@ -681,7 +684,7 @@ def decode_file(suffix: str, contents: bytes, *, timeout: int = TIMEOUT_SECONDS,
 def decode_provider_catalog(provider_id: str, contents: bytes) -> dict:
     """One fixed provider codec, child-isolated; broker performs all network I/O."""
     from cloud.workers.python.supplied_bridge import BY_ID as supplied_providers
-    if provider_id not in ("thailand-vpn", "kham-vpn", "opentunnel-ssh", "md-proxy-vpn", "xxpicore-tunnel", "catnet-vpn", "litron-vpn", "litron-pro-vpn", "speigo-vpn-configs", "speigo-vpn-ssh", "genis-vpn", "speicers-turbo-vpn", "http-conexion", "namo-vpn", "fnf-tunnel-bd", "alsaher-vip", "halcon-r-net", "ha-tunnel-plus", "ultra-tunnel", "zig-tunnel", "enaa-tunnel", "alfaisal-tunnel-plus", "izph-vpn-pro", "vip-snipher-pro", "netcol-vpn", "wolf-custom-vpn", "jyfast-vpn-ultra", "tunneldoom-vpn", "mtm-tunnel-lite", "mnr-tunnel-plus", "bd-net-vpn", "aura-net-vpn", "apna-vpn", "any-vpn", "speicers-pro-vpn", "tx-tunnel", "mm-tunnel", "creeb-vpn", "abowaged-vpn", "7net-vpn", "xhypher-tunnel-pro", "ut-loop-pro-vpn", "turbomx-vpn", "superflash-vpn", "rmp-tunnel-pro", "rjc-tunnel-pro", "proneet-vpn", "onspace-vpn", "mx-tunnel-pro", "megatunnel", "http-internet-infinito", "24clan-green", "hx-tunnel", "mkk-hyper", "my-tunnel-proxy", "robust-tunnel", "royal-tunnel", "trv-tunnel", "4u-tunnel-lite", "ac-tunnel-vpn", "austroplus-vpn", "http-fenixvpn", "http-jireh", "http-socketclay", "http-wakko", "v2ray-tunnel-plus", "eut-vpn", "focus-vpn-cloud", "freedom-vpn", "tunelguard-vpn", "tunneltweak", "ksh-vpn", "dtunnel-mod", "gcp-vpn"):
+    if provider_id not in ("thailand-vpn", "kham-vpn", "opentunnel-ssh", "md-proxy-vpn", "xxpicore-tunnel", "catnet-vpn", "litron-vpn", "litron-pro-vpn", "speigo-vpn-configs", "speigo-vpn-ssh", "genis-vpn", "speicers-turbo-vpn", "http-conexion", "namo-vpn", "fnf-tunnel-bd", "alsaher-vip", "halcon-r-net", "ha-tunnel-plus", "ultra-tunnel", "zig-tunnel", "enaa-tunnel", "alfaisal-tunnel-plus", "izph-vpn-pro", "vip-snipher-pro", "netcol-vpn", "wolf-custom-vpn", "jyfast-vpn-ultra", "tunneldoom-vpn", "mtm-tunnel-lite", "mnr-tunnel-plus", "bd-net-vpn", "aura-net-vpn", "apna-vpn", "any-vpn", "speicers-pro-vpn", "tx-tunnel", "mm-tunnel", "creeb-vpn", "abowaged-vpn", "7net-vpn", "xhypher-tunnel-pro", "ut-loop-pro-vpn", "turbomx-vpn", "superflash-vpn", "rmp-tunnel-pro", "rjc-tunnel-pro", "proneet-vpn", "onspace-vpn", "mx-tunnel-pro", "megatunnel", "http-internet-infinito", "24clan-green", "hx-tunnel", "mkk-hyper", "my-tunnel-proxy", "robust-tunnel", "royal-tunnel", "trv-tunnel", "4u-tunnel-lite", "ac-tunnel-vpn", "austroplus-vpn", "http-fenixvpn", "http-jireh", "http-socketclay", "http-wakko", "v2ray-tunnel-plus", "eut-vpn", "focus-vpn-cloud", "freedom-vpn", "tunelguard-vpn", "tunneltweak", "ksh-vpn", "dtunnel-mod", "gcp-vpn", "netflux-vpn"):
         if provider_id not in supplied_providers:
             raise DecodeFailure("UNSUPPORTED_FORMAT")
     if not isinstance(contents, bytes) or not contents:

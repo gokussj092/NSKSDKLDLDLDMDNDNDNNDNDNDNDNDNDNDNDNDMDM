@@ -239,6 +239,14 @@
       "credentialFields": []
     },
     {
+      "suffix": "netflux",
+      "name": "RENZ / NETFLUX",
+      "kind": "file",
+      "offlineSupported": false,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
       "suffix": "omanova",
       "name": "XOR VPN family",
       "kind": "file",

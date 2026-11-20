@@ -470,6 +470,12 @@
       "kind": "text"
     },
     {
+      "prefix": "netfluxvpn://",
+      "name": "NetFlux VPN",
+      "suffix": "netflux",
+      "kind": "text"
+    },
+    {
       "prefix": "eut://",
       "name": "EUT VPN",
       "suffix": "eut",

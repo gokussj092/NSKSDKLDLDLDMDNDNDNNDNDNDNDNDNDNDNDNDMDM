@@ -1,0 +1,94 @@
+{
+  "analysisLimit": "No field-mode table recovered from the APK; the catalog decoder reuses the verified generic RENZ route instead of inventing one. HMAC connection authentication NOT_OBSERVED (see dossier MANIFEST.json connection_authentication).",
+  "analysisTools": [
+    "analysis/app.netfluxvpn.net/11/tools/inspect_netflux.py",
+    "analysis/app.netfluxvpn.net/11/tools/dex_strings_netflux.py",
+    "analysis/app.netfluxvpn.net/11/tools/verify_netflux_catalog.py"
+  ],
+  "analyzedBaseCommit": "8af15a4a",
+  "branch": "ci/unity-ads-online-qa",
+  "catalog": {
+    "authenticatedCiphertext": false,
+    "deploymentEnabledByDefault": false,
+    "entrypoint": "server_catalog_decoder.py",
+    "providerId": "netflux-vpn",
+    "publicCatalogVersion": 94,
+    "remoteAuthorization": "User-authorized fixed public catalog read",
+    "remoteBlobBytes": 505176,
+    "remoteBlobSha256": "fff27a6d2a7bdb23275fdcd3bd947baaddc70dda73e89921e1421c156fb8044e",
+    "remoteFieldsDecrypted": 2736,
+    "remoteFieldsUndecrypted": 51,
+    "remoteNetworksObserved": 334,
+    "remoteServersObserved": 90,
+    "remoteUndecryptedNote": "51 short presentation fields (Servers[].Name/Subname, Networks[].Info) served as-is; SlowDNS.PubKey (10) DOES open with the generic main mode to a 64-char hex key -- see codec.py. No field-mode table invented: no APK evidence for one. Same blob as GCP VPN, so same counts.",
+    "remoteValidated": true,
+    "remoteVersion": "3304",
+    "runtimeValidation": {
+      "completeLiveCliEqual": true,
+      "completeRealWorkerEqual": false,
+      "completeStdinCliEqual": true,
+      "note": "Synthetic catalog round-trips through codec, stdin CLI and the isolated worker (tests/test_netfluxvpn.py). Live catalog decodes end to end through the same codec in 1-2 s (worker cap 120 s for catalogs); the live run is not stored in Git."
+    },
+    "source": "https://raw.githubusercontent.com/kiranoble/config/refs/heads/main/netflux",
+    "sourceEvidence": [
+      {
+        "bytes": 505176,
+        "completeJdkEqual": false,
+        "networks": 334,
+        "note": "Live HTTPS read + shared RENZ route; no JDK oracle for this catalog. Structure and counts only; no decrypted values stored.",
+        "servers": 90,
+        "sha256": "fff27a6d2a7bdb23275fdcd3bd947baaddc70dda73e89921e1421c156fb8044e",
+        "source": "download-live-2026-11-20",
+        "version": "3304"
+      }
+    ],
+    "testScope": "New NetFlux VPN Python tests plus the full RENZ regression suites (see TESTING.md); Node broker + gateway tests in cloud/web/tests/netfluxvpn-remote.test.mjs.",
+    "validatedOn": "2026-11-20",
+    "validation": "Live catalog opens with the current renz.py keys (no rotation); the live blob is byte-identical to gcpvpn2026. Synthetic catalog fixtures verify every nested mode (main / speciale / sensitive) plus rejection of corrupt, truncated, HTML and wrong-profile input. File/text round-trip 7/7 synthetic via netflux.py (dossier RESULTS.md). No real .netflux export or real netfluxvpn:// link has been supplied yet."
+  },
+  "compatibleVersions": [
+    "1.1"
+  ],
+  "dependencies": {
+    "pycryptodome": "3.23.0",
+    "python": ">=3.10",
+    "sharedSourceNote": "Remote-head hash at integration time (8af15a4a); renz.py is UNCHANGED -- no 'netflux' profile and no .netflux / netfluxvpn:// registration. Files, texts and catalog dispatch EXPLICITLY to the existing 'gcpvpn' profile (same key material, same live catalog); if the NetFlux and GCP blobs ever diverge, that is a separate decision. NetFlux stays online-only, no offline port, like GCP VPN.",
+    "sharedSourceSha256": {
+      "../../renz.py": "2acf2c07545fa2c68f5635a7b51e2db959d530ebf670c88de4e61d65320ebb21"
+    },
+    "supportFiles": [
+      "../../renz.py"
+    ]
+  },
+  "engine": "python-renz-aes128cbc-xxtea-byteoffset-threefish256-pbkdf2-aes256cbc",
+  "engineVersion": 1,
+  "files": {
+    "canonicalScript": "../../renz.py",
+    "confirmedScheme": "netfluxvpn://",
+    "entrypoint": "file_decoder.py",
+    "exporterCertified": false,
+    "extensions": [
+      "netflux"
+    ],
+    "historicalAliasesRetained": [],
+    "newRouteRegistered": false,
+    "realExportSupplied": false,
+    "supported": true,
+    "validation": "Explicit dispatch to the existing 'gcpvpn' profile (no 'netflux' profile registered in renz.py, no Android change); synthetic fixtures 7/7 file + 7/7 text through the netflux.py round-trip (see dossier RESULTS.md). No independent real export or Android roundtrip."
+  },
+  "icon": {
+    "file": "NETFLUX_VPN.png",
+    "height": 240,
+    "pngBytes": 51006,
+    "pngSha256": "0fd1bf191d2d162c458ed032c53e96da55e5d13d94931f26eab0d9a20610898a",
+    "policy": "Exact original PNG bytes; no redraw, conversion or resize. The 512x512 netfluxvpn.png in the deliverable ZIP is a Lanczos upscale and was NOT used.",
+    "source": "app.netfluxvpn.net.apk:res/h/cd.png (androguard launcher icon)",
+    "width": 240
+  },
+  "id": "netflux-vpn",
+  "name": "NetFlux VPN",
+  "package": "app.netfluxvpn.net",
+  "sourceApksSha256": "6e02e448b1543e251c0df7271f2a2ca0bbad37aa25ff023cc514f2c210d3a515",
+  "sourceBaseApkSha256": "be43eb04debfce77b4e1ee1372a4599cd1002871c15cf5c491cf5e04a4e111f3",
+  "versionCode": 11
+}

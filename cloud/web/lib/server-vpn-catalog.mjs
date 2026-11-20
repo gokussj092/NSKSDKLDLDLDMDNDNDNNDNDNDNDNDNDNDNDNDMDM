@@ -7,7 +7,7 @@ import {providerEnabled} from "./server-vpn-provider.mjs";
 import {SUPPLIED_CATALOG_ITEMS,suppliedProviderConfigured} from "./supplied-integrations.mjs";
 import {catalogDefaultEnabled} from "./catalog-provider-policy.mjs";
 
-export const CATALOG_VERSION = 93; // PausaVPN (M Light) public naming + Tunneltweak Cloud UUID integration; one catalog revision for this batch.
+export const CATALOG_VERSION = 94; // NetFlux VPN 1.1 cloud catalog (netflux-vpn, Version 3304 live, 90 servers / 334 networks); one catalog revision for this batch.
 export const RECHECK_SECONDS = 15 * 60; // Version-only recovery; full download occurs on version change.
 
 /** Monotonic deployment version. Bump this override for ANY metadata, icon
@@ -76,6 +76,8 @@ const BASE_ITEMS = [
   {id:"7net-vpn", name:"7NET VPN", icon:"7net-vpn.png", remote:"7net-vpn"},
   // Live catalog validated 2026-11-19 (Version 3304, 90 servers, 334 networks).
   {id:"gcp-vpn", name:"GCP VPN", icon:"gcp-vpn.png", remote:"gcp-vpn"},
+  // Live catalog validated 2026-11-20 (Version 3304, 90 servers, 334 networks; blob byte-identical to gcpvpn2026).
+  {id:"netflux-vpn", name:"NetFlux VPN", icon:"netflux-vpn.png", remote:"netflux-vpn"},
   {id:"xhypher-tunnel-pro", name:"Xhypher Tunnel Pro", icon:"xhypher-tunnel-pro.png", remote:"xhypher-tunnel-pro"},
   // Official endpoint returns HTML; a valid signed OTA response is still required.
   {id:"ut-loop-pro-vpn", name:"UT Loop Pro VPN", icon:"ut-loop-pro-vpn.png", remote:null},

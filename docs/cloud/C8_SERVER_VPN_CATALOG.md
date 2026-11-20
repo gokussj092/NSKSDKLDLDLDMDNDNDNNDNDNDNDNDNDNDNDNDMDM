@@ -721,3 +721,55 @@ HEAD limpio) y suite Node completa con solo fallos preexistentes /
 uno flaky (DTunnel, pasa aislado). No se aportó una exportación real
 independiente (`.gcpvpn` real o `gcpvpn://` real pendientes); estado
 `VERIFIED_SYNTHETIC`. Sin despliegue, fusión ni cambios Android.
+
+## NetFlux VPN 1.1 (11) — catálogo en la nube, versión pública 94
+
+Proveedor fijo `netflux-vpn`, paquete `app.netfluxvpn.net`, versionCode 11.
+App SEPARADA de GCP VPN (`com.gcpvpn.net`): proveedor propio, sin fusión
+ni cambios en la entrada `gcp-vpn`, la tarjeta GCP ni el módulo
+`GCP_VPN`. Carpeta `decoders/Python/apps/NETFLUX_VPN/` con
+`server_catalog_decoder.py`, `codec.py`, `file_decoder.py`, PNG original,
+manifest, README y TESTING. Sigue el patrón 7NET/GCP (broker HTTPS fijo,
+worker aislado, contrato de documento completo, control administrativo
+individual, gateway enriquecido), pero **sin codec propio por campo**: no
+hay evidencia del APK para una tabla de modos propia, y la ruta RENZ
+genérica ya descifra el catálogo en vivo. El sobre exterior es Base64 →
+AES-128-CBC → XXTEA propio → restar 2 por byte; los campos anidados usan
+el pase recursivo genérico (hosts Threefish/HKDF, credenciales
+PBKDF2-XXTEA-AES, resto modo principal). La ruta `.netflux` /
+`netfluxvpn://` despacha EXPLÍCITAMENTE al perfil existente `gcpvpn`
+de `decoders/Python/renz.py` — sin perfil nuevo, por regla de
+arquitectura (una actualización de catálogo, archivos o textos en el
+servidor no toca la APK) — con el MISMO material de claves que `gcpvpn`
+y URL propia
+`https://raw.githubusercontent.com/kiranoble/config/refs/heads/main/netflux`.
+
+Lectura pública autorizada del 2026-11-20: HTTP 200,
+**505176 bytes, SHA-256
+`fff27a6d2a7bdb23275fdcd3bd947baaddc70dda73e89921e1421c156fb8044e`,
+Version 3304, 90 servidores / 334 redes** — blob byte a byte IDÉNTICO
+al de `gcpvpn2026`, por lo que el pase recursivo descifra los mismos
+2736 campos y sirve como están los mismos 51 campos cortos de
+presentación (`Servers[].Name`/`Subname`, `Networks[].Info`).
+`SlowDNS.PubKey` (10) abre con el modo principal a una clave hex de
+64 caracteres. Sin rotación de claves. HMAC de autenticación de
+conexión: `NOT_OBSERVED`.
+
+PNG original exacto del icono launcher `res/h/cd.png`: 240×240,
+51006 bytes, SHA-256
+`0fd1bf191d2d162c458ed032c53e96da55e5d13d94931f26eab0d9a20610898a`.
+Catálogo mínimo **94**; conserva switches y versión persistente.
+**5 tests Python y 6 web nuevos aprobados** (el Python añade el
+round-trip de enlace `netfluxvpn://` al patrón de 4 de GCP).
+Sin despliegue, fusión ni cambios Android.
+
+Pendiente fuera de esta entrega: fila `.netflux` en
+`docs/cloud/C0_FORMAT_MATRIX.csv` como documentación (el conteo ya
+cuadra en 277 porque el test `file-formats.test.mjs` deriva los
+conocidos de `_C8_FILE_ENGINES` en `engine.py`, que incluye `netflux`).
+Los contadores de inventario RENZ se mantienen en 16 sufijos /
+23 protocolos / 14 perfiles por decisión de arquitectura (las
+actualizaciones de catálogo, archivos y textos en el servidor no tocan
+la APK); no hay que actualizarlos. No se aportó una
+exportación real independiente (`.netflux` real o `netfluxvpn://`
+real pendientes); estado `VERIFIED_SYNTHETIC`.

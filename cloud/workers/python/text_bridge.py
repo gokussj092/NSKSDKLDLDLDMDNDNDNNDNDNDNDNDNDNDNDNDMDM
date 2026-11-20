@@ -107,6 +107,14 @@ def dispatch(text: str, *, password: str | None = None) -> str | None:
             return module.render(module.cloud_reference(value.encode("utf-8")))
         except Exception:
             return None
+    if lowered.startswith("netfluxvpn://"):
+        # NetFlux VPN 1.1: explicit dispatch to the shared RENZ 'gcpvpn'
+        # profile (same key material, same live catalog). No 'netflux'
+        # profile is registered in renz.py, so the canonical RENZ route
+        # cannot serve this scheme. The scheme is unambiguous: a None
+        # result is final, never a fallback to renz.
+        module = importlib.import_module("decoders.Python.apps.NETFLUX_VPN.file_decoder")
+        return module.decode_text(value)
     # C8 isolated original application codecs. These prefixes are unambiguous.
     c8_links = (
         ("bdnet://", "decoders.Python.apps.BD_NET_VPN.file_decoder"),

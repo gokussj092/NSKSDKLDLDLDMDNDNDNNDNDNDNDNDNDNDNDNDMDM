@@ -74,7 +74,7 @@ test("only registered icon identifiers are served",async()=>{
 
 import {providerIds,providerEnabled,downloadVpnCatalog} from "../lib/server-vpn-provider.mjs";
 test("only fixed catalog providers are eligible for remote broker",async()=>{
-  assert.deepEqual(providerIds().sort(),[...new Set(["24clan-green","4u-tunnel-lite","7net-vpn","abowaged-vpn","ac-tunnel-vpn","alfaisal-tunnel-plus","alsaher-vip","any-vpn","apna-vpn","aura-net-vpn","austroplus-vpn","bd-net-vpn","catnet-vpn","enaa-tunnel","fnf-tunnel-bd","focus-vpn-cloud","freedom-vpn","gcp-vpn","genis-vpn","ha-tunnel-plus","halcon-r-net","http-conexion","http-fenixvpn","http-internet-infinito","http-jireh","http-socketclay","http-wakko","hx-tunnel","izph-vpn-pro","jyfast-vpn-ultra","kham-vpn","ksh-vpn","litron-pro-vpn","litron-vpn","md-proxy-vpn","megatunnel","mkk-hyper","mm-tunnel","mnr-tunnel-plus","mtm-tunnel-lite","mx-tunnel-pro","my-tunnel-proxy","namo-vpn","netcol-vpn","onspace-vpn","opentunnel-ssh","rjc-tunnel-pro","rmp-tunnel-pro","robust-tunnel","royal-tunnel","speicers-pro-vpn","speicers-turbo-vpn","speigo-vpn-configs","speigo-vpn-ssh","superflash-vpn","thailand-vpn","trv-tunnel","tunneldoom-vpn","tunneltweak","turbomx-vpn","tx-tunnel","ultra-tunnel","v2ray-tunnel-plus","vip-snipher-pro","wolf-custom-vpn","xhypher-tunnel-pro","xxpicore-tunnel","zig-tunnel",...suppliedProviderIds()])].sort());
+  assert.deepEqual(providerIds().sort(),[...new Set(["24clan-green","4u-tunnel-lite","7net-vpn","abowaged-vpn","ac-tunnel-vpn","alfaisal-tunnel-plus","alsaher-vip","any-vpn","apna-vpn","aura-net-vpn","austroplus-vpn","bd-net-vpn","catnet-vpn","enaa-tunnel","fnf-tunnel-bd","focus-vpn-cloud","freedom-vpn","gcp-vpn","genis-vpn","ha-tunnel-plus","halcon-r-net","http-conexion","http-fenixvpn","http-internet-infinito","http-jireh","http-socketclay","http-wakko","hx-tunnel","izph-vpn-pro","jyfast-vpn-ultra","kham-vpn","ksh-vpn","litron-pro-vpn","litron-vpn","md-proxy-vpn","megatunnel","mkk-hyper","mm-tunnel","mnr-tunnel-plus","mtm-tunnel-lite","mx-tunnel-pro","my-tunnel-proxy","namo-vpn","netcol-vpn","netflux-vpn","onspace-vpn","opentunnel-ssh","rjc-tunnel-pro","rmp-tunnel-pro","robust-tunnel","royal-tunnel","speicers-pro-vpn","speicers-turbo-vpn","speigo-vpn-configs","speigo-vpn-ssh","superflash-vpn","thailand-vpn","trv-tunnel","tunneldoom-vpn","tunneltweak","turbomx-vpn","tx-tunnel","ultra-tunnel","v2ray-tunnel-plus","vip-snipher-pro","wolf-custom-vpn","xhypher-tunnel-pro","xxpicore-tunnel","zig-tunnel",...suppliedProviderIds()])].sort());
   for(const id of providerIds()) assert.equal(providerEnabled(id,{CLOUD_SERVER_VPN_ENABLED:"false"}),false);
   assert.equal(providerEnabled("https://attacker.invalid/",{CLOUD_SERVER_VPN_ENABLED:"true"}),false);
   await assert.rejects(()=>downloadVpnCatalog("https://attacker.invalid/"),{code:"UNSUPPORTED_FORMAT"});
@@ -301,6 +301,13 @@ test("GCP VPN original PNG and validated complete catalog follow provider contro
  assert.equal(app.name,"GCP VPN");assert.equal(app.decodeEnabled,true);
  assert.equal(app.iconSha256,"d65fec4b2cf0bf4325235b7a676c913b587e5f438a8313342fbbd1560a040a3a");
  assert.equal(catalog({availability:{"gcp-vpn":false}}).apps.find(x=>x.id==="gcp-vpn").decodeEnabled,false);
+});
+
+test("NetFlux VPN original PNG and validated complete catalog follow provider controls",()=>{
+ const app=catalog({availability:{"netflux-vpn":true}}).apps.find(x=>x.id==="netflux-vpn");
+ assert.equal(app.name,"NetFlux VPN");assert.equal(app.decodeEnabled,true);
+ assert.equal(app.iconSha256,"0fd1bf191d2d162c458ed032c53e96da55e5d13d94931f26eab0d9a20610898a");
+ assert.equal(catalog({availability:{"netflux-vpn":false}}).apps.find(x=>x.id==="netflux-vpn").decodeEnabled,false);
 });
 
 
