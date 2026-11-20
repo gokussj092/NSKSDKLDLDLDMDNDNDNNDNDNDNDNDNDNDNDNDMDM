@@ -4,6 +4,9 @@ on:
     branches: [ci/unity-ads-online-qa]
     paths:
       - .github/workflows/android-unity-ads-online-qa.yml
+      - android/app/build.gradle.kts
+      - android/app/src/main/java/com/ghostdeveloper/spdecode/NativeCommerceAuth.kt
+      - android/app/src/main/java/com/ghostdeveloper/spdecode/NativeCommerceScreens.kt
       - android/app/src/main/java/com/ghostdeveloper/spdecode/SpDecodeApp.kt
       - android/app/src/main/java/com/ghostdeveloper/spdecode/AccountDrawer.kt
       - android/app/src/main/java/com/ghostdeveloper/spdecode/AppAnalysisScreen.kt
@@ -250,6 +253,7 @@ jobs:
         run: |
           set -euo pipefail
           python3 scripts/ci/current_android_contracts.py --github-env "$GITHUB_ENV"
+          python3 -m unittest tests.test_native_google_auth_contract -v
           python3 scripts/android_s3_security_audit.py
           python3 scripts/android_s4_provisioning_audit.py
           # Normal production pacing; dashboard must remain in test mode for QA.

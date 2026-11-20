@@ -163,7 +163,7 @@ internal class NativeCommerceAuth(private val context:Context) {
                         val buffer=ByteArray(4096)
                         val count=stream.read(buffer)
                         if(count>0)JSONObject(String(buffer,0,count,Charsets.UTF_8))
-                            .optJSONObject("error") else null
+                            .let { parsed -> parsed.optJSONObject("error") ?: parsed } else null
                     }
                 }.getOrNull()
                 val returned=errorObject?.optString("code")
@@ -251,25 +251,33 @@ internal class NativeCommerceAuth(private val context:Context) {
             ?:throw AuthFailure("SESSION_NOT_ISSUED")
         save(session)
         return try {
-            account()?:throw AuthFailure("SESSION_NOT_CONFIRMED")
+            account(strict=true)?:throw AuthFailure("SESSION_NOT_CONFIRMED")
         }catch(e:AuthFailure){throw e}
         catch(_:Exception){throw AuthFailure("ACCOUNT_SESSION_UNAVAILABLE")}
     }
-    suspend fun account():JSONObject?{
+    suspend fun account(strict:Boolean=false):JSONObject?{
         if(sessionToken()==null){CommerceSession.clear();return null}
         val response=try{http("/api/account",authenticated=true).first}
             catch(e:AuthFailure){
                 if(e.code=="SIGN_IN_REQUIRED")wipeSession()
+                if(strict)throw e
                 return null
-            }catch(_:Exception){return null}
+            }catch(_:Exception){
+                if(strict)throw AuthFailure("ACCOUNT_SESSION_UNAVAILABLE")
+                return null
+            }
         // A temporary commerce outage is not session revocation. Keep the
         // Android Keystore-encrypted bearer for recovery after server rollout,
         // but don't expose cached entitlements while authentication is offline.
         if(!response.optBoolean("authEnabled",true)){
-            CommerceSession.clear();return null
+            CommerceSession.clear()
+            if(strict)throw AuthFailure("NATIVE_AUTH_DISABLED_ON_SERVER")
+            return null
         }
         if(response.isNull("user")||response.optJSONObject("user")==null){
-            wipeSession();return null
+            wipeSession()
+            if(strict)throw AuthFailure("SESSION_NOT_CONFIRMED")
+            return null
         }
         val streak=response.optJSONObject("streak")
         if(streak?.has("timeZoneLocked")==true && !streak.optBoolean("timeZoneLocked")){
@@ -333,7 +341,7 @@ internal class NativeCommerceAuth(private val context:Context) {
             ?:response.first.optString("token").takeIf{it.isNotBlank()}
             ?:throw AuthFailure("SESSION_NOT_ISSUED")
         save(session)
-        return account()?:throw AuthFailure("SESSION_NOT_CONFIRMED")
+        return account(strict=true)?:throw AuthFailure("SESSION_NOT_CONFIRMED")
     }
     suspend fun reauthenticateWithGoogle(expectedId:String):JSONObject {
         val snapshot=signInWithGoogle(true)

@@ -6,6 +6,8 @@ on:
     paths:
       - '.github/workflows/android-online-play-aab-signed.yml'
       - 'android/app/build.gradle.kts'
+      - 'android/app/src/main/java/com/ghostdeveloper/spdecode/NativeCommerceAuth.kt'
+      - 'android/app/src/main/java/com/ghostdeveloper/spdecode/NativeCommerceScreens.kt'
   workflow_dispatch:
 
 permissions:
@@ -50,6 +52,7 @@ jobs:
         run: |
           set -euo pipefail
           python3 scripts/ci/current_android_contracts.py --github-env "$GITHUB_ENV"
+          python3 -m unittest tests.test_native_google_auth_contract -v
           python3 scripts/ci/verify_aab_locales.py --source-only
           python3 -m unittest tests.test_android_play_compatibility tests.test_android_play_update_artifact_contract -v
           python3 -m unittest tests.test_android_unity_release_contract tests.test_cloud_c8_user_errors -v
