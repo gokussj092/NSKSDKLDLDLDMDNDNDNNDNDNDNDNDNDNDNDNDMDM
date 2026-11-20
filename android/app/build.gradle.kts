@@ -805,8 +805,8 @@ android {
         if(nativeOffline) applicationId = "com.ghostdeveloper.spdecode" + ".offline"
         minSdk = 24
         targetSdk = 36
-        versionCode = 46
-        versionName = "1.1.31"
+        versionCode = 45
+        versionName = "1.1.30"
         if(nativeOffline) versionName = listOf("1.1.27", "offline.alpha1").joinToString("-")
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         // A public API origin is not a secret; all server secrets stay in the VPS.

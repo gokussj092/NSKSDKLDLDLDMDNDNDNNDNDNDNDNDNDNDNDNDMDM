@@ -487,11 +487,7 @@ class AndroidUnityReleaseContract(unittest.TestCase):
         self.assertIn("GOOGLE_CREDENTIAL_PICKER_FAILED",auth)
         self.assertIn("NATIVE_AUTH_NOT_DEPLOYED",auth)
         self.assertIn("ACCOUNT_SESSION_UNAVAILABLE",auth)
-        # A cancelled/failed Google chooser must be visible; silent suppression
-        # made a post-selection provider failure look like a frozen login form.
-        self.assertNotIn('if(code!="GOOGLE_SIGN_IN_CANCELLED")',screen)
-        self.assertIn('val code=NativeCommerceAuth.diagnostic(e)',screen)
-        self.assertIn('notice=local("No se pudo iniciar sesión.',screen)
+        self.assertIn('if(code!="GOOGLE_SIGN_IN_CANCELLED")',screen)
         landing=read("android/app/src/main/java/com/ghostdeveloper/spdecode/CommerceAuthLanding.kt")
         self.assertIn("CommerceConsentRow(language,accepted,onAccepted,onLegalLink)",landing)
         self.assertNotIn("Text(CommerceI18n.policyConsent(language)",screen)

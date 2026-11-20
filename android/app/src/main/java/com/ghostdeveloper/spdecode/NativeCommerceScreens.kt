@@ -583,11 +583,10 @@ internal fun NativeCommerceScreens(start:String,onExit:()->Unit,
                             }catch(e:kotlinx.coroutines.CancellationException){throw e}
                             catch(e:Exception){
                                 val code=NativeCommerceAuth.diagnostic(e)
-                                // Play Services may also report a provider failure as
-                                // cancellation after account selection. Do not hide it.
-                                notice=local("No se pudo iniciar sesión. Verifica Google y tu conexión.",
-                                    "Sign-in failed. Verify Google and your connection.")+
-                                    " ("+code+")"
+                                if(code!="GOOGLE_SIGN_IN_CANCELLED")
+                                    notice=local("No se pudo iniciar sesión. Verifica Google y tu conexión.",
+                                        "Sign-in failed. Verify Google and your connection.")+
+                                        " ("+code+")"
                             }finally{signingIn=false}
                         }
                     },onEmail={page="email-login"})
