@@ -5,6 +5,7 @@ on:
     branches: [ci/unity-ads-online-qa]
     paths:
       - '.github/workflows/android-online-play-aab-signed.yml'
+      - 'android/app/build.gradle.kts'
   workflow_dispatch:
 
 permissions:
