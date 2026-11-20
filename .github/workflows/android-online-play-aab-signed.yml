@@ -1,0 +1,143 @@
+name: SP-DECODE Online Play AAB (Unity Ads, signed)
+# Builds a Play upload bundle only. Does not publish to Play Console.
+on:
+  push:
+    branches: [ci/unity-ads-online-qa]
+    paths:
+      - '.github/workflows/android-online-play-aab-signed.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: spdecode-online-play-aab-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  play-aab:
+    if: github.repository_owner == 'gokussj092' && github.ref == 'refs/heads/ci/unity-ads-online-qa'
+    runs-on: ubuntu-latest
+    timeout-minutes: 80
+    env:
+      SPDECODE_CLOUD_API_BASE_URL: https://api.spdecode.xyz
+      SPDECODE_CLOUD_RELEASE: "true"
+      SPDECODE_CLOUD_QA_BUILD: "false"
+      SPDECODE_UNITY_APP_KEY: "29755d275"
+      SPDECODE_UNITY_INTERSTITIAL_ID: "ouy4i00ulql2cxj3"
+      SPDECODE_UNITY_UMP_APP_ID: "ca-app-pub-6771239583897519~8354694124"
+      ORG_GRADLE_PROJECT_noticeFirebaseAPP_ID: ${{ vars.SPDECODE_NOTICE_FIREBASE_APP_ID || secrets.SPDECODE_NOTICE_FIREBASE_APP_ID }}
+      ORG_GRADLE_PROJECT_noticeFirebaseAPI_KEY: ${{ vars.SPDECODE_NOTICE_FIREBASE_API_KEY || secrets.SPDECODE_NOTICE_FIREBASE_API_KEY }}
+      ORG_GRADLE_PROJECT_noticeFirebasePROJECT_ID: ${{ vars.SPDECODE_NOTICE_FIREBASE_PROJECT_ID || secrets.SPDECODE_NOTICE_FIREBASE_PROJECT_ID }}
+      ORG_GRADLE_PROJECT_noticeFirebaseSENDER_ID: ${{ vars.SPDECODE_NOTICE_FIREBASE_SENDER_ID || secrets.SPDECODE_NOTICE_FIREBASE_SENDER_ID }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.11.1"
+      - name: Verify release source, Cloud and Google Play contracts
+        run: |
+          set -euo pipefail
+          python3 scripts/ci/current_android_contracts.py --github-env "$GITHUB_ENV"
+          python3 scripts/ci/verify_aab_locales.py --source-only
+          python3 -m unittest tests.test_android_play_compatibility tests.test_android_play_update_artifact_contract -v
+          python3 -m unittest tests.test_android_unity_release_contract tests.test_cloud_c8_user_errors -v
+          python3 scripts/android_s3_security_audit.py
+          python3 scripts/android_s4_provisioning_audit.py
+          for key in ORG_GRADLE_PROJECT_noticeFirebaseAPP_ID ORG_GRADLE_PROJECT_noticeFirebaseAPI_KEY ORG_GRADLE_PROJECT_noticeFirebasePROJECT_ID ORG_GRADLE_PROJECT_noticeFirebaseSENDER_ID; do
+            if [[ -z "${!key:-}" ]]; then
+              echo "::error::Incomplete Firebase notification identifiers for Play release"
+              exit 1
+            fi
+          done
+      - name: Install Android native toolchain
+        run: |
+          set -euo pipefail
+          MANAGER="$(find "$ANDROID_HOME/cmdline-tools" -type f -name sdkmanager | sort -V | tail -1)"
+          "$MANAGER" --install "platforms;android-36" "build-tools;35.0.0" "platform-tools" "cmake;3.22.1" "ndk;27.2.12479018"
+      - name: Restore ORIGINAL persistent upload keystore and pin Play certificate
+        env:
+          STORE_BASE64: ${{ secrets.SPDECODE_SIGNING_KEYSTORE_BASE64 }}
+          STORE_PASSWORD: ${{ secrets.SPDECODE_SIGNING_STORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.SPDECODE_SIGNING_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.SPDECODE_SIGNING_KEY_PASSWORD }}
+          PLAY_CERT: ${{ secrets.SPDECODE_PLAY_APP_SIGNER_SHA256 || vars.SPDECODE_PLAY_APP_SIGNER_SHA256 }}
+        run: |
+          set -euo pipefail
+          test -n "$STORE_BASE64" && test -n "$STORE_PASSWORD" && test -n "$KEY_ALIAS" && test -n "$KEY_PASSWORD"
+          umask 077
+          printf '%s' "$STORE_BASE64" | base64 --decode > "$RUNNER_TEMP/spdecode-online-play-upload.p12"
+          keytool -list -keystore "$RUNNER_TEMP/spdecode-online-play-upload.p12" -storetype PKCS12 -storepass:env STORE_PASSWORD -alias "$KEY_ALIAS" >/dev/null
+          UPLOAD_CERT="$(keytool -exportcert -keystore "$RUNNER_TEMP/spdecode-online-play-upload.p12" -storetype PKCS12 -storepass:env STORE_PASSWORD -alias "$KEY_ALIAS" | sha256sum | cut -d' ' -f1)"
+          [[ "$UPLOAD_CERT" =~ ^[0-9a-f]{64}$ ]]
+          PLAY_CERT="$(printf '%s' "$PLAY_CERT" | tr -d '[:space:]:' | tr '[:upper:]' '[:lower:]')"
+          # Play Console App Signing certificate, NOT the upload certificate.
+          [[ "$PLAY_CERT" == "64760393e52521294b40a1fd978b5bae732b7d8604bd222ca01166a25407854b" ]] || {
+            echo "::error::Play App Signing SHA-256 does not match the established repository pin"
+            exit 1
+          }
+          echo "SPDECODE_TRUSTED_SIGNER_SHA256=$UPLOAD_CERT" >> "$GITHUB_ENV"
+          echo "SPDECODE_PLAY_APP_SIGNER_SHA256=$PLAY_CERT" >> "$GITHUB_ENV"
+          echo "SPDECODE_RELEASE_STORE_FILE=$RUNNER_TEMP/spdecode-online-play-upload.p12" >> "$GITHUB_ENV"
+      - name: Build signed release AAB with Unity Ads, Cloud and Play In-App Updates
+        working-directory: android
+        env:
+          SPDECODE_RELEASE_STORE_PASSWORD: ${{ secrets.SPDECODE_SIGNING_STORE_PASSWORD }}
+          SPDECODE_RELEASE_KEY_ALIAS: ${{ secrets.SPDECODE_SIGNING_KEY_ALIAS }}
+          SPDECODE_RELEASE_KEY_PASSWORD: ${{ secrets.SPDECODE_SIGNING_KEY_PASSWORD }}
+        run: |
+          gradle --no-daemon --max-workers=2 -PspdecodeUnityAds=true -PspdecodePlayAab=true -PspdecodeAdsEveryFileQa=false :app:testReleaseUnitTest :app:bundleRelease
+      - name: Verify AAB signature, all languages, version, Play updater, R8 and native alignment
+        run: |
+          set -euo pipefail
+          AAB=android/app/build/outputs/bundle/release/app-release.aab
+          test -s "$AAB"
+          test -s android/app/build/outputs/mapping/release/mapping.txt
+          python3 scripts/ci/verify_release_signer_pins.py
+          python3 scripts/ci/verify_aab_locales.py "$AAB"
+          python3 scripts/android_16kb_elf_audit.py "$AAB"
+          jarsigner -verify "$AAB" > "$RUNNER_TEMP/spdecode-aab-verify.txt"
+          grep -q '^jar verified\.' "$RUNNER_TEMP/spdecode-aab-verify.txt"
+          python3 - "$AAB" <<'PY'
+          from pathlib import Path
+          from zipfile import ZipFile
+          import os, re, subprocess, sys
+          archive=Path(sys.argv[1])
+          with ZipFile(archive) as bundle:
+              names=set(bundle.namelist())
+              assert 'base/assets/spdecode-play-updates-enabled.marker' in names, 'Play In-App Update marker missing'
+              assert bundle.read('base/assets/spdecode-play-updates-enabled.marker').strip()==b'PLAY_AAB_ONLY'
+              assert 'base/manifest/AndroidManifest.xml' in names, 'Android bundle manifest missing'
+              assert 'base/resources.pb' in names, 'Bundle resource table missing'
+              assert any(x.startswith('base/dex/') and x.endswith('.dex') for x in names), 'Release dex missing'
+              assert not any('adi-registration.properties' in x for x in names), 'Ownership proof leaked'
+          cert=subprocess.run(['keytool','-printcert','-jarfile',str(archive)],capture_output=True,text=True,check=True).stdout
+          expected=os.environ['SPDECODE_TRUSTED_SIGNER_SHA256']
+          matched=re.findall(r'SHA256:\s*([A-Fa-f0-9:]{90,})',cert)
+          assert any(x.replace(':','').lower()==expected for x in matched), 'Upload signer does not match persistent release key'
+          print('PASS: AAB signed with existing upload certificate, Play updater and release dex present')
+          PY
+          mkdir -p dist
+          cp "$AAB" "dist/SP-DECODE-v${SPDECODE_VERSION_NAME}-b${SPDECODE_VERSION_CODE}-Play-UnityAds-signed.aab"
+          (cd dist && sha256sum *.aab > SHA256SUMS.txt)
+          printf 'Source commit: %s\nVersion: %s\nBuild: %s\nType: signed Play AAB (not published)\nUnity Ads: enabled\nCloud: enabled\nPlay In-App Updates: enabled\nR8: enabled\n' \
+            "$GITHUB_SHA" "$SPDECODE_VERSION_NAME" "$SPDECODE_VERSION_CODE" > dist/BUILD_INFO.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: SP-DECODE-ONLINE-PLAY-AAB-UNITYADS-SIGNED
+          path: dist/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Remove temporary signing keystore
+        if: always()
+        run: rm -f "$RUNNER_TEMP/spdecode-online-play-upload.p12"
