@@ -403,7 +403,7 @@ jobs:
           printf 'Version: %s\nBuild: %s\nSource SHA: %s\nUnity Ads: enabled\nDistribution: release candidate, not published\n' "$SPDECODE_VERSION_NAME" "$SPDECODE_VERSION_CODE" "$GITHUB_SHA" > dist/BUILD_INFO.txt
       - uses: actions/upload-artifact@v4
         with:
-          name: SP-DECODE-ONLINE-1.1.29-b44-release-candidate
+          name: SP-DECODE-ONLINE-${{ env.SPDECODE_VERSION_NAME }}-b${{ env.SPDECODE_VERSION_CODE }}-release-candidate
           path: dist/
           if-no-files-found: error
           retention-days: 30
