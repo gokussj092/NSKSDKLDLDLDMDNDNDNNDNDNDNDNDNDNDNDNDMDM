@@ -367,9 +367,10 @@ jobs:
           set -euo pipefail
           APK=android/app/build/outputs/apk/release/app-release.apk
           test -s "$APK"
-          # Validate release candidate version.
-          test "$SPDECODE_VERSION_NAME" = "1.1.29"
-          test "$SPDECODE_VERSION_CODE" = "44"
+          # Validate current metadata from Gradle, never pin to an old release.
+          # aapt badging checks below compare these values to the signed APK.
+          [[ "$SPDECODE_VERSION_NAME" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]
+          [[ "$SPDECODE_VERSION_CODE" =~ ^[1-9][0-9]*$ ]]
           python3 scripts/ci/verify_release_signer_pins.py
           python3 scripts/android_16kb_elf_audit.py "$APK"
           python3 tests/cloud_c5_apk_audit.py "$APK" --unity-ads
