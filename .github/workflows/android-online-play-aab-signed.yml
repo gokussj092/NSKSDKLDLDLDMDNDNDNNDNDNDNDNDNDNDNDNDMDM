@@ -8,6 +8,7 @@ on:
       - 'android/app/build.gradle.kts'
       - 'android/app/src/main/java/com/ghostdeveloper/spdecode/NativeCommerceAuth.kt'
       - 'android/app/src/main/java/com/ghostdeveloper/spdecode/NativeCommerceScreens.kt'
+      - 'tests/test_android_unity_release_contract.py'
   workflow_dispatch:
 
 permissions:
