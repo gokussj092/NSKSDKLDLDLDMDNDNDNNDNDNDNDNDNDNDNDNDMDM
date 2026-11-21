@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="catalog_background_title">バックグラウンドでダウンロード</string>
+    <string name="catalog_background_description">通知で進捗を確認できます。自動チェックがオンの場合、新しいカタログは自動でダウンロードされます。</string>
+    <string name="catalog_background_guide_title">バックグラウンドとバッテリー</string>
+    <string name="catalog_background_guide_body">アプリ情報でバッテリーを開き、バックグラウンドでの動作を許可するか、設定があれば制限なしを選びます。進捗を見るには通知を有効にしてください。項目名は端末によって異なります。</string>
+    <string name="catalog_background_open_settings">アプリ設定を開く</string>
+    <string name="catalog_background_channel">カタログのダウンロード</string>
+    <string name="catalog_background_progress">%1$d%% · %2$s / %3$s · 残り %4$s</string>
+</resources>

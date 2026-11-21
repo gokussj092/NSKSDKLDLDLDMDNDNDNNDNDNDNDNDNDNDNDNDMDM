@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="catalog_background_title">Télécharger en arrière-plan</string>
+    <string name="catalog_background_description">Suivez le téléchargement dans les notifications. La recherche automatique télécharge les nouvelles versions du catalogue.</string>
+    <string name="catalog_background_guide_title">Arrière-plan et batterie</string>
+    <string name="catalog_background_guide_body">Dans les informations de l’application, ouvrez Batterie et autorisez l’activité en arrière-plan ou choisissez Sans restriction si cette option existe. Activez les notifications pour suivre le téléchargement. Les noms varient selon le téléphone.</string>
+    <string name="catalog_background_open_settings">Ouvrir les paramètres de l’application</string>
+    <string name="catalog_background_channel">Téléchargements du catalogue</string>
+    <string name="catalog_background_progress">%1$d %% · %2$s / %3$s · %4$s restants</string>
+</resources>

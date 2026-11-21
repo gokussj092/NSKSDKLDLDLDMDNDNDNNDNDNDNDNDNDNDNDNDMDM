@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="catalog_background_title">Tải xuống trong nền</string>
+    <string name="catalog_background_description">Xem tiến độ tải xuống trong thông báo. Khi bật tự động kiểm tra, phiên bản danh mục mới sẽ được tải tự động.</string>
+    <string name="catalog_background_guide_title">Chạy nền và pin</string>
+    <string name="catalog_background_guide_body">Trong thông tin ứng dụng, mở Pin rồi cho phép chạy nền hoặc chọn Không hạn chế nếu có. Bật thông báo để xem tiến độ. Tên mục có thể khác nhau tùy thiết bị.</string>
+    <string name="catalog_background_open_settings">Mở cài đặt ứng dụng</string>
+    <string name="catalog_background_channel">Tải xuống danh mục</string>
+    <string name="catalog_background_progress">%1$d%% · %2$s / %3$s · còn %4$s</string>
+</resources>

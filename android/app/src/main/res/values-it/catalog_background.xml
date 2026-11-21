@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="catalog_background_title">Scarica in background</string>
+    <string name="catalog_background_description">Mostra il progresso nelle notifiche. Con la ricerca automatica attiva, le nuove versioni del catalogo vengono scaricate automaticamente.</string>
+    <string name="catalog_background_guide_title">Background e batteria</string>
+    <string name="catalog_background_guide_body">Nelle informazioni dell’app, apri Batteria e consenti l’attività in background o scegli Senza restrizioni, se disponibile. Attiva le notifiche per vedere il progresso. Le voci variano in base al dispositivo.</string>
+    <string name="catalog_background_open_settings">Apri impostazioni app</string>
+    <string name="catalog_background_channel">Download del catalogo</string>
+    <string name="catalog_background_progress">%1$d%% · %2$s / %3$s · %4$s rimanenti</string>
+</resources>

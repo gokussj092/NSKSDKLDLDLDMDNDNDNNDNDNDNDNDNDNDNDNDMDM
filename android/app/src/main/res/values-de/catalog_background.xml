@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="catalog_background_title">Im Hintergrund herunterladen</string>
+    <string name="catalog_background_description">Der Fortschritt steht in den Benachrichtigungen. Bei aktivierter automatischer Suche werden neue Katalogversionen automatisch geladen.</string>
+    <string name="catalog_background_guide_title">Hintergrund und Akku</string>
+    <string name="catalog_background_guide_body">Öffne in der App-Info den Bereich Akku und erlaube Hintergrundaktivität oder wähle Uneingeschränkt, falls verfügbar. Aktiviere Benachrichtigungen für den Fortschritt. Die Bezeichnungen können abweichen.</string>
+    <string name="catalog_background_open_settings">App-Einstellungen öffnen</string>
+    <string name="catalog_background_channel">Katalog-Downloads</string>
+    <string name="catalog_background_progress">%1$d %% · %2$s / %3$s · %4$s verbleibend</string>
+</resources>

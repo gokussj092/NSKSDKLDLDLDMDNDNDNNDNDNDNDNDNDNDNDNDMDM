@@ -32,10 +32,12 @@ internal class ServerVpnCatalogRepository(
     context: Context,
     private val client: CloudDecodeClient,
 ) {
-    private val downloadPreferences=context.applicationContext.getSharedPreferences("spdecode-catalog-sync",Context.MODE_PRIVATE)
+    private val app=context.applicationContext
+    private val downloadPreferences=app.getSharedPreferences("spdecode-catalog-sync",Context.MODE_PRIVATE)
     private val vault=ServerVpnSecureCache(context)
     private val newBadges=ServerVpnNewBadges(context)
-    private val mutex=Mutex()
+    // A Worker and a recreated Activity may open the same encrypted cache.
+    private companion object { val mutex = Mutex() }
     @Volatile var lastTransferResumable:Boolean=false
         private set
     private val placeholder by lazy { Bitmap.createBitmap(1,1,Bitmap.Config.ARGB_8888) }
@@ -240,7 +242,8 @@ internal class ServerVpnCatalogRepository(
     /** VPS-only hint; verified HTTPS metadata and encrypted cache are authoritative. */
     suspend fun refreshIfDue(force:Boolean=false,announcedVersion:Int=0,
         onProgress:((Int)->Unit)?=null,
-        onTransfer:((Long,Long)->Unit)?=null):List<ServerVpnApp> = mutex.withLock {
+        onTransfer:((Long,Long)->Unit)?=null,
+        useChunks:Boolean?=null):List<ServerVpnApp> = mutex.withLock {
         withContext(Dispatchers.IO) {
             val previous=stored()
             val available=verifiedApps(previous)
@@ -264,7 +267,7 @@ internal class ServerVpnCatalogRepository(
                 val knownVersion=if(!completeCache || cachedFormats.isEmpty() || !recipientMetadata)0 else previousVersion
                 // One explicit preference for the entire transfer; no capability
                 // long-poll on the full-download path. Both routes stay protected.
-                val chunked=downloadPreferences.getBoolean("download-by-chunks",false)
+                val chunked=useChunks ?: downloadPreferences.getBoolean("download-by-chunks",false)
                 lastTransferResumable=chunked
                 val downloader=if(chunked)CatalogSnapshotDownload(client,vault) else null
                 val remote=downloader?.download(knownVersion,onTransfer)
@@ -370,6 +373,7 @@ internal class ServerVpnCatalogRepository(
                     .put("onlineReferenceCount",remote.getInt("onlineReferenceCount"))
                     .put("onlineReferenceFormats",remote.getJSONArray("onlineReferenceFormats"))
                 currentCoroutineContext().ensureActive()
+                if (!CloudLegalConsent.accepted(app)) throw CancellationException("Catalog consent revoked")
                 vault.write("catalog",fresh.toString().toByteArray(Charsets.UTF_8))
                 downloader?.committed()
                 onProgress?.invoke(100)

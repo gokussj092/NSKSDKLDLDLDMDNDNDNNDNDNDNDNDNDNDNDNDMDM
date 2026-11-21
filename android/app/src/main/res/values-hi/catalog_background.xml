@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="catalog_background_title">बैकग्राउंड में डाउनलोड करें</string>
+    <string name="catalog_background_description">डाउनलोड की प्रगति सूचनाओं में देखें। अपने आप जाँच चालू होने पर कैटलॉग के नए संस्करण डाउनलोड होते हैं।</string>
+    <string name="catalog_background_guide_title">बैकग्राउंड और बैटरी</string>
+    <string name="catalog_background_guide_body">ऐप की जानकारी में बैटरी खोलें। बैकग्राउंड गतिविधि की अनुमति दें या उपलब्ध होने पर बिना रोक वाला विकल्प चुनें। प्रगति देखने के लिए सूचनाएँ चालू करें। फ़ोन पर नाम अलग हो सकते हैं।</string>
+    <string name="catalog_background_open_settings">ऐप सेटिंग खोलें</string>
+    <string name="catalog_background_channel">कैटलॉग डाउनलोड</string>
+    <string name="catalog_background_progress">%1$d%% · %2$s / %3$s · %4$s बाकी</string>
+</resources>

@@ -32,6 +32,8 @@
         </activity>
         <activity
             android:name=".MainActivity"
+            android:screenOrientation="fullUser"
+            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden"
             android:exported="true"
             android:documentLaunchMode="never"
             android:windowSoftInputMode="adjustResize">
