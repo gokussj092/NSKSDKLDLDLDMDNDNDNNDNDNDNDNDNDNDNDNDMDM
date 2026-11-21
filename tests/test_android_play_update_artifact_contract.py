@@ -8,9 +8,17 @@ class TestPlayUpdateDistribution(unittest.TestCase):
     def test_gradle_variant_boundary(self):
         gradle = (ROOT / "android/app/build.gradle.kts").read_text()
         self.assertIn('val enablePlayAab=providers.gradleProperty("spdecodePlayAab")', gradle)
-        self.assertIn('if (enablePlayAab) from("src/playUpdate/java")', gradle)
-        self.assertIn('if (enablePlayAab) {\n            implementation("com.google.android.play:app-update:2.1.0")', gradle)
-        self.assertIn('if (enablePlayAab) from("src/playUpdate/assets/', gradle)
+        self.assertIn('val enablePlayUpdates=enablePlayAab && providers.gradleProperty("spdecodePlayUpdates").orNull!="false"', gradle)
+        self.assertIn('if (enablePlayUpdates) from("src/playUpdate/java")', gradle)
+        self.assertIn('if (enablePlayUpdates) {\n            implementation("com.google.android.play:app-update:2.1.0")', gradle)
+        self.assertIn('if (enablePlayUpdates) from("src/playUpdate/assets/', gradle)
+
+    def test_android17_play_update_isolation(self):
+        gradle = (ROOT / "android/app/build.gradle.kts").read_text()
+        workflow = (ROOT / ".github/workflows/android-online-play-aab-signed.yml").read_text()
+        self.assertIn('-PspdecodePlayAab=true -PspdecodePlayUpdates=false', workflow)
+        self.assertIn("SPDECODE_PLAY_UPDATES\", enablePlayUpdates.toString()", gradle)
+        self.assertIn("Play In-App Updates must be disabled for Android 17 diagnostic", workflow)
 
     def test_play_only_workflow(self):
         w = (ROOT / ".github/workflows/play-beta-artifacts.yml").read_text()

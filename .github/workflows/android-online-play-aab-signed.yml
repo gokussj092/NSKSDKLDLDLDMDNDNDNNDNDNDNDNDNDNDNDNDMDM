@@ -90,15 +90,15 @@ jobs:
           echo "SPDECODE_TRUSTED_SIGNER_SHA256=$UPLOAD_CERT" >> "$GITHUB_ENV"
           echo "SPDECODE_PLAY_APP_SIGNER_SHA256=$PLAY_CERT" >> "$GITHUB_ENV"
           echo "SPDECODE_RELEASE_STORE_FILE=$RUNNER_TEMP/spdecode-online-play-upload.p12" >> "$GITHUB_ENV"
-      - name: Build signed release AAB with Unity Ads, Cloud and Play In-App Updates
+      - name: Build signed release AAB with Unity Ads and Play In-App Updates disabled (Android 17 diagnostic)
         working-directory: android
         env:
           SPDECODE_RELEASE_STORE_PASSWORD: ${{ secrets.SPDECODE_SIGNING_STORE_PASSWORD }}
           SPDECODE_RELEASE_KEY_ALIAS: ${{ secrets.SPDECODE_SIGNING_KEY_ALIAS }}
           SPDECODE_RELEASE_KEY_PASSWORD: ${{ secrets.SPDECODE_SIGNING_KEY_PASSWORD }}
         run: |
-          gradle --no-daemon --max-workers=2 -PspdecodeUnityAds=true -PspdecodePlayAab=true -PspdecodeAdsEveryFileQa=false :app:testReleaseUnitTest :app:bundleRelease
-      - name: Verify AAB signature, all languages, version, Play updater, R8 and native alignment
+          gradle --no-daemon --max-workers=2 -PspdecodeUnityAds=true -PspdecodePlayAab=true -PspdecodePlayUpdates=false -PspdecodeAdsEveryFileQa=false :app:testReleaseUnitTest :app:bundleRelease
+      - name: Verify AAB signature, locales, updater exclusion, R8 and native alignment
         run: |
           set -euo pipefail
           AAB=android/app/build/outputs/bundle/release/app-release.aab
@@ -116,8 +116,7 @@ jobs:
           archive=Path(sys.argv[1])
           with ZipFile(archive) as bundle:
               names=set(bundle.namelist())
-              assert 'base/assets/spdecode-play-updates-enabled.marker' in names, 'Play In-App Update marker missing'
-              assert bundle.read('base/assets/spdecode-play-updates-enabled.marker').strip()==b'PLAY_AAB_ONLY'
+              assert 'base/assets/spdecode-play-updates-enabled.marker' not in names, 'Play In-App Updates must be disabled for Android 17 diagnostic'
               assert 'base/manifest/AndroidManifest.xml' in names, 'Android bundle manifest missing'
               assert 'base/resources.pb' in names, 'Bundle resource table missing'
               assert any(x.startswith('base/dex/') and x.endswith('.dex') for x in names), 'Release dex missing'
@@ -126,12 +125,12 @@ jobs:
           expected=os.environ['SPDECODE_TRUSTED_SIGNER_SHA256']
           matched=re.findall(r'SHA256:\s*([A-Fa-f0-9:]{90,})',cert)
           assert any(x.replace(':','').lower()==expected for x in matched), 'Upload signer does not match persistent release key'
-          print('PASS: AAB signed with existing upload certificate, Play updater and release dex present')
+          print('PASS: AAB signed with existing upload certificate; Play updater disabled; release dex present')
           PY
           mkdir -p dist
           cp "$AAB" "dist/SP-DECODE-v${SPDECODE_VERSION_NAME}-b${SPDECODE_VERSION_CODE}-Play-UnityAds-signed.aab"
           (cd dist && sha256sum *.aab > SHA256SUMS.txt)
-          printf 'Source commit: %s\nVersion: %s\nBuild: %s\nType: signed Play AAB (not published)\nUnity Ads: enabled\nCloud: enabled\nPlay In-App Updates: enabled\nR8: enabled\n' \
+          printf 'Source commit: %s\nVersion: %s\nBuild: %s\nType: signed Play AAB (not published)\nUnity Ads: enabled\nCloud: enabled\nPlay In-App Updates: disabled (Android 17 diagnostic)\nR8: enabled\n' \
             "$GITHUB_SHA" "$SPDECODE_VERSION_NAME" "$SPDECODE_VERSION_CODE" > dist/BUILD_INFO.txt
       - uses: actions/upload-artifact@v4
         with:

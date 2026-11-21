@@ -132,6 +132,8 @@ require(!adsEveryFileQa || (enableUnityAds && enableCloud && !nativeOffline && !
 // Play In-App Updates is an AAB-only compile-time feature, not a runtime switch.
 // Ordinary signed APKs (Telegram), legacy/QA builds and ownership proofs omit it.
 val enablePlayAab=providers.gradleProperty("spdecodePlayAab").orNull=="true"
+// AAB remains a Play distribution when the optional updater is isolated for Android 17 QA.
+val enablePlayUpdates=enablePlayAab && providers.gradleProperty("spdecodePlayUpdates").orNull!="false"
 require(!nativeOffline || !enablePlayAab) { "Standalone Offline APK must not include Play AAB updates" }
 require(!nativeOffline || !enableQaBuild) { "Offline cannot enable Cloud QA" }
 require(!enablePlayAab || (enableCloud && !enableQaBuild)) {
@@ -659,7 +661,7 @@ val prepareCloudHistoryUiSource = tasks.register("prepareCloudHistoryUiSource") 
 
         // C0 remains immutable. Only the Play AAB receives the official
         // updater host and the suppression of Telegram's external APK prompt.
-        if (enablePlayAab) {
+        if (enablePlayUpdates) {
             app=replaceOnce(app,
                 "    onUsageAnalytics:(Boolean)->Unit={},",
                 "    onUsageAnalytics:(Boolean)->Unit={},\n" +
@@ -736,7 +738,7 @@ val prepareCloudOnlySources = tasks.register<Sync>("prepareCloudOnlySources") {
     }
     from("src/cloud/java")
     if(enableUnityAds) from("src/unityAds/java")
-    if (enablePlayAab) from("src/playUpdate/java")
+    if (enablePlayUpdates) from("src/playUpdate/java")
     dependsOn(prepareCloudHistoryUiSource)
     from(cloudHistoryUiRoot)
     dependsOn(prepareQaSettingsSource)
@@ -750,7 +752,7 @@ val prepareCloudAssets = tasks.register<Sync>("prepareCloudAssets") {
     from("src/main/assets") {
         include("racha-fuego-naranja.gif", "racha-fuego-violeta.gif", "cofre_cerrado.gif", "cofre_abierto.gif")
     }
-    if (enablePlayAab) from("src/playUpdate/assets/spdecode-play-updates-enabled.marker")
+    if (enablePlayUpdates) from("src/playUpdate/assets/spdecode-play-updates-enabled.marker")
     // Google package-name ownership proof is a temporary CI-only APK. It is
     // NEVER included in ordinary Play AABs, external beta APKs or debug APKs.
     if (providers.environmentVariable("SPDECODE_ADI_VERIFICATION_BUILD").orNull == "true") {
@@ -805,14 +807,14 @@ android {
         if(nativeOffline) applicationId = "com.ghostdeveloper.spdecode" + ".offline"
         minSdk = 24
         targetSdk = 36
-        versionCode = 45
-        versionName = "1.1.30"
+        versionCode = 46
+        versionName = "1.1.31"
         if(nativeOffline) versionName = listOf("1.1.27", "offline.alpha1").joinToString("-")
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         // A public API origin is not a secret; all server secrets stay in the VPS.
         buildConfigField("boolean", "SPDECODE_CLOUD_ENABLED", enableCloud.toString())
         buildConfigField("boolean", "SPDECODE_QA_BUILD", enableQaBuild.toString())
-        buildConfigField("boolean", "SPDECODE_PLAY_UPDATES", enablePlayAab.toString())
+        buildConfigField("boolean", "SPDECODE_PLAY_UPDATES", enablePlayUpdates.toString())
         buildConfigField("boolean", "SPDECODE_APK_QA_ENABLED", (enableCloud && enableQaBuild).toString())
         buildConfigField("boolean", "SPDECODE_UNITY_ADS_ENABLED", enableUnityAds.toString())
         buildConfigField("boolean", "SPDECODE_ADS_EVERY_FILE_QA", adsEveryFileQa.toString())
@@ -946,7 +948,7 @@ dependencies {
             implementation("com.google.android.libraries.identity.googleid:googleid:1.1.1")
         }
         if (enableCloud) implementation("com.google.firebase:firebase-messaging:25.0.0")
-        if (enablePlayAab) {
+        if (enablePlayUpdates) {
             implementation("com.google.android.play:app-update:2.1.0")
             implementation("androidx.lifecycle:lifecycle-runtime-compose:2.9.0")
         }
