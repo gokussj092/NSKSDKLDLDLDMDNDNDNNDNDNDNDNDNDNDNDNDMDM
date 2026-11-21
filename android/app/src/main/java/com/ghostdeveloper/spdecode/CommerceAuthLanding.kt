@@ -1,45 +1,62 @@
 package com.ghostdeveloper.spdecode
 
 import android.widget.ImageView
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Fingerprint
+import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.outlined.MailOutline
+import androidx.compose.material.icons.outlined.Visibility
+import androidx.compose.material.icons.outlined.VisibilityOff
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 private object AuthLandingLanguage {
-    private val keys=listOf("Welcome back","Create your account","Sign in to continue",
-        "Join SP-DECODE with your Google account","Sign in","Create account",
-        "Access your account","Create with Google","Continue with Google",
-        "Create account with Google","or with email","Email and password",
-        "Your account and purchases are securely linked.")
+    private val keys=listOf("Sign in","Create account","Create account with Google")
     private val translated=mapOf(
-        "pt" to "Bem-vindo de volta|Crie sua conta|Entre para continuar|Entre no SP-DECODE com sua conta Google|Entrar|Criar conta|Acessar sua conta|Criar com Google|Continuar com Google|Criar conta com Google|ou com e-mail|E-mail e senha|Sua conta e compras estão vinculadas com segurança.",
-        "fr" to "Bon retour|Créez votre compte|Connectez-vous pour continuer|Rejoignez SP-DECODE avec Google|Connexion|Créer un compte|Accéder à votre compte|Créer avec Google|Continuer avec Google|Créer avec Google|ou par e-mail|E-mail et mot de passe|Votre compte et vos achats sont liés en toute sécurité.",
-        "de" to "Willkommen zurück|Erstelle dein Konto|Zum Fortfahren anmelden|Tritt SP-DECODE mit deinem Google-Konto bei|Anmelden|Konto erstellen|Auf dein Konto zugreifen|Mit Google erstellen|Mit Google fortfahren|Google-Konto erstellen|oder per E-Mail|E-Mail und Passwort|Dein Konto und deine Käufe sind sicher verknüpft.",
-        "it" to "Bentornato|Crea il tuo account|Accedi per continuare|Unisciti a SP-DECODE con Google|Accedi|Crea account|Accedi al tuo account|Crea con Google|Continua con Google|Crea account con Google|oppure con e-mail|E-mail e password|Il tuo account e gli acquisti sono collegati in modo sicuro.",
-        "tr" to "Tekrar hoş geldin|Hesabını oluştur|Devam etmek için giriş yap|Google hesabınla SP-DECODE'a katıl|Giriş yap|Hesap oluştur|Hesabına eriş|Google ile oluştur|Google ile devam et|Google ile hesap oluştur|veya e-posta ile|E-posta ve şifre|Hesabın ve satın alımların güvenle bağlı.",
-        "ru" to "С возвращением|Создайте аккаунт|Войдите, чтобы продолжить|Присоединяйтесь к SP-DECODE через Google|Войти|Создать аккаунт|Войти в аккаунт|Создать через Google|Продолжить с Google|Создать аккаунт Google|или по почте|Почта и пароль|Аккаунт и покупки надёжно связаны.",
-        "ar" to "مرحبًا بعودتك|أنشئ حسابك|سجل الدخول للمتابعة|انضم إلى SP-DECODE بحساب Google|تسجيل الدخول|إنشاء حساب|الوصول إلى حسابك|الإنشاء باستخدام Google|المتابعة باستخدام Google|إنشاء حساب عبر Google|أو بالبريد الإلكتروني|البريد وكلمة المرور|حسابك ومشترياتك مرتبطان بأمان.",
-        "fa" to "خوش آمدید|حساب خود را بسازید|برای ادامه وارد شوید|با حساب گوگل به SP-DECODE بپیوندید|ورود|ایجاد حساب|دسترسی به حساب|ساخت با گوگل|ادامه با گوگل|ساخت حساب با گوگل|یا با ایمیل|ایمیل و رمز عبور|حساب و خریدهای شما به‌طور امن متصل‌اند.",
-        "hi" to "वापसी पर स्वागत है|अपना खाता बनाएँ|जारी रखने के लिए लॉगिन करें|Google खाते से SP-DECODE से जुड़ें|लॉगिन|खाता बनाएँ|अपने खाते में जाएँ|Google से बनाएँ|Google से जारी रखें|Google से खाता बनाएँ|या ईमेल से|ईमेल और पासवर्ड|आपका खाता और खरीदारी सुरक्षित रूप से जुड़े हैं।",
-        "ja" to "おかえりなさい|アカウントを作成|ログインして続行|GoogleアカウントでSP-DECODEに登録|ログイン|アカウント作成|アカウントにアクセス|Googleで作成|Googleで続行|Googleでアカウント作成|またはメールで|メールとパスワード|アカウントと購入履歴は安全に関連付けられています。",
-        "id" to "Selamat datang kembali|Buat akun Anda|Masuk untuk melanjutkan|Bergabung dengan SP-DECODE menggunakan Google|Masuk|Buat akun|Akses akun Anda|Buat dengan Google|Lanjutkan dengan Google|Buat akun dengan Google|atau dengan email|Email dan kata sandi|Akun dan pembelian Anda terhubung secara aman.",
-        "vi" to "Chào mừng trở lại|Tạo tài khoản|Đăng nhập để tiếp tục|Tham gia SP-DECODE bằng tài khoản Google|Đăng nhập|Tạo tài khoản|Truy cập tài khoản|Tạo bằng Google|Tiếp tục với Google|Tạo tài khoản với Google|hoặc qua email|Email và mật khẩu|Tài khoản và giao dịch được liên kết an toàn."
+        "pt" to "Entrar|Criar conta|Criar conta com Google",
+        "fr" to "Connexion|Créer un compte|Créer avec Google",
+        "de" to "Anmelden|Konto erstellen|Google-Konto erstellen",
+        "it" to "Accedi|Crea account|Crea account con Google",
+        "tr" to "Giriş yap|Hesap oluştur|Google ile hesap oluştur",
+        "ru" to "Войти|Создать аккаунт|Создать аккаунт Google",
+        "ar" to "تسجيل الدخول|إنشاء حساب|إنشاء حساب عبر Google",
+        "fa" to "ورود|ایجاد حساب|ساخت حساب با گوگل",
+        "hi" to "लॉगिन|खाता बनाएँ|Google से खाता बनाएँ",
+        "ja" to "ログイン|アカウント作成|Googleでアカウント作成",
+        "id" to "Masuk|Buat akun|Buat akun dengan Google",
+        "vi" to "Đăng nhập|Tạo tài khoản|Tạo tài khoản với Google",
     ).mapValues{it.value.split("|")}
     fun text(lang:String,es:String,en:String):String{
         val idx=keys.indexOf(en)
@@ -52,113 +69,297 @@ private object AuthLandingLanguage {
     }
 }
 
-/** The real packaged launcher resource is the identity on this screen. */
+private val authPanel = Color(0xFF151515)
+private val authStroke = Color(0xFF444444)
+private val authPrimary = Color(0xFFF7F7F7)
+private val authMuted = Color(0xFFB3B3B3)
+private val authShape = RoundedCornerShape(16.dp)
+
+/** Both email steps use the existing account entry point and legal footer. */
 @Composable
-internal fun CommerceAuthLanding(language:String,accepted:Boolean,
-    busy:Boolean,error:String?,onAccepted:(Boolean)->Unit,
-    onLegalLink:(String)->Unit,onGoogle:()->Unit,onEmail:()->Unit){
-    val t:(String,String)->String={es,en->AuthLandingLanguage.text(language,es,en)}
-    val bg=Color(0xFF222222)
-    val selected=Color(0xFFF7F7F7)
-    val secondary=Color(0xFFB3B3B3)
-    var mode by rememberSaveable{mutableIntStateOf(0)}
-    Column(Modifier.fillMaxWidth().padding(top=10.dp,bottom=25.dp),
-        horizontalAlignment=Alignment.CenterHorizontally,
-        verticalArrangement=Arrangement.spacedBy(14.dp)){
-        Box(Modifier.size(100.dp)
-            .background(bg,RoundedCornerShape(27.dp))
-            .border(1.dp,Color(0xFF484848),RoundedCornerShape(27.dp)),
-            contentAlignment=Alignment.Center){
-            // Android's launcher resource can be an adaptive-icon XML on API 26+.
-            // painterResource() supports vector/raster drawables, not adaptive icons.
-            // Let ImageView render the actual installed application icon instead.
-            AndroidView(
-                factory={ctx->
-                    ImageView(ctx).apply{
-                        scaleType=ImageView.ScaleType.FIT_CENTER
-                        val installedIcon=runCatching{
-                            ctx.packageManager.getApplicationIcon(ctx.packageName)
-                        }.getOrNull()
-                        if(installedIcon!=null)setImageDrawable(installedIcon)
-                        else setImageResource(R.drawable.ic_launcher_foreground)
-                    }
-                },
-                modifier=Modifier.size(82.dp)
+internal fun CommerceAuthLanding(
+    language: String,
+    accepted: Boolean,
+    busy: Boolean,
+    error: String?,
+    email: String,
+    onEmailChange: (String) -> Unit,
+    validEmail: Boolean,
+    passwordStep: Boolean,
+    password: String,
+    onPasswordChange: (String) -> Unit,
+    onEmailNext: () -> Unit,
+    onEditEmail: () -> Unit,
+    onEmailSignIn: () -> Unit,
+    onQuickSignIn: (() -> Unit)?,
+    onAccepted: (Boolean) -> Unit,
+    onLegalLink: (String) -> Unit,
+    onGoogle: () -> Unit,
+    onClearError: () -> Unit,
+) {
+    val t: (String, String) -> String = { es, en -> AuthLandingLanguage.text(language,es,en) }
+    val signIn = t("Iniciar sesión","Sign in")
+    val register = t("Crear cuenta","Create account")
+    val passwordFocus = remember { FocusRequester() }
+    val focus = LocalFocusManager.current
+    var creatingAccount by rememberSaveable { mutableStateOf(false) }
+    var showPassword by remember(passwordStep) { mutableStateOf(false) }
+    var showRecovery by remember(passwordStep) { mutableStateOf(false) }
+    var needsConsent by remember { mutableStateOf(false) }
+    val canSubmitPassword = password.isNotEmpty() && !busy
+
+    LaunchedEffect(passwordStep) {
+        if (passwordStep) passwordFocus.requestFocus()
+    }
+    LaunchedEffect(busy) {
+        if (busy) showPassword = false
+    }
+
+    Column(
+        Modifier.fillMaxWidth().padding(bottom = 12.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Column(
+            Modifier.widthIn(max = 420.dp).fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(13.dp),
+        ) {
+            AuthAppIcon()
+            Text("SP-DECODE", color = authMuted, letterSpacing = 2.sp,
+                fontSize = 12.sp, fontWeight = FontWeight.SemiBold, textAlign = TextAlign.Center)
+            Text(
+                if (creatingAccount) register else signIn,
+                color = authPrimary, fontSize = 28.sp, fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center,
             )
-        }
-        Text("SP-DECODE",color=selected,fontSize=21.sp,fontWeight=FontWeight.Bold)
-        Text(if(mode==0)t("Bienvenido de nuevo","Welcome back")
-                 else t("Crea tu cuenta","Create your account"),
-            color=selected,fontSize=29.sp,fontWeight=FontWeight.Bold,
-            textAlign=TextAlign.Center)
-        Text(if(mode==0)t("Inicia sesión para continuar",
-                "Sign in to continue")
-             else t("Únete a SP-DECODE con tu cuenta de Google",
-                "Join SP-DECODE with your Google account"),
-            color=secondary,fontSize=14.sp,textAlign=TextAlign.Center)
-        Spacer(Modifier.height(10.dp))
-        Column(Modifier.fillMaxWidth()
-            .background(bg,RoundedCornerShape(25.dp)).padding(18.dp),
-            verticalArrangement=Arrangement.spacedBy(17.dp)){
-            Row(Modifier.fillMaxWidth()
-                .background(Color(0xFF151515),RoundedCornerShape(18.dp)).padding(4.dp),
-                horizontalArrangement=Arrangement.spacedBy(5.dp)){
-                listOf(t("Iniciar sesión","Sign in"),
-                    t("Crear cuenta","Create account")).forEachIndexed{index,label->
-                    Box(Modifier.weight(1f)
-                        .clip(RoundedCornerShape(14.dp))
-                        .background(if(mode==index)selected else Color.Transparent)
-                        .clickable(enabled=!busy){mode=index}
-                        .padding(vertical=14.dp),
-                        contentAlignment=Alignment.Center){
-                        Text(label,color=if(mode==index)Color.Black else secondary,
-                            fontWeight=FontWeight.SemiBold,fontSize=13.sp,
-                            textAlign=TextAlign.Center,maxLines=1)
+
+            if (!passwordStep) {
+                Row(
+                    Modifier.fillMaxWidth().selectableGroup().background(authPanel, authShape).padding(4.dp),
+                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                ) {
+                    listOf(signIn, register).forEachIndexed { index, label ->
+                        val selected = creatingAccount == (index == 1)
+                        Box(
+                            Modifier.weight(1f).clip(RoundedCornerShape(12.dp))
+                                .background(if (selected) authPrimary else Color.Transparent)
+                                .selectable(
+                                    selected = selected, enabled = !busy, role = Role.Tab,
+                                    onClick = {
+                                        focus.clearFocus()
+                                        creatingAccount = index == 1
+                                        needsConsent = false
+                                        onClearError()
+                                    },
+                                )
+                                .heightIn(min = 46.dp).padding(horizontal = 7.dp, vertical = 8.dp),
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            Text(label, color = if (selected) Color.Black else authMuted,
+                                fontSize = 13.sp, fontWeight = FontWeight.SemiBold,
+                                textAlign = TextAlign.Center)
+                        }
                     }
                 }
             }
-            Text(if(mode==0)t("Accede a tu cuenta","Access your account")
-                   else t("Registrarse con Google","Create with Google"),
-                color=selected,fontWeight=FontWeight.SemiBold,fontSize=17.sp)
-            OutlinedButton(onClick=onGoogle,enabled=accepted&&!busy,
-                modifier=Modifier.fillMaxWidth().heightIn(min=53.dp),
-                shape=RoundedCornerShape(16.dp),
-                border=androidx.compose.foundation.BorderStroke(1.dp,Color(0xFF686868))){
-                Box(Modifier.size(28.dp).background(Color.White,RoundedCornerShape(50)),
-                    contentAlignment=Alignment.Center){
-                    Text("G",color=Color(0xFF4285F4),fontSize=19.sp,
-                        fontWeight=FontWeight.Bold)
+
+            if (!creatingAccount) {
+                if (passwordStep) {
+                    Row(
+                        Modifier.fillMaxWidth().background(authPanel, authShape)
+                            .padding(start = 14.dp, end = 6.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Text(email, modifier = Modifier.weight(1f), color = authPrimary,
+                            fontSize = 14.sp, maxLines = 2, overflow = TextOverflow.Ellipsis)
+                        TextButton(onClick = onEditEmail, enabled = !busy) {
+                            Text(stringResource(R.string.account_auth_edit_email), color = authPrimary)
+                        }
+                    }
+                    OutlinedTextField(
+                        value = password,
+                        onValueChange = onPasswordChange,
+                        modifier = Modifier.fillMaxWidth().focusRequester(passwordFocus),
+                        enabled = !busy,
+                        singleLine = true,
+                        shape = authShape,
+                        label = { Text(t("Contraseña","Password")) },
+                        leadingIcon = { Icon(Icons.Outlined.Lock, contentDescription = null) },
+                        trailingIcon = {
+                            IconButton(onClick = { showPassword = !showPassword }, enabled = !busy) {
+                                Icon(
+                                    if (showPassword) Icons.Outlined.VisibilityOff else Icons.Outlined.Visibility,
+                                    contentDescription = stringResource(
+                                        if (showPassword) R.string.account_auth_hide_password
+                                        else R.string.account_auth_show_password,
+                                    ),
+                                )
+                            }
+                        },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = ImeAction.Done),
+                        keyboardActions = KeyboardActions(onDone = {
+                            if (canSubmitPassword) {
+                                focus.clearFocus()
+                                onEmailSignIn()
+                            }
+                        }),
+                        visualTransformation =
+                            if (showPassword) VisualTransformation.None else PasswordVisualTransformation(),
+                        colors = authFieldColors(),
+                    )
+                    TextButton(
+                        onClick = { showRecovery = !showRecovery },
+                        modifier = Modifier.align(Alignment.End),
+                        enabled = !busy,
+                    ) {
+                        Text(stringResource(R.string.account_auth_forgot_password), color = authPrimary)
+                    }
+                    if (showRecovery) {
+                        Text(stringResource(R.string.account_auth_recovery_hint),
+                            modifier = Modifier.fillMaxWidth(), color = authMuted,
+                            fontSize = 13.sp, lineHeight = 18.sp)
+                    }
+                    AuthPrimaryButton(signIn, enabled = canSubmitPassword) {
+                        focus.clearFocus()
+                        onEmailSignIn()
+                    }
+                } else {
+                    OutlinedTextField(
+                        value = email,
+                        onValueChange = onEmailChange,
+                        modifier = Modifier.fillMaxWidth(),
+                        enabled = !busy,
+                        singleLine = true,
+                        shape = authShape,
+                        label = { Text(t("Correo electrónico","Email address")) },
+                        leadingIcon = { Icon(Icons.Outlined.MailOutline, contentDescription = null) },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email, imeAction = ImeAction.Next),
+                        keyboardActions = KeyboardActions(onNext = {
+                            if (validEmail && !busy) onEmailNext()
+                        }),
+                        colors = authFieldColors(),
+                    )
+                    AuthPrimaryButton(
+                        stringResource(R.string.account_auth_next),
+                        enabled = validEmail && !busy,
+                        onClick = onEmailNext,
+                    )
                 }
-                Spacer(Modifier.width(11.dp))
-                Text(if(mode==0)t("Continuar con Google","Continue with Google")
-                     else t("Crear cuenta con Google","Create account with Google"),
-                    color=selected,fontWeight=FontWeight.Medium)
+                Row(
+                    Modifier.fillMaxWidth().padding(vertical = 3.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(11.dp),
+                ) {
+                    HorizontalDivider(Modifier.weight(1f), color = authStroke)
+                    Text(stringResource(R.string.account_auth_or_continue_with),
+                        color = authMuted, fontSize = 12.sp, textAlign = TextAlign.Center)
+                    HorizontalDivider(Modifier.weight(1f), color = authStroke)
+                }
             }
-            if(mode==0){
-                Row(Modifier.fillMaxWidth(),verticalAlignment=Alignment.CenterVertically,
-                    horizontalArrangement=Arrangement.spacedBy(11.dp)){
-                    HorizontalDivider(modifier=Modifier.weight(1f),color=Color(0xFF515151))
-                    Text(t("o con correo","or with email"),color=secondary,fontSize=12.sp)
-                    HorizontalDivider(modifier=Modifier.weight(1f),color=Color(0xFF515151))
+
+            OutlinedButton(
+                onClick = {
+                    focus.clearFocus()
+                    onClearError()
+                    if (accepted) onGoogle() else needsConsent = true
+                },
+                enabled = !busy,
+                modifier = Modifier.fillMaxWidth().heightIn(min = 52.dp),
+                shape = authShape,
+                border = BorderStroke(1.dp, authStroke),
+                colors = ButtonDefaults.outlinedButtonColors(
+                    containerColor = authPanel, contentColor = authPrimary,
+                    disabledContentColor = authMuted,
+                ),
+            ) {
+                Box(Modifier.size(26.dp).background(Color.White, RoundedCornerShape(50)),
+                    contentAlignment = Alignment.Center) {
+                    Text("G", color = Color(0xFF4285F4), fontSize = 18.sp, fontWeight = FontWeight.Bold)
                 }
-                OutlinedButton(onClick=onEmail,enabled=!busy,
-                    modifier=Modifier.fillMaxWidth().heightIn(min=53.dp),
-                    shape=RoundedCornerShape(16.dp),
-                    border=androidx.compose.foundation.BorderStroke(1.dp,Color(0xFF686868))){
-                    Icon(Icons.Outlined.MailOutline,null,tint=selected)
-                    Spacer(Modifier.width(11.dp))
-                    Text(t("Correo y contraseña","Email and password"),color=selected,
-                        fontWeight=FontWeight.Medium)
+                Spacer(Modifier.width(10.dp))
+                Text(
+                    if (creatingAccount) t("Crear cuenta con Google","Create account with Google")
+                    else "Google",
+                    fontWeight = FontWeight.Medium, textAlign = TextAlign.Center,
+                )
+            }
+
+            if (!creatingAccount && onQuickSignIn != null) {
+                TextButton(
+                    onClick = {
+                        focus.clearFocus()
+                        onQuickSignIn()
+                    },
+                    enabled = !busy,
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.textButtonColors(contentColor = authPrimary),
+                ) {
+                    Icon(Icons.Outlined.Fingerprint, contentDescription = null,
+                        modifier = Modifier.size(19.dp))
+                    Spacer(Modifier.width(8.dp))
+                    Text(stringResource(R.string.account_auth_quick_access), textAlign = TextAlign.Center)
                 }
             }
+            if (busy) LinearProgressIndicator(Modifier.fillMaxWidth(), color = authPrimary, trackColor = authStroke)
+            if (error != null) {
+                Text(error, Modifier.fillMaxWidth().semantics { liveRegion = LiveRegionMode.Polite },
+                    color = authPrimary, fontSize = 13.sp, lineHeight = 18.sp)
+            }
+            if (needsConsent && !accepted) {
+                Text(stringResource(R.string.account_auth_consent_required),
+                    Modifier.fillMaxWidth().semantics { liveRegion = LiveRegionMode.Polite },
+                    color = authPrimary, fontSize = 13.sp, lineHeight = 18.sp)
+            }
+            HorizontalDivider(color = authStroke)
             CommerceConsentRow(language,accepted,onAccepted,onLegalLink)
-            if(busy)LinearProgressIndicator(modifier=Modifier.fillMaxWidth(),
-                color=Color(0xFFB8DCC0))
-            if(error!=null)Text(error,color=Color(0xFFFF7777),
-                fontSize=12.sp,lineHeight=18.sp)
         }
-        Text(t("Tu cuenta y compras están vinculadas de forma segura.",
-            "Your account and purchases are securely linked."),
-            color=secondary,fontSize=12.sp,textAlign=TextAlign.Center)
     }
 }
+
+@Composable
+private fun AuthAppIcon() {
+    Box(
+        Modifier.size(68.dp).background(authPanel, RoundedCornerShape(20.dp))
+            .border(1.dp, authStroke, RoundedCornerShape(20.dp)),
+        contentAlignment = Alignment.Center,
+    ) {
+        // ImageView supports the adaptive launcher icon resource used on API 26+.
+        AndroidView(
+            factory = { ctx ->
+                ImageView(ctx).apply {
+                    scaleType = ImageView.ScaleType.FIT_CENTER
+                    val installedIcon = runCatching {
+                        ctx.packageManager.getApplicationIcon(ctx.packageName)
+                    }.getOrNull()
+                    if (installedIcon != null) setImageDrawable(installedIcon)
+                    else setImageResource(R.drawable.ic_launcher_foreground)
+                }
+            },
+            modifier = Modifier.size(56.dp),
+        )
+    }
+}
+
+@Composable
+private fun AuthPrimaryButton(label: String, enabled: Boolean, onClick: () -> Unit) {
+    Button(
+        onClick = onClick, enabled = enabled, modifier = Modifier.fillMaxWidth().heightIn(min = 50.dp),
+        shape = authShape, colors = ButtonDefaults.buttonColors(
+            containerColor = authPrimary, contentColor = Color.Black,
+            disabledContainerColor = authPanel, disabledContentColor = authMuted,
+        ),
+    ) {
+        Text(label, fontWeight = FontWeight.SemiBold, textAlign = TextAlign.Center)
+    }
+}
+
+@Composable
+private fun authFieldColors() = OutlinedTextFieldDefaults.colors(
+    focusedTextColor = authPrimary, unfocusedTextColor = authPrimary, disabledTextColor = authMuted,
+    focusedContainerColor = authPanel, unfocusedContainerColor = authPanel, disabledContainerColor = authPanel,
+    focusedBorderColor = authPrimary, unfocusedBorderColor = authStroke, disabledBorderColor = authStroke,
+    focusedLabelColor = authPrimary, unfocusedLabelColor = authMuted, disabledLabelColor = authMuted,
+    focusedLeadingIconColor = authPrimary, unfocusedLeadingIconColor = authMuted,
+    focusedTrailingIconColor = authPrimary, unfocusedTrailingIconColor = authMuted,
+    cursorColor = authPrimary,
+)

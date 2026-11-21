@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="account_auth_next">بعدی</string>
+    <string name="account_auth_or_continue_with">یا ادامه با</string>
+    <string name="account_auth_edit_email">تغییر ایمیل</string>
+    <string name="account_auth_show_password">نمایش رمز عبور</string>
+    <string name="account_auth_hide_password">پنهان کردن رمز عبور</string>
+    <string name="account_auth_forgot_password">رمز عبور را فراموش کرده‌اید؟</string>
+    <string name="account_auth_recovery_hint">اگر حساب شما به Google پیوند داده شده، با Google وارد شوید و رمز عبور را در بخش امنیت تغییر دهید.</string>
+    <string name="account_auth_consent_required">برای ادامه با Google، شرایط خدمات و سیاست حفظ حریم خصوصی را بپذیرید.</string>
+    <string name="account_auth_quick_access">ورود با اثر انگشت یا پین</string>
+    <string name="account_auth_device_prompt">باز کردن قفل حساب</string>
+    <string name="account_auth_session_expired">نشست شما منقضی شد. با رمز عبور یا Google وارد شوید.</string>
+    <string name="account_auth_email_error">اطلاعات ورود نادرست است یا حساب در دسترس نیست.</string>
+    <string name="account_auth_google_error">ورود ناموفق بود. Google و اتصال خود را بررسی کنید. (%1$s)</string>
+</resources>

@@ -3,6 +3,7 @@ package com.ghostdeveloper.spdecode
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -58,7 +59,9 @@ internal fun CommerceConsentRow(
 ){
     Row(Modifier.fillMaxWidth(),verticalAlignment=Alignment.CenterVertically) {
         Checkbox(checked=accepted,onCheckedChange=onAccepted,
-            modifier=Modifier.size(45.dp))
+            modifier=Modifier.size(48.dp),
+            colors=CheckboxDefaults.colors(checkedColor=Color(0xFFF7F7F7),
+                uncheckedColor=Color(0xFFB0B0B0),checkmarkColor=Color.Black))
         val annotated=CommerceLegalConsent.text(language)
         ClickableText(
             text=annotated,

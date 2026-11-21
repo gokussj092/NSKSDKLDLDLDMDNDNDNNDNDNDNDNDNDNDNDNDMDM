@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="account_auth_next">İleri</string>
+    <string name="account_auth_or_continue_with">veya şununla devam et</string>
+    <string name="account_auth_edit_email">E-postayı değiştir</string>
+    <string name="account_auth_show_password">Şifreyi göster</string>
+    <string name="account_auth_hide_password">Şifreyi gizle</string>
+    <string name="account_auth_forgot_password">Şifreni mi unuttun?</string>
+    <string name="account_auth_recovery_hint">Hesabın Google’a bağlıysa Google ile giriş yap ve Güvenlik bölümünden şifreni değiştir.</string>
+    <string name="account_auth_consent_required">Google ile devam etmek için hizmet şartlarını ve gizlilik politikasını kabul et.</string>
+    <string name="account_auth_quick_access">Parmak izi veya PIN ile giriş yap</string>
+    <string name="account_auth_device_prompt">Hesabının kilidini aç</string>
+    <string name="account_auth_session_expired">Oturumun sona erdi. Şifrenle veya Google ile giriş yap.</string>
+    <string name="account_auth_email_error">Giriş bilgileri yanlış veya hesap kullanılamıyor.</string>
+    <string name="account_auth_google_error">Giriş yapılamadı. Google’ı ve bağlantını kontrol et. (%1$s)</string>
+</resources>

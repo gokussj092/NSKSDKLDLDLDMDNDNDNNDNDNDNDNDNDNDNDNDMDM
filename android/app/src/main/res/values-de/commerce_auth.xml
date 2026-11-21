@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="account_auth_next">Weiter</string>
+    <string name="account_auth_or_continue_with">oder fortfahren mit</string>
+    <string name="account_auth_edit_email">E-Mail ändern</string>
+    <string name="account_auth_show_password">Passwort anzeigen</string>
+    <string name="account_auth_hide_password">Passwort ausblenden</string>
+    <string name="account_auth_forgot_password">Passwort vergessen?</string>
+    <string name="account_auth_recovery_hint">Wenn dein Konto mit Google verknüpft ist, melde dich mit Google an und ändere das Passwort unter Sicherheit.</string>
+    <string name="account_auth_consent_required">Akzeptiere die Nutzungsbedingungen und die Datenschutzerklärung, um mit Google fortzufahren.</string>
+    <string name="account_auth_quick_access">Mit Fingerabdruck oder PIN anmelden</string>
+    <string name="account_auth_device_prompt">Konto entsperren</string>
+    <string name="account_auth_session_expired">Deine Sitzung ist abgelaufen. Melde dich mit Passwort oder Google an.</string>
+    <string name="account_auth_email_error">Ungültige Anmeldedaten oder Konto nicht verfügbar.</string>
+    <string name="account_auth_google_error">Anmeldung fehlgeschlagen. Prüfe Google und deine Verbindung. (%1$s)</string>
+</resources>

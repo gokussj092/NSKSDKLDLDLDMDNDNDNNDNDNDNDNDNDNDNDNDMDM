@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="account_auth_next">Tiếp theo</string>
+    <string name="account_auth_or_continue_with">hoặc tiếp tục với</string>
+    <string name="account_auth_edit_email">Đổi email</string>
+    <string name="account_auth_show_password">Hiện mật khẩu</string>
+    <string name="account_auth_hide_password">Ẩn mật khẩu</string>
+    <string name="account_auth_forgot_password">Quên mật khẩu?</string>
+    <string name="account_auth_recovery_hint">Nếu tài khoản đã liên kết với Google, hãy đăng nhập bằng Google và đổi mật khẩu trong mục Bảo mật.</string>
+    <string name="account_auth_consent_required">Chấp nhận điều khoản dịch vụ và chính sách quyền riêng tư để tiếp tục với Google.</string>
+    <string name="account_auth_quick_access">Đăng nhập bằng vân tay hoặc mã PIN</string>
+    <string name="account_auth_device_prompt">Mở khóa tài khoản</string>
+    <string name="account_auth_session_expired">Phiên đăng nhập đã hết hạn. Đăng nhập bằng mật khẩu hoặc Google.</string>
+    <string name="account_auth_email_error">Thông tin đăng nhập không đúng hoặc tài khoản không khả dụng.</string>
+    <string name="account_auth_google_error">Không thể đăng nhập. Kiểm tra Google và kết nối của bạn. (%1$s)</string>
+</resources>

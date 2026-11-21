@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="account_auth_next">Suivant</string>
+    <string name="account_auth_or_continue_with">ou continuer avec</string>
+    <string name="account_auth_edit_email">Modifier l’adresse e-mail</string>
+    <string name="account_auth_show_password">Afficher le mot de passe</string>
+    <string name="account_auth_hide_password">Masquer le mot de passe</string>
+    <string name="account_auth_forgot_password">Mot de passe oublié ?</string>
+    <string name="account_auth_recovery_hint">Si votre compte est associé à Google, connectez-vous avec Google et changez votre mot de passe dans Sécurité.</string>
+    <string name="account_auth_consent_required">Acceptez les conditions d’utilisation et la politique de confidentialité pour continuer avec Google.</string>
+    <string name="account_auth_quick_access">Se connecter par empreinte ou code PIN</string>
+    <string name="account_auth_device_prompt">Déverrouillez votre compte</string>
+    <string name="account_auth_session_expired">Votre session a expiré. Connectez-vous avec votre mot de passe ou Google.</string>
+    <string name="account_auth_email_error">Identifiants incorrects ou compte indisponible.</string>
+    <string name="account_auth_google_error">Connexion impossible. Vérifiez Google et votre connexion. (%1$s)</string>
+</resources>

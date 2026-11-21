@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="account_auth_next">التالي</string>
+    <string name="account_auth_or_continue_with">أو المتابعة باستخدام</string>
+    <string name="account_auth_edit_email">تغيير البريد الإلكتروني</string>
+    <string name="account_auth_show_password">إظهار كلمة المرور</string>
+    <string name="account_auth_hide_password">إخفاء كلمة المرور</string>
+    <string name="account_auth_forgot_password">هل نسيت كلمة المرور؟</string>
+    <string name="account_auth_recovery_hint">إذا كان حسابك مرتبطًا بـ Google، سجّل الدخول باستخدام Google وغيّر كلمة المرور في قسم الأمان.</string>
+    <string name="account_auth_consent_required">وافق على شروط الخدمة وسياسة الخصوصية للمتابعة باستخدام Google.</string>
+    <string name="account_auth_quick_access">تسجيل الدخول بالبصمة أو رمز PIN</string>
+    <string name="account_auth_device_prompt">فتح قفل الحساب</string>
+    <string name="account_auth_session_expired">انتهت جلستك. سجّل الدخول بكلمة المرور أو باستخدام Google.</string>
+    <string name="account_auth_email_error">بيانات تسجيل الدخول غير صحيحة أو الحساب غير متاح.</string>
+    <string name="account_auth_google_error">تعذر تسجيل الدخول. تحقق من Google والاتصال. (%1$s)</string>
+</resources>

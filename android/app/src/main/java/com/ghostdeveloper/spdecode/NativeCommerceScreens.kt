@@ -1,6 +1,7 @@
 package com.ghostdeveloper.spdecode
 
 import android.content.res.Configuration
+import android.util.Patterns
 import com.ghostdeveloper.spdecode.cloud.CloudNoticePush
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
@@ -25,7 +26,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import org.json.JSONObject
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -165,8 +165,9 @@ internal fun NativeCommerceScreens(start:String,onExit:()->Unit,
     val auth=remember(context){NativeCommerceAuth(context)}
     val scope=rememberCoroutineScope()
     var signingIn by remember {mutableStateOf(false)}
-    var email by remember {mutableStateOf("")}
-    var emailPassword by remember {mutableStateOf("")}
+    var email by remember(start) { mutableStateOf("") }
+    var emailPassword by remember(start) { mutableStateOf("") }
+    var emailPasswordStep by remember(start) { mutableStateOf(false) }
     var acceptedPolicies by rememberSaveable {mutableStateOf(false)}
     var accountSnapshot by remember {mutableStateOf<JSONObject?>(null)}
     var ipEdit by rememberSaveable{mutableStateOf("")}
@@ -199,11 +200,29 @@ internal fun NativeCommerceScreens(start:String,onExit:()->Unit,
         ApiTerm(it.planId,it.days,it.prices.getValue(currency),it.available)
     }
     LaunchedEffect(apiTerms.size){if(term !in apiTerms.indices)term=0}
+    fun resetEmailStep(){
+        emailPasswordStep = false
+        emailPassword = ""
+        notice = null
+    }
+    fun signInSucceeded(snapshot: JSONObject){
+        accountSnapshot = snapshot
+        resetEmailStep()
+        email = ""
+        CloudNoticePush.syncAccount(context)
+        page = "account"
+    }
     fun back(){
+        if (page == "login") {
+            if (signingIn) return
+            val wasPasswordStep = emailPasswordStep
+            resetEmailStep()
+            if (wasPasswordStep) return
+            email = ""
+        }
         when {
             page=="profile-edit" -> if(start=="profile-edit")onExit() else page="account"
             page=="password" -> if(start=="password")onExit() else page="security"
-            page=="email-login" -> page="login"
             page=="gift" -> if(start=="gift")onExit() else {page="store";detail="home"}
             page=="delete-account" -> if(start=="delete-account")onExit() else page="account"
             page in setOf("support","report","notifications","activity","analysis-history") ->
@@ -223,7 +242,12 @@ internal fun NativeCommerceScreens(start:String,onExit:()->Unit,
     val supportOwnHeader=page in setOf("support","report") &&
         (!NativeDeviceAccountGuard.enabled(context)||NativeDeviceAccountGuard.unlocked)
     Column(Modifier.fillMaxSize().background(black).safeDrawingPadding()){
-        if(!supportOwnHeader){
+        if (page == "login") {
+            IconButton(onClick = { back() }, enabled = !signingIn,
+                modifier = Modifier.padding(start = 8.dp)) {
+                Icon(Icons.Outlined.ArrowBack, local("Volver","Back"), tint = white)
+            }
+        } else if(!supportOwnHeader){
         Row(Modifier.fillMaxWidth().padding(horizontal=12.dp,vertical=9.dp),
             verticalAlignment=Alignment.CenterVertically){
             IconButton(onClick={back()}){
@@ -239,7 +263,6 @@ internal fun NativeCommerceScreens(start:String,onExit:()->Unit,
                     "security" -> CommerceAccountWords.get(language,"Account security")
                     "password" -> CommerceSecurityText.get(language,"Password")
                     "gift" -> CommerceGiftText.get(language,"Redeem gift code")
-                    "email-login" -> local("Acceso con correo","Email sign in")
                     "support" -> local("Soporte técnico","Technical support")
                     "report" -> local("Reportar un error","Report an issue")
                     "notifications" -> local("Notificaciones","Notifications")
@@ -247,7 +270,6 @@ internal fun NativeCommerceScreens(start:String,onExit:()->Unit,
                     "analysis-history" -> local("Historial de análisis APK","APK analysis history")
                     "delete-account" -> local("Eliminar cuenta","Delete account")
                     "ad-free" -> CommerceAccountWords.get(language,"Ad-free experience")
-                    "login" -> local("Acceso seguro","Secure sign in")
                     else -> local("Tienda","Store")
                 },color=muted,fontSize=12.sp)
             }
@@ -501,95 +523,98 @@ internal fun NativeCommerceScreens(start:String,onExit:()->Unit,
                             page="account"
                         })
                 }
-                "email-login" -> {
-                    Text(local("Iniciar sesión con correo","Sign in with email"),
-                        color=white,fontSize=27.sp,fontWeight=FontWeight.Bold)
-                    SlateCard {
-                        OutlinedTextField(email,{email=it.take(254)},
-                            modifier=Modifier.fillMaxWidth(),singleLine=true,
-                            label={Text(local("Correo electrónico","Email address"))},
-                            colors=OutlinedTextFieldDefaults.colors(
-                                focusedTextColor=white,unfocusedTextColor=white))
-                        OutlinedTextField(emailPassword,{emailPassword=it.take(128)},
-                            modifier=Modifier.fillMaxWidth(),singleLine=true,
-                            visualTransformation=PasswordVisualTransformation(),
-                            label={Text(local("Contraseña","Password"))},
-                            colors=OutlinedTextFieldDefaults.colors(
-                                focusedTextColor=white,unfocusedTextColor=white))
-                        if(notice!=null)Note(notice.orEmpty())
-                        if(NativeDeviceAccountGuard.enabled(context) &&
-                           auth.sessionToken()!=null &&
-                           NativeDeviceAccountGuard.supported(context)){
-                            OutlinedButton(modifier=Modifier.fillMaxWidth(),onClick={
-                                NativeDeviceAccountGuard.authenticate(context,
-                                    local("Iniciar con huella o PIN","Sign in with fingerprint or PIN")){ok->
-                                    if(ok)scope.launch{
-                                        accountSnapshot=auth.account()
-                                        if(accountSnapshot!=null)page="account"
-                                        else notice=local("La sesión venció. Inicia con contraseña o Google.",
-                                            "Session expired. Sign in with password or Google.")
+                "login" -> {
+                    val validEmail = Patterns.EMAIL_ADDRESS.matcher(email.trim()).matches()
+                    val canUseDeviceLogin = remember(auth, signingIn) {
+                        NativeDeviceAccountGuard.enabled(context) && NativeDeviceAccountGuard.supported(context) &&
+                            auth.sessionToken() != null
+                    }
+                    val deviceLogin: (() -> Unit)? = if (canUseDeviceLogin) {
+                        {
+                            if (!signingIn) {
+                                signingIn = true
+                                notice = null
+                                NativeDeviceAccountGuard.authenticate(
+                                    context, context.getString(R.string.account_auth_device_prompt),
+                                ) { ok ->
+                                    if (ok) scope.launch {
+                                        try {
+                                            val snapshot = auth.account()
+                                            if (snapshot != null) signInSucceeded(snapshot)
+                                            else notice = context.getString(R.string.account_auth_session_expired)
+                                        } finally {
+                                            signingIn = false
+                                        }
+                                    } else signingIn = false
+                                }
+                            }
+                        }
+                    } else null
+                    CommerceAuthLanding(language,acceptedPolicies,
+                        busy = signingIn,
+                        error = notice,
+                        email = email,
+                        onEmailChange = {
+                            email = it.take(254)
+                            notice = null
+                        },
+                        validEmail = validEmail,
+                        passwordStep = emailPasswordStep,
+                        password = emailPassword,
+                        onPasswordChange = {
+                            emailPassword = it.take(128)
+                            notice = null
+                        },
+                        onEmailNext = {
+                            if (validEmail && !signingIn) {
+                                email = email.trim()
+                                resetEmailStep()
+                                emailPasswordStep = true
+                            }
+                        },
+                        onEditEmail = { resetEmailStep() },
+                        onEmailSignIn = {
+                            if (!signingIn && emailPasswordStep && validEmail && emailPassword.isNotEmpty()) {
+                                scope.launch {
+                                    signingIn = true
+                                    notice = null
+                                    try {
+                                        signInSucceeded(auth.signInWithEmail(email, emailPassword))
+                                    } catch (e: kotlinx.coroutines.CancellationException) {
+                                        throw e
+                                    } catch (_: Exception) {
+                                        emailPassword = ""
+                                        notice = context.getString(R.string.account_auth_email_error)
+                                    } finally {
+                                        signingIn = false
                                     }
                                 }
-                            }){
-                                Icon(Icons.Outlined.Fingerprint,null,tint=white)
-                                Spacer(Modifier.width(8.dp))
-                                Text(local("Acceso rápido con huella o PIN",
-                                    "Quick sign in with fingerprint or PIN"),color=white)
                             }
-                        }
-                        PrimaryAction(local("Iniciar sesión","Sign in"),
-                            enabled=!signingIn&&email.contains("@")&&emailPassword.isNotEmpty()){
-                            scope.launch{
-                                signingIn=true;notice=null
+                        },
+                        onQuickSignIn = deviceLogin,
+                        onAccepted = { if (!signingIn) acceptedPolicies = it },
+                        onLegalLink = onLegalLink,
+                        onGoogle = {
+                            if (acceptedPolicies && !signingIn) scope.launch {
+                                signingIn = true
+                                notice = null
                                 try {
-                                    accountSnapshot=auth.signInWithEmail(email,emailPassword)
-                                    emailPassword=""
-                                    CloudNoticePush.syncAccount(context)
-                                    page="account"
-                                }catch(e:kotlinx.coroutines.CancellationException){throw e}
-                                catch(_:Exception){
-                                    notice=local("Credenciales incorrectas o cuenta no disponible.",
-                                        "Invalid credentials or account unavailable.")
-                                }finally{signingIn=false}
+                                    signInSucceeded(auth.signInWithGoogle(acceptedPolicies))
+                                } catch (e: kotlinx.coroutines.CancellationException) {
+                                    throw e
+                                } catch (e: Exception) {
+                                    val code = NativeCommerceAuth.diagnostic(e)
+                                    if(code!="GOOGLE_SIGN_IN_CANCELLED") {
+                                        notice = context.getString(R.string.account_auth_google_error, code)
+                                    }
+                                } finally {
+                                    signingIn = false
+                                }
                             }
-                        }
-                        TextButton(onClick={
-                            emailPassword=""
-                            notice=null
-                            page="login"
-                        },modifier=Modifier.fillMaxWidth()){
-                            Icon(Icons.Outlined.AccountCircle,null,tint=good)
-                            Spacer(Modifier.width(9.dp))
-                            Text(local("¿Olvidaste tu contraseña? Recupera el acceso con Google",
-                                "Forgot password? Recover access with Google"),
-                                color=good,fontSize=13.sp)
-                        }
-                        Text(local("Para cuentas vinculadas a Google, inicia con Google y cambia tu contraseña en Seguridad.",
-                            "For Google-linked accounts, sign in with Google and change your password in Security."),
-                            color=muted,fontSize=11.sp,lineHeight=17.sp)
-                        if(signingIn)LinearProgressIndicator(Modifier.fillMaxWidth(),color=white)
-                    }
+                        },
+                        onClearError = { notice = null },
+                    )
                 }
-                "login" -> CommerceAuthLanding(language,acceptedPolicies,
-                    signingIn,notice,
-                    onAccepted={acceptedPolicies=it},onLegalLink=onLegalLink,
-                    onGoogle={
-                        if(!signingIn)scope.launch{
-                            signingIn=true;notice=null
-                            try{
-                                accountSnapshot=auth.signInWithGoogle(acceptedPolicies)
-                                CloudNoticePush.syncAccount(context)
-                                page="account"
-                            }catch(e:kotlinx.coroutines.CancellationException){throw e}
-                            catch(e:Exception){
-                                val code=NativeCommerceAuth.diagnostic(e)
-                                if(code!="GOOGLE_SIGN_IN_CANCELLED")
-                                    notice=local("No se pudo iniciar sesión. Verifica Google y tu conexión.",
-                                        "Sign-in failed. Verify Google and your connection.")+
-                                        " ("+code+")"
-                            }finally{signingIn=false}
-                        }
-                    },onEmail={page="email-login"})
             }
         }
     }
