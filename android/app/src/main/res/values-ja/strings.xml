@@ -364,4 +364,6 @@
     <string name="app_analysis_error_busy">分析が多すぎます。後でもう一度お試しください。</string>
     <string name="app_analysis_error_generic">操作を完了できませんでした。もう一度お試しください。</string>
     <string name="app_analysis_title">APK解析</string>
+    <string name="release_integrity_error_title">アプリを検証できませんでした</string>
+    <string name="release_integrity_error_message">インストール済みアプリの署名を検証できませんでした。公式の配布元から SP-DECODE を更新してください。問題が続く場合は、サポートに連絡し、コード RELEASE_SIGNER_REJECTED をお知らせください。</string>
 </resources>

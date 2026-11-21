@@ -756,6 +756,7 @@ jboolean verifyReleaseSigner(JNIEnv* env,jclass,jobject context,
         auto name=static_cast<jstring>(env->CallObjectMethod(context,getName));
         if(!name||env->ExceptionCheck()||utf(env,name)!=expected)return JNI_FALSE;
         auto info=env->CallObjectMethod(context,getInfo);
+        if(!info||env->ExceptionCheck())return JNI_FALSE;
         jclass infoClass=env->FindClass("android/content/pm/ApplicationInfo");
         const jfieldID flagsField=env->GetFieldID(infoClass,"flags","I");
         if(!info||!flagsField||env->ExceptionCheck()||
@@ -796,9 +797,9 @@ jboolean verifyReleaseSigner(JNIEnv* env,jclass,jobject context,
         jclass signatureClass=env->FindClass("android/content/pm/Signature");
         const jmethodID toBytes=env->GetMethodID(signatureClass,"toByteArray","()[B");
         if(!toBytes||env->ExceptionCheck())return JNI_FALSE;
-        // Every CURRENT signer must be explicitly authorized. An allowed
-        // historical signer or one allowed signer in a multi-signed APK is
-        // insufficient. Play App Signing and authorized QA pins stay distinct.
+        // Multi-signed APKs still require EVERY current signer to be pinned.
+        // A single signer may also descend from the Play anchor through an
+        // Android-verified proof of rotation (including Android 17 v3.2 PQC).
         for(jsize index=0;index<signerCount;++index){
             auto signature=env->GetObjectArrayElement(certs,index);
             if(!signature||env->ExceptionCheck())return JNI_FALSE;
@@ -814,7 +815,25 @@ jboolean verifyReleaseSigner(JNIEnv* env,jclass,jobject context,
             bool matched=false;
             for(const auto& fingerprint:fingerprints)matched|=result==fingerprint;
             env->DeleteLocalRef(data);env->DeleteLocalRef(signature);
-            if(!matched)return JNI_FALSE;
+            if(!matched){
+                if(sdk<28||signerCount!=1)return JNI_FALSE;
+                std::array<unsigned char,32> playAnchor{};
+                if(!parseFingerprint(utf(env,playDigest),playAnchor)||env->ExceptionCheck())
+                    return JNI_FALSE;
+                const auto hasCertificate=env->GetMethodID(pmClass,"hasSigningCertificate",
+                    "(Ljava/lang/String;[BI)Z");
+                if(!hasCertificate||env->ExceptionCheck())return JNI_FALSE;
+                auto anchor=env->NewByteArray(static_cast<jsize>(playAnchor.size()));
+                if(!anchor||env->ExceptionCheck())return JNI_FALSE;
+                env->SetByteArrayRegion(anchor,0,static_cast<jsize>(playAnchor.size()),
+                    reinterpret_cast<const jbyte*>(playAnchor.data()));
+                if(env->ExceptionCheck())return JNI_FALSE;
+                // CERT_INPUT_SHA256 = 1. PackageManager checks the installed
+                // package's verified lineage; no app-supplied history is used.
+                const auto authorized=env->CallBooleanMethod(pm,hasCertificate,name,anchor,1);
+                env->DeleteLocalRef(anchor);
+                if(env->ExceptionCheck()||authorized!=JNI_TRUE)return JNI_FALSE;
+            }
         }
         return JNI_TRUE;
     }catch(const std::exception&) {

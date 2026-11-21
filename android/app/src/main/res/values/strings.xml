@@ -371,4 +371,6 @@
     <string name="app_analysis_error_busy">Too many analyses are in progress. Try again later.</string>
     <string name="app_analysis_error_generic">The operation could not be completed. Try again.</string>
     <string name="app_analysis_title">APK Analysis</string>
+    <string name="release_integrity_error_title">App verification failed</string>
+    <string name="release_integrity_error_message">The installed app signature could not be verified. Update SP-DECODE from its official source. If the problem continues, contact support and include code RELEASE_SIGNER_REJECTED.</string>
 </resources>

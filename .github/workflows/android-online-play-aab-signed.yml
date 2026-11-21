@@ -6,6 +6,10 @@ on:
     paths:
       - '.github/workflows/android-online-play-aab-signed.yml'
       - 'android/app/build.gradle.kts'
+      - 'android/app/src/main/cpp/spdecode_transport.cpp'
+      - 'android/app/src/main/java/com/ghostdeveloper/spdecode/ReleaseIntegrity.kt'
+      - 'scripts/ci/run_release_signer_jni.sh'
+      - 'tests/native/v2_transport_jni/**'
   workflow_dispatch:
 
 permissions:
@@ -66,6 +70,8 @@ jobs:
           set -euo pipefail
           MANAGER="$(find "$ANDROID_HOME/cmdline-tools" -type f -name sdkmanager | sort -V | tail -1)"
           "$MANAGER" --install "platforms;android-36" "build-tools;35.0.0" "platform-tools" "cmake;3.22.1" "ndk;27.2.12479018"
+      - name: Exercise release signer JNI and Android 17 verified key rotation
+        run: bash scripts/ci/run_release_signer_jni.sh
       - name: Restore ORIGINAL persistent upload keystore and pin Play certificate
         env:
           STORE_BASE64: ${{ secrets.SPDECODE_SIGNING_KEYSTORE_BASE64 }}

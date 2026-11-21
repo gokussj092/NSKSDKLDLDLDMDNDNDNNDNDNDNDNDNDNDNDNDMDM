@@ -5,7 +5,8 @@ import com.ghostdeveloper.spdecode.cloud.CloudNativeTransport
 
 /**
  * JNI adapter only: package identity and signing-certificate
- * evaluation execute inside libv7q3.so through Android system APIs.
+ * evaluation, including verified Play signing-key rotation, execute inside
+ * libv7q3.so through Android system APIs.
  * Backend Play Integrity and hardware attestation remain independent.
  */
 internal object ReleaseIntegrity {

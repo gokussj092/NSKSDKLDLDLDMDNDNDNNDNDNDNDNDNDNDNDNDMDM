@@ -363,4 +363,6 @@
     <string name="app_analysis_error_busy">هناك تحليلات كثيرة جارية. حاول لاحقًا.</string>
     <string name="app_analysis_error_generic">تعذّر إكمال العملية. حاول مرة أخرى.</string>
     <string name="app_analysis_title">تحليل APK</string>
+    <string name="release_integrity_error_title">تعذر التحقق من التطبيق</string>
+    <string name="release_integrity_error_message">تعذر التحقق من توقيع التطبيق المثبت. حدّث SP-DECODE من مصدره الرسمي. إذا استمرت المشكلة، تواصل مع الدعم وأرفق الرمز RELEASE_SIGNER_REJECTED.</string>
 </resources>

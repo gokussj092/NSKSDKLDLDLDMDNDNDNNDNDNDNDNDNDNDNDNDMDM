@@ -80,6 +80,7 @@ import java.util.Date
  */
 class MainActivity : ComponentActivity() {
     private companion object { const val MAX_BYTES=1024*1024 }
+    private var releaseIntegrityBlocked=false
     private val scope=CoroutineScope(SupervisorJob()+Dispatchers.Main.immediate)
     private val cloudClient by lazy { CloudDecodeClient(this) }
     private val onlineAds by lazy {
@@ -723,13 +724,24 @@ class MainActivity : ComponentActivity() {
         catch(_:ActivityNotFoundException){toast(R.string.read_error)}
     }
 
+    private fun showReleaseIntegrityError(){
+        if(releaseIntegrityBlocked)return
+        releaseIntegrityBlocked=true
+        android.app.AlertDialog.Builder(this)
+            .setTitle(R.string.release_integrity_error_title)
+            .setMessage(R.string.release_integrity_error_message)
+            .setCancelable(false)
+            .setPositiveButton(android.R.string.ok) { _,_ -> finishAndRemoveTask() }
+            .show()
+    }
+
     override fun onCreate(savedInstanceState:Bundle?){
         val splashStarted=SystemClock.elapsedRealtime()
         installSplashScreen()
         super.onCreate(savedInstanceState)
         // Fail closed for a release APK re-signed with an unknown certificate.
         if (!ReleaseIntegrity.isTrusted(this)) {
-            finishAndRemoveTask()
+            showReleaseIntegrityError()
             return
         }
         // A new launch starts with an empty Home result. Rotation keeps the
@@ -1122,14 +1134,15 @@ class MainActivity : ComponentActivity() {
 
     override fun onWindowFocusChanged(hasFocus:Boolean) {
         super.onWindowFocusChanged(hasFocus)
-        if(BuildConfig.SPDECODE_UNITY_ADS_ENABLED && !showCloudLegal)
+        if(!releaseIntegrityBlocked && BuildConfig.SPDECODE_UNITY_ADS_ENABLED && !showCloudLegal)
             onlineAds?.onWindowFocusChanged(this,hasFocus)
     }
 
     override fun onResume() {
         super.onResume()
+        if(releaseIntegrityBlocked)return
         if(!ReleaseIntegrity.isTrusted(this)) {
-            finishAndRemoveTask()
+            showReleaseIntegrityError()
             return
         }
         observeRuntime()
@@ -1165,6 +1178,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onNewIntent(intent:Intent){
         super.onNewIntent(intent)
+        if(releaseIntegrityBlocked)return
         setIntent(intent)
         if(!showCloudLegal)handleExternalIntent(intent)
     }

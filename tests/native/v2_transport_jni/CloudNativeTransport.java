@@ -28,6 +28,7 @@ public final class CloudNativeTransport {
     }
     private static void check(boolean value,String message){if(!value)throw new AssertionError(message);}
     public static void main(String[] args)throws Exception {
+        ReleaseSignerContract.run(CloudNativeTransport::nativeVerifyReleaseSigner);
         URL.setURLStreamHandlerFactory(protocol->protocol.equals("https")?new URLStreamHandler(){
             protected URLConnection openConnection(URL url){return last=new FakeConnection(url);}
         }:null);

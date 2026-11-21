@@ -371,4 +371,6 @@
     <string name="app_analysis_error_busy">Hay demasiados análisis en curso. Inténtalo más tarde.</string>
     <string name="app_analysis_error_generic">No se pudo completar la operación. Inténtalo de nuevo.</string>
     <string name="app_analysis_title">Análisis de APK</string>
+    <string name="release_integrity_error_title">No se pudo verificar la aplicación</string>
+    <string name="release_integrity_error_message">No se pudo verificar la firma de la aplicación instalada. Actualiza SP-DECODE desde su fuente oficial. Si el problema continúa, contacta con soporte e incluye el código RELEASE_SIGNER_REJECTED.</string>
 </resources>

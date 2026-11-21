@@ -364,4 +364,6 @@
     <string name="app_analysis_error_busy">Đang có quá nhiều phân tích. Thử lại sau.</string>
     <string name="app_analysis_error_generic">Không thể hoàn tất thao tác. Thử lại.</string>
     <string name="app_analysis_title">Phân tích APK</string>
+    <string name="release_integrity_error_title">Không thể xác minh ứng dụng</string>
+    <string name="release_integrity_error_message">Không thể xác minh chữ ký của ứng dụng đã cài đặt. Hãy cập nhật SP-DECODE từ nguồn chính thức. Nếu sự cố vẫn tiếp diễn, hãy liên hệ bộ phận hỗ trợ và cung cấp mã RELEASE_SIGNER_REJECTED.</string>
 </resources>

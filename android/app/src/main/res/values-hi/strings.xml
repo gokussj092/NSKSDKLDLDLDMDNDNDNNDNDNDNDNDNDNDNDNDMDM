@@ -364,4 +364,6 @@
     <string name="app_analysis_error_busy">बहुत सारे विश्लेषण चल रहे हैं। बाद में प्रयास करें।</string>
     <string name="app_analysis_error_generic">कार्रवाई पूरी नहीं हो सकी। पुनः प्रयास करें।</string>
     <string name="app_analysis_title">APK विश्लेषण</string>
+    <string name="release_integrity_error_title">ऐप की पुष्टि नहीं हो सकी</string>
+    <string name="release_integrity_error_message">इंस्टॉल किए गए ऐप के हस्ताक्षर की पुष्टि नहीं हो सकी। SP-DECODE को उसके आधिकारिक स्रोत से अपडेट करें। समस्या बनी रहने पर सहायता से संपर्क करें और RELEASE_SIGNER_REJECTED कोड दें।</string>
 </resources>
