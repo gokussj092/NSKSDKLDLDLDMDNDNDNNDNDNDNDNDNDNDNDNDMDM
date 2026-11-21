@@ -105,6 +105,7 @@ internal fun SpDecodeApp(
     cloudFormats:List<AndroidDecoderCatalog.Format> = emptyList(),
     cloudTextFormats:List<CloudTextRoute> = emptyList(),
     serverVpnLoading:Boolean=false,
+    catalogWorkRunning:Boolean=false,
     serverVpnUnavailable:Boolean=false,
     catalogProgress:Int?=null,
     catalogTransfer:CatalogTransferUiState?=null,
@@ -168,7 +169,7 @@ internal fun SpDecodeApp(
                 showServerVpnRefresh=(activeTab==3 || activeTab==2) &&
                     BuildConfig.SPDECODE_CLOUD_ENABLED,
                 refreshingServerVpn=serverVpnLoading && catalogTransfer==null,
-                enableServerVpnRefresh=!busy && !serverVpnLoading,
+                enableServerVpnRefresh=!busy && !serverVpnLoading && !catalogWorkRunning,
                 onRefreshServerVpn=onRefreshServerVpn,
             )
             Box(Modifier.weight(1f)) {

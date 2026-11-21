@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="account_auth_next">Next</string>
+    <string name="account_auth_or_continue_with">or continue with</string>
+    <string name="account_auth_edit_email">Edit email</string>
+    <string name="account_auth_show_password">Show password</string>
+    <string name="account_auth_hide_password">Hide password</string>
+    <string name="account_auth_forgot_password">Forgot your password?</string>
+    <string name="account_auth_recovery_hint">If your account is linked to Google, sign in with Google and change your password in Security.</string>
+    <string name="account_auth_consent_required">Accept the Terms of Service and Privacy Policy to continue with Google.</string>
+    <string name="account_auth_quick_access">Sign in with fingerprint or PIN</string>
+    <string name="account_auth_device_prompt">Unlock your account</string>
+    <string name="account_auth_session_expired">Your session expired. Sign in with your password or Google.</string>
+    <string name="account_auth_email_error">Invalid credentials or account unavailable.</string>
+    <string name="account_auth_google_error">Could not sign in. Check Google and your connection. (%1$s)</string>
+</resources>

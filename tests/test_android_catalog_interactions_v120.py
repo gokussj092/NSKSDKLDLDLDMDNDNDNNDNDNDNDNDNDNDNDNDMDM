@@ -48,7 +48,7 @@ class CatalogInteractions(unittest.TestCase):
      ui=(JAVA/"SpDecodeApp.kt").read_text("utf-8")
      transfer=(JAVA/"CatalogTransferDialog.kt").read_text("utf-8")
      router=(JAVA/"ImportFormatRouter.kt").read_text("utf-8")
-     self.assertIn("pendingServerVpnCatalogVersion=latest",activity)
+     self.assertIn("pendingServerVpnCatalogVersion=version",activity)
      self.assertIn("CloudTextFormats.identify(userText,textRoutes)",activity)
      self.assertIn("serverVpnCatalog.cachedTextFormats()",activity)
      self.assertIn("ImportFormatRouter.detect(",activity)
@@ -58,7 +58,7 @@ class CatalogInteractions(unittest.TestCase):
      self.assertIn("receivedBytes",transfer)
      self.assertIn("totalBytes",transfer)
      self.assertIn("fun validateTextFormats(",repo)
-     self.assertIn('CloudDecodeClient(applicationContext).watchCatalogVersion(0)',update)
+     self.assertIn('client.watchCatalogVersion(0)',update)
      self.assertNotIn('repository.refreshIfDue(announcedVersion=requested)',update)
      self.assertIn("CloudLegalConsent.accepted(context)",update)
 

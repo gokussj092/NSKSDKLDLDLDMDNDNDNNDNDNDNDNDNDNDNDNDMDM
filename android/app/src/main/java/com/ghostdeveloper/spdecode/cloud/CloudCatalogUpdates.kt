@@ -5,7 +5,9 @@ import androidx.work.BackoffPolicy
 import androidx.work.Constraints
 import androidx.work.CoroutineWorker
 import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.ExistingWorkPolicy
 import androidx.work.NetworkType
+import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkerParameters
 import androidx.work.WorkManager
@@ -20,9 +22,13 @@ import kotlinx.coroutines.isActive
 internal object CloudCatalogUpdates {
     private const val PREFS="spdecode-catalog-sync"
     private const val CONSENT="allow-background-sync"
+    private const val DOWNLOAD="catalog-download-in-background"
     private const val BACKUP="catalog-version-recovery"
+    private const val IMMEDIATE_CHECK="catalog-version-opt-in-check"
     internal const val PUSH_WORK_NAME="catalog-version-push"
     private const val PENDING_VERSION="latest-offered-catalog"
+    private const val AUTO_VERSION="last-automatic-catalog-version"
+    private const val AUTO_TIME="last-automatic-catalog-time"
 
     fun enabled(context:Context):Boolean =
         BuildConfig.SPDECODE_CLOUD_ENABLED &&
@@ -32,12 +38,55 @@ internal object CloudCatalogUpdates {
         if(value && !CloudLegalConsent.accepted(context))return
         context.getSharedPreferences(PREFS,Context.MODE_PRIVATE)
             .edit().putBoolean(CONSENT,value).apply()
-        if(value)ensureScheduled(context)
+        if(value) {
+            ensureScheduled(context)
+            if (downloadInBackground(context)) checkNow(context)
+        }
         else {
             val wm=WorkManager.getInstance(context)
             wm.cancelUniqueWork(BACKUP)
             wm.cancelUniqueWork(PUSH_WORK_NAME)
+            wm.cancelUniqueWork(IMMEDIATE_CHECK)
+            wm.cancelAllWorkByTag(CatalogTransferWorker.AUTO_TAG)
         }
+    }
+
+    fun backgroundEnabled(context: Context): Boolean =
+        BuildConfig.SPDECODE_CLOUD_ENABLED &&
+            context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getBoolean(DOWNLOAD, false)
+
+    fun downloadInBackground(context: Context): Boolean = enabled(context) && backgroundEnabled(context)
+
+    fun setBackgroundEnabled(context: Context, value: Boolean) {
+        if (value && !CloudLegalConsent.accepted(context)) return
+        context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit()
+            .putBoolean(DOWNLOAD, value).remove(AUTO_VERSION).remove(AUTO_TIME).apply()
+        if (value && enabled(context)) checkNow(context)
+        else WorkManager.getInstance(context).cancelAllWorkByTag(CatalogTransferWorker.AUTO_TAG)
+    }
+
+    private fun checkNow(context: Context) {
+        val check = OneTimeWorkRequestBuilder<CloudCatalogSyncWorker>()
+            .setConstraints(Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build())
+            .build()
+        WorkManager.getInstance(context).enqueueUniqueWork(IMMEDIATE_CHECK, ExistingWorkPolicy.KEEP, check)
+    }
+
+    /** Version hints are untrusted; the Worker authenticates and verifies the actual snapshot. */
+    @Synchronized fun queueAutomaticDownload(context: Context, version: Int, installed: Int) {
+        if (version !in 1..999999999 || version <= installed || !downloadInBackground(context) ||
+            !CloudLegalConsent.accepted(context)) return
+        val prefs = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+        val now = System.currentTimeMillis()
+        // Failed or cancelled work is not recreated repeatedly for the same hint.
+        val age = now - prefs.getLong(AUTO_TIME, 0)
+        if (prefs.getInt(AUTO_VERSION, 0) >= version && age in 0 until TimeUnit.HOURS.toMillis(24)) return
+        CatalogTransferWorker.enqueue(context, version, automatic = true, background = true)
+    }
+
+    fun recordAutomaticAttempt(context: Context, version: Int) {
+        context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit()
+            .putInt(AUTO_VERSION, version).putLong(AUTO_TIME, System.currentTimeMillis()).apply()
     }
 
     fun ensureScheduled(context:Context) {
@@ -68,7 +117,7 @@ internal object CloudCatalogUpdates {
         if(!rawVersion.matches(Regex("[1-9][0-9]{0,8}")))return
         val version=rawVersion.toIntOrNull()?:return
         markOffered(context,version)
-        // A push already supplies a version hint. Verify/download only after the user's tap.
+        if (downloadInBackground(context)) checkNow(context)
     }
 
     /** HTTPS long-poll from the VPS while the consenting app is visible.
@@ -123,10 +172,14 @@ internal class CloudCatalogSyncWorker(
             !CloudLegalConsent.accepted(applicationContext))return Result.success()
         val requested=inputData.getInt("catalogVersion",0)
         return try{
-            // Background recovery only retains a version hint. Never download
-            // new catalogs without the user confirming the foreground dialog.
-            val remote=CloudDecodeClient(applicationContext).watchCatalogVersion(0)
-            CloudCatalogUpdates.markOffered(applicationContext,maxOf(requested,remote))
+            val client = CloudDecodeClient(applicationContext)
+            val remote = client.watchCatalogVersion(0)
+            val offered = maxOf(requested, remote)
+            CloudCatalogUpdates.markOffered(applicationContext, offered)
+            if (CloudCatalogUpdates.downloadInBackground(applicationContext)) {
+                val installed = ServerVpnCatalogRepository(applicationContext, client).currentVersion()
+                CloudCatalogUpdates.queueAutomaticDownload(applicationContext, remote, installed)
+            }
             Result.success()
         }catch(error:CancellationException){throw error}
          catch(_:Exception){Result.failure()}

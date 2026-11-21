@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="account_auth_next">Berikutnya</string>
+    <string name="account_auth_or_continue_with">atau lanjutkan dengan</string>
+    <string name="account_auth_edit_email">Ubah email</string>
+    <string name="account_auth_show_password">Tampilkan kata sandi</string>
+    <string name="account_auth_hide_password">Sembunyikan kata sandi</string>
+    <string name="account_auth_forgot_password">Lupa kata sandi?</string>
+    <string name="account_auth_recovery_hint">Jika akun tertaut ke Google, masuk dengan Google dan ubah kata sandi di bagian Keamanan.</string>
+    <string name="account_auth_consent_required">Setujui ketentuan layanan dan kebijakan privasi untuk melanjutkan dengan Google.</string>
+    <string name="account_auth_quick_access">Masuk dengan sidik jari atau PIN</string>
+    <string name="account_auth_device_prompt">Buka kunci akun</string>
+    <string name="account_auth_session_expired">Sesi Anda berakhir. Masuk dengan kata sandi atau Google.</string>
+    <string name="account_auth_email_error">Kredensial salah atau akun tidak tersedia.</string>
+    <string name="account_auth_google_error">Tidak dapat masuk. Periksa Google dan koneksi Anda. (%1$s)</string>
+</resources>

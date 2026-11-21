@@ -297,6 +297,7 @@ fun FunctionalSettingsPanel(
                     colors=SwitchDefaults.colors(checkedThumbColor=Color.Black,
                         checkedTrackColor=TitleText))
             }
+            com.ghostdeveloper.spdecode.cloud.CatalogBackgroundSettings()
         }
         if(BuildConfig.SPDECODE_CLOUD_ENABLED) SettingsCard {
             val transferLabels=listOf(

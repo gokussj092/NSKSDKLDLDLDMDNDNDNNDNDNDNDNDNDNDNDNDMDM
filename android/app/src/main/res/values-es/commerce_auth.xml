@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="account_auth_next">Siguiente</string>
+    <string name="account_auth_or_continue_with">o continuar con</string>
+    <string name="account_auth_edit_email">Cambiar correo</string>
+    <string name="account_auth_show_password">Mostrar contraseña</string>
+    <string name="account_auth_hide_password">Ocultar contraseña</string>
+    <string name="account_auth_forgot_password">¿Olvidaste tu contraseña?</string>
+    <string name="account_auth_recovery_hint">Si tu cuenta está vinculada a Google, inicia sesión con Google y cambia tu contraseña en Seguridad.</string>
+    <string name="account_auth_consent_required">Acepta los términos del servicio y la política de privacidad para continuar con Google.</string>
+    <string name="account_auth_quick_access">Iniciar con huella o PIN</string>
+    <string name="account_auth_device_prompt">Desbloquea tu cuenta</string>
+    <string name="account_auth_session_expired">La sesión venció. Inicia sesión con tu contraseña o con Google.</string>
+    <string name="account_auth_email_error">Credenciales incorrectas o cuenta no disponible.</string>
+    <string name="account_auth_google_error">No se pudo iniciar sesión. Verifica Google y tu conexión. (%1$s)</string>
+</resources>

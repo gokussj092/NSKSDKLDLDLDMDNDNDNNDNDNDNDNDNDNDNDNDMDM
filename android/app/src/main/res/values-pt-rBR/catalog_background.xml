@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="catalog_background_title">Baixar em segundo plano</string>
+    <string name="catalog_background_description">Veja o andamento nas notificações. Com a busca automática ativada, novas versões do catálogo são baixadas automaticamente.</string>
+    <string name="catalog_background_guide_title">Segundo plano e bateria</string>
+    <string name="catalog_background_guide_body">Nas informações do app, abra Bateria e permita a atividade em segundo plano ou selecione Sem restrições, se disponível. Ative as notificações para ver o andamento. Os nomes variam conforme o dispositivo.</string>
+    <string name="catalog_background_open_settings">Abrir configurações do app</string>
+    <string name="catalog_background_channel">Downloads do catálogo</string>
+    <string name="catalog_background_progress">%1$d%% · %2$s / %3$s · faltam %4$s</string>
+</resources>

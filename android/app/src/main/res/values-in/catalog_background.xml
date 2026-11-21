@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="catalog_background_title">Unduh di latar belakang</string>
+    <string name="catalog_background_description">Lihat progres unduhan di notifikasi. Jika pemeriksaan otomatis aktif, versi katalog baru diunduh otomatis.</string>
+    <string name="catalog_background_guide_title">Latar belakang dan baterai</string>
+    <string name="catalog_background_guide_body">Di Info aplikasi, buka Baterai dan izinkan aktivitas latar belakang atau pilih Tidak dibatasi jika tersedia. Aktifkan notifikasi untuk melihat progres. Nama pengaturan tergantung pada perangkat.</string>
+    <string name="catalog_background_open_settings">Buka setelan aplikasi</string>
+    <string name="catalog_background_channel">Unduhan katalog</string>
+    <string name="catalog_background_progress">%1$d%% · %2$s / %3$s · tersisa %4$s</string>
+</resources>

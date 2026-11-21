@@ -42,6 +42,7 @@ import com.ghostdeveloper.spdecode.cloud.CloudTextRoute
 import com.ghostdeveloper.spdecode.cloud.CloudCatalogUpdates
 import com.ghostdeveloper.spdecode.cloud.CloudLegalConsent
 import com.ghostdeveloper.spdecode.cloud.CloudLegalConsentDialog
+import com.ghostdeveloper.spdecode.cloud.CatalogTransferWorker
 import com.ghostdeveloper.spdecode.cloud.ServerVpnApp
 import com.ghostdeveloper.spdecode.cloud.ServerVpnCatalogRepository
 import com.ghostdeveloper.spdecode.parity.AndroidDecoderCatalog
@@ -116,10 +117,10 @@ class MainActivity : ComponentActivity() {
     private var showCloudLegal by mutableStateOf(false)
     private var serverVpnRefresh:Job?=null
     private var serverVpnLoading by mutableStateOf(false)
-    private var catalogProgress by mutableStateOf<Int?>(null)
     private var catalogTransfer by mutableStateOf<CatalogTransferUiState?>(null)
     private var interruptedCatalogVersion=0
-    private var catalogTransferGeneration=0
+    private var catalogWorkId:java.util.UUID?=null
+    private var catalogWorkRunning by mutableStateOf(false)
     private var serverVpnUnavailable by mutableStateOf(false)
     private var pendingServerVpnCatalogVersion by mutableStateOf<Int?>(null)
     private val privateCredentialVault by lazy { DevicePrivateCredentialVault(this) }
@@ -263,7 +264,13 @@ class MainActivity : ComponentActivity() {
      * "Cancel" does not permanently hide improvements from the customer.
      */
     private fun offerServerCatalogVersion(version:Int){
-        if(version !in 1..999999999 || version<=serverVpnCatalog.currentVersion())return
+        val installed = serverVpnCatalog.currentVersion()
+        if(version !in 1..999999999 || version<=installed)return
+        if (CloudCatalogUpdates.downloadInBackground(this)) {
+            if (!catalogWorkRunning)
+                CloudCatalogUpdates.queueAutomaticDownload(this, version, installed)
+            return
+        }
         val previous=settings.getInt("last_dismissed_catalog_version",0)
         val until=settings.getLong("last_dismissed_catalog_until",0L)
         val now=System.currentTimeMillis()
@@ -283,9 +290,8 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    /** On every new entry, obtain ONLY the server version: no catalogs, URLs or
-     * icon payloads are downloaded without an explicit confirmation.
-     * This is foreground checking; it does not require background-sync opt-in.
+    /** Check the current version on entry. A transfer needs a manual confirmation
+     * or explicit automatic download consent.
      */
     private fun probeUpdatesOnEntry(){
         if(!BuildConfig.SPDECODE_CLOUD_ENABLED || showCloudLegal)return
@@ -331,7 +337,7 @@ class MainActivity : ComponentActivity() {
     }
 
     /** Opening Server VPN without auto-updates reads cached icons only. */
-    private fun refreshServerVpn(force:Boolean=false) {
+    private fun refreshServerVpn() {
         if(!BuildConfig.SPDECODE_CLOUD_ENABLED || showCloudLegal ||
             serverVpnRefresh?.isActive==true)return
         serverVpnLoading=true
@@ -342,12 +348,7 @@ class MainActivity : ComponentActivity() {
                 // the larger icon directory on low-end devices.
                 fileFormats=serverVpnCatalog.cachedFormats()
                 serverVpnApps=serverVpnCatalog.cached()
-                    textRoutes=serverVpnCatalog.cachedTextFormats()
-                if(force) {
-                    serverVpnApps=serverVpnCatalog.refreshIfDue(force=force)
-                    fileFormats=serverVpnCatalog.cachedFormats()
-                    textRoutes=serverVpnCatalog.cachedTextFormats()
-                }
+                textRoutes=serverVpnCatalog.cachedTextFormats()
             }catch(error:CancellationException){throw error}
              catch(_:Exception){ /* An authenticated cached snapshot remains usable. */ }
             finally {
@@ -357,55 +358,68 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    /** The refresh button asks locally; the confirmed action makes one catalog request. */
+    /** The refresh button asks locally; confirmation enqueues a single persistent transfer. */
     private fun checkServerVpnUpdates() {
         if(!BuildConfig.SPDECODE_CLOUD_ENABLED || showCloudLegal || busy ||
-            serverVpnRefresh?.isActive==true)return
-        pendingServerVpnCatalogVersion=0 // manual refresh; no invented remote version
+            catalogWorkRunning)return
+        pendingServerVpnCatalogVersion=0
     }
 
-    /** Explicit confirmation starts one cancellable, byte-measured catalog transfer. */
     private fun confirmServerVpnUpdate() {
         val version=pendingServerVpnCatalogVersion?:return
-        interruptedCatalogVersion=version
-        pendingServerVpnCatalogVersion=null
         if(!BuildConfig.SPDECODE_CLOUD_ENABLED || showCloudLegal || busy ||
-            serverVpnRefresh?.isActive==true)return
-        val generation=++catalogTransferGeneration
-        catalogTransfer=CatalogTransferUiState()
-        serverVpnLoading=true
-        catalogProgress=null
-        serverVpnRefresh=scope.launch {
-            try {
-                val apps=serverVpnCatalog.refreshIfDue(
-                    force=true,announcedVersion=version,
-                    onTransfer={received,total->
-                        scope.launch(Dispatchers.Main.immediate) {
-                            if(generation==catalogTransferGeneration &&
-                                catalogTransfer?.completed==false)
-                                catalogTransfer=CatalogTransferUiState(received,total,resumable=serverVpnCatalog.lastTransferResumable)
-                        }
-                    })
-                if(generation!=catalogTransferGeneration)return@launch
-                serverVpnApps=apps
-                fileFormats=serverVpnCatalog.cachedFormats()
-                textRoutes=serverVpnCatalog.cachedTextFormats()
-                if(version!=0 && serverVpnCatalog.currentVersion()<version){
-                    catalogTransfer=null
-                    toast(R.string.server_vpn_catalog_update_error)
-                }else catalogTransfer=CatalogTransferUiState(completed=true,displayVersion=serverVpnCatalog.displayVersion())
-            }catch(error:CancellationException){throw error}
-             catch(_:Exception){
-                if(generation==catalogTransferGeneration) {
-                    catalogTransfer=(catalogTransfer?:CatalogTransferUiState()).copy(paused=true,resumable=serverVpnCatalog.lastTransferResumable)
-                }
-             }finally {
-                if(generation==catalogTransferGeneration) {
-                    serverVpnUnavailable=serverVpnApps.isEmpty()
-                    serverVpnLoading=false
-                    catalogProgress=null
-                }
-             }
+            catalogWorkRunning)return
+        pendingServerVpnCatalogVersion=null
+        interruptedCatalogVersion=version
+        CatalogTransferWorker.enqueue(this, version, automatic=false,
+            background=CloudCatalogUpdates.backgroundEnabled(this))
+    }
+
+    private fun observeCatalogTransfer(states:List<WorkInfo>) {
+        if (showCloudLegal) return
+        val active=states.firstOrNull { !it.state.isFinished }
+        if (active!=null) {
+            catalogWorkId=active.id
+            catalogWorkRunning=true
+            if (pendingServerVpnCatalogVersion != 0) pendingServerVpnCatalogVersion=null
+            if (CatalogTransferWorker.BACKGROUND_TAG in active.tags) {
+                catalogTransfer=null
+            } else {
+                val progress=active.progress
+                interruptedCatalogVersion=progress.getInt(CatalogTransferWorker.VERSION,interruptedCatalogVersion)
+                catalogTransfer=CatalogTransferUiState(
+                    receivedBytes=progress.getLong(CatalogTransferWorker.RECEIVED,0L),
+                    totalBytes=progress.getLong(CatalogTransferWorker.TOTAL,-1L),
+                    resumable=progress.getBoolean(CatalogTransferWorker.RESUMABLE,catalogDownloadChunks))
+            }
+            return
+        }
+        val previousId=catalogWorkId ?: return
+        catalogWorkId=null
+        catalogWorkRunning=false
+        val done=states.firstOrNull { it.id==previousId } ?: run {
+            catalogTransfer=null
+            return
+        }
+        val showCard=CatalogTransferWorker.BACKGROUND_TAG !in done.tags
+        when (done.state) {
+            WorkInfo.State.SUCCEEDED -> {
+                serverVpnRefresh?.cancel()
+                serverVpnRefresh=null
+                refreshServerVpn()
+                catalogTransfer=if (showCard) CatalogTransferUiState(completed=true,
+                    displayVersion=done.outputData.getString(CatalogTransferWorker.DISPLAY_VERSION)
+                        ?.takeIf { it.isNotBlank() }) else null
+                offerServerCatalogVersion(CloudCatalogUpdates.pendingVersion(this))
+            }
+            WorkInfo.State.FAILED -> {
+                interruptedCatalogVersion=done.outputData.getInt(CatalogTransferWorker.VERSION,interruptedCatalogVersion)
+                catalogTransfer=if (showCard) CatalogTransferUiState(
+                    receivedBytes=done.outputData.getLong(CatalogTransferWorker.RECEIVED,0L),
+                    totalBytes=done.outputData.getLong(CatalogTransferWorker.TOTAL,-1L),
+                    paused=true, resumable=done.outputData.getBoolean(CatalogTransferWorker.RESUMABLE,false)) else null
+            }
+            else -> catalogTransfer=null
         }
     }
 
@@ -419,12 +433,8 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun cancelCatalogDownload() {
-        catalogTransferGeneration++
-        com.ghostdeveloper.spdecode.cloud.CloudNativeTransport.cancelCatalogDownload()
-        serverVpnRefresh?.cancel()
+        WorkManager.getInstance(this).cancelUniqueWork(CatalogTransferWorker.WORK_NAME)
         catalogTransfer=null
-        catalogProgress=null
-        serverVpnLoading=false
     }
 
     private fun requireCloudLegal():Boolean {
@@ -766,13 +776,9 @@ class MainActivity : ComponentActivity() {
         catalogDownloadChunks=getSharedPreferences("spdecode-catalog-sync",MODE_PRIVATE).getBoolean("download-by-chunks",false)
         catalogUpdatesEnabled=CloudCatalogUpdates.enabled(this)
         if(BuildConfig.SPDECODE_CLOUD_ENABLED) {
-            // Refresh the visible provider list as soon as a background push completes.
             WorkManager.getInstance(this).getWorkInfosForUniqueWorkLiveData(
-                CloudCatalogUpdates.PUSH_WORK_NAME
-            ).observe(this) { states ->
-                if(states.any { it.state==WorkInfo.State.SUCCEEDED } &&
-                    !showCloudLegal)refreshServerVpn()
-            }
+                CatalogTransferWorker.WORK_NAME
+            ).observe(this) { states -> observeCatalogTransfer(states) }
         }
         if(!showCloudLegal){refreshServerVpn();syncOptInUsage();CloudCatalogUpdates.ensureScheduled(this);refreshCloudWhatsNew()}
         if(savedInstanceState==null && !settings.getBoolean("first_run_guide_completed",false))
@@ -964,9 +970,6 @@ class MainActivity : ComponentActivity() {
                         if(catalogUpdatesEnabled) {
                             startCatalogWatch()
                             if(tab==2 || tab==3)refreshServerVpn()
-                        }else {
-                            serverVpnRefresh?.cancel()
-                            serverVpnLoading=false
                         }
                     }catch(_:Exception){message=getString(R.string.history_storage_error)}
                 },
@@ -976,6 +979,7 @@ class MainActivity : ComponentActivity() {
                             CloudDiagnosticsPrivacy.setEnabled(this@MainActivity,false)
                             usageOptIn=false
                             CloudCatalogUpdates.setEnabled(this@MainActivity,false)
+                            CloudCatalogUpdates.setBackgroundEnabled(this@MainActivity,false)
                             catalogWatchJob?.cancel()
                             entryProbeJob?.cancel()
                             catalogUpdatesEnabled=false
@@ -1007,8 +1011,8 @@ class MainActivity : ComponentActivity() {
                 serverVpnApps=serverVpnApps,
                 cloudFormats=fileFormats,
                 cloudTextFormats=textRoutes,
-                serverVpnLoading=serverVpnLoading,
-                catalogProgress=catalogProgress,
+                serverVpnLoading=serverVpnLoading || catalogTransfer?.let { !it.completed && !it.paused }==true,
+                catalogWorkRunning=catalogWorkRunning,
                 catalogTransfer=catalogTransfer,
                 onCancelCatalogTransfer={cancelCatalogDownload()},
                 onFinishCatalogTransfer={catalogTransfer=null},

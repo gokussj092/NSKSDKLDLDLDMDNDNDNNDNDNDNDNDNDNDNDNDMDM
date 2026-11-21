@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="account_auth_next">次へ</string>
+    <string name="account_auth_or_continue_with">または次の方法で続ける</string>
+    <string name="account_auth_edit_email">メールアドレスを変更</string>
+    <string name="account_auth_show_password">パスワードを表示</string>
+    <string name="account_auth_hide_password">パスワードを非表示</string>
+    <string name="account_auth_forgot_password">パスワードをお忘れですか？</string>
+    <string name="account_auth_recovery_hint">アカウントが Google に連携されている場合は、Google でログインし、セキュリティ設定でパスワードを変更してください。</string>
+    <string name="account_auth_consent_required">Google で続けるには、利用規約とプライバシーポリシーに同意してください。</string>
+    <string name="account_auth_quick_access">指紋または PIN でログイン</string>
+    <string name="account_auth_device_prompt">アカウントのロックを解除</string>
+    <string name="account_auth_session_expired">セッションの有効期限が切れました。パスワードまたは Google でログインしてください。</string>
+    <string name="account_auth_email_error">ログイン情報が正しくないか、アカウントを利用できません。</string>
+    <string name="account_auth_google_error">ログインできませんでした。Google と接続を確認してください。(%1$s)</string>
+</resources>

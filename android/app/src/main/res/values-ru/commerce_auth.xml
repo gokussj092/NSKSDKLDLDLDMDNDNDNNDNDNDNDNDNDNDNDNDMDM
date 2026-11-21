@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="account_auth_next">Далее</string>
+    <string name="account_auth_or_continue_with">или продолжить через</string>
+    <string name="account_auth_edit_email">Изменить почту</string>
+    <string name="account_auth_show_password">Показать пароль</string>
+    <string name="account_auth_hide_password">Скрыть пароль</string>
+    <string name="account_auth_forgot_password">Забыли пароль?</string>
+    <string name="account_auth_recovery_hint">Если аккаунт связан с Google, войдите через Google и смените пароль в разделе «Безопасность».</string>
+    <string name="account_auth_consent_required">Примите условия обслуживания и политику конфиденциальности, чтобы продолжить через Google.</string>
+    <string name="account_auth_quick_access">Войти по отпечатку пальца или PIN-коду</string>
+    <string name="account_auth_device_prompt">Разблокируйте аккаунт</string>
+    <string name="account_auth_session_expired">Срок сеанса истёк. Войдите с паролем или через Google.</string>
+    <string name="account_auth_email_error">Неверные данные для входа или аккаунт недоступен.</string>
+    <string name="account_auth_google_error">Не удалось войти. Проверьте Google и подключение. (%1$s)</string>
+</resources>

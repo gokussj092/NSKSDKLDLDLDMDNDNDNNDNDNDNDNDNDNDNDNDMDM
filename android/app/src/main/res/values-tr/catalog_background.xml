@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="catalog_background_title">Arka planda indir</string>
+    <string name="catalog_background_description">İlerlemeyi bildirimlerde gösterir. Otomatik arama açıkken yeni katalog sürümleri kendiliğinden indirilir.</string>
+    <string name="catalog_background_guide_title">Arka plan ve pil</string>
+    <string name="catalog_background_guide_body">Uygulama bilgilerinde Pil bölümünü açıp arka plan etkinliğine izin ver veya varsa Kısıtlanmamış seçeneğini seç. İlerleme için bildirimleri aç. Ayar adları cihaza göre değişebilir.</string>
+    <string name="catalog_background_open_settings">Uygulama ayarlarını aç</string>
+    <string name="catalog_background_channel">Katalog indirmeleri</string>
+    <string name="catalog_background_progress">%%%1$d · %2$s / %3$s · kalan %4$s</string>
+</resources>

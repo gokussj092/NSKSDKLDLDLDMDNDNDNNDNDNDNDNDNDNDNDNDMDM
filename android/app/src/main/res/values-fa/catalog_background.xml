@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="catalog_background_title">دانلود در پس‌زمینه</string>
+    <string name="catalog_background_description">پیشرفت دانلود در اعلان‌ها نمایش داده می‌شود. با فعال بودن بررسی خودکار، نسخه‌های جدید کاتالوگ خودکار دانلود می‌شوند.</string>
+    <string name="catalog_background_guide_title">پس‌زمینه و باتری</string>
+    <string name="catalog_background_guide_body">در اطلاعات برنامه، بخش باتری را باز کنید و فعالیت پس‌زمینه را مجاز کنید یا گزینه بدون محدودیت را بزنید، اگر وجود دارد. اعلان‌ها را برای مشاهده پیشرفت فعال کنید. نام‌ها ممکن است متفاوت باشند.</string>
+    <string name="catalog_background_open_settings">باز کردن تنظیمات برنامه</string>
+    <string name="catalog_background_channel">دانلودهای کاتالوگ</string>
+    <string name="catalog_background_progress">%1$d%% · %2$s / %3$s · %4$s باقی‌مانده</string>
+</resources>

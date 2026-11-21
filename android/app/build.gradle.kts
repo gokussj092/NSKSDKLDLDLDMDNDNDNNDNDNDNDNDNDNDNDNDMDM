@@ -623,9 +623,6 @@ val prepareCloudHistoryUiSource = tasks.register("prepareCloudHistoryUiSource") 
             "                            CloudLegalConsent.revoke(this@MainActivity)",
             """                            com.ghostdeveloper.spdecode.cloud.CloudNotifications.setEnabled(this@MainActivity,false)
                             CloudLegalConsent.revoke(this@MainActivity)""")
-        activity = replaceOnce(activity,
-            "serverVpnCatalog.refreshIfDue(force=force)",
-            "serverVpnCatalog.refreshIfDue(force=force,onProgress={percent->scope.launch {catalogProgress=percent}})")
 
 
         // Cloud-only UI adaptation; the C0-locked original screens stay unchanged.
@@ -807,8 +804,8 @@ android {
         if(nativeOffline) applicationId = "com.ghostdeveloper.spdecode" + ".offline"
         minSdk = 24
         targetSdk = 36
-        versionCode = 47
-        versionName = "1.1.32"
+        versionCode = 48
+        versionName = "1.1.33"
         if(nativeOffline) versionName = listOf("1.1.27", "offline.alpha1").joinToString("-")
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         // A public API origin is not a secret; all server secrets stay in the VPS.

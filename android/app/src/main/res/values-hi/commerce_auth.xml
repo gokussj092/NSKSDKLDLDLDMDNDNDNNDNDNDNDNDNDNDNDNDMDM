@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="account_auth_next">आगे</string>
+    <string name="account_auth_or_continue_with">या इससे जारी रखें</string>
+    <string name="account_auth_edit_email">ईमेल बदलें</string>
+    <string name="account_auth_show_password">पासवर्ड दिखाएँ</string>
+    <string name="account_auth_hide_password">पासवर्ड छिपाएँ</string>
+    <string name="account_auth_forgot_password">पासवर्ड भूल गए?</string>
+    <string name="account_auth_recovery_hint">अगर आपका खाता Google से जुड़ा है, तो Google से साइन इन करें और सुरक्षा अनुभाग में पासवर्ड बदलें।</string>
+    <string name="account_auth_consent_required">Google से जारी रखने के लिए सेवा की शर्तें और गोपनीयता नीति स्वीकार करें।</string>
+    <string name="account_auth_quick_access">फ़िंगरप्रिंट या पिन से साइन इन करें</string>
+    <string name="account_auth_device_prompt">अपना खाता अनलॉक करें</string>
+    <string name="account_auth_session_expired">आपका सत्र समाप्त हो गया है। पासवर्ड या Google से साइन इन करें।</string>
+    <string name="account_auth_email_error">लॉगिन विवरण गलत हैं या खाता उपलब्ध नहीं है।</string>
+    <string name="account_auth_google_error">साइन इन नहीं हो सका। Google और अपना कनेक्शन जाँचें। (%1$s)</string>
+</resources>
