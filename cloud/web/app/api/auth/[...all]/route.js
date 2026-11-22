@@ -16,7 +16,7 @@ async function handle(request){return safe(async()=>{
       if(!input||typeof input!=='object'||Array.isArray(input)||
         Object.keys(input).some(k=>!['email','password','rememberMe'].includes(k))||
         typeof input.email!=='string'||input.email.length>254||
-        !/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(input.email)||
+        !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.email)||
         typeof input.password!=='string'||input.password.length>128||
         (input.rememberMe!==undefined&&input.rememberMe!==true))
         fail('INVALID_REQUEST');
