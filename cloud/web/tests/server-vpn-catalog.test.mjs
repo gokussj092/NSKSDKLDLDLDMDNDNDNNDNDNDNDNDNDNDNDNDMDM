@@ -74,7 +74,7 @@ test("only registered icon identifiers are served",async()=>{
 
 import {providerIds,providerEnabled,downloadVpnCatalog} from "../lib/server-vpn-provider.mjs";
 test("only fixed catalog providers are eligible for remote broker",async()=>{
-  assert.deepEqual(providerIds().sort(),[...new Set(["24clan-green","4u-tunnel-lite","7net-vpn","abowaged-vpn","ac-tunnel-vpn","alfaisal-tunnel-plus","alsaher-vip","any-vpn","apna-vpn","aura-net-vpn","austroplus-vpn","bd-net-vpn","catnet-vpn","enaa-tunnel","fnf-tunnel-bd","focus-vpn-cloud","freedom-vpn","gcp-vpn","genis-vpn","ha-tunnel-plus","halcon-r-net","http-conexion","http-fenixvpn","http-internet-infinito","http-jireh","http-socketclay","http-wakko","hx-tunnel","izph-vpn-pro","jyfast-vpn-ultra","kham-vpn","ksh-vpn","litron-pro-vpn","litron-vpn","md-proxy-vpn","megatunnel","mkk-hyper","mm-tunnel","mnr-tunnel-plus","mtm-tunnel-lite","mx-tunnel-pro","my-tunnel-proxy","namo-vpn","netcol-vpn","netflux-vpn","onspace-vpn","opentunnel-ssh","rjc-tunnel-pro","rmp-tunnel-pro","robust-tunnel","royal-tunnel","speicers-pro-vpn","speicers-turbo-vpn","speigo-vpn-configs","speigo-vpn-ssh","superflash-vpn","thailand-vpn","trv-tunnel","tunneldoom-vpn","tunneltweak","turbomx-vpn","tx-tunnel","ultra-tunnel","v2ray-tunnel-plus","vip-snipher-pro","wolf-custom-vpn","xhypher-tunnel-pro","xxpicore-tunnel","zig-tunnel",...suppliedProviderIds()])].sort());
+  assert.deepEqual(providerIds().sort(),[...new Set(["24clan-green","4u-tunnel-lite","7net-vpn","abowaged-vpn","ac-tunnel-vpn","alfaisal-tunnel-plus","alsaher-vip","any-vpn","apna-vpn","aura-net-vpn","austroplus-vpn","bd-net-vpn","catnet-vpn","enaa-tunnel","fnf-tunnel-bd","focus-vpn-cloud","freedom-vpn","gcp-vpn","genis-vpn","ha-tunnel-plus","halcon-r-net","http-conexion","http-fenixvpn","http-internet-infinito","http-jireh","http-socketclay","http-wakko","hx-tunnel","izph-vpn-pro","jyfast-vpn-ultra","kham-vpn","ksh-vpn","litron-pro-vpn","litron-vpn","maya-tun-pro","md-proxy-vpn","megatunnel","mkk-hyper","mm-tunnel","mnr-tunnel-plus","mtm-tunnel-lite","mx-tunnel-pro","my-tunnel-proxy","namo-vpn","netcol-vpn","netflux-vpn","onspace-vpn","opentunnel-ssh","pm-tunnel-lite","rjc-tunnel-pro","rmp-tunnel-lite","rmp-tunnel-pro","robust-tunnel","royal-tunnel","speicers-pro-vpn","speicers-turbo-vpn","speigo-vpn-configs","speigo-vpn-ssh","superflash-vpn","thailand-vpn","trv-tunnel","tunneldoom-vpn","tunneltweak","turbomx-vpn","tx-tunnel","ultra-tunnel","v2ray-tunnel-plus","vip-snipher-pro","wolf-custom-vpn","xhypher-tunnel-pro","xxpicore-tunnel","zig-tunnel",...suppliedProviderIds()])].sort());
   for(const id of providerIds()) assert.equal(providerEnabled(id,{CLOUD_SERVER_VPN_ENABLED:"false"}),false);
   assert.equal(providerEnabled("https://attacker.invalid/",{CLOUD_SERVER_VPN_ENABLED:"true"}),false);
   await assert.rejects(()=>downloadVpnCatalog("https://attacker.invalid/"),{code:"UNSUPPORTED_FORMAT"});
@@ -124,6 +124,23 @@ test("Royal live catalog is enabled with its verified icon",async t=>{
  const value=await response.json();const bytes=Buffer.from(value.contentBase64,"base64");
  assert.equal(bytes.length,261386);
  assert.equal(createHash("sha256").update(bytes).digest("hex"),"56e6ef0898653e632f54f16966ad7bdbbcfcc7149ca86a3c72b79f20208dbfb8");
+});
+
+// Live catalog validated 2026-11-22 (v1.3.41, 27 servers, 376 tweaks): the
+// card is decoding-enabled and serves the 512x512 icon remuxed from the
+// 300x300 APK launcher icon (216,321 bytes). The icon is NOT the exact
+// APK bytes (see manifest icon.policy); owner confirmation pending.
+test("MAYA TUN PRO live catalog is enabled with its verified icon",async t=>{
+ const previous=process.env.CLOUD_SERVER_VPN_ENABLED;
+ process.env.CLOUD_SERVER_VPN_ENABLED="true";
+ t.after(()=>{if(previous===undefined)delete process.env.CLOUD_SERVER_VPN_ENABLED;else process.env.CLOUD_SERVER_VPN_ENABLED=previous;});
+ const app=catalog().apps.find(x=>x.id==="maya-tun-pro");
+ assert(app);assert.equal(app.decodeEnabled,true);
+ assert.equal(app.iconSha256,"7749e091a93dba4bb5f64372c8b4d795aabf621e2af8ea2112aca412eeaa2e00");
+ const response=await getIcon(body({id:"maya-tun-pro"}));assert.equal(response.status,200);
+ const value=await response.json();const bytes=Buffer.from(value.contentBase64,"base64");
+ assert.equal(bytes.length,216321);
+ assert.equal(createHash("sha256").update(bytes).digest("hex"),"7749e091a93dba4bb5f64372c8b4d795aabf621e2af8ea2112aca412eeaa2e00");
 });
 
 
@@ -251,6 +268,13 @@ test("RMP TUNNEL PRO exact original icon and real validated source follow provid
  assert.equal(catalog({availability:{"rmp-tunnel-pro":false}}).apps.find(x=>x.id==="rmp-tunnel-pro").decodeEnabled,false);
 });
 
+test("RMP TUNNEL LITE exact original icon and real validated source follow provider controls",()=>{
+ const app=catalog({availability:{"rmp-tunnel-lite":true}}).apps.find(x=>x.id==="rmp-tunnel-lite");
+ assert.equal(app.name,"RMP TUNNEL LITE");assert.equal(app.decodeEnabled,true);
+ assert.equal(app.iconSha256,"157565e9f1d1aafdb1b4cb90da76f9e844088137d30e4a285b73d38a1932f0b1");
+ assert.equal(catalog({availability:{"rmp-tunnel-lite":false}}).apps.find(x=>x.id==="rmp-tunnel-lite").decodeEnabled,false);
+});
+
 
 test("SuperFlash original PNG and validated paired sources follow provider controls",()=>{
  const app=catalog({availability:{"superflash-vpn":true}}).apps.find(x=>x.id==="superflash-vpn");
@@ -308,6 +332,14 @@ test("NetFlux VPN original PNG and validated complete catalog follow provider co
  assert.equal(app.name,"NetFlux VPN");assert.equal(app.decodeEnabled,true);
  assert.equal(app.iconSha256,"0fd1bf191d2d162c458ed032c53e96da55e5d13d94931f26eab0d9a20610898a");
  assert.equal(catalog({availability:{"netflux-vpn":false}}).apps.find(x=>x.id==="netflux-vpn").decodeEnabled,false);
+});
+
+test("PM Tunnel Lite original PNG and validated complete catalog follow provider controls",()=>{
+ const app=catalog({availability:{"pm-tunnel-lite":true}}).apps.find(x=>x.id==="pm-tunnel-lite");
+ assert.equal(app.name,"PM Tunnel Lite");assert.equal(app.decodeEnabled,true);
+ assert.equal(app.iconSha256,"cd38af8be4d17162c0481008f7a7882b287d7dc5731d3fee3b794b315f43218d");
+ assert.equal(iconFor("pm-tunnel-lite").bytes.length,295765);
+ assert.equal(catalog({availability:{"pm-tunnel-lite":false}}).apps.find(x=>x.id==="pm-tunnel-lite").decodeEnabled,false);
 });
 
 

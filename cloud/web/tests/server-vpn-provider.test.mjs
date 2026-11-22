@@ -27,6 +27,7 @@ for(const provider of [
   {id:"ac-tunnel-vpn",host:"rttunnelv2ray.xyz",path:"/api/files/app",query:"?json=7ef7a9a142eb1f77a56f",agent:"AC TUNNEL VPN/1.4"},
   {id:"ksh-vpn",host:"raw.githubusercontent.com",path:"/yannaing86tt/ksh_server/main/servers.json",query:"",agent:"KSH VPN/1.3.2"},
   {id:"my-tunnel-proxy",host:"mfmpro.xyz",path:"/api/app",query:"?json=3c9a2a29f3a4180271da",agent:"My Tunnel Proxy/2.3"},
+  {id:"pm-tunnel-lite",host:"raw.githubusercontent.com",path:"/rajon-apps-2026/PM-Tunnel-Lite-Updater/refs/heads/main/update.js",query:"",agent:"PM Tunnel Lite"},
   {id:"robust-tunnel",host:"xkingvpn.xyz",path:"/api/files/app",query:"?json=beae113e6e46d674a068",agent:"Robust Tunnel VPN/isvsoft 16.4.7"},
   {id:"trv-tunnel",host:"trmrelay.store",path:"/updater/b67b57c85f49c34ee09fd87f2d6915",query:"",agent:"TRV TUNNEL/2.4"},
   {id:"4u-tunnel-lite",host:"ctxrelay.online",path:"/updater/08f9aa63574a055cffdac66783b05b",query:"",agent:"4U TUNNEL LITE/2.2"},

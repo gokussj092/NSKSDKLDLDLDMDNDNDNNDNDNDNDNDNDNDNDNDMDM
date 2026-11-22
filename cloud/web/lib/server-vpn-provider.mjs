@@ -122,10 +122,25 @@ const PROVIDERS = Object.freeze({
   // blob byte-identical to gcpvpn2026). UA "NetFlux VPN" follows the RENZ-family
   // pattern; the result does not depend on it (see the GCP note above).
   "netflux-vpn": {url:"https://raw.githubusercontent.com/kiranoble/config/refs/heads/main/netflux",agent:"NetFlux VPN"},
+  // Live catalog validated 2026-11-22 (Version 1.3.41, 27 servers, 376 tweaks).
+  // Plain GET, no headers, no auth — exactly like the app; UA "MAYA TUN PRO"
+  // follows the GCP/NetFlux app-name pattern. Live control fetches with a
+  // default urllib UA and with no headers returned byte-identical blobs,
+  // so the result does not depend on it.
+  "maya-tun-pro": {url:"https://jezvpn.xyz/api/app?json=38FD5AC7020E09D8203F",agent:"MAYA TUN PRO"},
+  // Live catalog validated 2026-11-22 (Version 159, 10 servers, 151 networks).
+  // UA "PM Tunnel Lite" follows the RENZ-family pattern; the app itself
+  // fetches with a plain Volley GET (no headers) and plain curl/urllib
+  // return the identical bytes, so the result does not depend on it.
+  "pm-tunnel-lite": {url:"https://raw.githubusercontent.com/rajon-apps-2026/PM-Tunnel-Lite-Updater/refs/heads/main/update.js",agent:"PM Tunnel Lite"},
   "xhypher-tunnel-pro": {url:"https://raw.githubusercontent.com/XyrussProject/infinite88/refs/heads/main/xhyphertunnelpro888.hs",agent:"Xhypher Tunnel Pro/43"},
   "turbomx-vpn": {url:TURBOMX_SOURCES.servers,agent:"TurboMX VPN/143.1.26"},
   "superflash-vpn": {url:SUPERFLASH_SOURCES.servers,agent:"SuperFlash VPN/184.0.1"},
   "rmp-tunnel-pro": {url:"https://raw.githubusercontent.com/pipoyrichards/RMPSYSTEM/refs/heads/main/RMPPRO",agent:"RMP TUNNEL PRO/RMP-5"},
+  // Live catalog validated 2026-11-22 (Version 10.4, 40 free servers, 1255 payloads;
+  // bytes identical to live RMPPRO). UA "RMP TUNNEL LITE/RMP-4" is the app's own
+  // User-Agent, used in the live verification (dossier ANALYSIS.md §5, RESULTS.md).
+  "rmp-tunnel-lite": {url:"https://raw.githubusercontent.com/pipoyrichards/RMPSYSTEM/refs/heads/main/RMPLITE",agent:"RMP TUNNEL LITE/RMP-4"},
   "rjc-tunnel-pro": {url:"https://raw.githubusercontent.com/pipoyrichards/RJCPRO/refs/heads/main/FEBRUARY",agent:"RJC TUNNEL PRO/RJC-6"},
   "onspace-vpn": {url:ONSPACE_SOURCES.servers,agent:"OnSpace VPN/4.2"},
   "mx-tunnel-pro": {url:"https://rasedpanel.xyz/updater/750b71355b025b19884ee835b759d6",agent:"Mx Tunnel PRO/Mx-Build48"},
@@ -608,7 +623,7 @@ export async function downloadVpnCatalog(id,source=id==="jyfast-vpn-ultra"?"free
         continue;
       }
       if(answer.redirect!==undefined){
-        if(["kham-vpn","opentunnel-ssh","md-proxy-vpn","xxpicore-tunnel","speigo-vpn-configs","speigo-vpn-ssh","litron-vpn","litron-pro-vpn","genis-vpn","http-conexion","namo-vpn","fnf-tunnel-bd","alsaher-vip","ha-tunnel-plus","ultra-tunnel","mm-tunnel","zig-tunnel","enaa-tunnel","izph-vpn-pro","vip-snipher-pro","netcol-vpn","wolf-custom-vpn","tunneldoom-vpn","mtm-tunnel-lite","mnr-tunnel-plus","bd-net-vpn","aura-net-vpn","apna-vpn","any-vpn","speicers-pro-vpn","7net-vpn","gcp-vpn","netflux-vpn","xhypher-tunnel-pro","focus-vpn-cloud","freedom-vpn","http-internet-infinito","megatunnel","mx-tunnel-pro","rjc-tunnel-pro","rmp-tunnel-pro","http-jireh"].includes(id)||Object.hasOwn(PAIRED_SOURCES,id))fail("REMOTE_NETWORK_DENIED");
+        if(["kham-vpn","opentunnel-ssh","md-proxy-vpn","xxpicore-tunnel","speigo-vpn-configs","speigo-vpn-ssh","litron-vpn","litron-pro-vpn","genis-vpn","http-conexion","namo-vpn","fnf-tunnel-bd","alsaher-vip","ha-tunnel-plus","ultra-tunnel","mm-tunnel","zig-tunnel","enaa-tunnel","izph-vpn-pro","vip-snipher-pro","netcol-vpn","wolf-custom-vpn","tunneldoom-vpn","mtm-tunnel-lite","mnr-tunnel-plus","bd-net-vpn","aura-net-vpn","apna-vpn","any-vpn","speicers-pro-vpn","7net-vpn","gcp-vpn","netflux-vpn","maya-tun-pro","pm-tunnel-lite","xhypher-tunnel-pro","focus-vpn-cloud","freedom-vpn","http-internet-infinito","megatunnel","mx-tunnel-pro","rjc-tunnel-pro","rmp-tunnel-pro","rmp-tunnel-lite","http-jireh"].includes(id)||Object.hasOwn(PAIRED_SOURCES,id))fail("REMOTE_NETWORK_DENIED");
         const next=answer.redirect;
         if(typeof next!=="string"||next.length>2048)fail("REMOTE_NETWORK_DENIED");
         target=new URL(next,dest).href;

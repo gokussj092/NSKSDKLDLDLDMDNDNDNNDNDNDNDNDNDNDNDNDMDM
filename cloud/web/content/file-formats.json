@@ -255,6 +255,14 @@
       "credentialFields": []
     },
     {
+      "suffix": "rmplite",
+      "name": "RMP TUNNEL LITE",
+      "kind": "file",
+      "offlineSupported": false,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
       "suffix": "sksplus",
       "name": "SocksIP Plus",
       "kind": "file",

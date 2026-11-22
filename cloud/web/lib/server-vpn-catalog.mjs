@@ -7,7 +7,7 @@ import {providerEnabled} from "./server-vpn-provider.mjs";
 import {SUPPLIED_CATALOG_ITEMS,suppliedProviderConfigured} from "./supplied-integrations.mjs";
 import {catalogDefaultEnabled} from "./catalog-provider-policy.mjs";
 
-export const CATALOG_VERSION = 94; // NetFlux VPN 1.1 cloud catalog (netflux-vpn, Version 3304 live, 90 servers / 334 networks); one catalog revision for this batch.
+export const CATALOG_VERSION = 95; // Batch 16 (2026-11-22): PM Tunnel Lite (pm-tunnel-lite, Version 159 live, 10 servers / 151 networks), RMP Tunnel Lite (rmp-tunnel-lite, Version 10.4 live, 40 free servers / 1255 payloads), MAYA TUN PRO (maya-tun-pro, Version 1.3.41 live, 27 servers / 376 tweaks); one catalog revision for this batch.
 export const RECHECK_SECONDS = 15 * 60; // Version-only recovery; full download occurs on version change.
 
 /** Monotonic deployment version. Bump this override for ANY metadata, icon
@@ -78,12 +78,18 @@ const BASE_ITEMS = [
   {id:"gcp-vpn", name:"GCP VPN", icon:"gcp-vpn.png", remote:"gcp-vpn"},
   // Live catalog validated 2026-11-20 (Version 3304, 90 servers, 334 networks; blob byte-identical to gcpvpn2026).
   {id:"netflux-vpn", name:"NetFlux VPN", icon:"netflux-vpn.png", remote:"netflux-vpn"},
+  // Live catalog validated 2026-11-22 (Version 1.3.41, 27 servers, 376 tweaks).
+  {id:"maya-tun-pro", name:"MAYA TUN PRO", icon:"maya-tun-pro.png", remote:"maya-tun-pro"},
+  // Live catalog validated 2026-11-22 (Version 159, 10 servers, 151 networks).
+  {id:"pm-tunnel-lite", name:"PM Tunnel Lite", icon:"pm-tunnel-lite.png", remote:"pm-tunnel-lite"},
   {id:"xhypher-tunnel-pro", name:"Xhypher Tunnel Pro", icon:"xhypher-tunnel-pro.png", remote:"xhypher-tunnel-pro"},
   // Official endpoint returns HTML; a valid signed OTA response is still required.
   {id:"ut-loop-pro-vpn", name:"UT Loop Pro VPN", icon:"ut-loop-pro-vpn.png", remote:null},
   {id:"turbomx-vpn", name:"TurboMX VPN", icon:"turbomx-vpn.png", remote:"turbomx-vpn"},
   {id:"superflash-vpn", name:"SuperFlash VPN", icon:"superflash-vpn.png", remote:"superflash-vpn"},
   {id:"rmp-tunnel-pro", name:"RMP TUNNEL PRO", icon:"rmp-tunnel-pro.png", remote:"rmp-tunnel-pro"},
+  // Live catalog validated 2026-11-22 (Version 10.4, 40 free servers, 1255 payloads; blob byte-identical to live RMPPRO).
+  {id:"rmp-tunnel-lite", name:"RMP TUNNEL LITE", icon:"rmp-tunnel-lite.png", remote:"rmp-tunnel-lite"},
   {id:"rjc-tunnel-pro", name:"RJC TUNNEL PRO", icon:"rjc-tunnel-pro.png", remote:"rjc-tunnel-pro"},
   // Build 88 updater files currently contain only a newline; offline catalogs work.
   {id:"proneet-vpn", name:"ProNeet VPN", icon:"proneet-vpn.png", remote:null},

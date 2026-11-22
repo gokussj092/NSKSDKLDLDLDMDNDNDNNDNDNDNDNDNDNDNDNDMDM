@@ -55,6 +55,7 @@ PROVIDERS = {
     "turbomx-vpn": "decoders.Python.apps.TurboMX_VPN.server_catalog_decoder",
     "superflash-vpn": "decoders.Python.apps.SuperFlash_VPN.server_catalog_decoder",
     "rmp-tunnel-pro": "decoders.Python.apps.RMP_TUNNEL_PRO.server_catalog_decoder",
+    "rmp-tunnel-lite": "decoders.Python.apps.RMP_Tunnel_Lite.server_catalog_decoder",
     "rjc-tunnel-pro": "decoders.Python.apps.RJC_TUNNEL_PRO.server_catalog_decoder",
     "proneet-vpn": "decoders.Python.apps.ProNeet_VPN.server_catalog_decoder",
     "onspace-vpn": "decoders.Python.apps.OnSpace_VPN.server_catalog_decoder",
@@ -86,6 +87,8 @@ PROVIDERS = {
     "4u-tunnel-lite": "decoders.Python.apps.4U_TUNNEL_LITE.server_catalog_decoder",
     "gcp-vpn": "decoders.Python.apps.GCP_VPN.server_catalog_decoder",
     "netflux-vpn": "decoders.Python.apps.NETFLUX_VPN.server_catalog_decoder",
+    "maya-tun-pro": "decoders.Python.apps.Maya_Tun_Pro.server_catalog_decoder",
+    "pm-tunnel-lite": "decoders.Python.apps.PM_Tunnel_Lite.server_catalog_decoder",
 }
 
 def decode(provider_id: str, payload: bytes) -> str:

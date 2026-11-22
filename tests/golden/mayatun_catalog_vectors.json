@@ -1,0 +1,36 @@
+{
+  "catalog": "AgICAgICAgICAgICAgICAubqvVUPB9U/zHLZ4esZcYlLMNIgRRivOFwghf+lISHE3qdbcDbcqK5B9T+wsflXbFBEFQ94u+yaBJjHAH/KWh/AvGcjk2rl6D4Ey4eUZiOyQS6S8GWdIiIMItaNtnpaNc2pscEVwIC7voZ6qXXAq9agcjncBW8bAb1eSjeAz7B5cVVwcmWY4uXDXBsMsKcxoV+oJ38kMqY+va9bHC8IZk36viPSt3hOTd9Ny1QI0DkcqLUV9jd9mqmWVA27X83GsjoN1p7vOdhEo3yVVBWS9TQUhx/rk9vJ8KzTrBHa4GIg9saOpYbXVweFEHl3oxauRpwSYwq0UFQGaW+zfBvDxB0OeqQIhGGgkPSKVw5mKVS7bxdGFKSOwv9F4hFnB++cmdHnzDTR7CZnP0Y7Ck+4dIML2PiRYZ8qarzqOmIqF/dO2C5m16REa/eHqRg7a2gViL6J8D5eGsVQNdVMIVB1TWqDXGYX18yp1DRLqsNhFQvhHWtXyh4iqJZv3UIHd5igGnjmk77+YZowD3nYVgG1p1mwKgVeLpR4ttouP+VnQgNTtYT2/VbJDI90SnPAmU3K4TOjSnXQSYoS+E9PTu0uBlI/QlPZC0nuag5PIA4wDEzGJkTn3SSao55OWT2dGkh5HiVZZSME6XGy5nIFByGv3Fd2TAlmbMtH5BBbJhOI8ulBbwd63kEcyCHTPXTIr4JwjvxVGt52Wd55FkeWqPKFIB6cfgbsiB2jjpuiyUbyGjGyVMPqpqOkYZqN1c42B7rATWxKaxrFbF23sVNzv3SQGL/yaEKHMtaPkVuo/3x1ku+7WDG+E+TAhsZHAMpu3CMAdWY/NoUP//aO0IM7QFmJp/HMHVVS67Ex3PXtHQNh5DD4t+it9goWRO2s7EgymRSyeM4zzCrlRjref4Vg5BL8AU0eI0k++pv1AzFe5Wltso2aclaYfvPxDY/bec4yNnl6Xik730WkXLyWZ0NiyVEehB8ZqEuj1TW6ztP02z6uEQ2p4c71T4S/0dMWklASNT8perhFmJMB402fEWRdhcn6jFoL90KtxAzXuSD5DCrhYxcfwDnQMHi6sDJn1Rs1VWHCTQp5y1KccQGrmM4cNE1pad8xZkwEBkvKD+KvpT3bIYqfp8sJm7wOEk3YXYZvXqDjnAWVstsoEFH6g57Wypldy89Ta9JmP0wXGfkllY4ZE+6mfLTnEkxHxRv2Hf7rQY7XyzMKhiOTxBhMtdP5+i91j3cxcI1zXBPQyczfrHH9vt+zZdh9IVAeY16VJkruOpC7bGpLboU=",
+  "expected": {
+    "Version": "1.3.41-test",
+    "DefUpdateURL": "https://jezvpn.xyz/api/app?json=38FD5AC7020E09D8203F",
+    "show_release": true,
+    "defTime": 30,
+    "Servers": [
+      {
+        "Name": "Test Server",
+        "Flag": "xx",
+        "Info": "Test info",
+        "ServerIPHost": "test.invalid",
+        "ServerHTTPHost": "test.invalid",
+        "NoobLevel": 0,
+        "Protocol": 1,
+        "OpenVPNUDPPort": "1194",
+        "Username": "synthetic-user",
+        "Password": "synthetic-pass"
+      }
+    ],
+    "Tweaks": [
+      {
+        "Name": "Test Tweak",
+        "Flag": "xx",
+        "Mode": 2,
+        "Sni": "[host]",
+        "Payload": "GET / HTTP/1.1",
+        "CustomProxy": "test.invalid:8080"
+      }
+    ],
+    "Message": [
+      "line one"
+    ]
+  }
+}

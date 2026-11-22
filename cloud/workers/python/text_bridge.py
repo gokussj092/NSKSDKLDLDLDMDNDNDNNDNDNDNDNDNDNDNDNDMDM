@@ -115,6 +115,30 @@ def dispatch(text: str, *, password: str | None = None) -> str | None:
         # result is final, never a fallback to renz.
         module = importlib.import_module("decoders.Python.apps.NETFLUX_VPN.file_decoder")
         return module.decode_text(value)
+    if lowered.startswith("maya://"):
+        # MAYA TUN PRO 43.0: explicit dispatch to codec.decode_text.
+        # Mode 3 is ChaCha20-Poly1305 over the .maya file bytes (same
+        # "maya" key); the decrypted bytes open through the existing
+        # repo file route (_noobcrypt.decrypt_profile). No real maya://
+        # link has been supplied, so this route is VERIFIED_SYNTHETIC.
+        # The scheme is unambiguous: a None result is final, never a
+        # fallback to another format.
+        module = importlib.import_module("decoders.Python.apps.Maya_Tun_Pro.codec")
+        return module.decode_text(value)
+    if lowered.startswith("pmtunnellite://"):
+        # PM Tunnel Lite 1.0: standalone codec (own key material, no
+        # renz.py profile, so the canonical RENZ route cannot serve
+        # this scheme). The scheme is unambiguous: a None result is
+        # final, never a fallback to renz.
+        module = importlib.import_module("decoders.Python.apps.PM_Tunnel_Lite.file_decoder")
+        return module.decode_text(value)
+    if lowered.startswith("rmplite://"):
+        # RMP TUNNEL LITE RMP-4: explicit dispatch to the Lite file
+        # decoder (.rmplite hex + XOR key + JNI modified UTF-8 tweak).
+        # The scheme is unambiguous: a None result is final, never a
+        # fallback to another format.
+        module = importlib.import_module("decoders.Python.apps.RMP_Tunnel_Lite.file_decoder")
+        return module.decode_text(value)
     # C8 isolated original application codecs. These prefixes are unambiguous.
     c8_links = (
         ("bdnet://", "decoders.Python.apps.BD_NET_VPN.file_decoder"),

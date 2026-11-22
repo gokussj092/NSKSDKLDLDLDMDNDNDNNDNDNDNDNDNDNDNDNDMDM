@@ -476,6 +476,24 @@
       "kind": "text"
     },
     {
+      "prefix": "maya://",
+      "name": "MAYA TUN PRO",
+      "suffix": "maya",
+      "kind": "text"
+    },
+    {
+      "prefix": "pmtunnellite://",
+      "name": "PM Tunnel Lite",
+      "suffix": "pmtunnel",
+      "kind": "text"
+    },
+    {
+      "prefix": "rmplite://",
+      "name": "RMP Tunnel Lite",
+      "suffix": "rmplite",
+      "kind": "text"
+    },
+    {
       "prefix": "eut://",
       "name": "EUT VPN",
       "suffix": "eut",

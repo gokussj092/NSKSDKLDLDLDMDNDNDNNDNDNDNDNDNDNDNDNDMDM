@@ -773,3 +773,146 @@ actualizaciones de catálogo, archivos y textos en el servidor no tocan
 la APK); no hay que actualizarlos. No se aportó una
 exportación real independiente (`.netflux` real o `netfluxvpn://`
 real pendientes); estado `VERIFIED_SYNTHETIC`.
+
+## PM Tunnel Lite 1.0 (10) — catálogo en la nube, versión pública 95
+
+Proveedor fijo `pm-tunnel-lite`, paquete `com.pmtunnel.app`,
+versionCode 10. Carpeta `decoders/Python/apps/PM_Tunnel_Lite/` con
+`server_catalog_decoder.py`, `codec.py`, `file_decoder.py`, PNG
+original, manifest, README y TESTING. Sigue el patrón 7NET/GCP/NetFlux
+(broker HTTPS fijo, worker aislado, contrato de documento completo,
+control administrativo individual, gateway enriquecido), pero con
+**codec propio standalone**: la estructura y el delta XXTEA
+(`0x7a56d3e1`) coinciden con la ruta RENZ, pero el material de claves
+(`PASSWORD`, `FIXED_SALT`, `IV`) es distinto de todas las entradas de
+`RENZ_KEYS` (p. ej. `gcpvpn`), así que el perfil compartido no abre
+este catálogo; y no se registra ningún perfil nuevo en
+`decoders/Python/renz.py` por regla de arquitectura (una actualización
+de catálogo, archivos o textos en el servidor no toca la APK). El
+sobre exterior es Base64 → AES-128-CBC → XXTEA propio → restar 2 por
+byte; los campos anidados usan la tabla explícita de modos 0/1/2
+(hosts Threefish/HKDF, credenciales PBKDF2-XXTEA-AES, resto modo
+principal, incluidas las secciones anidadas `SlowDNS`/`V2Ray`/
+`UDPOptions`, verificadas modo a modo contra el catálogo en vivo).
+La ruta `.js` NO se registra como formato de archivo (sufijo
+genérico; el despacho es solo por sufijo, sin detección por
+contenido) y `pmtunnellite://` despacha por bloque explícito en
+`text_bridge.py`, como `netfluxvpn://`.
+
+Lectura pública autorizada del 2026-11-22: HTTP 200,
+**140224 bytes, SHA-256
+`d09b5d7304ec70561a6871cd0ee6ca08f3a5ad6a713b77977c7c840e2698a82d`,
+Version 159, 10 servidores / 151 redes** — re-fetch ~16:10 Tijuana
+con bytes idénticos a la descarga de las 04:10. 915/915 campos no
+vacíos descifran (modo 0: 694, modo 1: 155, modo 2: 14; anidados: 52);
+0 sin descifrar. 6/10 servidores traen credenciales que abren con el
+modo sensible. No existe flag libre/premium en el catálogo. Sin
+rotación de claves. HMAC de autenticación de conexión:
+`NOT_OBSERVED`.
+
+PNG original exacto del icono launcher del XAPK: 512×512,
+295765 bytes, SHA-256
+`cd38af8be4d17162c0481008f7a7882b287d7dc5731d3fee3b794b315f43218d`.
+Catálogo mínimo **95**; conserva switches y versión persistente.
+**8 tests Python y 5 web nuevos** (el Python añade known-answers del
+catálogo empaquetado `e.js`, redacción de credenciales y round-trip
+`pmtunnellite://`). Sin despliegue, fusión ni cambios Android.
+
+## MAYA TUN PRO 43.0 (43) — catálogo en la nube, versión pública 95
+
+Proveedor fijo `maya-tun-pro`, paquete `maya.tun.udp`, versionCode 43.
+Carpeta `decoders/Python/apps/Maya_Tun_Pro/` con
+`server_catalog_decoder.py`, `codec.py`, PNG, manifest, README y
+TESTING — **sin `file_decoder.py` a propósito**: los archivos `.maya`
+siguen su ruta C0 congelada (`C0_FORMAT_MATRIX.csv` fila 80 →
+`decoders/Python/maya.py` → `_noobcrypt.decrypt_profile`); un wrapper
+sería código muerto y el precedente `RMP_TUNNEL_PRO` envía módulos
+solo-catálogo igual. Sigue el patrón GCP/NetFlux (broker HTTPS fijo,
+worker aislado, contrato de documento completo, control administrativo
+individual, gateway con rama propia Servers+Tweaks — la rama RENZ de
+`c3-gateway.mjs` exige `Networks` y NO aplica a Maya). El sobre
+exterior es Base64 → AES-256-XTS modo 5 (tweak = primeros 16 B, clave
+de 64 B derivada del `.rodata` de `libovpn3.so`); los campos internos
+usan la clave `maya` existente de `_noobcrypt.py` (GCM modo 0, CBC
+modos 1/4). La ruta `maya://` despacha EXPLÍCITAMENTE a
+`codec.decode_text` (ChaCha20-Poly1305 modo 3 sobre los bytes `.maya`,
+misma clave; los bytes descifrados abren por la ruta de archivo
+existente). Sin perfil nuevo en `renz.py` y sin cambios en `android/`.
+
+Lectura pública autorizada del 2026-11-22: HTTP 200,
+**454,716 bytes, SHA-256
+`131869d6027906f3cfcadfbc96bf81db9479435ad54a6b069ef80f84668b4806`,
+Version 1.3.41, 27 servidores / 376 tweaks** — 2,449 campos Base64
+internos, 0 sin descifrar (el recuento de NOTES.md decía 2,402 por
+una regla de conteo distinta; el blob es byte-idéntico). Sin marca
+libre/premium en el catálogo (`NoobLevel` no separa libre/premium).
+Sin rotación de claves. HMAC de autenticación de conexión:
+`NOT_OBSERVED`.
+
+PNG del icono launcher del XAPK 43.0, remuestreado Lanczos 300×300 →
+512×512, 216,321 bytes, SHA-256
+`7749e091a93dba4bb5f64372c8b4d795aabf621e2af8ea2112aca412eeaa2e00`
+— NO son los bytes exactos del APK (original 300×300, 47,275 bytes,
+SHA-256 `57f6a6f79829f4eb8336fb7d127a1043d11efe921c1f3f5093b06e9532b488a6`);
+pendiente de confirmación del owner. Catálogo mínimo **95**; conserva
+switches y versión persistente. Tests Python y web nuevos aprobados
+(ver TESTING.md). Sin despliegue, fusión ni cambios Android.
+
+Pendiente fuera de esta entrega: una exportación `.maya` real o un
+enlace `maya://` real del teléfono de Pedro (archivos
+`VERIFIED_STATIC`, texto `VERIFIED_SYNTHETIC`).
+
+## RMP Tunnel Lite RMP-4 — catálogo en la nube, versión pública 95
+
+Proveedor fijo `rmp-tunnel-lite`, paquete `com.rmptunnel.lite`, versionCode 4.
+App SEPARADA de RMP TUNNEL PRO (`com.rmptunnel.pro`): proveedor propio, sin
+fusión ni cambios en la entrada `rmp-tunnel-pro`, la tarjeta PRO ni el módulo
+`RMP_TUNNEL_PRO`. Carpeta `decoders/Python/apps/RMP_Tunnel_Lite/` con
+`server_catalog_decoder.py`, `codec.py`, `file_decoder.py`, PNG original,
+manifest, README y TESTING. Sigue el patrón 7NET/GCP/NetFlux (broker HTTPS
+fijo, worker aislado, contrato de documento completo, control administrativo
+individual, gateway enriquecido), pero **sin codec propio de catálogo**: el
+catálogo reutiliza el motor `python-shared-mx-xxtea` ya integrado para PRO
+(`codec.py` delega en `../RMP_TUNNEL_PRO/codec.py`, que delega en
+`../Mx_Tunnel_PRO/codec.py` y las primitivas `../HX_Tunnel_VPN/`). La Lite
+comparte ese motor con PRO — verificado desde su propio APK, no asumido: su
+asset `gremlin.json` es byte-idéntico al de PRO (versión 3.8, 40 servidores,
+1211 payloads) y sus bytes en vivo son idénticos a los de RMPPRO en vivo.
+La única divergencia es la URL propia
+`https://raw.githubusercontent.com/pipoyrichards/RMPSYSTEM/refs/heads/main/RMPLITE`,
+con agent propio `RMP TUNNEL LITE/RMP-4` (el de la app, verificado en vivo).
+
+Lectura pública autorizada del 2026-11-22: HTTP 200, **723808 bytes, SHA-256
+`a977755b358fa69010dc3cc54005c60150fa33ca8577dcb5d2ba233fb81b99b0`,
+Version 10.3, 40 servidores libres / 1255 payloads** — blob byte a byte
+IDÉNTICO al de `RMPPRO` en vivo. Re-verificación en vivo el mismo día:
+**723984 bytes, SHA-256
+`8f61ee74773551c9fd596b557b1726e0539205e1d0b9e3c24655f1decbbeb55d`,
+Version 10.4, mismos conteos** (40 libres, 0/0/0 premium/vip/private,
+1255 payloads); los bytes siguen siendo idénticos a los de RMPPRO en vivo.
+Sin rotación de claves. HMAC de autenticación de conexión: `NOT_OBSERVED`.
+
+La ruta `.rmplite` / `rmplite://` es NUEVA para Lite (PRO no tiene ruta de
+archivos): una línea hex → XOR con la clave de formato de 12 bytes
+`4%PdXch>fkP]` → texto JNI modified UTF-8 → JSON de tweak. Verificada con
+oráculo nativo Unicorn en ambas direcciones; sin muestra real, estado
+`VERIFIED_SYNTHETIC`. `.ovpn`/`.conf` son passthrough (core OpenVPN, sin
+cifrado RMP). `server.psi` es PARTIAL y no tiene decoder. El sufijo
+`rmplite` se registra en `_C8_FILE_ENGINES` (`engine.py`) y el esquema
+`rmplite://` despacha explícitamente en `text_bridge.py`; nada se registra
+en `renz.py` ni en `android/`.
+
+PNG original exacto del icono launcher `res/drawable/ic_app_icon.png`:
+512×512, 67222 bytes, SHA-256
+`157565e9f1d1aafdb1b4cb90da76f9e844088137d30e4a285b73d38a1932f0b1`.
+Difiere del icono de PRO. Catálogo mínimo **95**; conserva switches y
+versión persistente. **Tests Python y web nuevos aprobados** (ver
+`decoders/Python/apps/RMP_Tunnel_Lite/TESTING.md`). Sin despliegue,
+fusión ni cambios Android.
+
+Pendiente fuera de esta entrega: una exportación `.rmplite` real o un
+enlace `rmplite://` real del teléfono de Pedro (estado actual:
+`VERIFIED_SYNTHETIC`); `server.psi` sin resolver; fila `.rmplite` en
+`docs/cloud/C0_FORMAT_MATRIX.csv` como documentación (el conteo ya
+cuadra en 278 porque el test `file-formats.test.mjs` deriva los
+conocidos de `_C8_FILE_ENGINES` en `engine.py`, que incluye `rmplite`).
