@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="npv_title">คีย์ผู้รับ NPV</string>
+    <string name="npv_detail">ใช้ข้อมูลประจำตัวของคุณสำหรับไฟล์ที่สร้างมาเพื่อคุณ คีย์ถูกเข้ารหัสไว้บนอุปกรณ์นี้ เปิดตัวเลือกนี้เพื่อใช้กับ SP Cloud</string>
+    <string name="npv_enabled">ใช้ข้อมูลประจำตัว NPV ของฉัน</string>
+    <string name="npv_generate">สร้างด้วย SP Cloud</string>
+    <string name="npv_import">นำเข้า JSON ที่บันทึกไว้</string>
+    <string name="npv_generated">สร้างโดย SP Cloud</string>
+    <string name="npv_captured">บันทึกจากแอปทางการ</string>
+    <string name="npv_file_only">ไฟล์นี้เท่านั้น</string>
+    <string name="npv_view">ดูและคัดลอก</string>
+    <string name="npv_delete">ลบ</string>
+    <string name="npv_invalid">ไม่สามารถอ่านคีย์ NPV ได้ ตรวจสอบ JSON และคีย์ที่ตรงกัน</string>
+    <string name="npv_saved">บันทึกข้อมูลประจำตัวแล้ว เปิดตัวเลือกเพื่อใช้งาน</string>
+    <string name="npv_generation_notice">แชร์เฉพาะคีย์สาธารณะกับผู้ที่สร้างเซิร์ฟเวอร์ VPN หรือการตั้งค่าของคุณเท่านั้น ห้ามแชร์คีย์ส่วนตัวของคุณ</string>
+    <string name="npv_choose_title">เลือกข้อมูลประจำตัว NPV</string>
+    <string name="npv_send_notice">เลือกข้อมูลประจำตัวที่จะใช้เปิดไฟล์นี้กับ SP Cloud</string>
+    <string name="npv_use">ใช้ข้อมูลประจำตัวที่เลือก</string>
+    <string name="npv_copy_public">คัดลอกคีย์สาธารณะ</string>
+    <string name="npv_copy_private">คัดลอกคีย์ส่วนตัว</string>
+    <string name="npv_reveal">แสดงหรือซ่อนคีย์ส่วนตัว</string>
+    <string name="npv_hardware_notice">คีย์ส่วนตัวของฮาร์ดแวร์ไม่สามารถส่งออกได้ การบันทึกนี้ใช้ได้เฉพาะกับไฟล์ที่ตรงกันเท่านั้น</string>
+    <string name="npv_delete_title">ลบข้อมูลประจำตัวนี้ใช่ไหม?</string>
+    <string name="npv_delete_warning">คีย์นี้เก็บไว้บนอุปกรณ์นี้เท่านั้น เมื่อลบแล้ว SP Cloud จะไม่สามารถกู้คืนได้ คุณอาจสูญเสียการเข้าถึงไฟล์ที่เข้ารหัสสำหรับข้อมูลประจำตัวนี้</string>
+    <string name="npv_public_label">คีย์สาธารณะ · P-256</string>
+    <string name="npv_private_label">คีย์ส่วนตัว · PKCS#8</string>
+    <string name="npv_cancel">ยกเลิก</string>
+    <string name="npv_already_generated">มีข้อมูลประจำตัว SP Cloud อยู่แล้ว ลบออกก่อนสร้างใหม่อีกครั้ง</string>
+</resources>

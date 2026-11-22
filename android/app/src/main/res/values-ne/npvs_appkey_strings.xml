@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_failure_npvs_appkey_auth">यो NPVS एप-कुञ्जी फाइल प्रमाणित गर्न सकिएन। यसले फरक भेरियन्ट प्रयोग गरेको हुन सक्छ वा परिमार्जन गरिएको हुन सक्छ। यो विधिलाई पासवर्ड वा प्राप्तकर्ता निजी कुञ्जी दुवै चाहिँदैन।</string>
+</resources>

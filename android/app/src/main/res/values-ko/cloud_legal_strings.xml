@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_legal_title">약관 및 개인정보 보호</string>
+    <string name="cloud_legal_explanation">SP-DECODE Cloud는 사용자가 디코딩하도록 선택한 파일이나 텍스트를 서버로 전송합니다. 또한 임의의 설치 코드를 사용해 서버 용량을 계획하기 위해 하루에 한 번 대략적인 활성 설치 수를 집계합니다. 집계에는 구성 내용이 포함되지 않습니다.</string>
+    <string name="cloud_legal_terms">이용 약관 읽기</string>
+    <string name="cloud_legal_privacy">개인정보처리방침 읽기</string>
+    <string name="cloud_legal_accept_check">약관 및 개인정보처리방침을 읽었으며 동의합니다.</string>
+    <string name="cloud_legal_accept">동의</string>
+    <string name="cloud_legal_decline">거부</string>
+    <string name="server_vpn_loading">서버 VPN 카탈로그 로드 중…</string>
+    <string name="server_vpn_unavailable">VPN 서버 카탈로그를 사용할 수 없습니다. 연결을 확인하고 다시 시도하세요.</string>
+    <string name="server_vpn_retry">카탈로그 다시 시도</string>
+    <string name="cloud_legal_withdraw">Cloud 동의 철회</string>
+    <string name="cloud_legal_withdraw_detail">동의를 철회하면 새로운 서버 요청이 차단됩니다. 로컬에 암호화된 기록은 이 기기에 남습니다. 나중에 다시 동의할 수 있습니다.</string>
+</resources>

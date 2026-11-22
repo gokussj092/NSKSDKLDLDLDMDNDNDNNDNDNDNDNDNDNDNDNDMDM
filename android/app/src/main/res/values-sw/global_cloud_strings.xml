@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_global_title">Cloud (Mtandaoni)</string>
+    <string name="cloud_global_auto">Tambua kiotomatiki</string>
+    <string name="cloud_global_hint">Bandika kiungo, ufunguo au msimbo wa Cloud unaoungwa mkono</string>
+    <string name="cloud_global_action">Ingiza kutoka Cloud</string>
+    <string name="cloud_global_detail">Bandika kiungo, ufunguo au msimbo wa Cloud na SP-DECODE hutambua mtoa huduma kiotomatiki. Ni huduma zilizoidhinishwa tu zinazoungwa mkono.</string>
+    <string name="cloud_global_invalid">Rejeleo hili halilingani na mtoa huduma wa Cloud anayepatikana.</string>
+</resources>

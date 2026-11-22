@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="about_screen_entry_detail">Versiune, securitate și linkuri oficiale</string>
+    <string name="about_screen_description">Instrument de analiză și decodare a configurațiilor VPN</string>
+    <string name="about_screen_version_badge">Versiunea %1$s · Compilarea %2$d</string>
+    <string name="about_screen_info">Informații despre aplicație</string>
+    <string name="about_screen_languages">Limbi disponibile</string>
+    <string name="about_screen_installed">Versiunea instalată</string>
+    <string name="about_screen_features">Funcții principale</string>
+    <string name="about_screen_feature_decode">Decodarea fișierelor VPN</string>
+    <string name="about_screen_feature_catalog">Catalog de servere VPN</string>
+    <string name="about_screen_feature_export">Export JSON și deblocat</string>
+    <string name="about_screen_feature_history">Istoricul rezultatelor</string>
+    <string name="about_screen_security">Securitate și confidențialitate</string>
+    <string name="about_screen_cloud_security">Comunicațiile Cloud V2 folosesc criptare HPKE și verificări de integritate conform configurației serviciului.</string>
+    <string name="about_screen_local_security">Istoricul local este criptat pe acest dispozitiv.</string>
+    <string name="about_screen_privacy">Politica de confidențialitate</string>
+    <string name="about_screen_terms">Termeni de utilizare</string>
+    <string name="about_screen_links">Linkuri oficiale și comunitare</string>
+    <string name="about_screen_website">Site web oficial</string>
+    <string name="about_screen_community_detail">Comunitatea oficială Telegram</string>
+    <string name="about_screen_credit">Dezvoltat de Ghost Developer</string>
+    <string name="about_screen_copyright">SP-DECODE · Toate drepturile rezervate</string>
+</resources>

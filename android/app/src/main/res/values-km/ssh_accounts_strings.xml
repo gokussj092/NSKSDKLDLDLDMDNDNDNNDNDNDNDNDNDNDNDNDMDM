@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="server_vpn_filter_ssh_accounts">គណនី SSH</string>
+    <string name="server_vpn_ssh_notice_text">គណនី SSH ទាំងនេះអាចប្រើបានតែនៅក្នុងកម្មវិធីខាងក្រោមប៉ុណ្ណោះ៖</string>
+    <string name="server_vpn_ssh_no_matches">គ្មានគណនី SSH ដែលត្រូវគ្នានឹងការស្វែងរករបស់អ្នកទេ។</string>
+</resources>

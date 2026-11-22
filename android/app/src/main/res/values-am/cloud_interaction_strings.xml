@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="unsupported_file_title">የፋይል አይነት አይደገፍም</string>
+    <string name="unsupported_file_detail">ይህ የፋይል ቅጥያ በSP-DECODE ውስጥ ገና አይገኝም። ድጋፍን ለመጠየቅ ገንቢውን ያነጋግሩ።</string>
+    <string name="unsupported_version_title">የፋይል ስሪት ገና አይደገፍም</string>
+    <string name="unsupported_version_detail">ይህ ፋይል ገና የማይጣጣም ስሪት ወይም የምስጠራ ዘዴ ይጠቀማል። ከገንቢው ድጋፍ መጠየቅ ይችላሉ።</string>
+    <string name="unsupported_text_title">የጽሑፍ ቅርጸት አይደገፍም</string>
+    <string name="unsupported_text_detail">ይህ ጽሑፍ ወይም ፕሮቶኮል ገና አይደገፍም። ውህደትን ለመጠየቅ ገንቢውን ያነጋግሩ።</string>
+    <string name="catalog_check_action">አዘምን</string>
+    <string name="catalog_checking">በማዘመን ላይ</string>
+    <string name="catalog_downloading">ካታሎግ በማዘመን ላይ…</string>
+    <string name="catalog_progress">%1$d%%</string>
+    <string name="app_update_title">አዲስ የመተግበሪያ ስሪት ይገኛል</string>
+    <string name="app_update_body">SP-DECODE %1$s ይገኛል። ዝመናውን ለማግኘት ኦፊሴላዊውን የTelegram ቻናል ይጎብኙ።</string>
+    <string name="app_update_open">Telegram ክፈት</string>
+    <string name="app_update_close">ዝጋ</string>
+    <string name="catalog_available_title">አዲስ ካታሎግ ይገኛል</string>
+    <string name="catalog_available_body">አዲስ የካታሎግ ስሪት %1$d ለማውረድ ይገኛል።</string>
+    <string name="catalog_check_short">ካታሎግ ፈትሽ</string>
+</resources>
+

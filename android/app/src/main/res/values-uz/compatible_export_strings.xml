@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="compatible_export_for">%1$s uchun eksport</string>
+    <string name="compatible_export_redecode">%1$s ga eksport qilishni yoqish uchun ushbu faylni qayta import qiling.</string>
+    <string name="compatible_export_failed">Mos faylni saqlab boʻlmadi.</string>
+</resources>

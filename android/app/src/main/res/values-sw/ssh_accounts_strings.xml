@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="server_vpn_filter_ssh_accounts">Akaunti za SSH</string>
+    <string name="server_vpn_ssh_notice_text">Akaunti hizi za SSH zinaweza kutumika tu katika programu ifuatayo:</string>
+    <string name="server_vpn_ssh_no_matches">Hakuna akaunti za SSH zinazolingana na utafutaji wako.</string>
+</resources>

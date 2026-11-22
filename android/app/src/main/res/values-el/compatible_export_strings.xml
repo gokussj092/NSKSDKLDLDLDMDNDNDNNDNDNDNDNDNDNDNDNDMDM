@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="compatible_export_for">Εξαγωγή για %1$s</string>
+    <string name="compatible_export_redecode">Εισαγάγετε ξανά αυτό το αρχείο για να ενεργοποιήσετε την εξαγωγή σε %1$s.</string>
+    <string name="compatible_export_failed">Δεν ήταν δυνατή η αποθήκευση του συμβατού αρχείου.</string>
+</resources>

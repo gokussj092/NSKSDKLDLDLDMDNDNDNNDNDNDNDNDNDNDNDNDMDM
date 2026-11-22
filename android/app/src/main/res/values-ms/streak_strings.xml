@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="streak_verified_date">Tarikh disahkan server</string>
+    <string name="streak_date_pending">Menunggu pengesahan tarikh</string>
+    <string name="streak_today_done">Selesai hari ini</string>
+    <string name="streak_today_pending">Nyahsulit fail atau teks hari ini untuk meneruskan rentetan</string>
+    <string name="streak_weekly_reward">Setiap 7 hari berturut-turut</string>
+    <string name="streak_reward">+1 kredit analisis APK</string>
+    <string name="streak_reward_delivered">Hadiah diberikan</string>
+    <string name="streak_verified_note">Hari dan hadiah disahkan oleh server.</string>
+    <plurals name="streak_days_left">
+        <item quantity="one">%1$d hari lagi</item>
+        <item quantity="other">%1$d hari lagi</item>
+    </plurals>
+    <string name="streak_reminder_channel">Peringatan rentetan</string>
+    <string name="streak_reminder_title">Rentetan anda menunggu</string>
+    <string name="streak_reminder_body">Nyahsulit fail atau teks hari ini untuk meneruskan rentetan anda.</string>
+</resources>

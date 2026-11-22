@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_failure_offline">Nincs internetkapcsolat. Csatlakozzon egy hálózathoz, és próbálja újra.</string>
+    <string name="cloud_failure_network">Nem érhető el a szolgáltatás. Ellenőrizze a kapcsolatot, és próbálja újra.</string>
+    <string name="cloud_failure_tls">Nem sikerült biztonságos kapcsolatot létesíteni. Ellenőrizze a hálózatot és az eszköz óráját.</string>
+    <string name="cloud_failure_timeout">A kérés túl sokáig tartott. Próbálja újra, amikor stabil a kapcsolat.</string>
+    <string name="cloud_failure_integrity">Az alkalmazás ellenőrzése nem fejeződött be. Frissítse az alkalmazást, vagy használja a hivatalos QA-hozzáférést.</string>
+    <string name="cloud_failure_qa_code">Hiányzik a QA-hozzáférés. Nyissa meg az SP-DECODE QA-t, és adjon meg egy új ideiglenes kódot.</string>
+    <string name="cloud_failure_session">A munkamenet lejárt, vagy nem ellenőrizhető. Próbálja újra.</string>
+    <string name="cloud_failure_forbidden">Hozzáférés megtagadva. Ellenőrizze a jogosultságot, és próbálja újra.</string>
+    <string name="cloud_failure_qa">A QA-hozzáférés érvénytelen, letiltott vagy lejárt. Kérjen új privát kódot.</string>
+    <string name="cloud_failure_consent">Fogadja el az aktuális feltételeket és adatvédelmi tájékoztatót a Cloud-dekódolás használatához.</string>
+    <string name="cloud_failure_rate">Túl sok kérés. Várjon egy kicsit az újrapróbálkozás előtt.</string>
+    <string name="cloud_failure_large">A fájl vagy az eredmény meghaladja a megengedett méretet.</string>
+    <string name="cloud_failure_invalid">Ez a fájl vagy kérés nem fogadható el. Ellenőrizze a formátumot.</string>
+    <string name="cloud_failure_unsupported">Ez a fájlformátum nem érhető el a szerveren.</string>
+    <string name="cloud_failure_decode">A dekódoló nem tudta feldolgozni ezt a fájlverziót. A fájl nem feltétlenül sérült.</string>
+    <string name="cloud_failure_maintenance">Ez a szolgáltatás átmenetileg karbantartás alatt áll. Próbálja újra később.</string>
+    <string name="cloud_failure_unavailable">A szolgáltatás átmenetileg nem érhető el. Próbálja újra később.</string>
+    <string name="cloud_failure_config_unavailable">Ez a Cloud-konfiguráció már nem érhető el. Lehet, hogy lejárt, törölték, vagy csak egyszeri használatra volt érvényes. Ez nem dekódolási hiba.</string>
+    <string name="cloud_failure_remote">A távoli szolgáltató érvénytelen vagy ellenőrizhetetlen választ adott.</string>
+    <string name="cloud_failure_credentials">Helytelen jelszó vagy HWID. Ellenőrizze az adatokat, és próbálja újra.</string>
+    <string name="cloud_failure_password">Ez a védett fájl jelszót igényel.</string>
+    <string name="cloud_failure_hwid">Ez a védett fájl HWID-t igényel.</string>
+    <string name="cloud_failure_both">Ez a védett fájl jelszót és HWID-t is igényel.</string>
+    <string name="cloud_failure_not_found">A kért erőforrás nem érhető el, vagy nem található.</string>
+    <string name="cloud_failure_conflict">A kérés ütközik a jelenlegi állapottal. Próbálja újra.</string>
+    <string name="cloud_failure_partial">Az eredmény hiányos vagy érvénytelen volt, ezért nem jelenik meg.</string>
+    <string name="cloud_failure_general">Nem sikerült befejezni a műveletet. Próbálja újra, vagy lépjen kapcsolatba az ügyfélszolgálattal.</string>
+    <string name="cloud_failure_notice_title">Értesítés</string>
+    <string name="cloud_password_title">Konfigurációs jelszó szükséges</string>
+    <string name="cloud_password_description">A(z) %1$s jelszóval védett. A folytatáshoz adja meg az exportálási jelszót. A rendszer nem menti el.</string>
+    <string name="cloud_failure_password_incorrect">Helytelen jelszó.</string>
+    <string name="cloud_failure_private_key">Ez az NPVS-fájl címzett nyilvános/privát kulcsos védelmet használ. Ez a módszer még nem támogatott; a támogatás hamarosan érkezik.</string>
+    <string name="cloud_failure_recipient">Ez az NPVS-fájl olyan címzettkulcsos módszert használ, amely még nem támogatott. A támogatás hamarosan érkezik.</string>
+    <string name="cloud_failure_npvs_unsupported">Ez az NPVS-verzió vagy védelmi módszer még nem támogatott. A támogatás hamarosan érkezik.</string>
+</resources>

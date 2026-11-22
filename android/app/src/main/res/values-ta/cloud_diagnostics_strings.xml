@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_report_action">பிழையைப் புகாரளி</string>
+    <string name="cloud_report_sent">புகார் பெறப்பட்டது: %1$s</string>
+    <string name="cloud_report_failed">புகாரைச் சமர்ப்பிக்க முடியவில்லை. பின்னர் மீண்டும் முயலவும்.</string>
+    <string name="cloud_usage_title">அநாமதேய நிறுவல் புள்ளிவிவரங்கள்</string>
+    <string name="cloud_usage_detail">சர்வர் திறனைத் திட்டமிட, SP-DECODE ஒரு நாளைக்கு ஒரு முறை தோராயமான செயலில் உள்ள நிறுவல்களை எண்ணுகிறது. உங்கள் Android ID, HWID அல்லது விளம்பர ID-க்குப் பதிலாக சீரற்ற நிறுவல் குறியீடு பயன்படுத்தப்படுகிறது.</string>
+    <string name="cloud_usage_footnote">தனியுரிமை விதிமுறைகளை நீங்கள் ஏற்றுக்கொண்ட பிறகு, கிளவுட் பயன்பாட்டுடன் சேர்க்கப்பட்டுள்ளது. கோப்பு உள்ளடக்கங்கள், கடவுச்சொற்கள் அல்லது மறைகுறியீடு நீக்கப்பட்ட கட்டமைப்புகள் எதுவும் சேர்க்கப்படவில்லை.</string>
+</resources>

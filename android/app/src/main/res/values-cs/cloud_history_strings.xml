@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_decode_progress_title">Dekódování konfigurace</string>
+    <string name="cloud_decode_progress_message">Může to trvat několik minut. Počkejte prosím.</string>
+    <string name="cloud_large_result_title">Dekódována velká konfigurace</string>
+    <string name="cloud_large_result_body">Konfigurace byla uložena do šifrované historie. Náhled velmi velkých výsledků může aplikaci zpomalit nebo zavřít. Doporučujeme exportovat kompletní JSON z Historie pomocí nabídky se třemi tečkami a poté Exportovat. Android vám umožní vybrat složku a název souboru.</string>
+    <string name="cloud_large_result_acknowledge">Rozumím</string>
+    <string name="cloud_history_actions">Další akce</string>
+</resources>

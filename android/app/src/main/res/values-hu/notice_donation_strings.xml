@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="donations_title">Adományok</string>
+    <string name="donation_copy_id">Azonosító másolása</string>
+    <string name="donation_id_copied">Binance-azonosító másolva</string>
+    <string name="donation_coming_soon">Hamarosan</string>
+    <string name="catalog_loading_short">Katalógus betöltése</string>
+    <string name="notifications_title">Értesítések</string>
+    <string name="notifications_description">Szolgáltatási értesítéseket kap az SP-DECODE-tól. Bármikor kikapcsolhatja őket.</string>
+    <string name="notifications_system_settings">Rendszerbeállítások</string>
+    <string name="notifications_enable">Engedélyezés</string>
+    <string name="notifications_later">Később</string>
+</resources>

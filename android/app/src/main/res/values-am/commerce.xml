@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="account_sign_in">ግባ</string>
+    <string name="account_web_description">መለያዎን እና ግዢዎችዎን በኦፊሴላዊ ድረ-ገጽ ላይ ያስተዳድሩ። ነጻ ባህሪያት ያለ መለያ ይገኛሉ።</string>
+    <string name="account_continue_web">በድሩ ላይ ቀጥል</string>
+    <string name="account_my_account">የእኔ መለያ</string>
+    <string name="account_store">ሱቅ</string>
+    <string name="account_open_menu">ምናሌ ክፈት</string>
+    <string name="ads_privacy_options">የማስታወቂያ የግላዊነት አማራጮች</string>
+</resources>

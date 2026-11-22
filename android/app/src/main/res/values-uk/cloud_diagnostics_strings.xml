@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_report_action">Повідомити про помилку</string>
+    <string name="cloud_report_sent">Звіт отримано: %1$s</string>
+    <string name="cloud_report_failed">Не вдалося надіслати звіт. Спробуйте ще раз пізніше.</string>
+    <string name="cloud_usage_title">Анонімна статистика встановлень</string>
+    <string name="cloud_usage_detail">SP-DECODE підраховує приблизну кількість активних встановлень раз на день, щоб планувати потужність сервера. Використовується випадковий код встановлення, а не ваш Android ID, HWID чи рекламний ідентифікатор.</string>
+    <string name="cloud_usage_footnote">Включено під час використання Cloud після прийняття умов конфіденційності. Вміст файлів, паролі та декодовані конфігурації не включаються.</string>
+</resources>

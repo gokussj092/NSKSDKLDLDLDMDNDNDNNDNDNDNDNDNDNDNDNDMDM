@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="compatible_export_for">导出为 %1$s</string>
+    <string name="compatible_export_redecode">请重新导入此文件以启用导出为 %1$s。</string>
+    <string name="compatible_export_failed">无法保存兼容文件。</string>
+</resources>

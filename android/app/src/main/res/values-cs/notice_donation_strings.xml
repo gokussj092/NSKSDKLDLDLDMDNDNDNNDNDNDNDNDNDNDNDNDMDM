@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="donations_title">Dary</string>
+    <string name="donation_copy_id">Kopírovat ID</string>
+    <string name="donation_id_copied">Binance ID zkopírováno</string>
+    <string name="donation_coming_soon">Již brzy</string>
+    <string name="catalog_loading_short">Načítání katalogu</string>
+    <string name="notifications_title">Oznámení</string>
+    <string name="notifications_description">Dostávejte servisní oznámení od SP-DECODE. Kdykoli je můžete vypnout.</string>
+    <string name="notifications_system_settings">Systémová nastavení</string>
+    <string name="notifications_enable">Povolit</string>
+    <string name="notifications_later">Později</string>
+</resources>

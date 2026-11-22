@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="apk_import_button">Mag-import ng APK</string>
+    <string name="apk_future_message">Magiging available ang pagsusuri ng APK sa susunod na update.</string>
+    <string name="apk_credits_title">Credit center</string>
+    <string name="apk_credits_intro">Pamahalaan ang mga credit sa hinaharap at mga pagbili para sa pagsusuri ng APK.</string>
+    <string name="apk_credits_notice">Magiging available ang balanse at mga pagbili kapag naglunsad na ang serbisyo.</string>
+    <string name="apk_credits_buy_title">Bumili ng mga credit</string>
+    <string name="apk_credits_one">1 credit</string>
+    <string name="apk_credits_buy_one">Bumili ng 1 credit · Malapit na</string>
+    <string name="apk_credits_packages">Mga bundle ng credit</string>
+    <string name="apk_credits_buy_package">Bumili ng bundle · Malapit na</string>
+    <string name="apk_credits_prices_title">Mga Presyo</string>
+    <string name="apk_credits_subscriptions">Mga Subscription</string>
+    <string name="apk_credits_button">Mga Credit: 1+</string>
+    <string name="apk_credits_back">Bumalik</string>
+</resources>

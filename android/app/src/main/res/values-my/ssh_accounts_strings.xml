@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="server_vpn_filter_ssh_accounts">SSH အကောင့်များ</string>
+    <string name="server_vpn_ssh_notice_text">ဤ SSH အကောင့်များကို အောက်ပါအက်ပ်တွင်သာ အသုံးပြုနိုင်ပါသည်-</string>
+    <string name="server_vpn_ssh_no_matches">သင့်ရှာဖွေမှုနှင့် ကိုက်ညီသော SSH အကောင့် မရှိပါ။</string>
+</resources>

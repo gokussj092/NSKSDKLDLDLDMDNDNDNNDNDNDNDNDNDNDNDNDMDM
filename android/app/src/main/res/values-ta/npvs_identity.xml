@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="npv_title">NPV பெறுநர் விசைகள்</string>
+    <string name="npv_detail">உங்களுக்காக உருவாக்கப்பட்ட கோப்புகளுக்கு உங்கள் அடையாளத்தைப் பயன்படுத்தவும். விசைகள் இந்தச் சாதனத்தில் குறியாக்கம் செய்யப்பட்டுள்ளன. SP கிளவுட்டுடன் அவற்றைப் பயன்படுத்த இந்த விருப்பத்தை இயக்கவும்.</string>
+    <string name="npv_enabled">என் NPV அடையாளங்களைப் பயன்படுத்து</string>
+    <string name="npv_generate">SP கிளவுட் மூலம் உருவாக்கு</string>
+    <string name="npv_import">பதிவு செய்யப்பட்ட JSON-ஐ இறக்குமதி செய்</string>
+    <string name="npv_generated">SP கிளவுட் மூலம் உருவாக்கப்பட்டது</string>
+    <string name="npv_captured">அதிகாரப்பூர்வ செயலியிலிருந்து பதிவு செய்யப்பட்டது</string>
+    <string name="npv_file_only">இந்தக் கோப்பு மட்டும்</string>
+    <string name="npv_view">பார்த்து நகலெடு</string>
+    <string name="npv_delete">நீக்கு</string>
+    <string name="npv_invalid">NPV விசைகளைப் படிக்க முடியவில்லை. JSON மற்றும் பொருந்தும் விசைகளைச் சரிபார்க்கவும்.</string>
+    <string name="npv_saved">அடையாளம் சேமிக்கப்பட்டது. அதைப் பயன்படுத்த விருப்பத்தை இயக்கவும்.</string>
+    <string name="npv_generation_notice">உங்கள் VPN சர்வர் அல்லது கட்டமைப்பை உருவாக்கும் நபருடன் பொது விசையை மட்டும் பகிரவும். உங்கள் தனியார் விசையை ஒருபோதும் பகிர வேண்டாம்.</string>
+    <string name="npv_choose_title">NPV அடையாளத்தைத் தேர்வுசெய்</string>
+    <string name="npv_send_notice">இந்தக் கோப்பை SP கிளவுட் மூலம் திறக்கப் பயன்படுத்தும் அடையாளத்தைத் தேர்வுசெய்யவும்.</string>
+    <string name="npv_use">தேர்ந்த அடையாளத்தைப் பயன்படுத்து</string>
+    <string name="npv_copy_public">பொது விசையை நகலெடு</string>
+    <string name="npv_copy_private">தனியார் விசையை நகலெடு</string>
+    <string name="npv_reveal">தனியார் விசையைக் காட்டு அல்லது மறை</string>
+    <string name="npv_hardware_notice">வன்பொருள் தனியார் விசையை ஏற்றுமதி செய்ய முடியாது. இந்தப் பதிவு பொருந்தும் கோப்பிற்கு மட்டுமே வேலை செய்யும்.</string>
+    <string name="npv_delete_title">இந்த அடையாளத்தை நீக்கவா?</string>
+    <string name="npv_delete_warning">இந்த விசை இந்தச் சாதனத்தில் மட்டுமே சேமிக்கப்பட்டுள்ளது. நீக்கப்பட்டதும், SP கிளவுட் அதை மீட்க முடியாது. இந்த அடையாளத்திற்காகக் குறியாக்கம் செய்யப்பட்ட கோப்புகளுக்கான அணுகலை நீங்கள் இழக்கலாம்.</string>
+    <string name="npv_public_label">பொது விசை · P-256</string>
+    <string name="npv_private_label">தனியார் விசை · PKCS#8</string>
+    <string name="npv_cancel">ரத்துசெய்</string>
+    <string name="npv_already_generated">SP கிளவுட் அடையாளம் ஏற்கனவே உள்ளது. மற்றொன்றை உருவாக்கும் முன் அதை நீக்கவும்.</string>
+</resources>

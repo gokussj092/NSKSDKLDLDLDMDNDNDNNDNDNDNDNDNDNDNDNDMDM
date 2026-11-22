@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_decode_progress_title">กำลังถอดรหัสการตั้งค่า</string>
+    <string name="cloud_decode_progress_message">อาจใช้เวลาสักครู่ โปรดรอ</string>
+    <string name="cloud_large_result_title">ถอดรหัสการตั้งค่าขนาดใหญ่แล้ว</string>
+    <string name="cloud_large_result_body">การตั้งค่าถูกบันทึกไว้ในประวัติที่เข้ารหัสแล้ว การดูตัวอย่างผลลัพธ์ขนาดใหญ่อาจทำให้แอปช้าหรือปิดตัวลง เราแนะนำให้ส่งออก JSON ฉบับสมบูรณ์จากประวัติโดยใช้เมนูสามจุด แล้วเลือกส่งออก Android จะให้คุณเลือกโฟลเดอร์และชื่อไฟล์</string>
+    <string name="cloud_large_result_acknowledge">รับทราบ</string>
+    <string name="cloud_history_actions">การดำเนินการเพิ่มเติม</string>
+</resources>

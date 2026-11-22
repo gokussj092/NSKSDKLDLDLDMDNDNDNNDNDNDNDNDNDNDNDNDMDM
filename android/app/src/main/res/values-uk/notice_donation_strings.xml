@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="donations_title">Пожертви</string>
+    <string name="donation_copy_id">Копіювати ID</string>
+    <string name="donation_id_copied">Binance ID скопійовано</string>
+    <string name="donation_coming_soon">Незабаром</string>
+    <string name="catalog_loading_short">Завантаження каталогу</string>
+    <string name="notifications_title">Сповіщення</string>
+    <string name="notifications_description">Отримуйте службові повідомлення від SP-DECODE. Ви можете вимкнути їх будь-коли.</string>
+    <string name="notifications_system_settings">Системні налаштування</string>
+    <string name="notifications_enable">Увімкнути</string>
+    <string name="notifications_later">Пізніше</string>
+</resources>

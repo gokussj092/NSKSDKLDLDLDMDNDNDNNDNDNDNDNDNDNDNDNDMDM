@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="server_vpn_filter_ssh_accounts">SSH 账号</string>
+    <string name="server_vpn_ssh_notice_text">这些 SSH 账号仅可用于以下应用：</string>
+    <string name="server_vpn_ssh_no_matches">没有符合您搜索条件的 SSH 账号。</string>
+</resources>

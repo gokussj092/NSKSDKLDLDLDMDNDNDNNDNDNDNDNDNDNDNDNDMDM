@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="streak_verified_date">Datum ověřené serverem</string>
+    <string name="streak_date_pending">Čeká se na ověřené datum</string>
+    <string name="streak_today_done">Dnes dokončeno</string>
+    <string name="streak_today_pending">Dnes dekódujte soubor nebo text, abyste si udrželi sérii</string>
+    <string name="streak_weekly_reward">Každých 7 dní v řadě</string>
+    <string name="streak_reward">+1 kredit na analýzu APK</string>
+    <string name="streak_reward_delivered">Odměna doručena</string>
+    <string name="streak_verified_note">Dny a odměny ověřuje server.</string>
+    <plurals name="streak_days_left">
+        <item quantity="one">Zbývá %1$d den</item>
+        <item quantity="other">Zbývající dny: %1$d</item>
+    </plurals>
+    <string name="streak_reminder_channel">Připomenutí série</string>
+    <string name="streak_reminder_title">Vaše série čeká</string>
+    <string name="streak_reminder_body">Dnes dekódujte soubor nebo text, abyste si udrželi sérii.</string>
+</resources>

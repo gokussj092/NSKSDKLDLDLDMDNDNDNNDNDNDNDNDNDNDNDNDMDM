@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="apk_import_button">Shigar da APK</string>
+    <string name="apk_future_message">Nazarin APK zai samu a sabuntawa ta gaba.</string>
+    <string name="apk_credits_title">Cibiyar kiredit</string>
+    <string name="apk_credits_intro">Ka sarrafa kiredit na gaba da sayayyar nazarin APK.</string>
+    <string name="apk_credits_notice">Ma\'auni da sayayya za su samu lokacin da sabis ɗin ya fara.</string>
+    <string name="apk_credits_buy_title">Sayi kiredit</string>
+    <string name="apk_credits_one">Kiredit 1</string>
+    <string name="apk_credits_buy_one">Sayi kiredit 1 · Yana zuwa nan ba da daɗewa ba</string>
+    <string name="apk_credits_packages">Kundin kiredit</string>
+    <string name="apk_credits_buy_package">Sayi kundi · Yana zuwa nan ba da daɗewa ba</string>
+    <string name="apk_credits_prices_title">Farashi</string>
+    <string name="apk_credits_subscriptions">Biyan kuɗi na wata-wata</string>
+    <string name="apk_credits_button">Kiredit: 1+</string>
+    <string name="apk_credits_back">Baya</string>
+</resources>

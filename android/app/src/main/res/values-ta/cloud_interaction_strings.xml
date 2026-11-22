@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="unsupported_file_title">கோப்பு வகை ஆதரிக்கப்படவில்லை</string>
+    <string name="unsupported_file_detail">இந்தக் கோப்பு நீட்டிப்பு SP-DECODE-இல் இன்னும் கிடைக்கவில்லை. ஆதரவைப் பரிந்துரைக்க டெவலப்பரைத் தொடர்புகொள்ளவும்.</string>
+    <string name="unsupported_version_title">கோப்பு பதிப்பு இன்னும் ஆதரிக்கப்படவில்லை</string>
+    <string name="unsupported_version_detail">இந்தக் கோப்பு இன்னும் இணக்கமற்ற பதிப்பு அல்லது குறியாக்க முறையைப் பயன்படுத்துகிறது. டெவலப்பரிடம் ஆதரவைக் கோரலாம்.</string>
+    <string name="unsupported_text_title">உரை வடிவம் ஆதரிக்கப்படவில்லை</string>
+    <string name="unsupported_text_detail">இந்த உரை அல்லது நெறிமுறை இன்னும் ஆதரிக்கப்படவில்லை. ஒருங்கிணைப்பைப் பரிந்துரைக்க டெவலப்பரைத் தொடர்புகொள்ளவும்.</string>
+    <string name="catalog_check_action">புதுப்பி</string>
+    <string name="catalog_checking">புதுப்பிக்கப்படுகிறது</string>
+    <string name="catalog_downloading">பட்டியல் புதுப்பிக்கப்படுகிறது…</string>
+    <string name="catalog_progress">%1$d%%</string>
+    <string name="app_update_title">புதிய செயலி பதிப்பு கிடைக்கிறது</string>
+    <string name="app_update_body">SP-DECODE %1$s கிடைக்கிறது. புதுப்பிப்பைப் பெற அதிகாரப்பூர்வ Telegram சேனலைப் பார்வையிடவும்.</string>
+    <string name="app_update_open">Telegram-ஐத் திற</string>
+    <string name="app_update_close">மூடுக</string>
+    <string name="catalog_available_title">புதிய பட்டியல் கிடைக்கிறது</string>
+    <string name="catalog_available_body">புதிய பட்டியல் பதிப்பு %1$d பதிவிறக்கக் கிடைக்கிறது.</string>
+    <string name="catalog_check_short">பட்டியலைச் சரிபார்</string>
+</resources>
+

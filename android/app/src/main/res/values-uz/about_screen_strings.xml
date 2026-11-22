@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="about_screen_entry_detail">Versiya, xavfsizlik va rasmiy havolalar</string>
+    <string name="about_screen_description">VPN konfiguratsiyalarini tahlil qilish va dekodlash vositasi</string>
+    <string name="about_screen_version_badge">Versiya %1$s · Yigʻilish %2$d</string>
+    <string name="about_screen_info">Ilova haqida maʻlumot</string>
+    <string name="about_screen_languages">Mavjud tillar</string>
+    <string name="about_screen_installed">Oʻrnatilgan versiya</string>
+    <string name="about_screen_features">Asosiy funksiyalar</string>
+    <string name="about_screen_feature_decode">VPN fayllarini dekodlash</string>
+    <string name="about_screen_feature_catalog">Server VPN katalogi</string>
+    <string name="about_screen_feature_export">JSON va ochiq eksport</string>
+    <string name="about_screen_feature_history">Natijalar tarixi</string>
+    <string name="about_screen_security">Xavfsizlik va maxfiylik</string>
+    <string name="about_screen_cloud_security">Cloud V2 aloqalarida xizmat konfiguratsiyasiga muvofiq HPKE shifrlash va yaxlitlik tekshiruvlari qoʻllaniladi.</string>
+    <string name="about_screen_local_security">Mahalliy tarix ushbu qurilmada shifrlangan.</string>
+    <string name="about_screen_privacy">Maxfiylik siyosati</string>
+    <string name="about_screen_terms">Foydalanish shartlari</string>
+    <string name="about_screen_links">Hamjamiyat va rasmiy havolalar</string>
+    <string name="about_screen_website">Rasmiy veb-sayt</string>
+    <string name="about_screen_community_detail">Rasmiy Telegram hamjamiyati</string>
+    <string name="about_screen_credit">Ghost Developer tomonidan ishlab chiqilgan</string>
+    <string name="about_screen_copyright">SP-DECODE · Barcha huquqlar himoyalangan</string>
+</resources>

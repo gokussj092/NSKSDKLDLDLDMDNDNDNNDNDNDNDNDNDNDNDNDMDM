@@ -158,8 +158,14 @@ internal fun SpDecodeApp(
 ){
     var dialog by remember{mutableStateOf<String?>(null)}
     var confirmCatalogPostpone by remember(pendingServerVpnCatalogVersion){mutableStateOf(false)}
+    // External commerce request (e.g. "Sign in" from Settings → language
+    // help): AccountDrawer owns the destination state, this only asks for
+    // the existing "login" route; nothing is invented here.
+    var commerceDestination by remember{mutableStateOf<String?>(null)}
     SpDecodeAmoledTheme {
-      AccountDrawer(busy,onExternalLink,onLegalLink,onCheckoutUrl) { openMenu ->
+      AccountDrawer(busy,onExternalLink,onLegalLink,onCheckoutUrl,
+        externalDestination=commerceDestination,
+        onExternalDestinationConsumed={commerceDestination=null}) { openMenu ->
         Column(
             modifier=Modifier.fillMaxSize().background(Background).safeDrawingPadding()
         ) {
@@ -203,6 +209,7 @@ internal fun SpDecodeApp(
                         retentionDays,onRetention,onShowGuide=onGuideRestart,
                         onLegalLink=onLegalLink,onWithdrawConsent=onWithdrawCloudConsent,
                         onAdsPrivacyOptions=onAdsPrivacyOptions,
+                        onSignIn={commerceDestination="login"},
                         catalogDownloadChunks=catalogDownloadChunks,onCatalogDownloadChunks=onCatalogDownloadChunks,
                         catalogUpdatesEnabled=catalogUpdatesEnabled,onCatalogUpdates=onCatalogUpdates,
                         usageAnalyticsEnabled=usageAnalyticsEnabled,onUsageAnalytics=onUsageAnalytics,

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="catalog_offer_title">नयाँ क्याटलग उपलब्ध छ</string>
+    <string name="catalog_offer_body">क्याटलग संस्करण %1$d तयार छ। नयाँ समर्थित एपहरू, विधिहरू र सुधारहरूमा पहुँच गर्न अपडेट गर्नुहोस्।</string>
+    <string name="catalog_offer_update">अहिले अपडेट गर्नुहोस्</string>
+    <string name="catalog_offer_later">रद्द गर्नुहोस्</string>
+    <string name="catalog_postpone_title">अपडेट नगरी जारी राख्ने?</string>
+    <string name="catalog_postpone_body">यदि तपाईंले रद्द गर्नुभयो भने, तपाईंले अपडेट नगरेसम्म नवीनतम क्याटलग एपहरू, विधिहरू र सुधारहरू उपलब्ध हुने छैनन्। तपाईंले पछि Server VPN मा अपडेट गर्न सक्नुहुन्छ।</string>
+    <string name="catalog_postpone_confirm">अपडेट नगरी जारी राख्नुहोस्</string>
+    <string name="catalog_postpone_back">फिर्ता जानुहोस्</string>
+</resources>

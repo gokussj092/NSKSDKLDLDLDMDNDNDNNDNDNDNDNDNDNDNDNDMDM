@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_decode_progress_title">Декодування конфігурації</string>
+    <string name="cloud_decode_progress_message">Це може зайняти кілька хвилин. Зачекайте, будь ласка.</string>
+    <string name="cloud_large_result_title">Декодовано велику конфігурацію</string>
+    <string name="cloud_large_result_body">Конфігурацію збережено в зашифрованій історії. Попередній перегляд дуже великих результатів може сповільнити або закрити застосунок. Рекомендуємо експортувати повний JSON з «Історії» через меню з трьома крапками, а потім «Експорт». Android дозволить вам вибрати папку та ім’я файлу.</string>
+    <string name="cloud_large_result_acknowledge">Зрозуміло</string>
+    <string name="cloud_history_actions">Додаткові дії</string>
+</resources>

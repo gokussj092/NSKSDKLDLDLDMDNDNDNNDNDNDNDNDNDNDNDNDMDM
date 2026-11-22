@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="server_vpn_search_hint">Αναζήτηση εφαρμογών VPN</string>
+    <string name="server_vpn_filter_all">Όλα</string>
+    <string name="server_vpn_filter_enabled">Ενεργοποιημένα</string>
+    <string name="server_vpn_filter_favorites">Αγαπημένα</string>
+    <string name="server_vpn_favorite_add">Προσθήκη στα αγαπημένα</string>
+    <string name="server_vpn_favorite_remove">Αφαίρεση από τα αγαπημένα</string>
+    <string name="server_vpn_manual_refresh">Έλεγχος καταλόγου τώρα</string>
+    <string name="server_vpn_catalog_refreshing">Έλεγχος καταλόγου διακομιστή…</string>
+    <string name="server_vpn_no_matches">Καμία εφαρμογή VPN δεν αντιστοιχεί στην αναζήτηση ή τα φίλτρα σας.</string>
+    <string name="server_vpn_catalog_enabled">Ενεργοποιημένο στον κατάλογο</string>
+    <string name="server_vpn_catalog_disabled">Μη ενεργοποιημένο στον κατάλογο</string>
+    <string name="server_vpn_new_badge">Νέο</string>
+    <string name="server_vpn_catalog_update_title">Διαθέσιμη ενημέρωση καταλόγου</string>
+    <string name="server_vpn_catalog_update_question">Η έκδοση %1$d του καταλόγου Server VPN είναι διαθέσιμη. Να τη ληφθεί τώρα;</string>
+    <string name="server_vpn_catalog_download">Λήψη</string>
+    <string name="server_vpn_catalog_current">Ο κατάλογος Server VPN σας είναι ενημερωμένος.</string>
+    <string name="server_vpn_catalog_updated">Ο κατάλογος Server VPN ενημερώθηκε.</string>
+    <string name="server_vpn_catalog_update_error">Δεν ήταν δυνατός ο έλεγχος ή η λήψη του καταλόγου. Δοκιμάστε ξανά.</string>
+    <string name="server_vpn_updated_badge">Ενημερώθηκε</string>
+    <string name="server_vpn_maintenance_badge">Υπό συντήρηση</string>
+    <string name="server_vpn_maintenance_detail">Μέθοδος προσωρινά υπό συντήρηση</string>
+    <plurals name="server_vpn_app_count">
+        <item quantity="one">%1$d εφαρμογή διαθέσιμη</item>
+        <item quantity="other">%1$d εφαρμογές διαθέσιμες</item>
+    </plurals>
+</resources>

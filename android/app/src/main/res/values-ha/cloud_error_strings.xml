@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_failure_offline">Babu haɗin intanet. Ka haɗa da hanyar sadarwa ka sake gwadawa.</string>
+    <string name="cloud_failure_network">Ba a iya isa ga sabis ɗin ba. Ka duba haɗinka ka sake gwadawa.</string>
+    <string name="cloud_failure_tls">Ba a iya kafa amintaccen haɗi ba. Ka duba hanyar sadarwarka da agogon na\'ura.</string>
+    <string name="cloud_failure_timeout">Buƙatar ta ɗauki lokaci mai yawa. Ka sake gwadawa lokacin da haɗin ya daidaita.</string>
+    <string name="cloud_failure_integrity">Ba a iya kammala tabbatar da app ɗin ba. Ka sabunta app ɗin ko ka yi amfani da izinin QA da aka ba da izini.</string>
+    <string name="cloud_failure_qa_code">Izin QA ya ɓace. Ka buɗe SP-DECODE QA ka shigar da sabon lambar wucin gadi.</string>
+    <string name="cloud_failure_session">Zamanka ya ƙare ko ba a iya tabbatar da shi ba. Don Allah ka sake gwadawa.</string>
+    <string name="cloud_failure_forbidden">An hana shiga. Ka duba izinin ka ka sake gwadawa.</string>
+    <string name="cloud_failure_qa">Izin QA ba shi da inganci, an kashe shi ko ya ƙare. Ka nemi sabon lambar sirri.</string>
+    <string name="cloud_failure_consent">Ka karɓi sharuɗɗan yanzu da sanarwar sirri domin amfani da warwarewa ta Cloud.</string>
+    <string name="cloud_failure_rate">Buƙatu sun yi yawa. Don Allah ka jira kafin ka sake gwadawa.</string>
+    <string name="cloud_failure_large">Fayil ko sakamako ya wuce girman da aka yarda.</string>
+    <string name="cloud_failure_invalid">Ba a iya karɓar wannan fayil ko buƙata ba. Ka duba tsarin.</string>
+    <string name="cloud_failure_unsupported">Wannan tsarin fayil ba ya samuwa a kan sabar.</string>
+    <string name="cloud_failure_decode">Mai warwarewa ba ta iya sarrafa wannan sigar fayil ba. Fayil ɗin ba lallai ya lalace ba.</string>
+    <string name="cloud_failure_maintenance">Wannan sabis ɗin yana cikin gyara na ɗan lokaci. Don Allah ka sake gwadawa daga baya.</string>
+    <string name="cloud_failure_unavailable">Sabis ɗin ba ya samuwa na ɗan lokaci. Ka sake gwadawa daga baya.</string>
+    <string name="cloud_failure_config_unavailable">Wannan tsarin Cloud ba ya samuwa kuma. Wataƙila ya ƙare, an goge shi, ko yana aiki ne don amfani ɗaya kawai. Wannan ba kuskuren mai warwarewa ba ne.</string>
+    <string name="cloud_failure_remote">Mai bada sabis na nesa ya dawo da amsa marar inganci ko wacce ba a iya tabbatarwa.</string>
+    <string name="cloud_failure_credentials">Kalmar sirri ko HWID ba daidai ba ne. Ka duba bayanin ka sake gwadawa.</string>
+    <string name="cloud_failure_password">Wannan fayil mai kariya yana buƙatar kalmar sirri.</string>
+    <string name="cloud_failure_hwid">Wannan fayil mai kariya yana buƙatar HWID.</string>
+    <string name="cloud_failure_both">Wannan fayil mai kariya yana buƙatar kalmar sirri da HWID duka.</string>
+    <string name="cloud_failure_not_found">Abin da aka nema ba ya samuwa ko ba a same shi ba.</string>
+    <string name="cloud_failure_conflict">Buƙatar ta saba wa halin yanzu. Don Allah ka sake gwadawa.</string>
+    <string name="cloud_failure_partial">Sakamako bai cika ba ko ba shi da inganci, kuma ba za a nuna shi ba.</string>
+    <string name="cloud_failure_general">Ba a iya kammala aikin ba. Ka sake gwadawa ko ka tuntuɓi tallafi.</string>
+    <string name="cloud_failure_notice_title">Sanarwa</string>
+    <string name="cloud_password_title">Ana buƙatar kalmar sirrin tsari</string>
+    <string name="cloud_password_description">%1$s tana da kariyar kalmar sirri. Ka shigar da kalmar sirrin fitarwa don ci gaba. Ba za a ajiye ta ba.</string>
+    <string name="cloud_failure_password_incorrect">Kalmar sirri ba daidai ba ce.</string>
+    <string name="cloud_failure_private_key">Wannan fayil ɗin NPVS yana amfani da kariyar maɓallin jama\'a/sirri na mai karɓa. Ba a tallafa wa wannan hanyar ba tukuna; tallafi yana zuwa nan ba da daɗewa ba.</string>
+    <string name="cloud_failure_recipient">Wannan fayil ɗin NPVS yana amfani da hanyar maɓallin mai karɓa wacce ba a tallafa mata ba tukuna. Tallafi yana zuwa nan ba da daɗewa ba.</string>
+    <string name="cloud_failure_npvs_unsupported">Ba a tallafa wa wannan sigar NPVS ko hanyar kariya ba tukuna. Tallafi yana zuwa nan ba da daɗewa ba.</string>
+</resources>

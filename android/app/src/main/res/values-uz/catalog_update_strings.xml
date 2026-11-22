@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="catalog_auto_title">Server VPN katalogini avtomatik yangilash</string>
+    <string name="catalog_auto_detail">Ilova ochiq paytda katalog versiyalarini oʻz SP-DECODE serveringiz bilan HTTPS orqali tekshiradi va kerak boʻlganda fonda kamdan-kam tiklash tekshiruvlarini bajaradi. Yangi katalog maʻlumotlari va piktogrammalar faqat versiya oʻzgarganda yuklab olinadi. Firebase, hisob yoki push token talab qilinmaydi. Istalgan vaqtda oʻchirib qoʻyishingiz mumkin.</string>
+    <string name="catalog_auto_switch">Fonda katalog sinxronlashni yoqish</string>
+</resources>

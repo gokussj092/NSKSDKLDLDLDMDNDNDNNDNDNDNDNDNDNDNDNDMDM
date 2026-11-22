@@ -363,6 +363,12 @@
     <string name="app_analysis_error_busy">تحلیل‌های زیادی در جریان است. بعداً تلاش کنید.</string>
     <string name="app_analysis_error_generic">عملیات کامل نشد. دوباره تلاش کنید.</string>
     <string name="app_analysis_title">تحلیل APK</string>
+    <string name="apk_qa_sub_metadata">خواندن فرادادهٔ بسته</string>
+    <string name="apk_qa_sub_dex">تحلیل بایت‌کد و متدهای DEX</string>
+    <string name="apk_qa_sub_native">بررسی کتابخانه‌های بومی (.so)</string>
+    <string name="apk_qa_sub_jadx">دی‌کامپایل کردن کد با JADX Lite</string>
+    <string name="apk_qa_sub_recovery">بازیابی خروجی جزئی DEX</string>
+    <string name="apk_qa_sub_evidence">تطبیق ارجاعات رمزنگاری</string>
     <string name="release_integrity_error_title">تأیید برنامه ناموفق بود</string>
     <string name="release_integrity_error_message">امضای برنامه نصب‌شده قابل تأیید نیست. SP-DECODE را از منبع رسمی به‌روز کنید. اگر مشکل ادامه داشت، با پشتیبانی تماس بگیرید و کد RELEASE_SIGNER_REJECTED را ذکر کنید.</string>
 </resources>

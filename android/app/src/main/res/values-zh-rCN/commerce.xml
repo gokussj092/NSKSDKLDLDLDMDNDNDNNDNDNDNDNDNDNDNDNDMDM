@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="account_sign_in">登录</string>
+    <string name="account_web_description">在官方网站上管理您的账号和购买。免费功能无需账号即可使用。</string>
+    <string name="account_continue_web">前往网页继续</string>
+    <string name="account_my_account">我的账号</string>
+    <string name="account_store">商店</string>
+    <string name="account_open_menu">打开菜单</string>
+    <string name="ads_privacy_options">广告隐私选项</string>
+</resources>

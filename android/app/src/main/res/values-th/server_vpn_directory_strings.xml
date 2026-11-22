@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="server_vpn_search_hint">ค้นหาแอป VPN</string>
+    <string name="server_vpn_filter_all">ทั้งหมด</string>
+    <string name="server_vpn_filter_enabled">เปิดใช้งานแล้ว</string>
+    <string name="server_vpn_filter_favorites">รายการโปรด</string>
+    <string name="server_vpn_favorite_add">เพิ่มในรายการโปรด</string>
+    <string name="server_vpn_favorite_remove">ลบออกจากรายการโปรด</string>
+    <string name="server_vpn_manual_refresh">ตรวจสอบแค็ตตาล็อกตอนนี้</string>
+    <string name="server_vpn_catalog_refreshing">กำลังตรวจสอบแค็ตตาล็อกเซิร์ฟเวอร์…</string>
+    <string name="server_vpn_no_matches">ไม่มีแอป VPN ตรงกับการค้นหาหรือตัวกรองของคุณ</string>
+    <string name="server_vpn_catalog_enabled">เปิดใช้งานในแค็ตตาล็อกแล้ว</string>
+    <string name="server_vpn_catalog_disabled">ยังไม่ได้เปิดใช้งานในแค็ตตาล็อก</string>
+    <string name="server_vpn_new_badge">ใหม่</string>
+    <string name="server_vpn_catalog_update_title">มีอัปเดตแค็ตตาล็อก</string>
+    <string name="server_vpn_catalog_update_question">แค็ตตาล็อก Server VPN เวอร์ชัน %1$d พร้อมใช้งานแล้ว ดาวน์โหลดตอนนี้ใช่ไหม?</string>
+    <string name="server_vpn_catalog_download">ดาวน์โหลด</string>
+    <string name="server_vpn_catalog_current">แค็ตตาล็อก Server VPN ของคุณเป็นเวอร์ชันล่าสุดแล้ว</string>
+    <string name="server_vpn_catalog_updated">อัปเดตแค็ตตาล็อก Server VPN แล้ว</string>
+    <string name="server_vpn_catalog_update_error">ไม่สามารถตรวจสอบหรือดาวน์โหลดแค็ตตาล็อกได้ โปรดลองอีกครั้ง</string>
+    <string name="server_vpn_updated_badge">อัปเดตแล้ว</string>
+    <string name="server_vpn_maintenance_badge">อยู่ระหว่างการบำรุงรักษา</string>
+    <string name="server_vpn_maintenance_detail">วิธีการนี้อยู่ระหว่างการบำรุงรักษาชั่วคราว</string>
+    <plurals name="server_vpn_app_count">
+        <item quantity="one">มีแอป %1$d แอป</item>
+        <item quantity="other">มีแอป %1$d แอป</item>
+    </plurals>
+</resources>

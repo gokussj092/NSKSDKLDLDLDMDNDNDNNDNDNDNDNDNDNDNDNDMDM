@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_decode_progress_title">কনফিগারেশন ডিকোড করা হচ্ছে</string>
+    <string name="cloud_decode_progress_message">কয়েক মিনিট সময় লাগতে পারে। অপেক্ষা করুন।</string>
+    <string name="cloud_large_result_title">বড় কনফিগারেশন ডিকোড হয়েছে</string>
+    <string name="cloud_large_result_body">কনফিগারেশনটি এনক্রিপ্ট করা ইতিহাসে সংরক্ষণ করা হয়েছে। খুব বড় ফলাফলের পূর্বরূপ দেখলে অ্যাপ ধীর হয়ে যেতে পারে বা বন্ধ হয়ে যেতে পারে। ইতিহাস থেকে তিন-ডট মেনু, তারপর Export ব্যবহার করে সম্পূর্ণ JSON এক্সপোর্ট করার পরামর্শ দিচ্ছি। Android আপনাকে ফোল্ডার ও ফাইলের নাম বেছে নিতে দেবে।</string>
+    <string name="cloud_large_result_acknowledge">বুঝেছি</string>
+    <string name="cloud_history_actions">আরও কাজ</string>
+</resources>

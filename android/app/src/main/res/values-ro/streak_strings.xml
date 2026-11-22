@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="streak_verified_date">Dată verificată de server</string>
+    <string name="streak_date_pending">Se așteaptă o dată verificată</string>
+    <string name="streak_today_done">Finalizat astăzi</string>
+    <string name="streak_today_pending">Decodează un fișier sau un text astăzi pentru a-ți păstra seria</string>
+    <string name="streak_weekly_reward">La fiecare 7 zile consecutive</string>
+    <string name="streak_reward">+1 credit de analiză APK</string>
+    <string name="streak_reward_delivered">Recompensă livrată</string>
+    <string name="streak_verified_note">Zilele și recompensele sunt verificate de server.</string>
+    <plurals name="streak_days_left">
+        <item quantity="one">%1$d zi rămasă</item>
+        <item quantity="other">%1$d zile rămase</item>
+    </plurals>
+    <string name="streak_reminder_channel">Mementouri pentru serie</string>
+    <string name="streak_reminder_title">Seria ta te așteaptă</string>
+    <string name="streak_reminder_body">Decodează un fișier sau un text astăzi pentru a-ți continua seria.</string>
+</resources>

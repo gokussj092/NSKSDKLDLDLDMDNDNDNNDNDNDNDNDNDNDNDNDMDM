@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_legal_title">Όροι και απόρρητο</string>
+    <string name="cloud_legal_explanation">Το SP-DECODE Cloud στέλνει στον διακομιστή του τα αρχεία ή τα κείμενα που επιλέγετε να αποκωδικοποιήσετε. Επίσης μετράει περίπου τις ενεργές εγκαταστάσεις μία φορά την ημέρα για να σχεδιάσει τη χωρητικότητα του διακομιστή, χρησιμοποιώντας έναν τυχαίο κωδικό εγκατάστασης. Τα περιεχόμενα των διαμορφώσεων δεν περιλαμβάνονται σε αυτές τις μετρήσεις.</string>
+    <string name="cloud_legal_terms">Ανάγνωση όρων και προϋποθέσεων</string>
+    <string name="cloud_legal_privacy">Ανάγνωση πολιτικής απορρήτου</string>
+    <string name="cloud_legal_accept_check">Διάβασα και αποδέχομαι τους όρους και την πολιτική απορρήτου.</string>
+    <string name="cloud_legal_accept">Αποδοχή</string>
+    <string name="cloud_legal_decline">Απόρριψη</string>
+    <string name="server_vpn_loading">Φόρτωση καταλόγου διακομιστών VPN…</string>
+    <string name="server_vpn_unavailable">Ο κατάλογος διακομιστών VPN δεν είναι διαθέσιμος. Ελέγξτε τη σύνδεσή σας και δοκιμάστε ξανά.</string>
+    <string name="server_vpn_retry">Επανάληψη καταλόγου</string>
+    <string name="cloud_legal_withdraw">Ανάκληση συγκατάθεσης Cloud</string>
+    <string name="cloud_legal_withdraw_detail">Η ανάκληση της συγκατάθεσης μπλοκάρει τα νέα αιτήματα προς τον διακομιστή. Το τοπικά κρυπτογραφημένο ιστορικό σας θα παραμένει σε αυτήν τη συσκευή. Μπορείτε να αποδεχθείτε ξανά αργότερα.</string>
+</resources>

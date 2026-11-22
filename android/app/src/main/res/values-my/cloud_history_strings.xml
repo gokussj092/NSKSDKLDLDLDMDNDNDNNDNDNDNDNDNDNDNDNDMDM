@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_decode_progress_title">ဖွဲ့စည်းမှုကို ကုဒ်ဖြည်နေသည်</string>
+    <string name="cloud_decode_progress_message">မိနစ်အနည်းငယ် ကြာနိုင်ပါသည်။ စောင့်ပါ။</string>
+    <string name="cloud_large_result_title">ဖွဲ့စည်းမှု အကြီးကို ကုဒ်ဖြည်ပြီးပါပြီ</string>
+    <string name="cloud_large_result_body">ဖွဲ့စည်းမှုကို ကုဒ်ဝှက်ထားသော မှတ်တမ်းတွင် သိမ်းဆည်းပြီးပါပြီ။ အလွန်ကြီးသော ရလဒ်များကို ကြိုတင်ကြည့်ရှုခြင်းက အက်ပ်ကို နှေးကွေးစေခြင်း သို့မဟုတ် ပိတ်သွားစေနိုင်ပါသည်။ မှတ်တမ်းမှ အစက်သုံးစက် မီနူးဖြင့် ပြီးပြည့်စုံသော JSON ကို ထုတ်ယူရန် အကြံပြုပါသည်၊ ထို့နောက် ထုတ်ယူရန် ကို ရွေးပါ။ Android က ဖိုဒါနှင့် ဖိုင်အမည်ကို ရွေးချယ်ခွင့်ပေးပါမည်။</string>
+    <string name="cloud_large_result_acknowledge">နားလည်ပါပြီ</string>
+    <string name="cloud_history_actions">လုပ်ဆောင်ချက် များများ</string>
+</resources>

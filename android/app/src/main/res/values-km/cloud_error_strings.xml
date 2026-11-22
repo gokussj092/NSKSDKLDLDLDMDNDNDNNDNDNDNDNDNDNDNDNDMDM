@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_failure_offline">គ្មានការតភ្ជាប់អ៊ីនធឺណិត។ ភ្ជាប់ទៅបណ្តាញ ហើយព្យាយាមម្តងទៀត។</string>
+    <string name="cloud_failure_network">មិនអាចទៅដល់សេវាកម្មបានទេ។ ពិនិត្យការតភ្ជាប់របស់អ្នក ហើយព្យាយាមម្តងទៀត។</string>
+    <string name="cloud_failure_tls">មិនអាចបង្កើតការតភ្ជាប់សុវត្ថិភាពបានទេ។ ពិនិត្យមើលបណ្តាញ និងនាឡិកាឧបករណ៍របស់អ្នក។</string>
+    <string name="cloud_failure_timeout">សំណើនេះបានចំណាយពេលយូរពេក។ ព្យាយាមម្តងទៀតនៅពេលដែលការតភ្ជាប់មានស្ថេរភាព។</string>
+    <string name="cloud_failure_integrity">ការផ្ទៀងផ្ទាត់កម្មវិធីមិនអាចបញ្ចប់បានទេ។ ធ្វើបច្ចុប្បន្នភាពកម្មវិធី ឬប្រើការចូលប្រើ QA ដែលមានការអនុញ្ញាត។</string>
+    <string name="cloud_failure_qa_code">ការចូលប្រើ QA បាត់។ បើក SP-DECODE QA ហើយបញ្ចូលលេខកូដបណ្តោះអាសន្នថ្មី។</string>
+    <string name="cloud_failure_session">វគ្គរបស់អ្នកផុតកំណត់ ឬមិនអាចផ្ទៀងផ្ទាត់បានទេ។ សូមព្យាយាមម្តងទៀត។</string>
+    <string name="cloud_failure_forbidden">ការចូលប្រើត្រូវបានបដិសេធ។ ពិនិត្យការអនុញ្ញាតរបស់អ្នក ហើយព្យាយាមម្តងទៀត។</string>
+    <string name="cloud_failure_qa">ការចូលប្រើ QA គឺមិនត្រឹមត្រូវ បិទ ឬផុតកំណត់។ ស្នើសុំលេខកូដឯកជនថ្មី។</string>
+    <string name="cloud_failure_consent">ទទួលយកលក្ខខណ្ឌបច្ចុប្បន្ន និងការជូនដំណឹងអំពីឯកជនភាព ដើម្បីប្រើការឌិកូដតាម Cloud។</string>
+    <string name="cloud_failure_rate">សំណើច្រើនពេក។ សូមរង់ចាំមុនពេលព្យាយាមម្តងទៀត។</string>
+    <string name="cloud_failure_large">ឯកសារ ឬលទ្ធផលលើសពីទំហំដែលអនុញ្ញាត។</string>
+    <string name="cloud_failure_invalid">ឯកសារ ឬសំណើនេះមិនអាចទទួលយកបានទេ។ ពិនិត្យទម្រង់។</string>
+    <string name="cloud_failure_unsupported">ទម្រង់ឯកសារនេះមិនមាននៅលើម៉ាស៊ីនមេទេ។</string>
+    <string name="cloud_failure_decode">ឧបករណ៍ឌិកូដមិនអាចដំណើរការកំណែឯកសារនេះបានទេ។ ឯកសារមិនចាំបាច់ខូចទេ។</string>
+    <string name="cloud_failure_maintenance">សេវាកម្មនេះស្ថិតក្រោមការថែទាំជាបណ្ដោះអាសន្ន។ សូមព្យាយាមម្តងទៀតនៅពេលក្រោយ។</string>
+    <string name="cloud_failure_unavailable">សេវាកម្មនេះមិនមានជាបណ្តោះអាសន្នទេ។ ព្យាយាមម្តងទៀតនៅពេលក្រោយ។</string>
+    <string name="cloud_failure_config_unavailable">ការកំណត់រចនាសម្ព័ន្ធ Cloud នេះលែងមានទៀតហើយ។ វាអាចផុតកំណត់ លុប ឬមានសុពលភាពសម្រាប់ការប្រើប្រាស់តែមួយប៉ុណ្ណោះ។ នេះមិនមែនជាការបរាជ័យរបស់ឧបករណ៍ឌិកូដទេ។</string>
+    <string name="cloud_failure_remote">អ្នកផ្តល់សេវាពីចម្ងាយបានត្រឡប់ការឆ្លើយតបមិនត្រឹមត្រូវ ឬមិនអាចផ្ទៀងផ្ទាត់បាន។</string>
+    <string name="cloud_failure_credentials">ពាក្យសម្ងាត់ ឬ HWID មិនត្រឹមត្រូវ។ ពិនិត្យព័ត៌មាន ហើយព្យាយាមម្តងទៀត។</string>
+    <string name="cloud_failure_password">ឯកសារដែលបានការពារនេះទាមទារពាក្យសម្ងាត់។</string>
+    <string name="cloud_failure_hwid">ឯកសារដែលបានការពារនេះទាមទារ HWID។</string>
+    <string name="cloud_failure_both">ឯកសារដែលបានការពារនេះទាមទារទាំងពាក្យសម្ងាត់ និង HWID។</string>
+    <string name="cloud_failure_not_found">ធនធានដែលបានស្នើគឺមិនអាចរកបាន ឬរកមិនឃើញ។</string>
+    <string name="cloud_failure_conflict">សំណើមានជម្លោះជាមួយស្ថានភាពបច្ចុប្បន្ន។ សូមព្យាយាមម្តងទៀត។</string>
+    <string name="cloud_failure_partial">លទ្ធផលមិនពេញលេញ ឬមិនត្រឹមត្រូវ ហើយនឹងមិនត្រូវបានបង្ហាញទេ។</string>
+    <string name="cloud_failure_general">មិនអាចបញ្ចប់ប្រតិបត្តិការបានទេ។ ព្យាយាមម្តងទៀត ឬទាក់ទងផ្នែកជំនួយ។</string>
+    <string name="cloud_failure_notice_title">សេចក្តីជូនដំណឹង</string>
+    <string name="cloud_password_title">ទាមទារពាក្យសម្ងាត់នៃការកំណត់រចនាសម្ព័ន្ធ</string>
+    <string name="cloud_password_description">%1$s ត្រូវបានការពារដោយពាក្យសម្ងាត់។ បញ្ចូលពាក្យសម្ងាត់នាំចេញដើម្បីបន្ត។ វានឹងមិនត្រូវបានរក្សាទុកទេ។</string>
+    <string name="cloud_failure_password_incorrect">ពាក្យសម្ងាត់មិនត្រឹមត្រូវ។</string>
+    <string name="cloud_failure_private_key">ឯកសារ NPVS នេះប្រើការការពារសោសាធារណៈ/ឯកជនរបស់អ្នកទទួល។ វិធីសាស្រ្តនេះមិនត្រូវបានគាំទ្រនៅឡើយទេ; ការគាំទ្រនឹងមកដល់ឆាប់ៗនេះ។</string>
+    <string name="cloud_failure_recipient">ឯកសារ NPVS នេះប្រើវិធីសាស្ត្រគន្លឹះអ្នកទទួល ដែលមិនទាន់អាចប្រើបាន។ ការគាំទ្រនឹងមកដល់ឆាប់ៗនេះ។</string>
+    <string name="cloud_failure_npvs_unsupported">កំណែ NPVS ឬវិធីការពារនេះមិនទាន់ត្រូវបានគាំទ្រនៅឡើយទេ។ ការគាំទ្រនឹងមកដល់ឆាប់ៗនេះ។</string>
+</resources>

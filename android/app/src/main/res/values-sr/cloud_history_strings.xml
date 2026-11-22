@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_decode_progress_title">Декодирање конфигурације</string>
+    <string name="cloud_decode_progress_message">Ово може потрајати неколико минута. Молимо сачекајте.</string>
+    <string name="cloud_large_result_title">Декодирана је велика конфигурација</string>
+    <string name="cloud_large_result_body">Конфигурација је сачувана у шифрованој историји. Преглед веома великих резултата може успорити или затворити апликацију. Препоручујемо да извезете комплетан JSON из Историје помоћу менија са три тачке, а затим Извоз. Android ће вам омогућити да изаберете фасциклу и назив датотеке.</string>
+    <string name="cloud_large_result_acknowledge">Разумем</string>
+    <string name="cloud_history_actions">Још радњи</string>
+</resources>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="unsupported_file_title">不支持此文件类型</string>
+    <string name="unsupported_file_detail">SP-DECODE 暂不支持此文件扩展名。请联系开发者建议添加支持。</string>
+    <string name="unsupported_version_title">暂不支持此文件版本</string>
+    <string name="unsupported_version_detail">此文件使用的版本或加密方法尚不兼容。您可以向开发者请求支持。</string>
+    <string name="unsupported_text_title">不支持此文本格式</string>
+    <string name="unsupported_text_detail">此文本或协议暂不受支持。请联系开发者建议集成。</string>
+    <string name="catalog_check_action">更新</string>
+    <string name="catalog_checking">正在更新</string>
+    <string name="catalog_downloading">正在更新目录…</string>
+    <string name="catalog_progress">%1$d%%</string>
+    <string name="app_update_title">有新应用版本可用</string>
+    <string name="app_update_body">SP-DECODE %1$s 已发布。请访问官方 Telegram 频道获取更新。</string>
+    <string name="app_update_open">打开 Telegram</string>
+    <string name="app_update_close">关闭</string>
+    <string name="catalog_available_title">有新目录可用</string>
+    <string name="catalog_available_body">新目录版本 %1$d 可供下载。</string>
+    <string name="catalog_check_short">检查目录</string>
+</resources>

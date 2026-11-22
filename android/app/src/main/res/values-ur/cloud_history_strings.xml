@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_decode_progress_title">کنفیگریشن ڈی کوڈ ہو رہی ہے</string>
+    <string name="cloud_decode_progress_message">اس میں چند منٹ لگ سکتے ہیں۔ براہ کرم انتظار کریں۔</string>
+    <string name="cloud_large_result_title">بڑی کنفیگریشن ڈی کوڈ ہو گئی</string>
+    <string name="cloud_large_result_body">کنفیگریشن انکرپٹڈ ہسٹری میں محفوظ کر دی گئی۔ بہت بڑے نتائج کا پیش نظارہ ایپ کو سست کر سکتا ہے یا بند کر سکتا ہے۔ ہم تجویز کرتے ہیں کہ History سے تین نقطوں والے مینیو سے پھر Export کے ذریعے مکمل JSON ایکسپورٹ کریں۔ Android آپ کو فولڈر اور فائل کا نام منتخب کرنے دے گا۔</string>
+    <string name="cloud_large_result_acknowledge">سمجھ گیا</string>
+    <string name="cloud_history_actions">مزید کارروائیاں</string>
+</resources>

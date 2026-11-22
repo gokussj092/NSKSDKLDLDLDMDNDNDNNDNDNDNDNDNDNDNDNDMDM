@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_http_injector_not_configured">HTTP Injector Cloud በሰርቨሩ ላይ ገና አልተዋቀረም። አገልግሎቱ ከተነቃ በኋላ እንደገና ይሞክሩ።</string>
+</resources>

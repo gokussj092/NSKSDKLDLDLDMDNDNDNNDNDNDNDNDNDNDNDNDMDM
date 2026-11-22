@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="file_extension_unsupported_contact">To rozszerzenie pliku nie jest obsługiwane. Skontaktuj się z deweloperem, aby poprosić o obsługę.</string>
+    <string name="text_format_unsupported_contact">Ten format tekstu lub protokół nie jest obsługiwany. Skontaktuj się z deweloperem, aby poprosić o obsługę.</string>
+    <string name="formats_remote_catalog_note">Obsługiwane rozszerzenia są synchronizowane bezpiecznie z SP-DECODE Cloud. Nowe formaty Cloud mogą pojawiać się bez aktualizacji aplikacji.</string>
+    <string name="formats_cloud_ready_short">Cloud</string>
+</resources>

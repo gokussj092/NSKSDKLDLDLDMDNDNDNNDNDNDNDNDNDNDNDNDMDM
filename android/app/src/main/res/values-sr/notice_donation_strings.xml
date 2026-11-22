@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="donations_title">Донације</string>
+    <string name="donation_copy_id">Копирај ID</string>
+    <string name="donation_id_copied">Binance ID копиран</string>
+    <string name="donation_coming_soon">Ускоро</string>
+    <string name="catalog_loading_short">Учитавање каталога</string>
+    <string name="notifications_title">Обавештења</string>
+    <string name="notifications_description">Примајте обавештења о услузи од SP-DECODE. Можете их искључити у било ком тренутку.</string>
+    <string name="notifications_system_settings">Подешавања система</string>
+    <string name="notifications_enable">Омогући</string>
+    <string name="notifications_later">Касније</string>
+</resources>

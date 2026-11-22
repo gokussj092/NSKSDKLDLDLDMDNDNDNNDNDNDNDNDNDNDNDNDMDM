@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="streak_verified_date">சர்வரால் சரிபார்க்கப்பட்ட தேதி</string>
+    <string name="streak_date_pending">சரிபார்க்கப்பட்ட தேதிக்காகக் காத்திருக்கிறது</string>
+    <string name="streak_today_done">இன்று முடிந்தது</string>
+    <string name="streak_today_pending">உங்கள் தொடரைத் தக்கவைக்க இன்று ஒரு கோப்பு அல்லது உரையை மறைகுறியீடு நீக்கவும்</string>
+    <string name="streak_weekly_reward">தொடர்ந்து 7 நாட்களுக்கு ஒரு முறை</string>
+    <string name="streak_reward">+1 APK பகுப்பாய்வு கிரெடிட்</string>
+    <string name="streak_reward_delivered">பரிசு வழங்கப்பட்டது</string>
+    <string name="streak_verified_note">நாட்கள் மற்றும் பரிசுகள் சர்வரால் சரிபார்க்கப்படுகின்றன.</string>
+    <plurals name="streak_days_left">
+        <item quantity="one">%1$d நாள் மீதமுள்ளது</item>
+        <item quantity="other">%1$d நாட்கள் மீதமுள்ளன</item>
+    </plurals>
+    <string name="streak_reminder_channel">தொடர் நினைவூட்டல்கள்</string>
+    <string name="streak_reminder_title">உங்கள் தொடர் காத்திருக்கிறது</string>
+    <string name="streak_reminder_body">உங்கள் தொடரைத் தொடர இன்று ஒரு கோப்பு அல்லது உரையை மறைகுறியீடு நீக்கவும்.</string>
+</resources>

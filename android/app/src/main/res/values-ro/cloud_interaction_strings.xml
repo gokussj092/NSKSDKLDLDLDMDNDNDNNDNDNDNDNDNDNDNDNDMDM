@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="unsupported_file_title">Tip de fișier neacceptat</string>
+    <string name="unsupported_file_detail">Această extensie de fișier nu este încă disponibilă în SP-DECODE. Contactează dezvoltatorul pentru a sugera asistența.</string>
+    <string name="unsupported_version_title">Versiune de fișier încă neacceptată</string>
+    <string name="unsupported_version_detail">Acest fișier folosește o versiune sau o metodă de criptare care nu este încă compatibilă. Poți solicita asistență de la dezvoltator.</string>
+    <string name="unsupported_text_title">Format de text neacceptat</string>
+    <string name="unsupported_text_detail">Acest text sau protocol nu este încă acceptat. Contactează dezvoltatorul pentru a sugera o integrare.</string>
+    <string name="catalog_check_action">Actualizează</string>
+    <string name="catalog_checking">Se actualizează</string>
+    <string name="catalog_downloading">Se actualizează catalogul…</string>
+    <string name="catalog_progress">%1$d%%</string>
+    <string name="app_update_title">Este disponibilă o versiune nouă a aplicației</string>
+    <string name="app_update_body">SP-DECODE %1$s este disponibilă. Vizitează canalul oficial Telegram pentru a obține actualizarea.</string>
+    <string name="app_update_open">Deschide Telegram</string>
+    <string name="app_update_close">Închide</string>
+    <string name="catalog_available_title">Catalog nou disponibil</string>
+    <string name="catalog_available_body">Este disponibilă pentru descărcare o nouă versiune %1$d a catalogului.</string>
+    <string name="catalog_check_short">Verifică catalogul</string>
+</resources>

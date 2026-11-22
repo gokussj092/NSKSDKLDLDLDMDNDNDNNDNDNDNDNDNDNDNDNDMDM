@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="file_extension_unsupported_contact">یہ فائل ایکسٹینشن سپورٹ نہیں ہوتی۔ سپورٹ کی درخواست کے لیے ڈویلپر سے رابطہ کریں۔</string>
+    <string name="text_format_unsupported_contact">یہ متن کا فارمیٹ یا پروٹوکول سپورٹ نہیں ہوتا۔ سپورٹ کی درخواست کے لیے ڈویلپر سے رابطہ کریں۔</string>
+    <string name="formats_remote_catalog_note">سپورٹ شدہ ایکسٹینشنز SP-DECODE Cloud سے محفوظ طریقے سے سنک ہوتی ہیں۔ نئے کلاؤڈ فارمیٹس ایپ اپ ڈیٹ کیے بغیر ظاہر ہو سکتے ہیں۔</string>
+    <string name="formats_cloud_ready_short">کلاؤڈ</string>
+</resources>

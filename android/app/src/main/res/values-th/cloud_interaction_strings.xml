@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="unsupported_file_title">ไม่รองรับประเภทไฟล์นี้</string>
+    <string name="unsupported_file_detail">นามสกุลไฟล์นี้ยังไม่พร้อมใช้งานใน SP-DECODE ติดต่อผู้พัฒนาเพื่อแนะนำการรองรับ</string>
+    <string name="unsupported_version_title">ยังไม่รองรับเวอร์ชันไฟล์นี้</string>
+    <string name="unsupported_version_detail">ไฟล์นี้ใช้เวอร์ชันหรือวิธีการเข้ารหัสที่ยังไม่เข้ากัน คุณสามารถขอการรองรับจากผู้พัฒนาได้</string>
+    <string name="unsupported_text_title">ไม่รองรับรูปแบบข้อความนี้</string>
+    <string name="unsupported_text_detail">ข้อความหรือโปรโตคอลนี้ยังไม่รองรับ ติดต่อผู้พัฒนาเพื่อแนะนำการผสานรวม</string>
+    <string name="catalog_check_action">อัปเดต</string>
+    <string name="catalog_checking">กำลังอัปเดต</string>
+    <string name="catalog_downloading">กำลังอัปเดตแค็ตตาล็อก…</string>
+    <string name="catalog_progress">%1$d%%</string>
+    <string name="app_update_title">มีแอปเวอร์ชันใหม่</string>
+    <string name="app_update_body">SP-DECODE %1$s พร้อมใช้งานแล้ว ไปที่ช่อง Telegram ทางการเพื่อรับการอัปเดต</string>
+    <string name="app_update_open">เปิด Telegram</string>
+    <string name="app_update_close">ปิด</string>
+    <string name="catalog_available_title">มีแค็ตตาล็อกใหม่</string>
+    <string name="catalog_available_body">แค็ตตาล็อกเวอร์ชันใหม่ %1$d พร้อมให้ดาวน์โหลดแล้ว</string>
+    <string name="catalog_check_short">ตรวจสอบแค็ตตาล็อก</string>
+</resources>

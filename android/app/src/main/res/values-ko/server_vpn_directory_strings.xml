@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="server_vpn_search_hint">VPN 앱 검색</string>
+    <string name="server_vpn_filter_all">전체</string>
+    <string name="server_vpn_filter_enabled">사용 중</string>
+    <string name="server_vpn_filter_favorites">즐겨찾기</string>
+    <string name="server_vpn_favorite_add">즐겨찾기에 추가</string>
+    <string name="server_vpn_favorite_remove">즐겨찾기에서 제거</string>
+    <string name="server_vpn_manual_refresh">지금 카탈로그 확인</string>
+    <string name="server_vpn_catalog_refreshing">서버 카탈로그 확인 중…</string>
+    <string name="server_vpn_no_matches">검색이나 필터와 일치하는 VPN 앱이 없습니다.</string>
+    <string name="server_vpn_catalog_enabled">카탈로그에서 사용 중</string>
+    <string name="server_vpn_catalog_disabled">카탈로그에서 사용 중이 아님</string>
+    <string name="server_vpn_new_badge">신규</string>
+    <string name="server_vpn_catalog_update_title">카탈로그 업데이트 사용 가능</string>
+    <string name="server_vpn_catalog_update_question">서버 VPN 카탈로그 버전 %1$d을(를) 사용할 수 있습니다. 지금 다운로드하시겠습니까?</string>
+    <string name="server_vpn_catalog_download">다운로드</string>
+    <string name="server_vpn_catalog_current">서버 VPN 카탈로그가 최신 상태입니다.</string>
+    <string name="server_vpn_catalog_updated">서버 VPN 카탈로그가 업데이트되었습니다.</string>
+    <string name="server_vpn_catalog_update_error">카탈로그를 확인하거나 다운로드할 수 없습니다. 다시 시도하세요.</string>
+    <string name="server_vpn_updated_badge">업데이트됨</string>
+    <string name="server_vpn_maintenance_badge">점검 중</string>
+    <string name="server_vpn_maintenance_detail">방식이 일시적으로 점검 중입니다</string>
+    <plurals name="server_vpn_app_count">
+        <item quantity="one">%1$d개의 앱 사용 가능</item>
+        <item quantity="other">%1$d개의 앱 사용 가능</item>
+    </plurals>
+</resources>

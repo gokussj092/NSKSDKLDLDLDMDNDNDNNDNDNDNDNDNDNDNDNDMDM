@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_global_title">Cloud (Kan layi)</string>
+    <string name="cloud_global_auto">Gano ta atomatik</string>
+    <string name="cloud_global_hint">Manna hanyar haɗin Cloud mai tallafi, maɓalli ko lamba</string>
+    <string name="cloud_global_action">Shigar da daga Cloud</string>
+    <string name="cloud_global_detail">Ka manna hanyar haɗin Cloud, maɓalli ko lamba, SP-DECODE za ta gano mai bada sabis ta atomatik. Ana tallafa wa sabis ɗin da aka amince da su kaɗai.</string>
+    <string name="cloud_global_invalid">Wannan bayanin bai dace da mai bada Cloud da ake da shi ba.</string>
+</resources>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="npv_title">Kunci penerima NPV</string>
+    <string name="npv_detail">Gunakan identiti anda untuk fail yang dibuat bagi anda. Kunci disulitkan di peranti ini. Aktifkan untuk menggunakannya dengan SP Cloud.</string>
+    <string name="npv_enabled">Gunakan identiti NPV saya</string>
+    <string name="npv_generate">Buat dengan SP Cloud</string>
+    <string name="npv_import">Import JSON tangkapan</string>
+    <string name="npv_generated">Dibuat oleh SP Cloud</string>
+    <string name="npv_captured">Diambil dari aplikasi rasmi</string>
+    <string name="npv_file_only">Hanya fail ini</string>
+    <string name="npv_view">Lihat dan salin</string>
+    <string name="npv_delete">Padam</string>
+    <string name="npv_invalid">Kunci NPV tidak dapat dibaca. Semak JSON dan kesepadanan kunci.</string>
+    <string name="npv_saved">Identiti disimpan. Aktifkan pilihan untuk menggunakannya.</string>
+    <string name="npv_generation_notice">Kongsi hanya kunci awam kepada orang yang membuat server atau konfigurasi VPN anda. Jangan pernah mengongsi kunci peribadi.</string>
+    <string name="npv_choose_title">Pilih identiti NPV</string>
+    <string name="npv_send_notice">Pilih identiti untuk membuka fail ini dengan SP Cloud.</string>
+    <string name="npv_use">Gunakan identiti terpilih</string>
+    <string name="npv_copy_public">Salin kunci awam</string>
+    <string name="npv_copy_private">Salin kunci peribadi</string>
+    <string name="npv_reveal">Papar atau sembunyikan kunci peribadi</string>
+    <string name="npv_hardware_notice">Kunci peribadi perkakasan tidak dapat dieksport. Tangkapan ini hanya terpakai untuk fail yang sesuai.</string>
+    <string name="npv_delete_title">Padam identiti ini?</string>
+    <string name="npv_delete_warning">Kunci ini hanya disimpan di peranti ini. Setelah dipadam, SP Cloud tidak dapat memulihkannya. anda mungkin kehilangan akses ke fail yang disulitkan untuk identiti ini.</string>
+    <string name="npv_public_label">Kunci awam · P-256</string>
+    <string name="npv_private_label">Kunci peribadi · PKCS#8</string>
+    <string name="npv_cancel">Batal</string>
+    <string name="npv_already_generated">Identiti SP Cloud sudah ada. Padam sebelum membuat yang baru.</string>
+</resources>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="catalog_offer_title">새 카탈로그 사용 가능</string>
+    <string name="catalog_offer_body">카탈로그 버전 %1$d이(가) 준비되었습니다. 새로 지원되는 앱, 방식 및 개선 사항을 이용하려면 업데이트하세요.</string>
+    <string name="catalog_offer_update">지금 업데이트</string>
+    <string name="catalog_offer_later">취소</string>
+    <string name="catalog_postpone_title">업데이트하지 않고 계속하시겠습니까?</string>
+    <string name="catalog_postpone_body">취소하면 업데이트할 때까지 최신 카탈로그 앱, 방식 및 개선 사항을 사용할 수 없습니다. 나중에 서버 VPN에서 업데이트할 수 있습니다.</string>
+    <string name="catalog_postpone_confirm">업데이트하지 않고 계속</string>
+    <string name="catalog_postpone_back">돌아가기</string>
+</resources>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="server_vpn_search_hint">Tafuta programu za VPN</string>
+    <string name="server_vpn_filter_all">Zote</string>
+    <string name="server_vpn_filter_enabled">Imewashwa</string>
+    <string name="server_vpn_filter_favorites">Vipendwa</string>
+    <string name="server_vpn_favorite_add">Ongeza kwenye vipendwa</string>
+    <string name="server_vpn_favorite_remove">Ondoa kwenye vipendwa</string>
+    <string name="server_vpn_manual_refresh">Angalia katalogi sasa</string>
+    <string name="server_vpn_catalog_refreshing">Inaangalia katalogi ya seva…</string>
+    <string name="server_vpn_no_matches">Hakuna programu za VPN zinazolingana na utafutaji au vichujio vyako.</string>
+    <string name="server_vpn_catalog_enabled">Imewashwa kwenye katalogi</string>
+    <string name="server_vpn_catalog_disabled">Haijawashwa kwenye katalogi</string>
+    <string name="server_vpn_new_badge">Mpya</string>
+    <string name="server_vpn_catalog_update_title">Sasisho la katalogi linapatikana</string>
+    <string name="server_vpn_catalog_update_question">Toleo %1$d la katalogi ya Server VPN linapatikana. Pakua sasa?</string>
+    <string name="server_vpn_catalog_download">Pakua</string>
+    <string name="server_vpn_catalog_current">Katalogi yako ya Server VPN iko sawa.</string>
+    <string name="server_vpn_catalog_updated">Katalogi ya Server VPN imesasishwa.</string>
+    <string name="server_vpn_catalog_update_error">Haikuweza kuangalia au kupakua katalogi. Tafadhali jaribu tena.</string>
+    <string name="server_vpn_updated_badge">Imesasishwa</string>
+    <string name="server_vpn_maintenance_badge">Katika matengenezo</string>
+    <string name="server_vpn_maintenance_detail">Mbinu iko katika matengenezo kwa muda</string>
+    <plurals name="server_vpn_app_count">
+        <item quantity="one">%1$d programu inapatikana</item>
+        <item quantity="other">%1$d programu zinapatikana</item>
+    </plurals>
+</resources>

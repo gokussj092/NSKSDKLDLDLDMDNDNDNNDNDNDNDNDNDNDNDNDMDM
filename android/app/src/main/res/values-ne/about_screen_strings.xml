@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="about_screen_entry_detail">संस्करण, सुरक्षा र आधिकारिक लिङ्कहरू</string>
+    <string name="about_screen_description">VPN कन्फिगरेसन विश्लेषण र डिकोडिङ उपकरण</string>
+    <string name="about_screen_version_badge">संस्करण %1$s · बिल्ड %2$d</string>
+    <string name="about_screen_info">एप जानकारी</string>
+    <string name="about_screen_languages">उपलब्ध भाषाहरू</string>
+    <string name="about_screen_installed">स्थापित संस्करण</string>
+    <string name="about_screen_features">मुख्य सुविधाहरू</string>
+    <string name="about_screen_feature_decode">VPN फाइल डिकोडिङ</string>
+    <string name="about_screen_feature_catalog">सर्भर VPN क्याटलग</string>
+    <string name="about_screen_feature_export">JSON र अनलक निर्यात</string>
+    <string name="about_screen_feature_history">नतिजा इतिहास</string>
+    <string name="about_screen_security">सुरक्षा र गोपनीयता</string>
+    <string name="about_screen_cloud_security">Cloud V2 सञ्चारले सेवा कन्फिगरेसन अनुसार HPKE इन्क्रिप्सन र अखण्डता जाँच प्रयोग गर्दछ।</string>
+    <string name="about_screen_local_security">स्थानीय इतिहास यस यन्त्रमा इन्क्रिप्ट गरिएको छ।</string>
+    <string name="about_screen_privacy">गोपनीयता नीति</string>
+    <string name="about_screen_terms">प्रयोगका सर्तहरू</string>
+    <string name="about_screen_links">समुदाय र आधिकारिक लिङ्कहरू</string>
+    <string name="about_screen_website">आधिकारिक वेबसाइट</string>
+    <string name="about_screen_community_detail">आधिकारिक Telegram समुदाय</string>
+    <string name="about_screen_credit">Ghost Developer द्वारा विकसित</string>
+    <string name="about_screen_copyright">SP-DECODE · सर्वाधिकार सुरक्षित</string>
+</resources>

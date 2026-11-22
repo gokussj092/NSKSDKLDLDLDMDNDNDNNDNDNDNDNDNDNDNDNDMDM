@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_global_title">Cloud (Onlayn)</string>
+    <string name="cloud_global_auto">Avtomatik aniqlash</string>
+    <string name="cloud_global_hint">Qoʻllab-quvvatlanadigan Cloud havola, kalit yoki kodni joylashtiring</string>
+    <string name="cloud_global_action">Clouddan import qilish</string>
+    <string name="cloud_global_detail">Cloud havola, kalit yoki kodni joylashtiring — SP-DECODE provayderni avtomatik aniqlaydi. Faqat tasdiqlangan xizmatlar qoʻllab-quvvatlanadi.</string>
+    <string name="cloud_global_invalid">Ushbu havola mavjud Cloud provayderiga mos kelmaydi.</string>
+</resources>

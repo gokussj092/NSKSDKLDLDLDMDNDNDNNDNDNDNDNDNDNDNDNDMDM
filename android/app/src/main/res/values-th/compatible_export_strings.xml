@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="compatible_export_for">ส่งออกสำหรับ %1$s</string>
+    <string name="compatible_export_redecode">นำเข้าไฟล์นี้อีกครั้งเพื่อเปิดการส่งออกไปยัง %1$s</string>
+    <string name="compatible_export_failed">ไม่สามารถบันทึกไฟล์ที่เข้ากันได้</string>
+</resources>

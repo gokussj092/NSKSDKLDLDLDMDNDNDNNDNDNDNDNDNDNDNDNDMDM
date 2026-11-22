@@ -364,6 +364,12 @@
     <string name="app_analysis_error_busy">Çok fazla analiz devam ediyor. Daha sonra tekrar deneyin.</string>
     <string name="app_analysis_error_generic">İşlem tamamlanamadı. Tekrar deneyin.</string>
     <string name="app_analysis_title">APK Analizi</string>
+    <string name="apk_qa_sub_metadata">Paket meta verileri okunuyor</string>
+    <string name="apk_qa_sub_dex">DEX bayt kodu ve yöntemleri analiz ediliyor</string>
+    <string name="apk_qa_sub_native">Yerel kitaplıklar (.so) denetleniyor</string>
+    <string name="apk_qa_sub_jadx">Kod, JADX Lite ile derlemeden çıkarılıyor</string>
+    <string name="apk_qa_sub_recovery">Kısmi DEX çıktısı kurtarılıyor</string>
+    <string name="apk_qa_sub_evidence">Kriptografik referanslar ilişkilendiriliyor</string>
     <string name="release_integrity_error_title">Uygulama doğrulanamadı</string>
     <string name="release_integrity_error_message">Yüklü uygulamanın imzası doğrulanamadı. SP-DECODE uygulamasını resmi kaynağından güncelleyin. Sorun devam ederse destek ekibine RELEASE_SIGNER_REJECTED koduyla başvurun.</string>
 </resources>

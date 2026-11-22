@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="unsupported_file_title">Nepodporovaný typ souboru</string>
+    <string name="unsupported_file_detail">Tato přípona souboru zatím není ve SP-DECODE k dispozici. Kontaktujte vývojáře a navrhněte podporu.</string>
+    <string name="unsupported_version_title">Verze souboru zatím není podporována</string>
+    <string name="unsupported_version_detail">Tento soubor používá verzi nebo metodu šifrování, která zatím není kompatibilní. Můžete požádat vývojáře o podporu.</string>
+    <string name="unsupported_text_title">Nepodporovaný formát textu</string>
+    <string name="unsupported_text_detail">Tento text nebo protokol zatím není podporován. Kontaktujte vývojáře a navrhněte integraci.</string>
+    <string name="catalog_check_action">Aktualizovat</string>
+    <string name="catalog_checking">Aktualizace</string>
+    <string name="catalog_downloading">Aktualizace katalogu…</string>
+    <string name="catalog_progress">%1$d%%</string>
+    <string name="app_update_title">K dispozici je nová verze aplikace</string>
+    <string name="app_update_body">SP-DECODE %1$s je k dispozici. Navštivte oficiální kanál na Telegramu a získejte aktualizaci.</string>
+    <string name="app_update_open">Otevřít Telegram</string>
+    <string name="app_update_close">Zavřít</string>
+    <string name="catalog_available_title">K dispozici je nový katalog</string>
+    <string name="catalog_available_body">K dispozici je ke stažení nová verze katalogu %1$d.</string>
+    <string name="catalog_check_short">Zkontrolovat katalog</string>
+</resources>

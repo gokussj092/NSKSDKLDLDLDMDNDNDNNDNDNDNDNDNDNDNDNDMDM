@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="server_vpn_search_hint">VPN অ্যাপ খুঁজুন</string>
+    <string name="server_vpn_filter_all">সব</string>
+    <string name="server_vpn_filter_enabled">চালু</string>
+    <string name="server_vpn_filter_favorites">প্রিয়</string>
+    <string name="server_vpn_favorite_add">প্রিয়তে যোগ করুন</string>
+    <string name="server_vpn_favorite_remove">প্রিয় থেকে সরান</string>
+    <string name="server_vpn_manual_refresh">এখনই ক্যাটালগ পরীক্ষা করুন</string>
+    <string name="server_vpn_catalog_refreshing">সার্ভার ক্যাটালগ পরীক্ষা করা হচ্ছে…</string>
+    <string name="server_vpn_no_matches">আপনার খোঁজ বা ফিল্টারের সঙ্গে কোনো VPN অ্যাপ মেলেনি।</string>
+    <string name="server_vpn_catalog_enabled">ক্যাটালগে চালু আছে</string>
+    <string name="server_vpn_catalog_disabled">ক্যাটালগে চালু নেই</string>
+    <string name="server_vpn_new_badge">নতুন</string>
+    <string name="server_vpn_catalog_update_title">ক্যাটালগ আপডেট উপলব্ধ</string>
+    <string name="server_vpn_catalog_update_question">সার্ভার VPN ক্যাটালগের সংস্করণ %1$d উপলব্ধ। এখনই ডাউনলোড করবেন?</string>
+    <string name="server_vpn_catalog_download">ডাউনলোড করুন</string>
+    <string name="server_vpn_catalog_current">আপনার সার্ভার VPN ক্যাটালগ হালনাগাদ আছে।</string>
+    <string name="server_vpn_catalog_updated">সার্ভার VPN ক্যাটালগ আপডেট হয়েছে।</string>
+    <string name="server_vpn_catalog_update_error">ক্যাটালগ পরীক্ষা বা ডাউনলোড করা যায়নি। আবার চেষ্টা করুন।</string>
+    <string name="server_vpn_updated_badge">আপডেট হয়েছে</string>
+    <string name="server_vpn_maintenance_badge">রক্ষণাবেক্ষণে আছে</string>
+    <string name="server_vpn_maintenance_detail">পদ্ধতিটি সাময়িকভাবে রক্ষণাবেক্ষণে আছে</string>
+    <plurals name="server_vpn_app_count">
+        <item quantity="one">%1$dটি অ্যাপ উপলব্ধ</item>
+        <item quantity="other">%1$dটি অ্যাপ উপলব্ধ</item>
+    </plurals>
+</resources>

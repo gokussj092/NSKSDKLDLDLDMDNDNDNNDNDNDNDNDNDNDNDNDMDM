@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="about_screen_entry_detail">பதிப்பு, பாதுகாப்பு மற்றும் அதிகாரப்பூர்வ இணைப்புகள்</string>
+    <string name="about_screen_description">VPN கட்டமைப்பு பகுப்பாய்வு மற்றும் மறைகுறியீடு நீக்கும் கருவி</string>
+    <string name="about_screen_version_badge">பதிப்பு %1$s · பில்டு %2$d</string>
+    <string name="about_screen_info">செயலி தகவல்</string>
+    <string name="about_screen_languages">கிடைக்கும் மொழிகள்</string>
+    <string name="about_screen_installed">நிறுவப்பட்ட பதிப்பு</string>
+    <string name="about_screen_features">முக்கிய அம்சங்கள்</string>
+    <string name="about_screen_feature_decode">VPN கோப்பு மறைகுறியீடு நீக்கம்</string>
+    <string name="about_screen_feature_catalog">சர்வர் VPN பட்டியல்</string>
+    <string name="about_screen_feature_export">JSON மற்றும் திறந்த ஏற்றுமதி</string>
+    <string name="about_screen_feature_history">முடிவுகளின் வரலாறு</string>
+    <string name="about_screen_security">பாதுகாப்பு மற்றும் தனியுரிமை</string>
+    <string name="about_screen_cloud_security">கிளவுட் V2 தகவல்தொடர்புகள், சேவை கட்டமைப்பின்படி HPKE குறியாக்கம் மற்றும் ஒருமைப்பாட்டு சரிபார்ப்புகளைப் பயன்படுத்துகின்றன.</string>
+    <string name="about_screen_local_security">உள்ளூர் வரலாறு இந்தச் சாதனத்தில் குறியாக்கம் செய்யப்பட்டுள்ளது.</string>
+    <string name="about_screen_privacy">தனியுரிமைக் கொள்கை</string>
+    <string name="about_screen_terms">பயன்பாட்டு விதிமுறைகள்</string>
+    <string name="about_screen_links">சமூகம் மற்றும் அதிகாரப்பூர்வ இணைப்புகள்</string>
+    <string name="about_screen_website">அதிகாரப்பூர்வ இணையதளம்</string>
+    <string name="about_screen_community_detail">அதிகாரப்பூர்வ Telegram சமூகம்</string>
+    <string name="about_screen_credit">Ghost Developer உருவாக்கியது</string>
+    <string name="about_screen_copyright">SP-DECODE · அனைத்து உரிமைகளும் பாதுகாக்கப்பட்டவை</string>
+</resources>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="account_sign_in">Mag-sign in</string>
+    <string name="account_web_description">Pamahalaan ang iyong account at mga pagbili sa opisyal na website. Mananatiling available nang walang account ang mga libreng feature.</string>
+    <string name="account_continue_web">Magpatuloy sa web</string>
+    <string name="account_my_account">Aking account</string>
+    <string name="account_store">Store</string>
+    <string name="account_open_menu">Buksan ang menu</string>
+    <string name="ads_privacy_options">Mga opsyon sa privacy ng advertising</string>
+</resources>

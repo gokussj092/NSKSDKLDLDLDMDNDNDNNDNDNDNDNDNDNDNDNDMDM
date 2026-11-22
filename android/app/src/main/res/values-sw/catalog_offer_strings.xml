@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="catalog_offer_title">Katalogi mpya inapatikana</string>
+    <string name="catalog_offer_body">Toleo la katalogi %1$d liko tayari. Sasisha ili kupata programu, mbinu na maboresho mapya yanayotumika.</string>
+    <string name="catalog_offer_update">Sasisha sasa</string>
+    <string name="catalog_offer_later">Ghairi</string>
+    <string name="catalog_postpone_title">Endelea bila kusasisha?</string>
+    <string name="catalog_postpone_body">Ukighairi, programu, mbinu na maboresho ya katalogi ya hivi punde hayatapatikana hadi usasishe. Unaweza kusasisha baadaye katika Server VPN.</string>
+    <string name="catalog_postpone_confirm">Endelea bila kusasisha</string>
+    <string name="catalog_postpone_back">Rudi nyuma</string>
+</resources>

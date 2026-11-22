@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_decode_progress_title">கட்டமைப்பு மறைகுறியீடு நீக்கப்படுகிறது</string>
+    <string name="cloud_decode_progress_message">இதற்கு சில நிமிடங்கள் ஆகலாம். காத்திருக்கவும்.</string>
+    <string name="cloud_large_result_title">பெரிய கட்டமைப்பு மறைகுறியீடு நீக்கப்பட்டது</string>
+    <string name="cloud_large_result_body">கட்டமைப்பு குறியாக்கம் செய்யப்பட்ட வரலாற்றில் சேமிக்கப்பட்டது. மிகப் பெரிய முடிவுகளை முன்னோட்டமிடுவது செயலியை மெதுவாக்கலாம் அல்லது மூடலாம். வரலாற்றில் இருந்து மூன்று புள்ளி மெனுவைப் பயன்படுத்தி, பின்னர் ஏற்றுமதி என்பதைத் தேர்ந்து, முழுமையான JSON-ஐ ஏற்றுமதி செய்ய பரிந்துரைக்கிறோம். Android கோப்புறை மற்றும் கோப்புப் பெயரைத் தேர்வுசெய்ய உங்களை அனுமதிக்கும்.</string>
+    <string name="cloud_large_result_acknowledge">புரிந்தது</string>
+    <string name="cloud_history_actions">மேலும் செயல்கள்</string>
+</resources>

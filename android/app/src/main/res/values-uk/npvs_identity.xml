@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="npv_title">Ключі одержувача NPV</string>
+    <string name="npv_detail">Використовуйте свою ідентичність для файлів, створених для вас. Ключі зашифровані на цьому пристрої. Увімкніть цю опцію, щоб використовувати їх із SP Cloud.</string>
+    <string name="npv_enabled">Використовувати мої NPV-ідентичності</string>
+    <string name="npv_generate">Згенерувати через SP Cloud</string>
+    <string name="npv_import">Імпортувати захоплений JSON</string>
+    <string name="npv_generated">Згенеровано SP Cloud</string>
+    <string name="npv_captured">Захоплено з офіційного застосунку</string>
+    <string name="npv_file_only">Лише цей файл</string>
+    <string name="npv_view">Переглянути та скопіювати</string>
+    <string name="npv_delete">Видалити</string>
+    <string name="npv_invalid">Не вдається прочитати ключі NPV. Перевірте JSON і відповідні ключі.</string>
+    <string name="npv_saved">Ідентичність збережено. Увімкніть опцію, щоб використовувати її.</string>
+    <string name="npv_generation_notice">Діліться лише відкритим ключем із особою, яка створює ваш VPN-сервер або конфігурацію. Ніколи не діліться своїм приватним ключем.</string>
+    <string name="npv_choose_title">Вибрати NPV-ідентичність</string>
+    <string name="npv_send_notice">Виберіть ідентичність, щоб відкрити цей файл через SP Cloud.</string>
+    <string name="npv_use">Використати вибрану ідентичність</string>
+    <string name="npv_copy_public">Копіювати відкритий ключ</string>
+    <string name="npv_copy_private">Копіювати приватний ключ</string>
+    <string name="npv_reveal">Показати або приховати приватний ключ</string>
+    <string name="npv_hardware_notice">Апаратний приватний ключ не експортується. Це захоплення працює лише для відповідного файлу.</string>
+    <string name="npv_delete_title">Видалити цю ідентичність?</string>
+    <string name="npv_delete_warning">Цей ключ зберігається лише на цьому пристрої. Після видалення SP Cloud не зможе його відновити. Ви можете втратити доступ до файлів, зашифрованих для цієї ідентичності.</string>
+    <string name="npv_public_label">Відкритий ключ · P-256</string>
+    <string name="npv_private_label">Приватний ключ · PKCS#8</string>
+    <string name="npv_cancel">Скасувати</string>
+    <string name="npv_already_generated">Ідентичність SP Cloud уже існує. Видаліть її, перш ніж генерувати іншу.</string>
+</resources>

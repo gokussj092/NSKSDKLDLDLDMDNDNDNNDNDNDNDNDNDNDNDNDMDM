@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_legal_title">Podmínky a soukromí</string>
+    <string name="cloud_legal_explanation">SP-DECODE Cloud odesílá na svůj server soubory nebo texty, které si zvolíte k dekódování. Také jednou denně počítá přibližný počet aktivních instalací, aby mohl plánovat kapacitu serveru, pomocí náhodného kódu instalace. Do těchto počtů nejsou zahrnuty žádné obsahy konfigurací.</string>
+    <string name="cloud_legal_terms">Přečíst podmínky a ujednání</string>
+    <string name="cloud_legal_privacy">Přečíst zásady ochrany osobních údajů</string>
+    <string name="cloud_legal_accept_check">Přečetl(a) jsem podmínky a zásady ochrany osobních údajů a souhlasím s nimi.</string>
+    <string name="cloud_legal_accept">Přijmout</string>
+    <string name="cloud_legal_decline">Odmítnout</string>
+    <string name="server_vpn_loading">Načítání katalogu serverů VPN…</string>
+    <string name="server_vpn_unavailable">Katalog serverů VPN není k dispozici. Zkontrolujte připojení a opakujte pokus.</string>
+    <string name="server_vpn_retry">Opakovat katalog</string>
+    <string name="cloud_legal_withdraw">Odvolat souhlas s Cloudem</string>
+    <string name="cloud_legal_withdraw_detail">Odvolání souhlasu zablokuje nové požadavky na server. Vaše místně šifrovaná historie zůstane na tomto zařízení. Později můžete souhlasit znovu.</string>
+</resources>

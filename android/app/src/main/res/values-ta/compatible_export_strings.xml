@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="compatible_export_for">%1$s-க்கு ஏற்றுமதி செய்</string>
+    <string name="compatible_export_redecode">இந்தக் கோப்பை மீண்டும் இறக்குமதி செய்து %1$s-க்கு ஏற்றுமதியை இயக்கவும்.</string>
+    <string name="compatible_export_failed">இணக்கமான கோப்பைச் சேமிக்க முடியவில்லை.</string>
+</resources>

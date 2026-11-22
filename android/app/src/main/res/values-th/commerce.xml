@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="account_sign_in">เข้าสู่ระบบ</string>
+    <string name="account_web_description">จัดการบัญชีและการซื้อของคุณบนเว็บไซต์ทางการ ฟีเจอร์ฟรีจะยังคงใช้งานได้โดยไม่ต้องมีบัญชี</string>
+    <string name="account_continue_web">ดำเนินการต่อบนเว็บ</string>
+    <string name="account_my_account">บัญชีของฉัน</string>
+    <string name="account_store">ร้านค้า</string>
+    <string name="account_open_menu">เปิดเมนู</string>
+    <string name="ads_privacy_options">ตัวเลือกความเป็นส่วนตัวด้านโฆษณา</string>
+</resources>

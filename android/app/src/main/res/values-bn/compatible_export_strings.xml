@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="compatible_export_for">%1$s-এর জন্য এক্সপোর্ট করুন</string>
+    <string name="compatible_export_redecode">%1$s-এ এক্সপোর্ট সক্ষম করতে এই ফাইলটি আবার ইমপোর্ট করুন।</string>
+    <string name="compatible_export_failed">সামঞ্জস্যপূর্ণ ফাইলটি সংরক্ষণ করা যায়নি।</string>
+</resources>

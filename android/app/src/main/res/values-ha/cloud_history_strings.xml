@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_decode_progress_title">Ana warware tsari</string>
+    <string name="cloud_decode_progress_message">Wannan na iya ɗaukar \'yan mintuna. Don Allah ka jira.</string>
+    <string name="cloud_large_result_title">An warware babban tsari</string>
+    <string name="cloud_large_result_body">An ajiye tsarin a cikin tarihin da aka ɓoye. Duba sakamako masu girma sosai na iya jinkirta app ɗin ko rufe ta. Muna ba da shawarar fitar da cikakken JSON daga Tarihi ta amfani da menu mai ɗigo uku, sannan Fitar. Android za ta bar ka ka zaɓi babban fayil da sunan fayil.</string>
+    <string name="cloud_large_result_acknowledge">Na fahimta</string>
+    <string name="cloud_history_actions">Ƙarin ayyuka</string>
+</resources>

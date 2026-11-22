@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="harness_preparing">Προετοιμασία εφαρμογής…</string>
+    <string name="harness_review">Σε έλεγχο</string>
+    <string name="harness_metadata">Έλεγχος μεταδεδομένων εφαρμογής…</string>
+    <string name="harness_code">Έλεγχος κώδικα εφαρμογής…</string>
+    <string name="harness_details">Λεπτομέρειες ανάλυσης</string>
+    <string name="harness_filename">Αρχείο</string>
+    <string name="harness_size">Μέγεθος</string>
+    <string name="harness_unknown_size">Μέγεθος σε εκκρεμότητα</string>
+    <string name="harness_updated">Ενημερώθηκε: %1$s</string>
+    <string name="harness_local_copy">Τα αποτελέσματα αποθηκεύτηκαν σε αυτήν τη συσκευή</string>
+    <string name="harness_normal">Κανονική μεταφορά</string>
+    <string name="harness_chunks">Μεταφορά σε τμήματα</string>
+    <string name="harness_support_ai">AI υποστήριξης</string>
+    <string name="harness_history_hint">Ανοίξτε μια εφαρμογή για να δείτε την ανάλυσή της και τα αποθηκευμένα αποτελέσματα.</string>
+    <string name="harness_queued_hint">Η μεταφόρτωση ολοκληρώθηκε. Αναμονή για θέση ανάλυσης.</string>
+    <string name="harness_review_hint">Η ανάλυση περιμένει έλεγχο.</string>
+    <string name="harness_transfer_title">Λειτουργία μεταφοράς</string>
+    <string name="harness_transfer_scope">Ισχύει για την επόμενη λήψη καταλόγου ή μεταφόρτωση APK.</string>
+    <string name="harness_stable">Σταθερή σύνδεση · συνεχής μεταφορά</string>
+    <string name="harness_unstable">Αργή ή ασταθής σύνδεση · μεταφορά σε τμήματα</string>
+</resources>

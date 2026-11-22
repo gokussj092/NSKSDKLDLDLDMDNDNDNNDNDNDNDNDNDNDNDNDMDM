@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="server_vpn_search_hint">Hledat aplikace VPN</string>
+    <string name="server_vpn_filter_all">Vše</string>
+    <string name="server_vpn_filter_enabled">Povoleno</string>
+    <string name="server_vpn_filter_favorites">Oblíbené</string>
+    <string name="server_vpn_favorite_add">Přidat do oblíbených</string>
+    <string name="server_vpn_favorite_remove">Odebrat z oblíbených</string>
+    <string name="server_vpn_manual_refresh">Zkontrolovat katalog nyní</string>
+    <string name="server_vpn_catalog_refreshing">Kontrola katalogu serveru…</string>
+    <string name="server_vpn_no_matches">Žádné aplikace VPN neodpovídají vašemu hledání ani filtrům.</string>
+    <string name="server_vpn_catalog_enabled">Povoleno v katalogu</string>
+    <string name="server_vpn_catalog_disabled">Nepovoleno v katalogu</string>
+    <string name="server_vpn_new_badge">Nové</string>
+    <string name="server_vpn_catalog_update_title">K dispozici je aktualizace katalogu</string>
+    <string name="server_vpn_catalog_update_question">Verze %1$d katalogu Server VPN je k dispozici. Stáhnout nyní?</string>
+    <string name="server_vpn_catalog_download">Stáhnout</string>
+    <string name="server_vpn_catalog_current">Váš katalog Server VPN je aktuální.</string>
+    <string name="server_vpn_catalog_updated">Katalog Server VPN aktualizován.</string>
+    <string name="server_vpn_catalog_update_error">Katalog se nepodařilo zkontrolovat ani stáhnout. Zkuste to prosím znovu.</string>
+    <string name="server_vpn_updated_badge">Aktualizováno</string>
+    <string name="server_vpn_maintenance_badge">V údržbě</string>
+    <string name="server_vpn_maintenance_detail">Metoda dočasně v údržbě</string>
+    <plurals name="server_vpn_app_count">
+        <item quantity="one">%1$d aplikace k dispozici</item>
+        <item quantity="other">Počet dostupných aplikací: %1$d</item>
+    </plurals>
+</resources>

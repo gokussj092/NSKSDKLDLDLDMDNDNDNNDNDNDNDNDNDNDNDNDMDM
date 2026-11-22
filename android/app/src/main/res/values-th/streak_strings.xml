@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="streak_verified_date">วันที่ยืนยันโดยเซิร์ฟเวอร์</string>
+    <string name="streak_date_pending">กำลังรอวันที่ที่ยืนยันแล้ว</string>
+    <string name="streak_today_done">เสร็จสมบูรณ์วันนี้</string>
+    <string name="streak_today_pending">ถอดรหัสไฟล์หรือข้อความวันนี้เพื่อรักษาสตรีคของคุณ</string>
+    <string name="streak_weekly_reward">ทุก 7 วันติดต่อกัน</string>
+    <string name="streak_reward">+1 เครดิตวิเคราะห์ APK</string>
+    <string name="streak_reward_delivered">มอบรางวัลแล้ว</string>
+    <string name="streak_verified_note">วันและรางวัลได้รับการยืนยันโดยเซิร์ฟเวอร์</string>
+    <plurals name="streak_days_left">
+        <item quantity="one">เหลืออีก %1$d วัน</item>
+        <item quantity="other">เหลืออีก %1$d วัน</item>
+    </plurals>
+    <string name="streak_reminder_channel">การเตือนสตรีค</string>
+    <string name="streak_reminder_title">สตรีคของคุณกำลังรออยู่</string>
+    <string name="streak_reminder_body">ถอดรหัสไฟล์หรือข้อความวันนี้เพื่อรักษาสตรีคของคุณต่อไป</string>
+</resources>

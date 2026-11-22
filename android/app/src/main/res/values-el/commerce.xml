@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="account_sign_in">Σύνδεση</string>
+    <string name="account_web_description">Διαχειριστείτε τον λογαριασμό και τις αγορές σας στην επίσημη ιστοσελίδα. Οι δωρεάν λειτουργίες παραμένουν διαθέσιμες χωρίς λογαριασμό.</string>
+    <string name="account_continue_web">Συνέχεια στον ιστό</string>
+    <string name="account_my_account">Ο λογαριασμός μου</string>
+    <string name="account_store">Κατάστημα</string>
+    <string name="account_open_menu">Άνοιγμα μενού</string>
+    <string name="ads_privacy_options">Επιλογές απορρήτου διαφημίσεων</string>
+</resources>

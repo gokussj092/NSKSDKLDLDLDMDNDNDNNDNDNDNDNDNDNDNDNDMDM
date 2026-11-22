@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="account_sign_in">সাইন ইন করুন</string>
+    <string name="account_web_description">অফিসিয়াল ওয়েবসাইটে আপনার অ্যাকাউন্ট ও কেনাকাটা পরিচালনা করুন। অ্যাকাউন্ট ছাড়াও বিনামূল্যের বৈশিষ্ট্যগুলো উপলব্ধ থাকে।</string>
+    <string name="account_continue_web">ওয়েবে এগিয়ে যান</string>
+    <string name="account_my_account">আমার অ্যাকাউন্ট</string>
+    <string name="account_store">স্টোর</string>
+    <string name="account_open_menu">মেনু খুলুন</string>
+    <string name="ads_privacy_options">বিজ্ঞাপনের গোপনীয়তা বিকল্প</string>
+</resources>

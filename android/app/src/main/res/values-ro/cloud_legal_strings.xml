@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_legal_title">Termeni și confidențialitate</string>
+    <string name="cloud_legal_explanation">SP-DECODE Cloud trimite către serverul său fișierele sau textele pe care alegi să le decodezi. De asemenea, numără o dată pe zi numărul aproximativ de instalări active pentru a planifica capacitatea serverului, folosind un cod aleatoriu de instalare. Conținutul configurațiilor nu este inclus în aceste numărători.</string>
+    <string name="cloud_legal_terms">Citește termenii și condițiile</string>
+    <string name="cloud_legal_privacy">Citește politica de confidențialitate</string>
+    <string name="cloud_legal_accept_check">Am citit și accept termenii și politica de confidențialitate.</string>
+    <string name="cloud_legal_accept">Accept</string>
+    <string name="cloud_legal_decline">Refuz</string>
+    <string name="server_vpn_loading">Se încarcă catalogul serverelor VPN…</string>
+    <string name="server_vpn_unavailable">Catalogul serverelor VPN este indisponibil. Verifică conexiunea și reîncearcă.</string>
+    <string name="server_vpn_retry">Reîncearcă catalogul</string>
+    <string name="cloud_legal_withdraw">Retrage consimțământul Cloud</string>
+    <string name="cloud_legal_withdraw_detail">Retragerea consimțământului blochează solicitările noi către server. Istoricul tău criptat local va rămâne pe acest dispozitiv. Poți accepta din nou mai târziu.</string>
+</resources>

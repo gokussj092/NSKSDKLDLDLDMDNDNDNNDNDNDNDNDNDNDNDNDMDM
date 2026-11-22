@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="npv_title">NPV кључеви примаоца</string>
+    <string name="npv_detail">Користите свој идентитет за датотеке направљене за вас. Кључеви су шифровани на овом уређају. Омогућите ову опцију да их користите са SP Cloud.</string>
+    <string name="npv_enabled">Користи моје NPV идентитете</string>
+    <string name="npv_generate">Генериши помоћу SP Cloud</string>
+    <string name="npv_import">Увези снимљени JSON</string>
+    <string name="npv_generated">Генерисао SP Cloud</string>
+    <string name="npv_captured">Снимљено из званичне апликације</string>
+    <string name="npv_file_only">Само ова датотека</string>
+    <string name="npv_view">Прикажи и копирај</string>
+    <string name="npv_delete">Избриши</string>
+    <string name="npv_invalid">NPV кључеви не могу да се прочитају. Проверите JSON и одговарајуће кључеве.</string>
+    <string name="npv_saved">Идентитет сачуван. Омогућите опцију да га користите.</string>
+    <string name="npv_generation_notice">Делите само јавни кључ са особом која прави ваш VPN сервер или конфигурацију. Никада не делите приватни кључ.</string>
+    <string name="npv_choose_title">Изаберите NPV идентитет</string>
+    <string name="npv_send_notice">Изаберите идентитет којим ћете отворити ову датотеку помоћу SP Cloud.</string>
+    <string name="npv_use">Користи изабрани идентитет</string>
+    <string name="npv_copy_public">Копирај јавни кључ</string>
+    <string name="npv_copy_private">Копирај приватни кључ</string>
+    <string name="npv_reveal">Прикажи или сакриј приватни кључ</string>
+    <string name="npv_hardware_notice">Хардверски приватни кључ не може да се извезе. Овај снимак ради само за одговарајућу датотеку.</string>
+    <string name="npv_delete_title">Избрисати овај идентитет?</string>
+    <string name="npv_delete_warning">Овај кључ је сачуван само на овом уређају. Када се избрише, SP Cloud не може да га поврати. Можете изгубити приступ датотекама шифрованим за овај идентитет.</string>
+    <string name="npv_public_label">Јавни кључ · P-256</string>
+    <string name="npv_private_label">Приватни кључ · PKCS#8</string>
+    <string name="npv_cancel">Откажи</string>
+    <string name="npv_already_generated">SP Cloud идентитет већ постоји. Избришите га пре генерисања новог.</string>
+</resources>

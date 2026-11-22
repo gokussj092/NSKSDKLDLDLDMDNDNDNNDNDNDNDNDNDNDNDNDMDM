@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="harness_preparing">Inihahanda ang application…</string>
+    <string name="harness_review">Nasa review</string>
+    <string name="harness_metadata">Sinusuri ang metadata ng application…</string>
+    <string name="harness_code">Sinusuri ang code ng application…</string>
+    <string name="harness_details">Mga detalye ng pagsusuri</string>
+    <string name="harness_filename">File</string>
+    <string name="harness_size">Laki</string>
+    <string name="harness_unknown_size">Naghihintay ang laki</string>
+    <string name="harness_updated">Na-update: %1$s</string>
+    <string name="harness_local_copy">Na-save ang mga resulta sa device na ito</string>
+    <string name="harness_normal">Normal na paglilipat</string>
+    <string name="harness_chunks">Paglilipat nang pira-piraso</string>
+    <string name="harness_support_ai">Support AI</string>
+    <string name="harness_history_hint">Magbukas ng application para makita ang pagsusuri nito at ang mga na-save na resulta.</string>
+    <string name="harness_queued_hint">Tapos na ang pag-upload. Naghihintay ng slot para sa pagsusuri.</string>
+    <string name="harness_review_hint">Naghihintay ng review ang pagsusuri.</string>
+    <string name="harness_transfer_title">Mode ng paglilipat</string>
+    <string name="harness_transfer_scope">Nalalapat ito sa susunod na pag-download ng catalog o pag-upload ng APK.</string>
+    <string name="harness_stable">Stable na koneksyon · tuloy-tuloy na paglilipat</string>
+    <string name="harness_unstable">Mabagal o hindi stable na koneksyon · paglilipat nang pira-piraso</string>
+</resources>

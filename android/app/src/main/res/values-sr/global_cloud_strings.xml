@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_global_title">Cloud (онлајн)</string>
+    <string name="cloud_global_auto">Аутоматско препознавање</string>
+    <string name="cloud_global_hint">Налепите подржану Cloud везу, кључ или код</string>
+    <string name="cloud_global_action">Увези из Cloud-а</string>
+    <string name="cloud_global_detail">Налепите Cloud везу, кључ или код и SP-DECODE аутоматски препознаје провајдера. Подржане су само одобрене услуге.</string>
+    <string name="cloud_global_invalid">Ова референца не одговара доступном Cloud провајдеру.</string>
+</resources>

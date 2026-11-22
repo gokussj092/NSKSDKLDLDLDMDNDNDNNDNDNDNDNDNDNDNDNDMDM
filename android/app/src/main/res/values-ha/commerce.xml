@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="account_sign_in">Shiga</string>
+    <string name="account_web_description">Ka sarrafa asusunka da sayayyarka a shafin yanar gizo na hukuma. Abubuwan kyauta suna nan ba tare da asusu ba.</string>
+    <string name="account_continue_web">Ci gaba a yanar gizo</string>
+    <string name="account_my_account">Asusuna</string>
+    <string name="account_store">Shago</string>
+    <string name="account_open_menu">Buɗe menu</string>
+    <string name="ads_privacy_options">Zaɓuɓɓukan sirri na talla</string>
+</resources>

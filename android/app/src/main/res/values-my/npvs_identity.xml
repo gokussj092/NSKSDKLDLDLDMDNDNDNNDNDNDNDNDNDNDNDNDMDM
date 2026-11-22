@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="npv_title">NPV လက်ခံသူ သော့များ</string>
+    <string name="npv_detail">သင့်အတွက် ဖန်တီးထားသော ဖိုင်များအတွက် သင့်အမှတ်အသားကို အသုံးပြုပါ။ သော့များကို ဤစက်တွင် ကုဒ်ဝှက်ထားသည်။ SP Cloud နှင့် အသုံးပြုရန် ဤရွေးချယ်စရာကို ဖွင့်ပါ။</string>
+    <string name="npv_enabled">ကျွန်ုပ်၏ NPV အမှတ်အသားများကို အသုံးပြုရန်</string>
+    <string name="npv_generate">SP Cloud ဖြင့် ဖန်တီးရန်</string>
+    <string name="npv_import">ဖမ်းယူထားသော JSON ကို တင်သွင်းရန်</string>
+    <string name="npv_generated">SP Cloud မှ ဖန်တီးထားသည်</string>
+    <string name="npv_captured">တရားဝင်အက်ပ်မှ ဖမ်းယူထားသည်</string>
+    <string name="npv_file_only">ဤဖိုင်သာ</string>
+    <string name="npv_view">ကြည့်ရှုပြီး ကူးယူရန်</string>
+    <string name="npv_delete">ဖျက်ရန်</string>
+    <string name="npv_invalid">NPV သော့များကို ဖတ်၍ မရပါ။ JSON နှင့် ကိုက်ညီသော သော့များကို စစ်ဆေးပါ။</string>
+    <string name="npv_saved">အမှတ်အသားကို သိမ်းဆည်းပြီးပါပြီ။ အသုံးပြုရန် ရွေးချယ်စရာကို ဖွင့်ပါ။</string>
+    <string name="npv_generation_notice">သင့် VPN ဆာဗာ သို့မဟုတ် ဖွဲ့စည်းမှုကို ဖန်တီးပေးသူနှင့်သာ အများသုံးသော့ကို မျှဝေပါ။ သီးသန့်သော့ကို ဘယ်တော့မှ မမျှဝေပါနှင့်။</string>
+    <string name="npv_choose_title">NPV အမှတ်အသားကို ရွေးပါ</string>
+    <string name="npv_send_notice">ဤဖိုင်ကို SP Cloud ဖြင့် ဖွင့်ရန် အမှတ်အသားကို ရွေးပါ။</string>
+    <string name="npv_use">ရွေးထားသော အမှတ်အသားကို အသုံးပြုရန်</string>
+    <string name="npv_copy_public">အများသုံးသော့ ကူးယူရန်</string>
+    <string name="npv_copy_private">သီးသန့်သော့ ကူးယူရန်</string>
+    <string name="npv_reveal">သီးသန့်သော့ကို ပြရန် သို့မဟုတ် ဖျောက်ရန်</string>
+    <string name="npv_hardware_notice">ဟာ့ဒ်ဝဲ သီးသန့်သော့ကို ထုတ်ယူ၍ မရပါ။ ဤဖမ်းယူမှုသည် ကိုက်ညီသော ဖိုင်အတွက်သာ အလုပ်လုပ်ပါသည်။</string>
+    <string name="npv_delete_title">ဤအမှတ်အသားကို ဖျက်မလား။</string>
+    <string name="npv_delete_warning">ဤသော့ကို ဤစက်တွင်သာ သိမ်းဆည်းထားပါသည်။ ဖျက်လိုက်ပြီးနောက် SP Cloud က ပြန်လည်ရယူ၍ မရပါ။ ဤအမှတ်အသားအတွက် ကုဒ်ဝှက်ထားသော ဖိုင်များကို သုံးစွဲနိုင်မှု ဆုံးရှုံးနိုင်ပါသည်။</string>
+    <string name="npv_public_label">အများသုံးသော့ · P-256</string>
+    <string name="npv_private_label">သီးသန့်သော့ · PKCS#8</string>
+    <string name="npv_cancel">ပယ်ဖျက်ရန်</string>
+    <string name="npv_already_generated">SP Cloud အမှတ်အသား တစ်ခု ရှိနေပြီးသားဖြစ်သည်။ အခြားတစ်ခု မဖန်တီးမီ ၎င်းကို ဖျက်ပါ။</string>
+</resources>

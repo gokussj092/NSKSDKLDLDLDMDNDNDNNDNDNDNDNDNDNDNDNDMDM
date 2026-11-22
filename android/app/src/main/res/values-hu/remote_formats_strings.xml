@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="file_extension_unsupported_contact">Ez a fájlkiterjesztés nem támogatott. Lépjen kapcsolatba a fejlesztővel a támogatás kérése érdekében.</string>
+    <string name="text_format_unsupported_contact">Ez a szövegformátum vagy protokoll nem támogatott. Lépjen kapcsolatba a fejlesztővel a támogatás kérése érdekében.</string>
+    <string name="formats_remote_catalog_note">A támogatott kiterjesztések biztonságosan szinkronizálódnak az SP-DECODE Cloud szolgáltatásból. Új Cloud-formátumok az alkalmazás frissítése nélkül is megjelenhetnek.</string>
+    <string name="formats_cloud_ready_short">Cloud</string>
+</resources>

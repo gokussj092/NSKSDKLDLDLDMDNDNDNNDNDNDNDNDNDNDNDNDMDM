@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="harness_preparing">Menyediakan aplikasi…</string>
+    <string name="harness_review">Dalam peninjauan</string>
+    <string name="harness_metadata">Menyemak metadata aplikasi…</string>
+    <string name="harness_code">Menyemak kod aplikasi…</string>
+    <string name="harness_details">Butiran analisis</string>
+    <string name="harness_filename">Fail</string>
+    <string name="harness_size">Saiz</string>
+    <string name="harness_unknown_size">Saiz belum tersedia</string>
+    <string name="harness_updated">Dikemas kini: %1$s</string>
+    <string name="harness_local_copy">Hasil disimpan di peranti ini</string>
+    <string name="harness_normal">Pindahan normal</string>
+    <string name="harness_chunks">Pindahan per bahagian</string>
+    <string name="harness_support_ai">Sokongan AI</string>
+    <string name="harness_history_hint">Buka aplikasi untuk melihat analisis dan hasil tersimpan.</string>
+    <string name="harness_queued_hint">Muat naik selesai. Menunggu giliran analisis.</string>
+    <string name="harness_review_hint">Analisis menunggu peninjauan.</string>
+    <string name="harness_transfer_title">Mod pindahan</string>
+    <string name="harness_transfer_scope">Terpakai untuk muat turun katalog atau muat naik APK seterusnya.</string>
+    <string name="harness_stable">Sambungan stabil · pindahan berterusan</string>
+    <string name="harness_unstable">Sambungan lambat atau tidak stabil · pindahan per bahagian</string>
+</resources>

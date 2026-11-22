@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_http_injector_not_configured">HTTP Injector கிளவுட் சர்வரில் இன்னும் கட்டமைக்கப்படவில்லை. சேவை இயக்கப்பட்டதும் மீண்டும் முயலவும்.</string>
+</resources>

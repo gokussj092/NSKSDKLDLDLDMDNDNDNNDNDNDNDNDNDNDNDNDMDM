@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="unsupported_file_title">فائل کی قسم سپورٹ نہیں ہوتی</string>
+    <string name="unsupported_file_detail">یہ فائل ایکسٹینشن SP-DECODE میں ابھی دستیاب نہیں ہے۔ سپورٹ تجویز کرنے کے لیے ڈویلپر سے رابطہ کریں۔</string>
+    <string name="unsupported_version_title">فائل ورژن ابھی سپورٹ نہیں ہوتا</string>
+    <string name="unsupported_version_detail">یہ فائل ایسا ورژن یا انکرپشن طریقہ استعمال کرتی ہے جو ابھی مطابق نہیں ہے۔ آپ ڈویلپر سے سپورٹ کی درخواست کر سکتے ہیں۔</string>
+    <string name="unsupported_text_title">متن کا فارمیٹ سپورٹ نہیں ہوتا</string>
+    <string name="unsupported_text_detail">یہ متن یا پروٹوکول ابھی سپورٹ نہیں ہوتا۔ انٹیگریشن تجویز کرنے کے لیے ڈویلپر سے رابطہ کریں۔</string>
+    <string name="catalog_check_action">اپ ڈیٹ کریں</string>
+    <string name="catalog_checking">اپ ڈیٹ ہو رہا ہے</string>
+    <string name="catalog_downloading">کیٹلاگ اپ ڈیٹ ہو رہا ہے…</string>
+    <string name="catalog_progress">%1$d%%</string>
+    <string name="app_update_title">ایپ کا نیا ورژن دستیاب ہے</string>
+    <string name="app_update_body">SP-DECODE %1$s دستیاب ہے۔ اپ ڈیٹ حاصل کرنے کے لیے سرکاری Telegram چینل دیکھیں۔</string>
+    <string name="app_update_open">Telegram کھولیں</string>
+    <string name="app_update_close">بند کریں</string>
+    <string name="catalog_available_title">نیا کیٹلاگ دستیاب ہے</string>
+    <string name="catalog_available_body">کیٹلاگ کا نیا ورژن %1$d ڈاؤن لوڈ کے لیے دستیاب ہے۔</string>
+    <string name="catalog_check_short">کیٹلاگ چیک کریں</string>
+</resources>

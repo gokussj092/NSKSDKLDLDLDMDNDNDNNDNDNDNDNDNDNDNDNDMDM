@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="about_screen_entry_detail">Bersyon, seguridad at mga opisyal na link</string>
+    <string name="about_screen_description">Tool sa pagsusuri at pag-decode ng VPN configuration</string>
+    <string name="about_screen_version_badge">Bersyon %1$s · Build %2$d</string>
+    <string name="about_screen_info">Impormasyon ng app</string>
+    <string name="about_screen_languages">Mga wikang available</string>
+    <string name="about_screen_installed">Naka-install na bersyon</string>
+    <string name="about_screen_features">Mga pangunahing feature</string>
+    <string name="about_screen_feature_decode">Pag-decode ng VPN file</string>
+    <string name="about_screen_feature_catalog">Catalog ng Server VPN</string>
+    <string name="about_screen_feature_export">JSON at naka-unlock na export</string>
+    <string name="about_screen_feature_history">Kasaysayan ng mga resulta</string>
+    <string name="about_screen_security">Seguridad at privacy</string>
+    <string name="about_screen_cloud_security">Ang mga komunikasyon ng Cloud V2 ay gumagamit ng HPKE encryption at mga integrity check ayon sa configuration ng serbisyo.</string>
+    <string name="about_screen_local_security">Ang lokal na kasaysayan ay naka-encrypt sa device na ito.</string>
+    <string name="about_screen_privacy">Patakaran sa privacy</string>
+    <string name="about_screen_terms">Mga tuntunin ng paggamit</string>
+    <string name="about_screen_links">Mga link ng komunidad at opisyal</string>
+    <string name="about_screen_website">Opisyal na website</string>
+    <string name="about_screen_community_detail">Opisyal na komunidad sa Telegram</string>
+    <string name="about_screen_credit">Ginawa ni Ghost Developer</string>
+    <string name="about_screen_copyright">SP-DECODE · Nakalaan ang lahat ng karapatan</string>
+</resources>

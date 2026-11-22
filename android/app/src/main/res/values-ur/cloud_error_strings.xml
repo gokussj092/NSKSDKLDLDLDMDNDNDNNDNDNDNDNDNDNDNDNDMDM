@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_failure_offline">انٹرنیٹ کنکشن نہیں ہے۔ نیٹ ورک سے جڑیں اور دوبارہ کوشش کریں۔</string>
+    <string name="cloud_failure_network">سروس تک نہیں پہنچ سکے۔ اپنا کنکشن چیک کریں اور دوبارہ کوشش کریں۔</string>
+    <string name="cloud_failure_tls">محفوظ کنکشن قائم نہیں ہو سکا۔ اپنا نیٹ ورک اور ڈیوائس کی گھڑی چیک کریں۔</string>
+    <string name="cloud_failure_timeout">درخواست میں بہت زیادہ وقت لگا۔ کنکشن مستحکم ہونے پر دوبارہ کوشش کریں۔</string>
+    <string name="cloud_failure_integrity">ایپ کی تصدیق مکمل نہیں ہو سکی۔ ایپ اپ ڈیٹ کریں یا مجاز QA رسائی استعمال کریں۔</string>
+    <string name="cloud_failure_qa_code">QA رسائی موجود نہیں۔ SP-DECODE QA کھولیں اور نیا عارضی کوڈ درج کریں۔</string>
+    <string name="cloud_failure_session">آپ کا سیشن ختم ہو گیا یا اس کی تصدیق نہیں ہو سکی۔ براہ کرم دوبارہ کوشش کریں۔</string>
+    <string name="cloud_failure_forbidden">رسائی مسترد کر دی گئی۔ اپنی اجازت چیک کریں اور دوبارہ کوشش کریں۔</string>
+    <string name="cloud_failure_qa">QA رسائی غلط، غیر فعال یا ختم شدہ ہے۔ نیا نجی کوڈ طلب کریں۔</string>
+    <string name="cloud_failure_consent">کلاؤڈ ڈی کوڈنگ استعمال کرنے کے لیے موجودہ شرائط اور پرائیویسی نوٹس قبول کریں۔</string>
+    <string name="cloud_failure_rate">بہت زیادہ درخواستیں۔ دوبارہ کوشش سے پہلے انتظار کریں۔</string>
+    <string name="cloud_failure_large">فائل یا نتیجہ اجازت شدہ سائز سے زیادہ ہے۔</string>
+    <string name="cloud_failure_invalid">یہ فائل یا درخواست قبول نہیں ہو سکی۔ فارمیٹ چیک کریں۔</string>
+    <string name="cloud_failure_unsupported">یہ فائل فارمیٹ سرور پر دستیاب نہیں ہے۔</string>
+    <string name="cloud_failure_decode">ڈی کوڈر اس فائل ورژن کو پروسیس نہیں کر سکا۔ فائل کا خراب ہونا ضروری نہیں۔</string>
+    <string name="cloud_failure_maintenance">یہ سروس عارضی طور پر دیکھ بھال کے تحت ہے۔ براہ کرم بعد میں دوبارہ کوشش کریں۔</string>
+    <string name="cloud_failure_unavailable">سروس عارضی طور پر دستیاب نہیں۔ بعد میں دوبارہ کوشش کریں۔</string>
+    <string name="cloud_failure_config_unavailable">یہ کلاؤڈ کنفیگریشن اب دستیاب نہیں ہے۔ یہ ختم ہو گئی ہو، حذف کر دی گئی ہو، یا صرف ایک بار کے استعمال کے لیے درست ہو۔ یہ ڈی کوڈر کی خرابی نہیں ہے۔</string>
+    <string name="cloud_failure_remote">ریموٹ فراہم کنندہ نے غلط یا غیر قابل تصدیق جواب دیا۔</string>
+    <string name="cloud_failure_credentials">غلط پاس ورڈ یا HWID۔ معلومات چیک کریں اور دوبارہ کوشش کریں۔</string>
+    <string name="cloud_failure_password">اس محفوظ فائل کے لیے پاس ورڈ درکار ہے۔</string>
+    <string name="cloud_failure_hwid">اس محفوظ فائل کے لیے HWID درکار ہے۔</string>
+    <string name="cloud_failure_both">اس محفوظ فائل کے لیے پاس ورڈ اور HWID دونوں درکار ہیں۔</string>
+    <string name="cloud_failure_not_found">درخواست کردہ وسیلہ دستیاب نہیں یا نہیں ملا۔</string>
+    <string name="cloud_failure_conflict">درخواست موجودہ حالت سے متصادم ہے۔ براہ کرم دوبارہ کوشش کریں۔</string>
+    <string name="cloud_failure_partial">نتیجہ نامکمل یا غلط تھا، اور ظاہر نہیں کیا جائے گا۔</string>
+    <string name="cloud_failure_general">آپریشن مکمل نہیں ہو سکا۔ دوبارہ کوشش کریں یا سپورٹ سے رابطہ کریں۔</string>
+    <string name="cloud_failure_notice_title">نوٹس</string>
+    <string name="cloud_password_title">کنفیگریشن پاس ورڈ درکار ہے</string>
+    <string name="cloud_password_description">%1$s پاس ورڈ سے محفوظ ہے۔ جاری رکھنے کے لیے ایکسپورٹ پاس ورڈ درج کریں۔ یہ محفوظ نہیں کیا جائے گا۔</string>
+    <string name="cloud_failure_password_incorrect">غلط پاس ورڈ۔</string>
+    <string name="cloud_failure_private_key">یہ NPVS فائل وصول کنندہ کے پبلک/پرائیویٹ کی تحفظ کا استعمال کرتی ہے۔ یہ طریقہ ابھی سپورٹ نہیں ہوتا؛ سپورٹ جلد آ رہی ہے۔</string>
+    <string name="cloud_failure_recipient">یہ NPVS فائل وصول کنندہ کے کی کا طریقہ استعمال کرتی ہے جو ابھی سپورٹ نہیں ہوتا۔ سپورٹ جلد آ رہی ہے۔</string>
+    <string name="cloud_failure_npvs_unsupported">یہ NPVS ورژن یا تحفظ کا طریقہ ابھی سپورٹ نہیں ہوتا۔ سپورٹ جلد آ رہی ہے۔</string>
+</resources>

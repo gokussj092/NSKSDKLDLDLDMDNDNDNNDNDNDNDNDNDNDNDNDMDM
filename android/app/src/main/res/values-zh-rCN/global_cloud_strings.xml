@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_global_title">云端（在线）</string>
+    <string name="cloud_global_auto">自动检测</string>
+    <string name="cloud_global_hint">粘贴受支持的云端链接、密钥或代码</string>
+    <string name="cloud_global_action">从云端导入</string>
+    <string name="cloud_global_detail">粘贴云端链接、密钥或代码，SP-DECODE 会自动检测提供方。仅支持已批准的服务。</string>
+    <string name="cloud_global_invalid">此引用与任何可用的云端提供方都不匹配。</string>
+</resources>

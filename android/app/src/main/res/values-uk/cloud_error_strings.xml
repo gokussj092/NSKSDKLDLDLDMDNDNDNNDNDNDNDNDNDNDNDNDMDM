@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_failure_offline">Немає підключення до інтернету. Підключіться до мережі та спробуйте ще раз.</string>
+    <string name="cloud_failure_network">Не вдається зв’язатися зі службою. Перевірте підключення та спробуйте ще раз.</string>
+    <string name="cloud_failure_tls">Не вдалося встановити безпечне з’єднання. Перевірте мережу та годинник пристрою.</string>
+    <string name="cloud_failure_timeout">Запит тривав надто довго. Спробуйте ще раз, коли з’єднання буде стабільним.</string>
+    <string name="cloud_failure_integrity">Не вдалося завершити перевірку застосунку. Оновіть застосунок або скористайтеся авторизованим QA-доступом.</string>
+    <string name="cloud_failure_qa_code">QA-доступ відсутній. Відкрийте SP-DECODE QA та введіть новий тимчасовий код.</string>
+    <string name="cloud_failure_session">Ваш сеанс завершився або не вдалося його перевірити. Спробуйте ще раз.</string>
+    <string name="cloud_failure_forbidden">Доступ заборонено. Перевірте свій дозвіл і спробуйте ще раз.</string>
+    <string name="cloud_failure_qa">QA-доступ недійсний, вимкнений або термін його дії минув. Запросіть новий приватний код.</string>
+    <string name="cloud_failure_consent">Прийміть чинні умови та повідомлення про конфіденційність, щоб користуватися хмарним декодуванням.</string>
+    <string name="cloud_failure_rate">Забагато запитів. Зачекайте, перш ніж повторювати спробу.</string>
+    <string name="cloud_failure_large">Файл або результат перевищує допустимий розмір.</string>
+    <string name="cloud_failure_invalid">Цей файл або запит не вдалося прийняти. Перевірте формат.</string>
+    <string name="cloud_failure_unsupported">Цей формат файлу недоступний на сервері.</string>
+    <string name="cloud_failure_decode">Декодеру не вдалося обробити цю версію файлу. Файл необов’язково пошкоджено.</string>
+    <string name="cloud_failure_maintenance">Ця служба тимчасово на технічному обслуговуванні. Спробуйте ще раз пізніше.</string>
+    <string name="cloud_failure_unavailable">Служба тимчасово недоступна. Спробуйте ще раз пізніше.</string>
+    <string name="cloud_failure_config_unavailable">Ця хмарна конфігурація більше недоступна. Можливо, термін її дії минув, її видалено або вона була дійсна лише для одного використання. Це не помилка декодера.</string>
+    <string name="cloud_failure_remote">Віддалений постачальник повернув недійсну відповідь або відповідь, яку не вдалося перевірити.</string>
+    <string name="cloud_failure_credentials">Неправильний пароль або HWID. Перевірте дані та спробуйте ще раз.</string>
+    <string name="cloud_failure_password">Цей захищений файл потребує пароля.</string>
+    <string name="cloud_failure_hwid">Цей захищений файл потребує HWID.</string>
+    <string name="cloud_failure_both">Цей захищений файл потребує і пароля, і HWID.</string>
+    <string name="cloud_failure_not_found">Запитаний ресурс недоступний або не знайдено.</string>
+    <string name="cloud_failure_conflict">Запит конфліктує з поточним станом. Спробуйте ще раз.</string>
+    <string name="cloud_failure_partial">Результат був неповним або недійсним і не відображатиметься.</string>
+    <string name="cloud_failure_general">Не вдалося завершити операцію. Спробуйте ще раз або зверніться до підтримки.</string>
+    <string name="cloud_failure_notice_title">Повідомлення</string>
+    <string name="cloud_password_title">Потрібен пароль конфігурації</string>
+    <string name="cloud_password_description">%1$s захищено паролем. Введіть пароль експорту, щоб продовжити. Він не зберігатиметься.</string>
+    <string name="cloud_failure_password_incorrect">Неправильний пароль.</string>
+    <string name="cloud_failure_private_key">Цей файл NPVS використовує захист відкритим/приватним ключем одержувача. Цей метод ще не підтримується; підтримка незабаром з’явиться.</string>
+    <string name="cloud_failure_recipient">Цей файл NPVS використовує метод ключа одержувача, який ще не підтримується. Підтримка незабаром з’явиться.</string>
+    <string name="cloud_failure_npvs_unsupported">Ця версія NPVS або метод захисту ще не підтримується. Підтримка незабаром з’явиться.</string>
+</resources>

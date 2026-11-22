@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="donations_title">ልገሳዎች</string>
+    <string name="donation_copy_id">ID ቅዳ</string>
+    <string name="donation_id_copied">የBinance ID ተቅድቷል</string>
+    <string name="donation_coming_soon">በቅርቡ ይመጣል</string>
+    <string name="catalog_loading_short">ካታሎግ በመጫን ላይ</string>
+    <string name="notifications_title">ማሳወቂያዎች</string>
+    <string name="notifications_description">ከSP-DECODE የአገልግሎት ማሳወቂያዎችን ይቀበሉ። በማንኛውም ጊዜ ማጥፋት ይችላሉ።</string>
+    <string name="notifications_system_settings">የስርዓት ቅንብሮች</string>
+    <string name="notifications_enable">አንቃ</string>
+    <string name="notifications_later">በኋላ</string>
+</resources>

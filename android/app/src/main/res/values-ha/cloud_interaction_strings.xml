@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="unsupported_file_title">Ba a tallafa wa nau\'in fayil ba</string>
+    <string name="unsupported_file_detail">Wannan tsawo na fayil ba ya samuwa tukuna a SP-DECODE. Ka tuntuɓi mai ƙirƙira don ba da shawarar tallafi.</string>
+    <string name="unsupported_version_title">Ba a tallafa wa sigar fayil ba tukuna</string>
+    <string name="unsupported_version_detail">Wannan fayil yana amfani da siga ko hanyar ɓoyayya wacce ba ta dace ba tukuna. Za ka iya neman tallafi daga mai ƙirƙira.</string>
+    <string name="unsupported_text_title">Ba a tallafa wa tsarin rubutu ba</string>
+    <string name="unsupported_text_detail">Ba a tallafa wa wannan rubutu ko ƙa\'ida ba tukuna. Ka tuntuɓi mai ƙirƙira don ba da shawarar haɗawa.</string>
+    <string name="catalog_check_action">Sabunta</string>
+    <string name="catalog_checking">Ana sabuntawa</string>
+    <string name="catalog_downloading">Ana sabunta kundin bayanai…</string>
+    <string name="catalog_progress">%1$d%%</string>
+    <string name="app_update_title">Sabon sigar app ta zo</string>
+    <string name="app_update_body">SP-DECODE %1$s ta zo. Ka ziyarci tashar Telegram ta hukuma don samun sabuntawa.</string>
+    <string name="app_update_open">Buɗe Telegram</string>
+    <string name="app_update_close">Rufe</string>
+    <string name="catalog_available_title">Sabon kundin bayanai ya zo</string>
+    <string name="catalog_available_body">Sabon sigar kundin bayanai %1$d tana samuwa don saukewa.</string>
+    <string name="catalog_check_short">Duba kundin bayanai</string>
+</resources>

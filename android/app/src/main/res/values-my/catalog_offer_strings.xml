@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="catalog_offer_title">ကတ်တလောက် အသစ် ရရှိနိုင်ပါပြီ</string>
+    <string name="catalog_offer_body">ကတ်တလောက် ဗားရှင်း %1$d အဆင်သင့်ဖြစ်ပါပြီ။ အသစ်ထောက်ပံ့ထားသော အက်ပ်များ၊ နည်းလမ်းများနှင့် တိုးတက်မှုများကို ရယူရန် အပ်ဒိတ်လုပ်ပါ။</string>
+    <string name="catalog_offer_update">ယခု အပ်ဒိတ်လုပ်ရန်</string>
+    <string name="catalog_offer_later">ပယ်ဖျက်ရန်</string>
+    <string name="catalog_postpone_title">အပ်ဒိတ်မလုပ်ဘဲ ဆက်လုပ်မလား။</string>
+    <string name="catalog_postpone_body">ပယ်ဖျက်လိုက်ပါက နောက်ဆုံးကတ်တလောက်ရှိ အက်ပ်များ၊ နည်းလမ်းများနှင့် တိုးတက်မှုများကို အပ်ဒိတ်လုပ်သည်အထိ ရရှိနိုင်မည် မဟုတ်ပါ။ Server VPN တွင် နောက်မှ အပ်ဒိတ်လုပ်နိုင်ပါသည်။</string>
+    <string name="catalog_postpone_confirm">အပ်ဒိတ်မလုပ်ဘဲ ဆက်လုပ်ရန်</string>
+    <string name="catalog_postpone_back">ပြန်သွားရန်</string>
+</resources>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="streak_verified_date">সার্ভার দ্বারা যাচাই করা তারিখ</string>
+    <string name="streak_date_pending">যাচাই করা তারিখের অপেক্ষায়</string>
+    <string name="streak_today_done">আজ সম্পূর্ণ হয়েছে</string>
+    <string name="streak_today_pending">আপনার স্ট্রিক ধরে রাখতে আজ একটি ফাইল বা টেক্সট ডিকোড করুন</string>
+    <string name="streak_weekly_reward">প্রতি টানা 7 দিনে</string>
+    <string name="streak_reward">+1টি APK বিশ্লেষণ ক্রেডিট</string>
+    <string name="streak_reward_delivered">পুরস্কার দেওয়া হয়েছে</string>
+    <string name="streak_verified_note">দিন ও পুরস্কার সার্ভার দ্বারা যাচাই করা হয়।</string>
+    <plurals name="streak_days_left">
+        <item quantity="one">%1$d দিন বাকি</item>
+        <item quantity="other">%1$d দিন বাকি</item>
+    </plurals>
+    <string name="streak_reminder_channel">স্ট্রিক অনুস্মারক</string>
+    <string name="streak_reminder_title">আপনার স্ট্রিক অপেক্ষা করছে</string>
+    <string name="streak_reminder_body">আপনার স্ট্রিক চালিয়ে যেতে আজ একটি ফাইল বা টেক্সট ডিকোড করুন।</string>
+</resources>

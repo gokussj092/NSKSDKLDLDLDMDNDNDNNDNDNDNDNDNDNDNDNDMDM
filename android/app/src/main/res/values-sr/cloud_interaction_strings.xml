@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="unsupported_file_title">Тип датотеке није подржан</string>
+    <string name="unsupported_file_detail">Ова екстензија датотеке још није доступна у SP-DECODE. Контактирајте програмера да предложите подршку.</string>
+    <string name="unsupported_version_title">Верзија датотеке још није подржана</string>
+    <string name="unsupported_version_detail">Ова датотека користи верзију или методу шифровања која још није компатибилна. Можете затражити подршку од програмера.</string>
+    <string name="unsupported_text_title">Формат текста није подржан</string>
+    <string name="unsupported_text_detail">Овај текст или протокол још није подржан. Контактирајте програмера да предложите интеграцију.</string>
+    <string name="catalog_check_action">Ажурирај</string>
+    <string name="catalog_checking">Ажурирање</string>
+    <string name="catalog_downloading">Ажурирање каталога…</string>
+    <string name="catalog_progress">%1$d%%</string>
+    <string name="app_update_title">Доступна је нова верзија апликације</string>
+    <string name="app_update_body">SP-DECODE %1$s је доступна. Посетите званични Telegram канал да преузмете ажурирање.</string>
+    <string name="app_update_open">Отвори Telegram</string>
+    <string name="app_update_close">Затвори</string>
+    <string name="catalog_available_title">Доступан је нови каталог</string>
+    <string name="catalog_available_body">Нова верзија каталога %1$d доступна је за преузимање.</string>
+    <string name="catalog_check_short">Провери каталог</string>
+</resources>

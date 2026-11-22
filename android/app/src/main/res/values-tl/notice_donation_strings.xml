@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="donations_title">Mga Donasyon</string>
+    <string name="donation_copy_id">Kopyahin ang ID</string>
+    <string name="donation_id_copied">Nakopya ang Binance ID</string>
+    <string name="donation_coming_soon">Malapit na</string>
+    <string name="catalog_loading_short">Nagkakarga ng katalogo</string>
+    <string name="notifications_title">Mga Abiso</string>
+    <string name="notifications_description">Makakatanggap ng mga paunawa sa serbisyo mula sa SP-DECODE. Maaari mo itong patayin anumang oras.</string>
+    <string name="notifications_system_settings">Mga pagtatakda ng sistema</string>
+    <string name="notifications_enable">Paganahin</string>
+    <string name="notifications_later">Mamaya</string>
+</resources>

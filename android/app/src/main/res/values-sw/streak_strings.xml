@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="streak_verified_date">Tarehe imethibitishwa na seva</string>
+    <string name="streak_date_pending">Inasubiri tarehe iliyothibitishwa</string>
+    <string name="streak_today_done">Imekamilika leo</string>
+    <string name="streak_today_pending">Simbua faili au maandishi leo ili kuendelea na mfululizo wako</string>
+    <string name="streak_weekly_reward">Kila siku 7 mfululizo</string>
+    <string name="streak_reward">+1 kredi ya uchambuzi wa APK</string>
+    <string name="streak_reward_delivered">Zawadi imetolewa</string>
+    <string name="streak_verified_note">Siku na zawadi huthibitishwa na seva.</string>
+    <plurals name="streak_days_left">
+        <item quantity="one">%1$d siku imebaki</item>
+        <item quantity="other">%1$d siku zimebaki</item>
+    </plurals>
+    <string name="streak_reminder_channel">Vikumbusho vya mfululizo</string>
+    <string name="streak_reminder_title">Mfululizo wako unangojea</string>
+    <string name="streak_reminder_body">Simbua faili au maandishi leo ili mfululizo wako uendelee.</string>
+</resources>

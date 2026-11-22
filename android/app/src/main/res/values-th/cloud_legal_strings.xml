@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_legal_title">ข้อกำหนดและความเป็นส่วนตัว</string>
+    <string name="cloud_legal_explanation">SP-DECODE Cloud ส่งไฟล์หรือข้อความที่คุณเลือกถอดรหัสไปยังเซิร์ฟเวอร์ของตน และนับจำนวนการติดตั้งที่ใช้งานโดยประมาณวันละครั้งเพื่อวางแผนความจุของเซิร์ฟเวอร์ โดยใช้รหัสการติดตั้งแบบสุ่ม การนับเหล่านั้นไม่รวมเนื้อหาการตั้งค่า</string>
+    <string name="cloud_legal_terms">อ่านข้อกำหนดและเงื่อนไข</string>
+    <string name="cloud_legal_privacy">อ่านนโยบายความเป็นส่วนตัว</string>
+    <string name="cloud_legal_accept_check">ฉันได้อ่านและยอมรับข้อกำหนดและนโยบายความเป็นส่วนตัวแล้ว</string>
+    <string name="cloud_legal_accept">ยอมรับ</string>
+    <string name="cloud_legal_decline">ปฏิเสธ</string>
+    <string name="server_vpn_loading">กำลังโหลดแค็ตตาล็อกเซิร์ฟเวอร์ VPN…</string>
+    <string name="server_vpn_unavailable">แค็ตตาล็อกเซิร์ฟเวอร์ VPN ไม่พร้อมใช้งาน ตรวจสอบการเชื่อมต่อแล้วลองอีกครั้ง</string>
+    <string name="server_vpn_retry">ลองโหลดแค็ตตาล็อกอีกครั้ง</string>
+    <string name="cloud_legal_withdraw">ถอนความยินยอม Cloud</string>
+    <string name="cloud_legal_withdraw_detail">การถอนความยินยอมจะบล็อกคำขอเซิร์ฟเวอร์ใหม่ ประวัติที่เข้ารหัสในเครื่องของคุณจะยังคงอยู่บนอุปกรณ์นี้ คุณสามารถยอมรับอีกครั้งภายหลังได้</string>
+</resources>

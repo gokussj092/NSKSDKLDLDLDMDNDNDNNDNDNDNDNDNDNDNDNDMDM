@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="compatible_export_for">Hamisha kwa %1$s</string>
+    <string name="compatible_export_redecode">Ingiza faili hii tena ili kuwezesha uhamishaji kwa %1$s.</string>
+    <string name="compatible_export_failed">Faili inayooana haikuweza kuhifadhiwa.</string>
+</resources>

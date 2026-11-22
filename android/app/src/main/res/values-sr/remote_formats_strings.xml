@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="file_extension_unsupported_contact">Ова екстензија датотеке није подржана. Контактирајте програмера да затражите подршку.</string>
+    <string name="text_format_unsupported_contact">Овај формат текста или протокол није подржан. Контактирајте програмера да затражите подршку.</string>
+    <string name="formats_remote_catalog_note">Подржане екстензије се безбедно синхронизују из SP-DECODE Cloud. Нови Cloud формати могу се појавити без ажурирања апликације.</string>
+    <string name="formats_cloud_ready_short">Cloud</string>
+</resources>

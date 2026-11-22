@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="account_sign_in">로그인</string>
+    <string name="account_web_description">공식 웹사이트에서 계정과 구매를 관리하세요. 무료 기능은 계정 없이도 계속 사용할 수 있습니다.</string>
+    <string name="account_continue_web">웹에서 계속</string>
+    <string name="account_my_account">내 계정</string>
+    <string name="account_store">스토어</string>
+    <string name="account_open_menu">메뉴 열기</string>
+    <string name="ads_privacy_options">광고 개인정보 보호 옵션</string>
+</resources>

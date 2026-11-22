@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_failure_offline">인터넷 연결이 없습니다. 네트워크에 연결하고 다시 시도하세요.</string>
+    <string name="cloud_failure_network">서비스에 연결할 수 없습니다. 연결을 확인하고 다시 시도하세요.</string>
+    <string name="cloud_failure_tls">보안 연결을 설정할 수 없습니다. 네트워크와 기기 시계를 확인하세요.</string>
+    <string name="cloud_failure_timeout">요청 시간이 너무 오래 걸렸습니다. 연결이 안정적일 때 다시 시도하세요.</string>
+    <string name="cloud_failure_integrity">앱 확인을 완료할 수 없습니다. 앱을 업데이트하거나 승인된 QA 액세스를 사용하세요.</string>
+    <string name="cloud_failure_qa_code">QA 액세스가 없습니다. SP-DECODE QA를 열고 새 임시 코드를 입력하세요.</string>
+    <string name="cloud_failure_session">세션이 만료되었거나 확인할 수 없습니다. 다시 시도하세요.</string>
+    <string name="cloud_failure_forbidden">액세스가 거부되었습니다. 권한을 확인하고 다시 시도하세요.</string>
+    <string name="cloud_failure_qa">QA 액세스가 잘못되었거나 비활성화되었거나 만료되었습니다. 새 비공개 코드를 요청하세요.</string>
+    <string name="cloud_failure_consent">Cloud 디코딩을 사용하려면 현재 약관 및 개인정보 고지에 동의하세요.</string>
+    <string name="cloud_failure_rate">요청이 너무 많습니다. 다시 시도하기 전에 잠시 기다리세요.</string>
+    <string name="cloud_failure_large">파일 또는 결과가 허용된 크기를 초과합니다.</string>
+    <string name="cloud_failure_invalid">이 파일 또는 요청을 수락할 수 없습니다. 형식을 확인하세요.</string>
+    <string name="cloud_failure_unsupported">이 파일 형식은 서버에서 사용할 수 없습니다.</string>
+    <string name="cloud_failure_decode">디코더가 이 파일 버전을 처리할 수 없습니다. 파일이 반드시 손상된 것은 아닙니다.</string>
+    <string name="cloud_failure_maintenance">이 서비스는 일시적으로 점검 중입니다. 나중에 다시 시도하세요.</string>
+    <string name="cloud_failure_unavailable">서비스를 일시적으로 사용할 수 없습니다. 나중에 다시 시도하세요.</string>
+    <string name="cloud_failure_config_unavailable">이 Cloud 구성을 더 이상 사용할 수 없습니다. 만료되었거나 삭제되었거나 일회용이었을 수 있습니다. 디코더 오류가 아닙니다.</string>
+    <string name="cloud_failure_remote">원격 제공업체에서 잘못되었거나 확인할 수 없는 응답을 반환했습니다.</string>
+    <string name="cloud_failure_credentials">비밀번호 또는 HWID가 잘못되었습니다. 정보를 확인하고 다시 시도하세요.</string>
+    <string name="cloud_failure_password">이 보호된 파일에는 비밀번호가 필요합니다.</string>
+    <string name="cloud_failure_hwid">이 보호된 파일에는 HWID가 필요합니다.</string>
+    <string name="cloud_failure_both">이 보호된 파일에는 비밀번호와 HWID가 모두 필요합니다.</string>
+    <string name="cloud_failure_not_found">요청한 리소스를 사용할 수 없거나 찾을 수 없습니다.</string>
+    <string name="cloud_failure_conflict">요청이 현재 상태와 충돌합니다. 다시 시도하세요.</string>
+    <string name="cloud_failure_partial">결과가 불완전하거나 잘못되어 표시되지 않습니다.</string>
+    <string name="cloud_failure_general">작업을 완료할 수 없습니다. 다시 시도하거나 지원팀에 문의하세요.</string>
+    <string name="cloud_failure_notice_title">알림</string>
+    <string name="cloud_password_title">구성 비밀번호 필요</string>
+    <string name="cloud_password_description">%1$s은(는) 비밀번호로 보호되어 있습니다. 계속하려면 내보내기 비밀번호를 입력하세요. 저장되지 않습니다.</string>
+    <string name="cloud_failure_password_incorrect">비밀번호가 잘못되었습니다.</string>
+    <string name="cloud_failure_private_key">이 NPVS 파일은 수신자 공개/개인 키 보호를 사용합니다. 이 방식은 아직 지원되지 않으며 곧 지원될 예정입니다.</string>
+    <string name="cloud_failure_recipient">이 NPVS 파일은 아직 지원되지 않는 수신자 키 방식을 사용합니다. 곧 지원될 예정입니다.</string>
+    <string name="cloud_failure_npvs_unsupported">이 NPVS 버전 또는 보호 방식은 아직 지원되지 않습니다. 곧 지원될 예정입니다.</string>
+</resources>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="catalog_offer_title">Διαθέσιμος νέος κατάλογος</string>
+    <string name="catalog_offer_body">Η έκδοση %1$d του καταλόγου είναι έτοιμη. Ενημερώστε για να αποκτήσετε πρόσβαση στις νέες υποστηριζόμενες εφαρμογές, μεθόδους και βελτιώσεις.</string>
+    <string name="catalog_offer_update">Ενημέρωση τώρα</string>
+    <string name="catalog_offer_later">Ακύρωση</string>
+    <string name="catalog_postpone_title">Συνέχεια χωρίς ενημέρωση;</string>
+    <string name="catalog_postpone_body">Αν ακυρώσετε, οι νέες εφαρμογές, οι μέθοδοι και οι βελτιώσεις του τελευταίου καταλόγου δεν θα είναι διαθέσιμες μέχρι να ενημερώσετε. Μπορείτε να ενημερώσετε αργότερα στο Server VPN.</string>
+    <string name="catalog_postpone_confirm">Συνέχεια χωρίς ενημέρωση</string>
+    <string name="catalog_postpone_back">Επιστροφή</string>
+</resources>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_failure_offline">இணைய இணைப்பு இல்லை. நெட்வொர்க்குடன் இணைத்து மீண்டும் முயலவும்.</string>
+    <string name="cloud_failure_network">சேவையை அணுக முடியவில்லை. உங்கள் இணைப்பைச் சரிபார்த்து மீண்டும் முயலவும்.</string>
+    <string name="cloud_failure_tls">பாதுகாப்பான இணைப்பை ஏற்படுத்த முடியவில்லை. உங்கள் நெட்வொர்க் மற்றும் சாதன நேரத்தைச் சரிபார்க்கவும்.</string>
+    <string name="cloud_failure_timeout">கோரிக்கை அதிக நேரம் எடுத்தது. இணைப்பு நிலையாக இருக்கும்போது மீண்டும் முயலவும்.</string>
+    <string name="cloud_failure_integrity">செயலி சரிபார்ப்பை முடிக்க முடியவில்லை. செயலியைப் புதுப்பிக்கவும் அல்லது அங்கீகரிக்கப்பட்ட QA அணுகலைப் பயன்படுத்தவும்.</string>
+    <string name="cloud_failure_qa_code">QA அணுகல் இல்லை. SP-DECODE QA-ஐத் திறந்து புதிய தற்காலிகக் குறியீட்டை உள்ளிடவும்.</string>
+    <string name="cloud_failure_session">உங்கள் அமர்வு காலாவதியானது அல்லது சரிபார்க்க முடியவில்லை. மீண்டும் முயலவும்.</string>
+    <string name="cloud_failure_forbidden">அணுகல் மறுக்கப்பட்டது. உங்கள் அங்கீகாரத்தைச் சரிபார்த்து மீண்டும் முயலவும்.</string>
+    <string name="cloud_failure_qa">QA அணுகல் தவறானது, முடக்கப்பட்டது அல்லது காலாவதியானது. புதிய தனியார் குறியீட்டைக் கோரவும்.</string>
+    <string name="cloud_failure_consent">கிளவுட் மறைகுறியீடு நீக்கத்தைப் பயன்படுத்த, தற்போதைய விதிமுறைகள் மற்றும் தனியுரிமை அறிவிப்பை ஏற்கவும்.</string>
+    <string name="cloud_failure_rate">அதிக கோரிக்கைகள். மீண்டும் முயலும் முன் காத்திருக்கவும்.</string>
+    <string name="cloud_failure_large">கோப்பு அல்லது முடிவு அனுமதிக்கப்பட்ட அளவை மீறுகிறது.</string>
+    <string name="cloud_failure_invalid">இந்தக் கோப்பு அல்லது கோரிக்கையை ஏற்க முடியவில்லை. வடிவத்தைச் சரிபார்க்கவும்.</string>
+    <string name="cloud_failure_unsupported">இந்தக் கோப்பு வடிவம் சர்வரில் கிடைக்கவில்லை.</string>
+    <string name="cloud_failure_decode">மறைகுறியீடு நீக்கி இந்தக் கோப்பு பதிப்பைச் செயலாக்க முடியவில்லை. கோப்பு சேதமடைந்திருக்க வேண்டிய அவசியமில்லை.</string>
+    <string name="cloud_failure_maintenance">இந்தச் சேவை தற்காலிகமாகப் பராமரிப்பில் உள்ளது. பின்னர் மீண்டும் முயலவும்.</string>
+    <string name="cloud_failure_unavailable">சேவை தற்காலிகமாகக் கிடைக்கவில்லை. மீண்டும் முயலவும்.</string>
+    <string name="cloud_failure_config_unavailable">இந்தக் கிளவுட் கட்டமைப்பு இனி கிடைக்கவில்லை. அது காலாவதியாகியிருக்கலாம், நீக்கப்பட்டிருக்கலாம் அல்லது ஒரு முறை மட்டுமே பயன்படுத்தக்கூடியதாக இருந்திருக்கலாம். இது மறைகுறியீடு நீக்கித் தோல்வி அல்ல.</string>
+    <string name="cloud_failure_remote">தொலை சேவையகம் தவறான அல்லது சரிபார்க்க முடியாத பதிலை வழங்கியது.</string>
+    <string name="cloud_failure_credentials">தவறான கடவுச்சொல் அல்லது HWID. தகவலைச் சரிபார்த்து மீண்டும் முயலவும்.</string>
+    <string name="cloud_failure_password">இந்தப் பாதுகாக்கப்பட்ட கோப்பிற்குக் கடவுச்சொல் தேவை.</string>
+    <string name="cloud_failure_hwid">இந்தப் பாதுகாக்கப்பட்ட கோப்பிற்கு HWID தேவை.</string>
+    <string name="cloud_failure_both">இந்தப் பாதுகாக்கப்பட்ட கோப்பிற்குக் கடவுச்சொல் மற்றும் HWID இரண்டும் தேவை.</string>
+    <string name="cloud_failure_not_found">கோரப்பட்ட வளம் கிடைக்கவில்லை அல்லது கண்டுபிடிக்கப்படவில்லை.</string>
+    <string name="cloud_failure_conflict">கோரிக்கை தற்போதைய நிலையுடன் முரண்படுகிறது. மீண்டும் முயலவும்.</string>
+    <string name="cloud_failure_partial">முடிவு முழுமையற்றதாக அல்லது தவறானதாக இருந்தது, அது காட்டப்படாது.</string>
+    <string name="cloud_failure_general">செயல்பாட்டை முடிக்க முடியவில்லை. மீண்டும் முயலவும் அல்லது ஆதரவைத் தொடர்புகொள்ளவும்.</string>
+    <string name="cloud_failure_notice_title">அறிவிப்பு</string>
+    <string name="cloud_password_title">கட்டமைப்புக் கடவுச்சொல் தேவை</string>
+    <string name="cloud_password_description">%1$s கடவுச்சொல் பாதுகாக்கப்பட்டுள்ளது. தொடர ஏற்றுமதிக் கடவுச்சொல்லை உள்ளிடவும். அது சேமிக்கப்படாது.</string>
+    <string name="cloud_failure_password_incorrect">தவறான கடவுச்சொல்.</string>
+    <string name="cloud_failure_private_key">இந்த NPVS கோப்பு பெறுநரின் பொது/தனியார் விசை பாதுகாப்பைப் பயன்படுத்துகிறது. இந்த முறை இன்னும் ஆதரிக்கப்படவில்லை; ஆதரவு விரைவில் வருகிறது.</string>
+    <string name="cloud_failure_recipient">இந்த NPVS கோப்பு இன்னும் ஆதரிக்கப்படாத பெறுநர் விசை முறையைப் பயன்படுத்துகிறது. ஆதரவு விரைவில் வருகிறது.</string>
+    <string name="cloud_failure_npvs_unsupported">இந்த NPVS பதிப்பு அல்லது பாதுகாப்பு முறை இன்னும் ஆதரிக்கப்படவில்லை. ஆதரவு விரைவில் வருகிறது.</string>
+</resources>

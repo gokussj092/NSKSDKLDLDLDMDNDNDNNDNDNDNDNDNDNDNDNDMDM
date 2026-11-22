@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_http_injector_not_configured">HTTP Injector Cloud سرور پر ابھی ترتیب نہیں دیا گیا۔ سروس فعال ہونے کے بعد دوبارہ کوشش کریں۔</string>
+</resources>

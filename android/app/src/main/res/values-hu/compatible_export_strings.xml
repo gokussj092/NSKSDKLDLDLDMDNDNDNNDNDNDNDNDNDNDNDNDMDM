@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="compatible_export_for">Exportálás ide: %1$s</string>
+    <string name="compatible_export_redecode">Importálja újra ezt a fájlt a %1$s formátumba történő exportálás engedélyezéséhez.</string>
+    <string name="compatible_export_failed">A kompatibilis fájlt nem sikerült menteni.</string>
+</resources>

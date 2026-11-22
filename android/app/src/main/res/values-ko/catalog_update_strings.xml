@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="catalog_auto_title">서버 VPN 카탈로그 자동 업데이트</string>
+    <string name="catalog_auto_detail">앱이 열려 있는 동안 HTTPS를 통해 자체 SP-DECODE 서버에서 카탈로그 버전을 확인하고, 필요 시 백그라운드에서 가끔 복구 검사를 수행합니다. 새 카탈로그 데이터와 아이콘은 버전이 변경된 후에만 다운로드됩니다. Firebase, 계정 또는 푸시 토큰이 필요하지 않습니다. 언제든지 끌 수 있습니다.</string>
+    <string name="catalog_auto_switch">백그라운드 카탈로그 동기화 사용</string>
+</resources>

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="catalog_auto_title">Usasishaji wa kiotomatiki wa katalogi ya Server VPN</string>
+    <string name="catalog_auto_detail">Huangalia matoleo ya katalogi na seva yako ya SP-DECODE kupitia HTTPS programu ikiwa wazi, na hufanya ukaguzi wa mara chache wa urejeshaji chinichini. Data mpya ya katalogi na aikoni hupakuliwa tu baada ya toleo kubadilika. Hakuna Firebase, akaunti au tokeni ya push inayohitajika. Unaweza kuizima wakati wowote.</string>
+    <string name="catalog_auto_switch">Washa usawazishaji wa katalogi chinichini</string>
+</resources>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_global_title">Cloud (Online)</string>
+    <string name="cloud_global_auto">Automatická detekce</string>
+    <string name="cloud_global_hint">Vložte podporovaný odkaz, klíč nebo kód Cloud</string>
+    <string name="cloud_global_action">Importovat z Cloudu</string>
+    <string name="cloud_global_detail">Vložte odkaz, klíč nebo kód Cloud a SP-DECODE automaticky rozpozná poskytovatele. Podporovány jsou pouze schválené služby.</string>
+    <string name="cloud_global_invalid">Tento odkaz neodpovídá žádnému dostupnému poskytovateli Cloudu.</string>
+</resources>

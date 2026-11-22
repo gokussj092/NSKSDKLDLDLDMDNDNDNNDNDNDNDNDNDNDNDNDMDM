@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="server_vpn_search_hint">VPN ilovalarini qidirish</string>
+    <string name="server_vpn_filter_all">Barchasi</string>
+    <string name="server_vpn_filter_enabled">Yoqilgan</string>
+    <string name="server_vpn_filter_favorites">Sevimlilar</string>
+    <string name="server_vpn_favorite_add">Sevimlilarga qoʻshish</string>
+    <string name="server_vpn_favorite_remove">Sevimlilardan olib tashlash</string>
+    <string name="server_vpn_manual_refresh">Katalogni hozir tekshirish</string>
+    <string name="server_vpn_catalog_refreshing">Server katalogi tekshirilmoqda…</string>
+    <string name="server_vpn_no_matches">Qidiruv yoki filtrlarga mos VPN ilovalar topilmadi.</string>
+    <string name="server_vpn_catalog_enabled">Katalogda yoqilgan</string>
+    <string name="server_vpn_catalog_disabled">Katalogda yoqilmagan</string>
+    <string name="server_vpn_new_badge">Yangi</string>
+    <string name="server_vpn_catalog_update_title">Katalog yangilanishi mavjud</string>
+    <string name="server_vpn_catalog_update_question">Server VPN katalogining %1$d-versiyasi mavjud. Hozir yuklab olinsinmi?</string>
+    <string name="server_vpn_catalog_download">Yuklab olish</string>
+    <string name="server_vpn_catalog_current">Server VPN katalogingiz yangilangan.</string>
+    <string name="server_vpn_catalog_updated">Server VPN katalogi yangilandi.</string>
+    <string name="server_vpn_catalog_update_error">Katalogni tekshirib yoki yuklab boʻlmadi. Qayta urining.</string>
+    <string name="server_vpn_updated_badge">Yangilangan</string>
+    <string name="server_vpn_maintenance_badge">Texnik xizmat koʻrsatilmoqda</string>
+    <string name="server_vpn_maintenance_detail">Usul vaqtincha texnik xizmat koʻrsatilmoqda</string>
+    <plurals name="server_vpn_app_count">
+        <item quantity="one">%1$d ilova mavjud</item>
+        <item quantity="other">%1$d ta ilova mavjud</item>
+    </plurals>
+</resources>

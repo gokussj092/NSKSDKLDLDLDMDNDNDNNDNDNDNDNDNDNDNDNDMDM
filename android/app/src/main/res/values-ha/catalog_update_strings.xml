@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="catalog_auto_title">Sabunta kundin Sabar VPN ta atomatik</string>
+    <string name="catalog_auto_detail">Yana duba sigogin kundin bayanai tare da sabar SP-DECODE naka ta hanyar HTTPS yayin da app ɗin a buɗe take, kuma yana iya yin binciken dawowa lokaci-lokaci a bango. Ana sauke sabbin bayanan kundin bayanai da gumaka ne kawai bayan an canza siga. Ba a buƙatar Firebase, asusu ko alamar turawa. Za ka iya kashe wannan a kowane lokaci.</string>
+    <string name="catalog_auto_switch">Kunna daidaita kundin bayanai a bango</string>
+</resources>

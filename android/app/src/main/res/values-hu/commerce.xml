@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="account_sign_in">Bejelentkezés</string>
+    <string name="account_web_description">Fiókját és vásárlásait a hivatalos webhelyen kezelheti. Az ingyenes funkciók fiók nélkül is elérhetők maradnak.</string>
+    <string name="account_continue_web">Folytatás a weben</string>
+    <string name="account_my_account">Fiókom</string>
+    <string name="account_store">Áruház</string>
+    <string name="account_open_menu">Menü megnyitása</string>
+    <string name="ads_privacy_options">Hirdetési adatvédelmi beállítások</string>
+</resources>

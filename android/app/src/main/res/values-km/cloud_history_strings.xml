@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_decode_progress_title">កំពុងឌិកូដការកំណត់រចនាសម្ព័ន្ធ</string>
+    <string name="cloud_decode_progress_message">វាអាចចំណាយពេលពីរបីនាទី។ សូមរង់ចាំ។</string>
+    <string name="cloud_large_result_title">ការកំណត់រចនាសម្ព័ន្ធធំត្រូវបានឌិកូដ</string>
+    <string name="cloud_large_result_body">ការកំណត់រចនាសម្ព័ន្ធត្រូវបានរក្សាទុកទៅក្នុងប្រវត្តិដែលបានអ៊ិនគ្រីប។ ការមើលលទ្ធផលដែលមានទំហំធំខ្លាំងអាចបន្ថយល្បឿន ឬបិទកម្មវិធី។ យើងសូមណែនាំឱ្យនាំចេញ JSON ពេញលេញពីប្រវត្តិដោយប្រើម៉ឺនុយបីចំណុច បន្ទាប់មកនាំចេញ។ ប្រព័ន្ធប្រតិបត្តិការ Android នឹងអនុញ្ញាតឱ្យអ្នកជ្រើសរើសថតឯកសារ និងឈ្មោះឯកសារ។</string>
+    <string name="cloud_large_result_acknowledge">យល់ហើយ</string>
+    <string name="cloud_history_actions">សកម្មភាពច្រើនទៀត</string>
+</resources>

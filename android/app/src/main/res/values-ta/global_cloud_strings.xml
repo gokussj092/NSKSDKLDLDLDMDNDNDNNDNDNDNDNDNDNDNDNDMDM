@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_global_title">கிளவுட் (ஆன்லைன்)</string>
+    <string name="cloud_global_auto">தானாகக் கண்டறி</string>
+    <string name="cloud_global_hint">ஆதரிக்கப்படும் கிளவுட் இணைப்பு, விசை அல்லது குறியீட்டை ஒட்டவும்</string>
+    <string name="cloud_global_action">கிளவுட்டிலிருந்து இறக்குமதி செய்</string>
+    <string name="cloud_global_detail">கிளவுட் இணைப்பு, விசை அல்லது குறியீட்டை ஒட்டவும், SP-DECODE வழங்குநரைத் தானாகக் கண்டறியும். அங்கீகரிக்கப்பட்ட சேவைகள் மட்டுமே ஆதரிக்கப்படுகின்றன.</string>
+    <string name="cloud_global_invalid">இந்தக் குறிப்பு கிடைக்கும் கிளவுட் வழங்குநர் எதனுடனும் பொருந்தவில்லை.</string>
+</resources>

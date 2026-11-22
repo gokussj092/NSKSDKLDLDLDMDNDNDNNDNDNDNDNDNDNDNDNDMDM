@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="harness_preparing">መተግበሪያ በማዘጋጀት ላይ…</string>
+    <string name="harness_review">በግምገማ ላይ</string>
+    <string name="harness_metadata">የመተግበሪያ ሜታዳታ በመመርመር ላይ…</string>
+    <string name="harness_code">የመተግበሪያ ኮድ በመመርመር ላይ…</string>
+    <string name="harness_details">የትንተና ዝርዝሮች</string>
+    <string name="harness_filename">ፋይል</string>
+    <string name="harness_size">መጠን</string>
+    <string name="harness_unknown_size">መጠን በመጠባበቅ ላይ</string>
+    <string name="harness_updated">የተዘመነው፡ %1$s</string>
+    <string name="harness_local_copy">ውጤቶች በዚህ መሣሪያ ላይ ተቀምጠዋል</string>
+    <string name="harness_normal">መደበኛ ዝውውር</string>
+    <string name="harness_chunks">በክፍሎች ዝውውር</string>
+    <string name="harness_support_ai">የድጋፍ AI</string>
+    <string name="harness_history_hint">ትንተናውን እና የተቀመጡ ውጤቶችን ለማየት መተግበሪያ ክፈት።</string>
+    <string name="harness_queued_hint">ሰቀላ ተጠናቋል። የትንተና ቦታ በመጠባበቅ ላይ።</string>
+    <string name="harness_review_hint">ትንተና በግምገማ በመጠባበቅ ላይ ነው።</string>
+    <string name="harness_transfer_title">የዝውውር ሁነታ</string>
+    <string name="harness_transfer_scope">ለሚቀጥለው የካታሎግ ማውረድ ወይም APK ሰቀላ ይተገበራል።</string>
+    <string name="harness_stable">የተረጋጋ ግንኙነት · ቀጣይ ዝውውር</string>
+    <string name="harness_unstable">ዝግ ወይም ያልተረጋጋ ግንኙነት · በክፍል ዝውውር</string>
+</resources>

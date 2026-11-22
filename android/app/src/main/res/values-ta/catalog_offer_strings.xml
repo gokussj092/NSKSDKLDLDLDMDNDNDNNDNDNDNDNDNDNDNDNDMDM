@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="catalog_offer_title">புதிய பட்டியல் கிடைக்கிறது</string>
+    <string name="catalog_offer_body">பட்டியல் பதிப்பு %1$d தயாராக உள்ளது. புதிதாக ஆதரிக்கப்படும் செயலிகள், முறைகள் மற்றும் மேம்பாடுகளை அணுக புதுப்பிக்கவும்.</string>
+    <string name="catalog_offer_update">இப்போது புதுப்பிக்கவும்</string>
+    <string name="catalog_offer_later">ரத்துசெய்</string>
+    <string name="catalog_postpone_title">புதுப்பிக்காமல் தொடரவா?</string>
+    <string name="catalog_postpone_body">நீங்கள் ரத்துசெய்தால், நீங்கள் புதுப்பிக்கும் வரை சமீபத்திய பட்டியல் செயலிகள், முறைகள் மற்றும் மேம்பாடுகள் கிடைக்காது. Server VPN-இல் பின்னர் புதுப்பிக்கலாம்.</string>
+    <string name="catalog_postpone_confirm">புதுப்பிக்காமல் தொடரவும்</string>
+    <string name="catalog_postpone_back">திரும்பிச் செல்</string>
+</resources>

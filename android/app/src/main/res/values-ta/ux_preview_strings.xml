@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="apk_import_button">APK இறக்குமதி</string>
+    <string name="apk_future_message">APK பகுப்பாய்வு எதிர்கால புதுப்பிப்பில் கிடைக்கும்.</string>
+    <string name="apk_credits_title">கிரெடிட் மையம்</string>
+    <string name="apk_credits_intro">எதிர்கால கிரெடிட்கள் மற்றும் APK பகுப்பாய்வு வாங்கல்களை நிர்வகிக்கவும்.</string>
+    <string name="apk_credits_notice">சேவை தொடங்கும்போது இருப்பு மற்றும் வாங்கல்கள் கிடைக்கும்.</string>
+    <string name="apk_credits_buy_title">கிரெடிட்கள் வாங்கு</string>
+    <string name="apk_credits_one">1 கிரெடிட்</string>
+    <string name="apk_credits_buy_one">1 கிரெடிட் வாங்கு · விரைவில் வருகிறது</string>
+    <string name="apk_credits_packages">கிரெடிட் தொகுப்புகள்</string>
+    <string name="apk_credits_buy_package">தொகுப்பு வாங்கு · விரைவில் வருகிறது</string>
+    <string name="apk_credits_prices_title">விலைகள்</string>
+    <string name="apk_credits_subscriptions">சந்தாக்கள்</string>
+    <string name="apk_credits_button">கிரெடிட்கள்: 1+</string>
+    <string name="apk_credits_back">திரும்பு</string>
+</resources>

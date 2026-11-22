@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="compatible_export_for">I-export para sa %1$s</string>
+    <string name="compatible_export_redecode">I-import ulit ang file na ito para paganahin ang pag-export sa %1$s.</string>
+    <string name="compatible_export_failed">Hindi ma-save ang compatible na file.</string>
+</resources>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="server_vpn_search_hint">Cari aplikasi VPN</string>
+    <string name="server_vpn_filter_all">Semua</string>
+    <string name="server_vpn_filter_enabled">Diaktifkan</string>
+    <string name="server_vpn_filter_favorites">Kegemaran</string>
+    <string name="server_vpn_favorite_add">Tambah ke kegemaran</string>
+    <string name="server_vpn_favorite_remove">Padam dari kegemaran</string>
+    <string name="server_vpn_manual_refresh">Semak katalog sekarang</string>
+    <string name="server_vpn_catalog_refreshing">Menyemak katalog server…</string>
+    <string name="server_vpn_no_matches">Tiada aplikasi VPN yang sesuai dengan carian atau penapis.</string>
+    <string name="server_vpn_catalog_enabled">Diaktifkan dalam katalog</string>
+    <string name="server_vpn_catalog_disabled">Belum diaktifkan dalam katalog</string>
+    <string name="server_vpn_new_badge">Baru</string>
+    <string name="server_vpn_catalog_update_title">Kemas kini katalog tersedia</string>
+    <string name="server_vpn_catalog_update_question">Versi %1$d katalog server VPN tersedia. Muat turun sekarang?</string>
+    <string name="server_vpn_catalog_download">Muat turun</string>
+    <string name="server_vpn_catalog_current">Katalog server VPN sudah terkini.</string>
+    <string name="server_vpn_catalog_updated">Katalog server VPN berjaya dikemas kini.</string>
+    <string name="server_vpn_catalog_update_error">Tidak dapat menyemak atau memuat turun katalog. Cuba lagi.</string>
+    <string name="server_vpn_updated_badge">Dikemas kini</string>
+    <string name="server_vpn_maintenance_badge">Dalam penyelenggaraan</string>
+    <string name="server_vpn_maintenance_detail">Kaedah sedang dalam penyelenggaraan sementara</string>
+    <plurals name="server_vpn_app_count">
+        <item quantity="one">%1$d aplikasi tersedia</item>
+        <item quantity="other">%1$d aplikasi tersedia</item>
+    </plurals>
+</resources>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="unsupported_file_title">지원되지 않는 파일 형식</string>
+    <string name="unsupported_file_detail">이 파일 확장자는 SP-DECODE에서 아직 사용할 수 없습니다. 지원을 제안하려면 개발자에게 문의하세요.</string>
+    <string name="unsupported_version_title">아직 지원되지 않는 파일 버전</string>
+    <string name="unsupported_version_detail">이 파일은 아직 호환되지 않는 버전이나 암호화 방식을 사용합니다. 개발자에게 지원을 요청할 수 있습니다.</string>
+    <string name="unsupported_text_title">지원되지 않는 텍스트 형식</string>
+    <string name="unsupported_text_detail">이 텍스트나 프로토콜은 아직 지원되지 않습니다. 통합을 제안하려면 개발자에게 문의하세요.</string>
+    <string name="catalog_check_action">업데이트</string>
+    <string name="catalog_checking">업데이트 중</string>
+    <string name="catalog_downloading">카탈로그 업데이트 중…</string>
+    <string name="catalog_progress">%1$d%%</string>
+    <string name="app_update_title">새 앱 버전을 사용할 수 있습니다</string>
+    <string name="app_update_body">SP-DECODE %1$s을(를) 사용할 수 있습니다. 업데이트를 받으려면 공식 Telegram 채널을 방문하세요.</string>
+    <string name="app_update_open">Telegram 열기</string>
+    <string name="app_update_close">닫기</string>
+    <string name="catalog_available_title">새 카탈로그 사용 가능</string>
+    <string name="catalog_available_body">새 카탈로그 버전 %1$d을(를) 다운로드할 수 있습니다.</string>
+    <string name="catalog_check_short">카탈로그 확인</string>
+</resources>

@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="catalog_download_confirm_body">是否一次性下载完整目录、格式和图标？</string>
+</resources>

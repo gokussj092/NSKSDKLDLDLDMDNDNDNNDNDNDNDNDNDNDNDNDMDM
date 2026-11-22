@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="about_screen_entry_detail">Siga, tsaro da hanyoyin haɗi na hukuma</string>
+    <string name="about_screen_description">Kayan aiki don nazarin tsarin VPN da warware ɓoyayyensu</string>
+    <string name="about_screen_version_badge">Siga %1$s · Gina %2$d</string>
+    <string name="about_screen_info">Bayanin app</string>
+    <string name="about_screen_languages">Harsunan da ake da su</string>
+    <string name="about_screen_installed">Sigar da aka shigar</string>
+    <string name="about_screen_features">Muhimman abubuwa</string>
+    <string name="about_screen_feature_decode">Warware ɓoyayyun fayilolin VPN</string>
+    <string name="about_screen_feature_catalog">Kundin Sabar VPN</string>
+    <string name="about_screen_feature_export">Fitar da JSON da fayilolin da aka buɗe</string>
+    <string name="about_screen_feature_history">Tarihin sakamako</string>
+    <string name="about_screen_security">Tsaro da sirri</string>
+    <string name="about_screen_cloud_security">Sadarwar Cloud V2 tana amfani da ɓoyayyar HPKE da binciken sahihanci kamar yadda tsarin sabis ɗin ya tanada.</string>
+    <string name="about_screen_local_security">Tarihin cikin gida an ɓoye shi a wannan na\'ura.</string>
+    <string name="about_screen_privacy">Manufar sirri</string>
+    <string name="about_screen_terms">Sharuɗɗan amfani</string>
+    <string name="about_screen_links">Al\'umma da hanyoyin haɗi na hukuma</string>
+    <string name="about_screen_website">Shafin yanar gizo na hukuma</string>
+    <string name="about_screen_community_detail">Al\'ummar Telegram ta hukuma</string>
+    <string name="about_screen_credit">Ghost Developer ne ya ƙirƙira shi</string>
+    <string name="about_screen_copyright">SP-DECODE · Duk haƙƙoƙi an tanade su</string>
+</resources>

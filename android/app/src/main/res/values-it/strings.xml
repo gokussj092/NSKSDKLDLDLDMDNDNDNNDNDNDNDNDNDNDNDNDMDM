@@ -364,6 +364,12 @@
     <string name="app_analysis_error_busy">Ci sono troppe analisi in corso. Riprova più tardi.</string>
     <string name="app_analysis_error_generic">Non è stato possibile completare l’operazione. Riprova.</string>
     <string name="app_analysis_title">Analisi APK</string>
+    <string name="apk_qa_sub_metadata">Lettura dei metadati del pacchetto</string>
+    <string name="apk_qa_sub_dex">Analisi del bytecode DEX e dei metodi</string>
+    <string name="apk_qa_sub_native">Ispezione delle librerie native (.so)</string>
+    <string name="apk_qa_sub_jadx">Decompilazione del codice con JADX Lite</string>
+    <string name="apk_qa_sub_recovery">Recupero dell\'output DEX parziale</string>
+    <string name="apk_qa_sub_evidence">Correlazione dei riferimenti crittografici</string>
     <string name="release_integrity_error_title">Impossibile verificare l’app</string>
     <string name="release_integrity_error_message">Non è stato possibile verificare la firma dell’app installata. Aggiorna SP-DECODE dalla fonte ufficiale. Se il problema persiste, contatta l’assistenza indicando il codice RELEASE_SIGNER_REJECTED.</string>
 </resources>

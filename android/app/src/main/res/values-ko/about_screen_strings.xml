@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="about_screen_entry_detail">버전, 보안 및 공식 링크</string>
+    <string name="about_screen_description">VPN 구성 분석 및 디코딩 도구</string>
+    <string name="about_screen_version_badge">버전 %1$s · 빌드 %2$d</string>
+    <string name="about_screen_info">앱 정보</string>
+    <string name="about_screen_languages">사용 가능한 언어</string>
+    <string name="about_screen_installed">설치된 버전</string>
+    <string name="about_screen_features">주요 기능</string>
+    <string name="about_screen_feature_decode">VPN 파일 디코딩</string>
+    <string name="about_screen_feature_catalog">서버 VPN 카탈로그</string>
+    <string name="about_screen_feature_export">JSON 및 잠금 해제 내보내기</string>
+    <string name="about_screen_feature_history">결과 기록</string>
+    <string name="about_screen_security">보안 및 개인정보 보호</string>
+    <string name="about_screen_cloud_security">Cloud V2 통신은 서비스 구성에 따라 HPKE 암호화 및 무결성 검사를 사용합니다.</string>
+    <string name="about_screen_local_security">로컬 기록은 이 기기에 암호화되어 있습니다.</string>
+    <string name="about_screen_privacy">개인정보처리방침</string>
+    <string name="about_screen_terms">이용 약관</string>
+    <string name="about_screen_links">커뮤니티 및 공식 링크</string>
+    <string name="about_screen_website">공식 웹사이트</string>
+    <string name="about_screen_community_detail">공식 Telegram 커뮤니티</string>
+    <string name="about_screen_credit">Ghost Developer 개발</string>
+    <string name="about_screen_copyright">SP-DECODE · 모든 권리 보유</string>
+</resources>

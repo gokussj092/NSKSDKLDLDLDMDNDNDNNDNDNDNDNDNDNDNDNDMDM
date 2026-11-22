@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="server_vpn_filter_ssh_accounts">Akaun SSH</string>
+    <string name="server_vpn_ssh_notice_text">Akaun SSH ini hanya dapat digunakan di aplikasi berikut:</string>
+    <string name="server_vpn_ssh_no_matches">Tiada akaun SSH yang sesuai dengan carian.</string>
+</resources>

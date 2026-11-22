@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_legal_title">លក្ខខណ្ឌ និងឯកជនភាព</string>
+    <string name="cloud_legal_explanation">SP-DECODE Cloud ផ្ញើឯកសារ ឬអត្ថបទដែលអ្នកជ្រើសរើសដើម្បីឌិកូដទៅកាន់ម៉ាស៊ីនមេរបស់វា។ វាក៏រាប់បញ្ចូលការដំឡើងសកម្មប្រហាក់ប្រហែលម្តងក្នុងមួយថ្ងៃ ដើម្បីរៀបចំផែនការសមត្ថភាពម៉ាស៊ីនមេ ដោយប្រើលេខកូដដំឡើងចៃដន្យ។ គ្មានខ្លឹមសារនៃការកំណត់រចនាសម្ព័ន្ធត្រូវបានរួមបញ្ចូលនៅក្នុងការរាប់ទាំងនោះទេ។</string>
+    <string name="cloud_legal_terms">អានលក្ខខណ្ឌ</string>
+    <string name="cloud_legal_privacy">អានគោលការណ៍ឯកជនភាព</string>
+    <string name="cloud_legal_accept_check">ខ្ញុំបានអាន និងទទួលយកលក្ខខណ្ឌ និងគោលការណ៍ឯកជនភាព។</string>
+    <string name="cloud_legal_accept">ទទួលយក</string>
+    <string name="cloud_legal_decline">បដិសេធ</string>
+    <string name="server_vpn_loading">កំពុងផ្ទុកកាតាឡុកម៉ាស៊ីនមេ VPN…</string>
+    <string name="server_vpn_unavailable">កាតាឡុកម៉ាស៊ីនមេ VPN មិនអាចប្រើបានទេ។ ពិនិត្យការតភ្ជាប់របស់អ្នក ហើយព្យាយាមម្តងទៀត។</string>
+    <string name="server_vpn_retry">សាកល្បងកាតាឡុកម្តងទៀត</string>
+    <string name="cloud_legal_withdraw">ដកការយល់ព្រមចំពោះ Cloud</string>
+    <string name="cloud_legal_withdraw_detail">ការដកការយល់ព្រមរារាំងសំណើម៉ាស៊ីនមេថ្មី។ ប្រវត្តិដែលបានអ៊ិនគ្រីបក្នុងមូលដ្ឋានរបស់អ្នកនឹងនៅតែមាននៅលើឧបករណ៍នេះ។ អ្នកអាចទទួលយកម្តងទៀតនៅពេលក្រោយ។</string>
+</resources>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="harness_preparing">កំពុងរៀបចំកម្មវិធី…</string>
+    <string name="harness_review">កំពុងពិនិត្យ</string>
+    <string name="harness_metadata">កំពុងពិនិត្យមើលទិន្នន័យមេតាកម្មវិធី…</string>
+    <string name="harness_code">កំពុងពិនិត្យលេខកូដកម្មវិធី…</string>
+    <string name="harness_details">ព័ត៌មានលម្អិតនៃការវិភាគ</string>
+    <string name="harness_filename">ឯកសារ</string>
+    <string name="harness_size">ទំហំ</string>
+    <string name="harness_unknown_size">ទំហំកំពុងរង់ចាំ</string>
+    <string name="harness_updated">បានធ្វើបច្ចុប្បន្នភាព៖ %1$s</string>
+    <string name="harness_local_copy">លទ្ធផលត្រូវបានរក្សាទុកនៅលើឧបករណ៍នេះ</string>
+    <string name="harness_normal">ការផ្ទេរធម្មតា</string>
+    <string name="harness_chunks">ផ្ទេរជាកំណាត់</string>
+    <string name="harness_support_ai">គាំទ្រ AI</string>
+    <string name="harness_history_hint">បើកកម្មវិធីដើម្បីមើលការវិភាគរបស់វា និងលទ្ធផលដែលបានរក្សាទុក។</string>
+    <string name="harness_queued_hint">ការបង្ហោះបានបញ្ចប់។ កំពុងរង់ចាំវេនវិភាគ។</string>
+    <string name="harness_review_hint">ការវិភាគកំពុងរង់ចាំការពិនិត្យ។</string>
+    <string name="harness_transfer_title">របៀបផ្ទេរ</string>
+    <string name="harness_transfer_scope">អនុវត្តចំពោះការទាញយកកាតាឡុកបន្ទាប់ ឬការបង្ហោះ APK។</string>
+    <string name="harness_stable">ការតភ្ជាប់មានស្ថេរភាព · ការផ្ទេរបន្ត</string>
+    <string name="harness_unstable">ការតភ្ជាប់យឺត ឬមិនស្ថិតស្ថេរ · ផ្ទេរជាផ្នែកៗ</string>
+</resources>

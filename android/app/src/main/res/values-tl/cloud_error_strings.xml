@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_failure_offline">Walang koneksyon sa internet. Kumonekta sa isang network at subukan ulit.</string>
+    <string name="cloud_failure_network">Hindi maabot ang serbisyo. Suriin ang iyong koneksyon at subukan ulit.</string>
+    <string name="cloud_failure_tls">Hindi makapagtatag ng ligtas na koneksyon. Suriin ang iyong network at ang orasan ng device.</string>
+    <string name="cloud_failure_timeout">Masyadong matagal ang request. Subukan ulit kapag stable na ang koneksyon.</string>
+    <string name="cloud_failure_integrity">Hindi makumpleto ang pag-verify ng application. I-update ang app o gamitin ang awtorisadong QA access.</string>
+    <string name="cloud_failure_qa_code">Kulang ang QA access. Buksan ang SP-DECODE QA at maglagay ng bagong pansamantalang code.</string>
+    <string name="cloud_failure_session">Nag-expire ang iyong session o hindi ito ma-verify. Pakisubukan ulit.</string>
+    <string name="cloud_failure_forbidden">Tinanggihan ang access. Suriin ang iyong awtorisasyon at subukan ulit.</string>
+    <string name="cloud_failure_qa">Hindi wasto, naka-disable o nag-expire ang QA access. Humingi ng bagong pribadong code.</string>
+    <string name="cloud_failure_consent">Tanggapin ang kasalukuyang mga tuntunin at paunawa sa privacy para magamit ang Cloud decoding.</string>
+    <string name="cloud_failure_rate">Masyadong maraming request. Maghintay muna bago subukan ulit.</string>
+    <string name="cloud_failure_large">Lumampas sa pinahihintulutang laki ang file o resulta.</string>
+    <string name="cloud_failure_invalid">Hindi matanggap ang file o request na ito. Suriin ang format.</string>
+    <string name="cloud_failure_unsupported">Hindi available sa server ang format ng file na ito.</string>
+    <string name="cloud_failure_decode">Hindi maproseso ng decoder ang bersyon ng file na ito. Hindi nangangahulugang sira ang file.</string>
+    <string name="cloud_failure_maintenance">Pansamantalang naka-maintenance ang serbisyong ito. Pakisubukan ulit mamaya.</string>
+    <string name="cloud_failure_unavailable">Pansamantalang hindi available ang serbisyo. Subukan ulit mamaya.</string>
+    <string name="cloud_failure_config_unavailable">Hindi na available ang Cloud configuration na ito. Maaaring nag-expire na ito, nabura, o para sa isang beses na paggamit lang. Hindi ito pagkabigo ng decoder.</string>
+    <string name="cloud_failure_remote">Nagbalik ng hindi wasto o hindi ma-verify na tugon ang remote provider.</string>
+    <string name="cloud_failure_credentials">Maling password o HWID. Suriin ang impormasyon at subukan ulit.</string>
+    <string name="cloud_failure_password">Kailangan ng password ang protektadong file na ito.</string>
+    <string name="cloud_failure_hwid">Kailangan ng HWID ang protektadong file na ito.</string>
+    <string name="cloud_failure_both">Kailangan ng password at HWID ang protektadong file na ito.</string>
+    <string name="cloud_failure_not_found">Hindi available o hindi nahanap ang hiniling na resource.</string>
+    <string name="cloud_failure_conflict">Sumasalungat ang request sa kasalukuyang estado. Pakisubukan ulit.</string>
+    <string name="cloud_failure_partial">Hindi kumpleto o hindi wasto ang resulta, kaya hindi ito ipapakita.</string>
+    <string name="cloud_failure_general">Hindi makumpleto ang operasyon. Subukan ulit o makipag-ugnayan sa support.</string>
+    <string name="cloud_failure_notice_title">Paunawa</string>
+    <string name="cloud_password_title">Kailangan ang password ng configuration</string>
+    <string name="cloud_password_description">Protektado ng password ang %1$s. Ilagay ang export password para magpatuloy. Hindi ito ise-save.</string>
+    <string name="cloud_failure_password_incorrect">Maling password.</string>
+    <string name="cloud_failure_private_key">Gumagamit ang NPVS file na ito ng proteksyon gamit ang recipient public/private key. Hindi pa suportado ang method na ito; malapit na itong suportahan.</string>
+    <string name="cloud_failure_recipient">Gumagamit ang NPVS file na ito ng recipient key method na hindi pa suportado. Malapit na itong suportahan.</string>
+    <string name="cloud_failure_npvs_unsupported">Hindi pa suportado ang bersyon o protection method ng NPVS na ito. Malapit na itong suportahan.</string>
+</resources>

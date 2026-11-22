@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_failure_npvs_appkey_auth">ឯកសារសោកម្មវិធី NPVS នេះមិនអាចផ្ទៀងផ្ទាត់បានទេ។ វាអាចប្រើវ៉ារ្យ៉ង់ផ្សេង ឬត្រូវបានកែប្រែ។ វិធីសាស្រ្តនេះមិនទាមទារពាក្យសម្ងាត់ ឬសោឯកជនរបស់អ្នកទទួលទេ។</string>
+</resources>

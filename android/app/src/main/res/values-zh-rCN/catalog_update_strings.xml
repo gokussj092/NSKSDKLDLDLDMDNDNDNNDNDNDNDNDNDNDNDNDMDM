@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="catalog_auto_title">Server VPN 目录自动更新</string>
+    <string name="catalog_auto_detail">在应用打开时通过 HTTPS 与您自己的 SP-DECODE 服务器检查目录版本，并可选择在后台不定期进行恢复检查。仅在版本变更后才会下载新的目录数据和图标。不需要 Firebase、账号或推送令牌。您可以随时停用此功能。</string>
+    <string name="catalog_auto_switch">启用后台目录同步</string>
+</resources>

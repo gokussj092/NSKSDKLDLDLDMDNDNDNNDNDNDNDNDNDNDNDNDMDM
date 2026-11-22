@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_global_title">Cloud (अनलाइन)</string>
+    <string name="cloud_global_auto">स्वतः पत्ता लगाउनुहोस्</string>
+    <string name="cloud_global_hint">समर्थित Cloud लिङ्क, कुञ्जी वा कोड टाँस्नुहोस्</string>
+    <string name="cloud_global_action">Cloud बाट आयात गर्नुहोस्</string>
+    <string name="cloud_global_detail">Cloud लिङ्क, कुञ्जी वा कोड टाँस्नुहोस् र SP-DECODE ले प्रदायक स्वतः पत्ता लगाउँछ। अनुमोदित सेवाहरू मात्र समर्थित छन्।</string>
+    <string name="cloud_global_invalid">यो सन्दर्भ उपलब्ध Cloud प्रदायकसँग मेल खाँदैन।</string>
+</resources>

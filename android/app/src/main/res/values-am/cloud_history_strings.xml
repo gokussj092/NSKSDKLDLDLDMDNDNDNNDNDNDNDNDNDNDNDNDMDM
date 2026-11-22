@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_decode_progress_title">ውቅር ዲኮድ በማድረግ ላይ</string>
+    <string name="cloud_decode_progress_message">ጥቂት ደቂቃዎችን ሊወስድ ይችላል። እባክዎ ይጠብቁ።</string>
+    <string name="cloud_large_result_title">ትልቅ ውቅር ዲኮድ ተደርጓል</string>
+    <string name="cloud_large_result_body">ውቅሩ ወደ ምስጠራ ታሪክ ተቀምጧል። በጣም ትልቅ ውጤቶችን አስቀድሞ ማየት መተግበሪያውን ሊያዘገይ ወይም ሊዘጋው ይችላል። ከታሪክ ውስጥ የሶስት ነጥብ ምናሌን በመጠቀም ሙሉውን JSON እንዲልኩ እንመክራለን፤ ከዚያም Export። Android አቃፊውን እና የፋይል ስም እንዲመርጡ ያስችልዎታል።</string>
+    <string name="cloud_large_result_acknowledge">ገብቶኛል</string>
+    <string name="cloud_history_actions">ተጨማሪ እርምጃዎች</string>
+</resources>

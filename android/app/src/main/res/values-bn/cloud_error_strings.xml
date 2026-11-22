@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_failure_offline">ইন্টারনেট সংযোগ নেই। নেটওয়ার্কে সংযুক্ত হয়ে আবার চেষ্টা করুন।</string>
+    <string name="cloud_failure_network">পরিষেবায় পৌঁছানো যাচ্ছে না। সংযোগ পরীক্ষা করে আবার চেষ্টা করুন।</string>
+    <string name="cloud_failure_tls">নিরাপদ সংযোগ স্থাপন করা যায়নি। নেটওয়ার্ক ও ডিভাইসের ঘড়ি পরীক্ষা করুন।</string>
+    <string name="cloud_failure_timeout">অনুরোধে অনেক সময় লেগেছে। সংযোগ স্থিতিশীল হলে আবার চেষ্টা করুন।</string>
+    <string name="cloud_failure_integrity">অ্যাপ যাচাই সম্পূর্ণ করা যায়নি। অ্যাপ আপডেট করুন বা অনুমোদিত QA অ্যাক্সেস ব্যবহার করুন।</string>
+    <string name="cloud_failure_qa_code">QA অ্যাক্সেস নেই। SP-DECODE QA খুলে নতুন অস্থায়ী কোড লিখুন।</string>
+    <string name="cloud_failure_session">আপনার সেশন মেয়াদোত্তীর্ণ হয়েছে বা যাচাই করা যায়নি। আবার চেষ্টা করুন।</string>
+    <string name="cloud_failure_forbidden">অ্যাক্সেস প্রত্যাখ্যাত। অনুমোদন পরীক্ষা করে আবার চেষ্টা করুন।</string>
+    <string name="cloud_failure_qa">QA অ্যাক্সেস অবৈধ, নিষ্ক্রিয় বা মেয়াদোত্তীর্ণ। নতুন ব্যক্তিগত কোড অনুরোধ করুন।</string>
+    <string name="cloud_failure_consent">Cloud ডিকোড ব্যবহার করতে বর্তমান শর্তাবলি ও গোপনীয়তা বিজ্ঞপ্তি মেনে নিন।</string>
+    <string name="cloud_failure_rate">অনেক বেশি অনুরোধ। আবার চেষ্টা করার আগে অপেক্ষা করুন।</string>
+    <string name="cloud_failure_large">ফাইল বা ফলাফল অনুমোদিত আকার ছাড়িয়ে গেছে।</string>
+    <string name="cloud_failure_invalid">এই ফাইল বা অনুরোধ গ্রহণ করা যায়নি। ফরম্যাট পরীক্ষা করুন।</string>
+    <string name="cloud_failure_unsupported">এই ফাইলের ফরম্যাট সার্ভারে উপলব্ধ নয়।</string>
+    <string name="cloud_failure_decode">ডিকোডার এই ফাইলের সংস্করণটি প্রক্রিয়া করতে পারেনি। ফাইলটি ক্ষতিগ্রস্ত নাও হতে পারে।</string>
+    <string name="cloud_failure_maintenance">এই পরিষেবাটি সাময়িকভাবে রক্ষণাবেক্ষণে রয়েছে। পরে আবার চেষ্টা করুন।</string>
+    <string name="cloud_failure_unavailable">পরিষেবাটি সাময়িকভাবে অনুপলব্ধ। পরে আবার চেষ্টা করুন।</string>
+    <string name="cloud_failure_config_unavailable">এই Cloud কনফিগারেশনটি আর উপলব্ধ নয়। এটির মেয়াদ শেষ হয়ে থাকতে পারে, মুছে ফেলা হয়ে থাকতে পারে, অথবা এটি একবার ব্যবহারের জন্য বৈধ ছিল। এটি ডিকোডারের ব্যর্থতা নয়।</string>
+    <string name="cloud_failure_remote">দূরবর্তী প্রদানকারী একটি অবৈধ বা যাচাই-অযোগ্য উত্তর দিয়েছে।</string>
+    <string name="cloud_failure_credentials">ভুল পাসওয়ার্ড বা HWID। তথ্য পরীক্ষা করে আবার চেষ্টা করুন।</string>
+    <string name="cloud_failure_password">এই সুরক্ষিত ফাইলের জন্য পাসওয়ার্ড প্রয়োজন।</string>
+    <string name="cloud_failure_hwid">এই সুরক্ষিত ফাইলের জন্য HWID প্রয়োজন।</string>
+    <string name="cloud_failure_both">এই সুরক্ষিত ফাইলের জন্য পাসওয়ার্ড ও HWID দুটোই প্রয়োজন।</string>
+    <string name="cloud_failure_not_found">অনুরোধ করা রিসোর্সটি অনুপলব্ধ বা পাওয়া যায়নি।</string>
+    <string name="cloud_failure_conflict">অনুরোধটি বর্তমান অবস্থার সঙ্গে সাংঘর্ষিক। আবার চেষ্টা করুন।</string>
+    <string name="cloud_failure_partial">ফলাফলটি অসম্পূর্ণ বা অবৈধ ছিল, তাই দেখানো হবে না।</string>
+    <string name="cloud_failure_general">কাজটি সম্পূর্ণ করা যায়নি। আবার চেষ্টা করুন বা সহায়তার সঙ্গে যোগাযোগ করুন।</string>
+    <string name="cloud_failure_notice_title">বিজ্ঞপ্তি</string>
+    <string name="cloud_password_title">কনফিগারেশন পাসওয়ার্ড প্রয়োজন</string>
+    <string name="cloud_password_description">%1$s পাসওয়ার্ড দিয়ে সুরক্ষিত। এগিয়ে যেতে এক্সপোর্ট পাসওয়ার্ড লিখুন। এটি সংরক্ষণ করা হবে না।</string>
+    <string name="cloud_failure_password_incorrect">ভুল পাসওয়ার্ড।</string>
+    <string name="cloud_failure_private_key">এই NPVS ফাইলটি প্রাপকের পাবলিক/প্রাইভেট কি সুরক্ষা ব্যবহার করে। এই পদ্ধতিটি এখনও সমর্থিত নয়; সহায়তা শীঘ্রই আসছে।</string>
+    <string name="cloud_failure_recipient">এই NPVS ফাইলটি এমন একটি প্রাপক কি পদ্ধতি ব্যবহার করে যা এখনও সমর্থিত নয়। সহায়তা শীঘ্রই আসছে।</string>
+    <string name="cloud_failure_npvs_unsupported">এই NPVS সংস্করণ বা সুরক্ষা পদ্ধতি এখনও সমর্থিত নয়। সহায়তা শীঘ্রই আসছে।</string>
+</resources>

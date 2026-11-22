@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="catalog_auto_title">Аутоматска ажурирања каталога Server VPN</string>
+    <string name="catalog_auto_detail">Проверава верзије каталога са вашим SP-DECODE сервером преко HTTPS док је апликација отворена, а по потреби обавља ретке провере опоравка у позадини. Нови подаци каталога и иконе преузимају се тек након промене верзије. Нису потребни Firebase, налог ни push токен. Можете ово искључити у било ком тренутку.</string>
+    <string name="catalog_auto_switch">Омогући синхронизацију каталога у позадини</string>
+</resources>

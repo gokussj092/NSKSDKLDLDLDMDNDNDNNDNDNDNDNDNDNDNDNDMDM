@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_failure_offline">Žádné připojení k internetu. Připojte se k síti a zkuste to znovu.</string>
+    <string name="cloud_failure_network">Službu nelze kontaktovat. Zkontrolujte připojení a zkuste to znovu.</string>
+    <string name="cloud_failure_tls">Nepodařilo se navázat zabezpečené připojení. Zkontrolujte síť a hodiny zařízení.</string>
+    <string name="cloud_failure_timeout">Požadavek trval příliš dlouho. Zkuste to znovu, až bude připojení stabilní.</string>
+    <string name="cloud_failure_integrity">Ověření aplikace se nepodařilo dokončit. Aktualizujte aplikaci nebo použijte autorizovaný přístup QA.</string>
+    <string name="cloud_failure_qa_code">Přístup QA chybí. Otevřete SP-DECODE QA a zadejte nový dočasný kód.</string>
+    <string name="cloud_failure_session">Vaše relace vypršela nebo ji nebylo možné ověřit. Zkuste to prosím znovu.</string>
+    <string name="cloud_failure_forbidden">Přístup odepřen. Zkontrolujte své oprávnění a zkuste to znovu.</string>
+    <string name="cloud_failure_qa">Přístup QA je neplatný, zakázaný nebo vypršel. Požádejte o nový soukromý kód.</string>
+    <string name="cloud_failure_consent">Pro používání dekódování Cloud přijměte aktuální podmínky a oznámení o ochraně osobních údajů.</string>
+    <string name="cloud_failure_rate">Příliš mnoho požadavků. Před dalším pokusem chvíli počkejte.</string>
+    <string name="cloud_failure_large">Soubor nebo výsledek překračuje povolenou velikost.</string>
+    <string name="cloud_failure_invalid">Tento soubor nebo požadavek nebylo možné přijmout. Zkontrolujte formát.</string>
+    <string name="cloud_failure_unsupported">Tento formát souboru není na serveru k dispozici.</string>
+    <string name="cloud_failure_decode">Dekodér nemohl zpracovat tuto verzi souboru. Soubor nemusí být nutně poškozený.</string>
+    <string name="cloud_failure_maintenance">Tato služba je dočasně v údržbě. Zkuste to prosím později.</string>
+    <string name="cloud_failure_unavailable">Služba je dočasně nedostupná. Zkuste to později.</string>
+    <string name="cloud_failure_config_unavailable">Tato konfigurace Cloudu již není k dispozici. Mohla vypršet, být smazána nebo platit pouze pro jedno použití. Nejedná se o selhání dekodéru.</string>
+    <string name="cloud_failure_remote">Vzdálený poskytovatel vrátil neplatnou nebo neověřitelnou odpověď.</string>
+    <string name="cloud_failure_credentials">Nesprávné heslo nebo HWID. Zkontrolujte údaje a zkuste to znovu.</string>
+    <string name="cloud_failure_password">Tento chráněný soubor vyžaduje heslo.</string>
+    <string name="cloud_failure_hwid">Tento chráněný soubor vyžaduje HWID.</string>
+    <string name="cloud_failure_both">Tento chráněný soubor vyžaduje heslo i HWID.</string>
+    <string name="cloud_failure_not_found">Požadovaný prostředek je nedostupný nebo nebyl nalezen.</string>
+    <string name="cloud_failure_conflict">Požadavek je v rozporu s aktuálním stavem. Zkuste to prosím znovu.</string>
+    <string name="cloud_failure_partial">Výsledek byl neúplný nebo neplatný a nebude zobrazen.</string>
+    <string name="cloud_failure_general">Operaci se nepodařilo dokončit. Zkuste to znovu nebo kontaktujte podporu.</string>
+    <string name="cloud_failure_notice_title">Oznámení</string>
+    <string name="cloud_password_title">Vyžadováno heslo konfigurace</string>
+    <string name="cloud_password_description">%1$s je chráněno heslem. Pokračujte zadáním exportního hesla. Nebude uloženo.</string>
+    <string name="cloud_failure_password_incorrect">Nesprávné heslo.</string>
+    <string name="cloud_failure_private_key">Tento soubor NPVS používá ochranu veřejným/soukromým klíčem příjemce. Tato metoda zatím není podporována; podpora brzy přijde.</string>
+    <string name="cloud_failure_recipient">Tento soubor NPVS používá metodu klíče příjemce, která zatím není podporována. Podpora brzy přijde.</string>
+    <string name="cloud_failure_npvs_unsupported">Tato verze nebo metoda ochrany NPVS zatím není podporována. Podpora brzy přijde.</string>
+</resources>

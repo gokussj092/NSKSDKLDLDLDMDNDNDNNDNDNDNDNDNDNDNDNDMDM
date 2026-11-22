@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_report_action">Ripoti hitilafu</string>
+    <string name="cloud_report_sent">Ripoti imepokelewa: %1$s</string>
+    <string name="cloud_report_failed">Ripoti haikuweza kuwasilishwa. Jaribu tena baadaye.</string>
+    <string name="cloud_usage_title">Takwimu za usakinishaji bila kujulikana</string>
+    <string name="cloud_usage_detail">SP-DECODE huhesabu usakinishaji hai wa kukadiria mara moja kwa siku ili kupanga uwezo wa seva. Hutumia msimbo wa usakinishaji wa nasibu, si Kitambulisho chako cha Android, HWID au Kitambulisho cha matangazo.</string>
+    <string name="cloud_usage_footnote">Inajumuishwa na matumizi ya Cloud baada ya kukubali masharti yake ya faragha. Hakuna yaliyomo kwenye faili, nywila au usanidi uliosimbuwa yanayojumuishwa.</string>
+</resources>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="streak_verified_date">Petsa na na-verify ng server</string>
+    <string name="streak_date_pending">Naghihintay ng na-verify na petsa</string>
+    <string name="streak_today_done">Natapos ngayong araw</string>
+    <string name="streak_today_pending">Mag-decode ng file o text ngayong araw para mapanatili ang iyong streak</string>
+    <string name="streak_weekly_reward">Tuwing 7 magkakasunod na araw</string>
+    <string name="streak_reward">+1 credit sa pagsusuri ng APK</string>
+    <string name="streak_reward_delivered">Naibigay na ang reward</string>
+    <string name="streak_verified_note">Bine-verify ng server ang mga araw at reward.</string>
+    <plurals name="streak_days_left">
+        <item quantity="one">%1$d araw na lang</item>
+        <item quantity="other">%1$d araw na lang</item>
+    </plurals>
+    <string name="streak_reminder_channel">Mga paalala sa streak</string>
+    <string name="streak_reminder_title">Naghihintay ang iyong streak</string>
+    <string name="streak_reminder_body">Mag-decode ng file o text ngayong araw para mapanatili ang iyong streak.</string>
+</resources>

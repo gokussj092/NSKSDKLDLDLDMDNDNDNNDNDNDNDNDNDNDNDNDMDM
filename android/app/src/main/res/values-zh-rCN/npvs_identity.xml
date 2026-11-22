@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="npv_title">NPV 接收方密钥</string>
+    <string name="npv_detail">将您的身份用于为您制作的文件。密钥已在本设备上加密。启用此选项即可与 SP Cloud 一起使用。</string>
+    <string name="npv_enabled">使用我的 NPV 身份</string>
+    <string name="npv_generate">通过 SP Cloud 生成</string>
+    <string name="npv_import">导入捕获的 JSON</string>
+    <string name="npv_generated">由 SP Cloud 生成</string>
+    <string name="npv_captured">从官方应用捕获</string>
+    <string name="npv_file_only">仅此文件</string>
+    <string name="npv_view">查看与复制</string>
+    <string name="npv_delete">删除</string>
+    <string name="npv_invalid">无法读取 NPV 密钥。请检查 JSON 和匹配的密钥。</string>
+    <string name="npv_saved">身份已保存。请启用该选项以使用。</string>
+    <string name="npv_generation_notice">仅与为您创建 VPN 服务器或配置的人分享公钥。切勿分享您的私钥。</string>
+    <string name="npv_choose_title">选择 NPV 身份</string>
+    <string name="npv_send_notice">请选择用于通过 SP Cloud 打开此文件的身份。</string>
+    <string name="npv_use">使用所选身份</string>
+    <string name="npv_copy_public">复制公钥</string>
+    <string name="npv_copy_private">复制私钥</string>
+    <string name="npv_reveal">显示或隐藏私钥</string>
+    <string name="npv_hardware_notice">硬件私钥不可导出。此捕获仅适用于匹配的文件。</string>
+    <string name="npv_delete_title">删除此身份吗？</string>
+    <string name="npv_delete_warning">此密钥仅存储在本设备上。一旦删除，SP Cloud 将无法恢复。您可能会失去访问为此身份加密的文件的权限。</string>
+    <string name="npv_public_label">公钥 · P-256</string>
+    <string name="npv_private_label">私钥 · PKCS#8</string>
+    <string name="npv_cancel">取消</string>
+    <string name="npv_already_generated">已存在一个 SP Cloud 身份。请先删除它，再生成另一个。</string>
+</resources>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="harness_preparing">Se pregătește aplicația…</string>
+    <string name="harness_review">În revizuire</string>
+    <string name="harness_metadata">Se inspectează metadatele aplicației…</string>
+    <string name="harness_code">Se inspectează codul aplicației…</string>
+    <string name="harness_details">Detalii ale analizei</string>
+    <string name="harness_filename">Fișier</string>
+    <string name="harness_size">Dimensiune</string>
+    <string name="harness_unknown_size">Dimensiune în așteptare</string>
+    <string name="harness_updated">Actualizat: %1$s</string>
+    <string name="harness_local_copy">Rezultate salvate pe acest dispozitiv</string>
+    <string name="harness_normal">Transfer normal</string>
+    <string name="harness_chunks">Transfer în părți</string>
+    <string name="harness_support_ai">AI de asistență</string>
+    <string name="harness_history_hint">Deschide o aplicație pentru a vedea analiza și rezultatele salvate.</string>
+    <string name="harness_queued_hint">Încărcare finalizată. Se așteaptă un slot de analiză.</string>
+    <string name="harness_review_hint">Analiza așteaptă revizuirea.</string>
+    <string name="harness_transfer_title">Mod de transfer</string>
+    <string name="harness_transfer_scope">Se aplică la următoarea descărcare a catalogului sau încărcare APK.</string>
+    <string name="harness_stable">Conexiune stabilă · transfer continuu</string>
+    <string name="harness_unstable">Conexiune lentă sau instabilă · transfer în părți</string>
+</resources>

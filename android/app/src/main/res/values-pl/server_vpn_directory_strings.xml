@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="server_vpn_search_hint">Szukaj aplikacji VPN</string>
+    <string name="server_vpn_filter_all">Wszystkie</string>
+    <string name="server_vpn_filter_enabled">Włączone</string>
+    <string name="server_vpn_filter_favorites">Ulubione</string>
+    <string name="server_vpn_favorite_add">Dodaj do ulubionych</string>
+    <string name="server_vpn_favorite_remove">Usuń z ulubionych</string>
+    <string name="server_vpn_manual_refresh">Sprawdź katalog teraz</string>
+    <string name="server_vpn_catalog_refreshing">Sprawdzanie katalogu serwerów…</string>
+    <string name="server_vpn_no_matches">Żadne aplikacje VPN nie pasują do wyszukiwania ani filtrów.</string>
+    <string name="server_vpn_catalog_enabled">Włączone w katalogu</string>
+    <string name="server_vpn_catalog_disabled">Niewłączone w katalogu</string>
+    <string name="server_vpn_new_badge">Nowe</string>
+    <string name="server_vpn_catalog_update_title">Dostępna aktualizacja katalogu</string>
+    <string name="server_vpn_catalog_update_question">Wersja %1$d katalogu Server VPN jest dostępna. Pobrać ją teraz?</string>
+    <string name="server_vpn_catalog_download">Pobierz</string>
+    <string name="server_vpn_catalog_current">Twój katalog Server VPN jest aktualny.</string>
+    <string name="server_vpn_catalog_updated">Katalog Server VPN zaktualizowany.</string>
+    <string name="server_vpn_catalog_update_error">Nie można sprawdzić ani pobrać katalogu. Spróbuj ponownie.</string>
+    <string name="server_vpn_updated_badge">Zaktualizowano</string>
+    <string name="server_vpn_maintenance_badge">W trakcie konserwacji</string>
+    <string name="server_vpn_maintenance_detail">Metoda tymczasowo w trakcie konserwacji</string>
+    <plurals name="server_vpn_app_count">
+        <item quantity="one">Dostępna %1$d aplikacja</item>
+        <item quantity="other">Dostępnych aplikacji: %1$d</item>
+    </plurals>
+</resources>

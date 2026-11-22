@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_failure_offline">Δεν υπάρχει σύνδεση στο διαδίκτυο. Συνδεθείτε σε ένα δίκτυο και δοκιμάστε ξανά.</string>
+    <string name="cloud_failure_network">Δεν είναι δυνατή η πρόσβαση στην υπηρεσία. Ελέγξτε τη σύνδεσή σας και δοκιμάστε ξανά.</string>
+    <string name="cloud_failure_tls">Δεν ήταν δυνατή η δημιουργία ασφαλούς σύνδεσης. Ελέγξτε το δίκτυο και το ρολόι της συσκευής σας.</string>
+    <string name="cloud_failure_timeout">Το αίτημα πήρε πολύ χρόνο. Δοκιμάστε ξανά όταν η σύνδεση είναι σταθερή.</string>
+    <string name="cloud_failure_integrity">Δεν ήταν δυνατή η ολοκλήρωση της επαλήθευσης της εφαρμογής. Ενημερώστε την εφαρμογή ή χρησιμοποιήστε την εξουσιοδοτημένη πρόσβαση QA.</string>
+    <string name="cloud_failure_qa_code">Λείπει η πρόσβαση QA. Ανοίξτε το SP-DECODE QA και εισαγάγετε έναν νέο προσωρινό κωδικό.</string>
+    <string name="cloud_failure_session">Η συνεδρία σας έληξε ή δεν ήταν δυνατή η επαλήθευσή της. Δοκιμάστε ξανά.</string>
+    <string name="cloud_failure_forbidden">Η πρόσβαση απαγορεύτηκε. Ελέγξτε την εξουσιοδότησή σας και δοκιμάστε ξανά.</string>
+    <string name="cloud_failure_qa">Η πρόσβαση QA δεν είναι έγκυρη, είναι απενεργοποιημένη ή έχει λήξει. Ζητήστε έναν νέο ιδιωτικό κωδικό.</string>
+    <string name="cloud_failure_consent">Αποδεχθείτε τους τρέχοντες όρους και τη σημείωση απορρήτου για να χρησιμοποιήσετε την αποκωδικοποίηση Cloud.</string>
+    <string name="cloud_failure_rate">Πάρα πολλά αιτήματα. Περιμένετε πριν δοκιμάσετε ξανά.</string>
+    <string name="cloud_failure_large">Το αρχείο ή το αποτέλεσμα υπερβαίνει το επιτρεπόμενο μέγεθος.</string>
+    <string name="cloud_failure_invalid">Αυτό το αρχείο ή αίτημα δεν ήταν δυνατό να γίνει αποδεκτό. Ελέγξτε τη μορφή.</string>
+    <string name="cloud_failure_unsupported">Αυτή η μορφή αρχείου δεν είναι διαθέσιμη στον διακομιστή.</string>
+    <string name="cloud_failure_decode">Ο αποκωδικοποιητής δεν μπόρεσε να επεξεργαστεί αυτήν την έκδοση αρχείου. Το αρχείο δεν είναι απαραίτητα κατεστραμμένο.</string>
+    <string name="cloud_failure_maintenance">Αυτή η υπηρεσία βρίσκεται προσωρινά υπό συντήρηση. Δοκιμάστε ξανά αργότερα.</string>
+    <string name="cloud_failure_unavailable">Η υπηρεσία δεν είναι προσωρινά διαθέσιμη. Δοκιμάστε ξανά αργότερα.</string>
+    <string name="cloud_failure_config_unavailable">Αυτή η διαμόρφωση Cloud δεν είναι πλέον διαθέσιμη. Μπορεί να έχει λήξει, να έχει διαγραφεί ή να ίσχυε για μία μόνο χρήση. Αυτό δεν είναι σφάλμα αποκωδικοποιητή.</string>
+    <string name="cloud_failure_remote">Ο απομακρυσμένος πάροχος επέστρεψε μη έγκυρη ή μη επαληθεύσιμη απάντηση.</string>
+    <string name="cloud_failure_credentials">Λανθασμένος κωδικός πρόσβασης ή HWID. Ελέγξτε τις πληροφορίες και δοκιμάστε ξανά.</string>
+    <string name="cloud_failure_password">Αυτό το προστατευμένο αρχείο απαιτεί κωδικό πρόσβασης.</string>
+    <string name="cloud_failure_hwid">Αυτό το προστατευμένο αρχείο απαιτεί HWID.</string>
+    <string name="cloud_failure_both">Αυτό το προστατευμένο αρχείο απαιτεί κωδικό πρόσβασης και HWID.</string>
+    <string name="cloud_failure_not_found">Ο πόρος που ζητήθηκε δεν είναι διαθέσιμος ή δεν βρέθηκε.</string>
+    <string name="cloud_failure_conflict">Το αίτημα έρχεται σε σύγκρουση με την τρέχουσα κατάσταση. Δοκιμάστε ξανά.</string>
+    <string name="cloud_failure_partial">Το αποτέλεσμα ήταν ελλιπές ή μη έγκυρο και δεν θα εμφανιστεί.</string>
+    <string name="cloud_failure_general">Δεν ήταν δυνατή η ολοκλήρωση της λειτουργίας. Δοκιμάστε ξανά ή επικοινωνήστε με την υποστήριξη.</string>
+    <string name="cloud_failure_notice_title">Σημείωση</string>
+    <string name="cloud_password_title">Απαιτείται κωδικός πρόσβασης διαμόρφωσης</string>
+    <string name="cloud_password_description">Το %1$s προστατεύεται με κωδικό πρόσβασης. Εισαγάγετε τον κωδικό πρόσβασης εξαγωγής για να συνεχίσετε. Δεν θα αποθηκευτεί.</string>
+    <string name="cloud_failure_password_incorrect">Λανθασμένος κωδικός πρόσβασης.</string>
+    <string name="cloud_failure_private_key">Αυτό το αρχείο NPVS χρησιμοποιεί προστασία με δημόσιο/ιδιωτικό κλειδί παραλήπτη. Αυτή η μέθοδος δεν υποστηρίζεται ακόμη· η υποστήριξη έρχεται σύντομα.</string>
+    <string name="cloud_failure_recipient">Αυτό το αρχείο NPVS χρησιμοποιεί μέθοδο κλειδιού παραλήπτη που δεν υποστηρίζεται ακόμη. Η υποστήριξη έρχεται σύντομα.</string>
+    <string name="cloud_failure_npvs_unsupported">Αυτή η έκδοση ή μέθοδος προστασίας NPVS δεν υποστηρίζεται ακόμη. Η υποστήριξη έρχεται σύντομα.</string>
+</resources>

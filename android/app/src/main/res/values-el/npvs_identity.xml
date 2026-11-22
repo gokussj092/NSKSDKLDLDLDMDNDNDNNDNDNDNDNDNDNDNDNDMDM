@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="npv_title">Κλειδιά παραλήπτη NPV</string>
+    <string name="npv_detail">Χρησιμοποιήστε την ταυτότητά σας για αρχεία που έγιναν για εσάς. Τα κλειδιά είναι κρυπτογραφημένα σε αυτήν τη συσκευή. Ενεργοποιήστε αυτήν την επιλογή για να τα χρησιμοποιήσετε με το SP Cloud.</string>
+    <string name="npv_enabled">Χρήση των ταυτοτήτων NPV μου</string>
+    <string name="npv_generate">Δημιουργία με το SP Cloud</string>
+    <string name="npv_import">Εισαγωγή καταγεγραμμένου JSON</string>
+    <string name="npv_generated">Δημιουργήθηκε από το SP Cloud</string>
+    <string name="npv_captured">Καταγράφηκε από την επίσημη εφαρμογή</string>
+    <string name="npv_file_only">Μόνο αυτό το αρχείο</string>
+    <string name="npv_view">Προβολή και αντιγραφή</string>
+    <string name="npv_delete">Διαγραφή</string>
+    <string name="npv_invalid">Δεν είναι δυνατή η ανάγνωση των κλειδιών NPV. Ελέγξτε το JSON και τα αντίστοιχα κλειδιά.</string>
+    <string name="npv_saved">Η ταυτότητα αποθηκεύτηκε. Ενεργοποιήστε την επιλογή για να τη χρησιμοποιήσετε.</string>
+    <string name="npv_generation_notice">Κοινοποιήστε μόνο το δημόσιο κλειδί στο άτομο που δημιουργεί τον διακομιστή VPN ή τη διαμόρφωσή σας. Μην κοινοποιήσετε ποτέ το ιδιωτικό σας κλειδί.</string>
+    <string name="npv_choose_title">Επιλογή ταυτότητας NPV</string>
+    <string name="npv_send_notice">Επιλέξτε την ταυτότητα με την οποία θα ανοίξετε αυτό το αρχείο με το SP Cloud.</string>
+    <string name="npv_use">Χρήση επιλεγμένης ταυτότητας</string>
+    <string name="npv_copy_public">Αντιγραφή δημόσιου κλειδιού</string>
+    <string name="npv_copy_private">Αντιγραφή ιδιωτικού κλειδιού</string>
+    <string name="npv_reveal">Εμφάνιση ή απόκρυψη ιδιωτικού κλειδιού</string>
+    <string name="npv_hardware_notice">Το ιδιωτικό κλειδί υλικού δεν μπορεί να εξαχθεί. Αυτή η καταγραφή λειτουργεί μόνο για το αντίστοιχο αρχείο.</string>
+    <string name="npv_delete_title">Διαγραφή αυτής της ταυτότητας;</string>
+    <string name="npv_delete_warning">Αυτό το κλειδί αποθηκεύεται μόνο σε αυτήν τη συσκευή. Μόλις διαγραφεί, το SP Cloud δεν μπορεί να το ανακτήσει. Μπορεί να χάσετε την πρόσβαση σε αρχεία κρυπτογραφημένα για αυτήν την ταυτότητα.</string>
+    <string name="npv_public_label">Δημόσιο κλειδί · P-256</string>
+    <string name="npv_private_label">Ιδιωτικό κλειδί · PKCS#8</string>
+    <string name="npv_cancel">Ακύρωση</string>
+    <string name="npv_already_generated">Υπάρχει ήδη ταυτότητα SP Cloud. Διαγράψτε την πριν δημιουργήσετε άλλη.</string>
+</resources>

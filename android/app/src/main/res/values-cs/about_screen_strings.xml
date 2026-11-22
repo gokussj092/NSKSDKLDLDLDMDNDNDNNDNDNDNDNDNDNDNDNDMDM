@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="about_screen_entry_detail">Verze, zabezpečení a oficiální odkazy</string>
+    <string name="about_screen_description">Nástroj pro analýzu a dekódování konfigurací VPN</string>
+    <string name="about_screen_version_badge">Verze %1$s · Sestavení %2$d</string>
+    <string name="about_screen_info">Informace o aplikaci</string>
+    <string name="about_screen_languages">Dostupné jazyky</string>
+    <string name="about_screen_installed">Nainstalovaná verze</string>
+    <string name="about_screen_features">Hlavní funkce</string>
+    <string name="about_screen_feature_decode">Dekódování souborů VPN</string>
+    <string name="about_screen_feature_catalog">Katalog serverů VPN</string>
+    <string name="about_screen_feature_export">Export JSON a odemčený export</string>
+    <string name="about_screen_feature_history">Historie výsledků</string>
+    <string name="about_screen_security">Zabezpečení a soukromí</string>
+    <string name="about_screen_cloud_security">Komunikace Cloud V2 používá šifrování HPKE a kontroly integrity podle konfigurace služby.</string>
+    <string name="about_screen_local_security">Místní historie je na tomto zařízení šifrovaná.</string>
+    <string name="about_screen_privacy">Zásady ochrany osobních údajů</string>
+    <string name="about_screen_terms">Podmínky použití</string>
+    <string name="about_screen_links">Komunitní a oficiální odkazy</string>
+    <string name="about_screen_website">Oficiální webové stránky</string>
+    <string name="about_screen_community_detail">Oficiální komunita na Telegramu</string>
+    <string name="about_screen_credit">Vyvinul Ghost Developer</string>
+    <string name="about_screen_copyright">SP-DECODE · Všechna práva vyhrazena</string>
+</resources>

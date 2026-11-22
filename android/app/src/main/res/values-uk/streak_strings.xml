@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="streak_verified_date">Дата, підтверджена сервером</string>
+    <string name="streak_date_pending">Очікування підтвердженої дати</string>
+    <string name="streak_today_done">Виконано сьогодні</string>
+    <string name="streak_today_pending">Декодуйте файл або текст сьогодні, щоб зберегти свою серію</string>
+    <string name="streak_weekly_reward">Кожні 7 днів поспіль</string>
+    <string name="streak_reward">+1 кредит аналізу APK</string>
+    <string name="streak_reward_delivered">Нагороду видано</string>
+    <string name="streak_verified_note">Дні та нагороди підтверджуються сервером.</string>
+    <plurals name="streak_days_left">
+        <item quantity="one">Залишився %1$d день</item>
+        <item quantity="other">Залишилося днів: %1$d</item>
+    </plurals>
+    <string name="streak_reminder_channel">Нагадування про серію</string>
+    <string name="streak_reminder_title">Ваша серія чекає</string>
+    <string name="streak_reminder_body">Декодуйте файл або текст сьогодні, щоб зберегти свою серію.</string>
+</resources>

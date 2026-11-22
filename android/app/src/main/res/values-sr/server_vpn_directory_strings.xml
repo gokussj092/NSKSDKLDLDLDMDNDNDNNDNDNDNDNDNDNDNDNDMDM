@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="server_vpn_search_hint">Претражи VPN апликације</string>
+    <string name="server_vpn_filter_all">Све</string>
+    <string name="server_vpn_filter_enabled">Омогућено</string>
+    <string name="server_vpn_filter_favorites">Омиљено</string>
+    <string name="server_vpn_favorite_add">Додај у омиљено</string>
+    <string name="server_vpn_favorite_remove">Уклони из омиљеног</string>
+    <string name="server_vpn_manual_refresh">Провери каталог сада</string>
+    <string name="server_vpn_catalog_refreshing">Провера каталога сервера…</string>
+    <string name="server_vpn_no_matches">Ниједна VPN апликација не одговара вашој претрази или филтерима.</string>
+    <string name="server_vpn_catalog_enabled">Омогућено у каталогу</string>
+    <string name="server_vpn_catalog_disabled">Није омогућено у каталогу</string>
+    <string name="server_vpn_new_badge">Ново</string>
+    <string name="server_vpn_catalog_update_title">Доступно је ажурирање каталога</string>
+    <string name="server_vpn_catalog_update_question">Верзија %1$d каталога Server VPN је доступна. Преузети је сада?</string>
+    <string name="server_vpn_catalog_download">Преузми</string>
+    <string name="server_vpn_catalog_current">Ваш каталог Server VPN је ажуран.</string>
+    <string name="server_vpn_catalog_updated">Каталог Server VPN је ажуриран.</string>
+    <string name="server_vpn_catalog_update_error">Каталог није могао да се провери или преузме. Покушајте поново.</string>
+    <string name="server_vpn_updated_badge">Ажурирано</string>
+    <string name="server_vpn_maintenance_badge">На одржавању</string>
+    <string name="server_vpn_maintenance_detail">Метода је привремено на одржавању</string>
+    <plurals name="server_vpn_app_count">
+        <item quantity="one">%1$d апликација доступна</item>
+        <item quantity="other">%1$d апликација доступно</item>
+    </plurals>
+</resources>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_report_action">오류 신고</string>
+    <string name="cloud_report_sent">신고가 접수되었습니다: %1$s</string>
+    <string name="cloud_report_failed">신고를 제출할 수 없습니다. 나중에 다시 시도하세요.</string>
+    <string name="cloud_usage_title">익명 설치 통계</string>
+    <string name="cloud_usage_detail">SP-DECODE는 서버 용량을 계획하기 위해 하루에 한 번 대략적인 활성 설치 수를 집계합니다. Android ID, HWID 또는 광고 ID가 아닌 임의의 설치 코드가 사용됩니다.</string>
+    <string name="cloud_usage_footnote">개인정보 약관에 동의한 후 Cloud 사용에 포함됩니다. 파일 내용, 비밀번호 또는 디코딩된 구성은 포함되지 않습니다.</string>
+</resources>

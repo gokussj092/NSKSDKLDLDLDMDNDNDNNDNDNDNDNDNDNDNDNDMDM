@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_failure_npvs_appkey_auth">Fail NPVS ini tidak dapat disahkan dengan kunci aplikasi. Fail mungkin memakai varian lain atau telah diubah. Kaedah ini tidak memerlukan kata laluan atau kunci peribadi penerima.</string>
+</resources>

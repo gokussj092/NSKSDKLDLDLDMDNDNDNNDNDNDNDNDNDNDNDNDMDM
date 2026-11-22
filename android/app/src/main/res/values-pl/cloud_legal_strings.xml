@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_legal_title">Warunki i prywatność</string>
+    <string name="cloud_legal_explanation">SP-DECODE Cloud wysyła wybrane przez Ciebie pliki lub teksty do dekodowania na swój serwer. Zlicza też raz dziennie przybliżoną liczbę aktywnych instalacji, aby planować pojemność serwerów, używając losowego kodu instalacji. Te zliczenia nie obejmują zawartości konfiguracji.</string>
+    <string name="cloud_legal_terms">Przeczytaj warunki korzystania</string>
+    <string name="cloud_legal_privacy">Przeczytaj politykę prywatności</string>
+    <string name="cloud_legal_accept_check">Przeczytałem(-am) i akceptuję warunki oraz politykę prywatności.</string>
+    <string name="cloud_legal_accept">Akceptuj</string>
+    <string name="cloud_legal_decline">Odrzuć</string>
+    <string name="server_vpn_loading">Ładowanie katalogu serwerów VPN…</string>
+    <string name="server_vpn_unavailable">Katalog serwerów VPN jest niedostępny. Sprawdź połączenie i spróbuj ponownie.</string>
+    <string name="server_vpn_retry">Ponów próbę pobrania katalogu</string>
+    <string name="cloud_legal_withdraw">Wycofaj zgodę na Cloud</string>
+    <string name="cloud_legal_withdraw_detail">Wycofanie zgody blokuje nowe żądania do serwera. Twoja lokalnie zaszyfrowana historia pozostanie na tym urządzeniu. Możesz zaakceptować ponownie później.</string>
+</resources>

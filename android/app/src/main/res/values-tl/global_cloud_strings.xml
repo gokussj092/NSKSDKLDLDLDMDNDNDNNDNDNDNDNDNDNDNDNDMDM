@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_global_title">Cloud (Online)</string>
+    <string name="cloud_global_auto">Awtomatikong tukuyin</string>
+    <string name="cloud_global_hint">Mag-paste ng suportadong Cloud link, key o code</string>
+    <string name="cloud_global_action">Mag-import mula sa Cloud</string>
+    <string name="cloud_global_detail">Mag-paste ng Cloud link, key o code at awtomatikong matutukoy ng SP-DECODE ang provider. Mga aprubadong serbisyo lang ang suportado.</string>
+    <string name="cloud_global_invalid">Hindi tumutugma ang reference na ito sa isang available na Cloud provider.</string>
+</resources>

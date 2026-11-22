@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="apk_import_button">APK امپورٹ کریں</string>
+    <string name="apk_future_message">APK تجزیہ مستقبل کی اپ ڈیٹ میں دستیاب ہوگا۔</string>
+    <string name="apk_credits_title">کریڈٹ سینٹر</string>
+    <string name="apk_credits_intro">مستقبل کے کریڈٹس اور APK تجزیہ کی خریداریاں منظم کریں۔</string>
+    <string name="apk_credits_notice">سروس شروع ہونے پر بیلنس اور خریداریاں دستیاب ہوں گی۔</string>
+    <string name="apk_credits_buy_title">کریڈٹس خریدیں</string>
+    <string name="apk_credits_one">1 کریڈٹ</string>
+    <string name="apk_credits_buy_one">1 کریڈٹ خریدیں · جلد آ رہا ہے</string>
+    <string name="apk_credits_packages">کریڈٹ بنڈلز</string>
+    <string name="apk_credits_buy_package">بنڈل خریدیں · جلد آ رہا ہے</string>
+    <string name="apk_credits_prices_title">قیمتیں</string>
+    <string name="apk_credits_subscriptions">سبسکرپشنز</string>
+    <string name="apk_credits_button">کریڈٹس: 1+</string>
+    <string name="apk_credits_back">واپس</string>
+</resources>

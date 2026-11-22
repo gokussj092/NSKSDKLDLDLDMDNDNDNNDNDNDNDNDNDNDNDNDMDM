@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_global_title">Cloud (Online)</string>
+    <string name="cloud_global_auto">Wykrywanie automatyczne</string>
+    <string name="cloud_global_hint">Wklej obsługiwany link, klucz lub kod Cloud</string>
+    <string name="cloud_global_action">Importuj z Cloud</string>
+    <string name="cloud_global_detail">Wklej link, klucz lub kod Cloud, a SP-DECODE automatycznie wykryje dostawcę. Obsługiwane są tylko zatwierdzone usługi.</string>
+    <string name="cloud_global_invalid">To odniesienie nie pasuje do żadnego dostępnego dostawcy Cloud.</string>
+</resources>

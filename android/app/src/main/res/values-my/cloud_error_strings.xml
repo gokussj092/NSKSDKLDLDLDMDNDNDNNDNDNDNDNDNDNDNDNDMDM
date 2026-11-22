@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_failure_offline">အင်တာနက် ချိတ်ဆက်မှု မရှိပါ။ ကွန်ရက်တစ်ခုသို့ ချိတ်ဆက်၍ ထပ်ကြိုးစားပါ။</string>
+    <string name="cloud_failure_network">ဝန်ဆောင်မှုသို့ ရောက်ရှိနိုင်ခြင်း မရှိပါ။ ချိတ်ဆက်မှုကို စစ်ဆေး၍ ထပ်ကြိုးစားပါ။</string>
+    <string name="cloud_failure_tls">လုံခြုံသော ချိတ်ဆက်မှုကို တည်ဆောက်၍ မရပါ။ ကွန်ရက်နှင့် စက်၏ နာရီကို စစ်ဆေးပါ။</string>
+    <string name="cloud_failure_timeout">တောင်းဆိုမှုမှာ ကြာလွန်းခဲ့ပါသည်။ ချိတ်ဆက်မှု တည်ငြိမ်သည့်အခါ ထပ်ကြိုးစားပါ။</string>
+    <string name="cloud_failure_integrity">အက်ပ် အတည်ပြုခြင်းကို အပြီးသတ်၍ မရပါ။ အက်ပ်ကို အပ်ဒိတ်လုပ်ပါ သို့မဟုတ် ခွင့်ပြုထားသော QA အသုံးပြုခွင့်ကို သုံးပါ။</string>
+    <string name="cloud_failure_qa_code">QA အသုံးပြုခွင့် ပျောက်နေပါသည်။ SP-DECODE QA ကို ဖွင့်၍ ယာယီကုဒ် အသစ်တစ်ခု ထည့်ပါ။</string>
+    <string name="cloud_failure_session">သင့်အစည်းအဝေး သက်တမ်းကုန်သွားခြင်း သို့မဟုတ် အတည်ပြုမရခြင်း ဖြစ်ပါသည်။ ထပ်ကြိုးစားပါ။</string>
+    <string name="cloud_failure_forbidden">အသုံးပြုခွင့် ငြင်းပယ်ထားပါသည်။ ခွင့်ပြုချက်ကို စစ်ဆေး၍ ထပ်ကြိုးစားပါ။</string>
+    <string name="cloud_failure_qa">QA အသုံးပြုခွင့်မှာ မမှန်ကန်ခြင်း၊ ပိတ်ထားခြင်း သို့မဟုတ် သက်တမ်းကုန်ခြင်း ဖြစ်ပါသည်။ သီးသန့်ကုဒ် အသစ် တစ်ခုတောင်းပါ။</string>
+    <string name="cloud_failure_consent">Cloud ကုဒ်ဖြည်ခြင်းကို အသုံးပြုရန် လက်ရှိ စည်းမျဉ်းများနှင့် ကိုယ်ရေးကိုယ်တာ အသိပေးချက်ကို လက်ခံပါ။</string>
+    <string name="cloud_failure_rate">တောင်းဆိုမှုများ များလွန်းပါသည်။ ထပ်ကြိုးစားမည့်အစား ခဏစောင့်ပါ။</string>
+    <string name="cloud_failure_large">ဖိုင် သို့မဟုတ် ရလဒ်မှာ ခွင့်ပြုထားသော အရွယ်အစားကို ကျော်လွန်နေပါသည်။</string>
+    <string name="cloud_failure_invalid">ဤဖိုင် သို့မဟုတ် တောင်းဆိုမှုကို လက်ခံ၍ မရပါ။ ဖော်မတ်ကို စစ်ဆေးပါ။</string>
+    <string name="cloud_failure_unsupported">ဤဖိုင်ဖော်မတ်ကို ဆာဗာတွင် မရရှိနိုင်ပါ။</string>
+    <string name="cloud_failure_decode">ကုဒ်ဖြည်စက်က ဤဖိုင်ဗားရှင်းကို လုပ်ဆောင်၍ မရပါ။ ဖိုင် ပျက်စီးနေသည်ဟု မဆိုလိုပါ။</string>
+    <string name="cloud_failure_maintenance">ဤဝန်ဆောင်မှုကို ယာယီ ပြုပြင်နေပါသည်။ နောက်မှ ထပ်ကြိုးစားပါ။</string>
+    <string name="cloud_failure_unavailable">ဝန်ဆောင်မှုကို ယာယီ ရရှိနိုင်ခြင်း မရှိပါ။ နောက်မှ ထပ်ကြိုးစားပါ။</string>
+    <string name="cloud_failure_config_unavailable">ဤ Cloud ဖွဲ့စည်းမှုကို ဆက်လက် ရရှိနိုင်တော့မည် မဟုတ်ပါ။ သက်တမ်းကုန်သွားခြင်း၊ ဖျက်လိုက်ခြင်း သို့မဟုတ် တစ်ကြိမ်သာ အသုံးပြုနိုင်ခြင်း ဖြစ်နိုင်ပါသည်။ ဤအရာသည် ကုဒ်ဖြည်စက်၏ ချို့ယွင်းချက် မဟုတ်ပါ။</string>
+    <string name="cloud_failure_remote">အဝေးမှ ဝန်ဆောင်ပေးသူက မမှန်ကန်သော သို့မဟုတ် အတည်ပြုမရသော အကြောင်းပြန်မှုကို ပြန်ပေးခဲ့ပါသည်။</string>
+    <string name="cloud_failure_credentials">စကားဝှက် သို့မဟုတ် HWID မှားနေပါသည်။ အချက်အလက်ကို စစ်ဆေး၍ ထပ်ကြိုးစားပါ။</string>
+    <string name="cloud_failure_password">ဤကာကွယ်ထားသော ဖိုင်အတွက် စကားဝှက် လိုအပ်ပါသည်။</string>
+    <string name="cloud_failure_hwid">ဤကာကွယ်ထားသော ဖိုင်အတွက် HWID လိုအပ်ပါသည်။</string>
+    <string name="cloud_failure_both">ဤကာကွယ်ထားသော ဖိုင်အတွက် စကားဝှက်နှင့် HWID နှစ်ခုလုံး လိုအပ်ပါသည်။</string>
+    <string name="cloud_failure_not_found">တောင်းဆိုထားသော အရင်းအမြစ်ကို ရရှိနိုင်ခြင်း မရှိပါ သို့မဟုတ် ရှာမတွေ့ပါ။</string>
+    <string name="cloud_failure_conflict">တောင်းဆိုမှုသည် လက်ရှိအခြေအနေနှင့် ကွဲလွဲနေပါသည်။ ထပ်ကြိုးစားပါ။</string>
+    <string name="cloud_failure_partial">ရလဒ်မှာ မပြည့်စုံခြင်း သို့မဟုတ် မမှန်ကန်ခြင်းဖြစ်ပြီး ပြသမည် မဟုတ်ပါ။</string>
+    <string name="cloud_failure_general">လုပ်ဆောင်မှုကို အပြီးသတ်၍ မရပါ။ ထပ်ကြိုးစားပါ သို့မဟုတ် အထောက်အပံ့သို့ ဆက်သွယ်ပါ။</string>
+    <string name="cloud_failure_notice_title">အသိပေးချက်</string>
+    <string name="cloud_password_title">ဖွဲ့စည်းမှု စကားဝှက် လိုအပ်ပါသည်</string>
+    <string name="cloud_password_description">%1$s ကို စကားဝှက်ဖြင့် ကာကွယ်ထားပါသည်။ ဆက်လုပ်ရန် ထုတ်ယူမှု စကားဝှက်ကို ထည့်ပါ။ သိမ်းဆည်းထားမည် မဟုတ်ပါ။</string>
+    <string name="cloud_failure_password_incorrect">စကားဝှက် မှားနေပါသည်။</string>
+    <string name="cloud_failure_private_key">ဤ NPVS ဖိုင်သည် လက်ခံသူ၏ အများသုံး/သီးသန့်သော့ ကာကွယ်မှုကို အသုံးပြုသည်။ ဤနည်းလမ်းကို မထောက်ပံ့သေးပါ၊ မကြာမီ ထောက်ပံ့ပါမည်။</string>
+    <string name="cloud_failure_recipient">ဤ NPVS ဖိုင်သည် မထောက်ပံ့သေးသော လက်ခံသူသော့ နည်းလမ်းကို အသုံးပြုသည်။ မကြာမီ ထောက်ပံ့ပါမည်။</string>
+    <string name="cloud_failure_npvs_unsupported">ဤ NPVS ဗားရှင်း သို့မဟုတ် ကာကွယ်မှု နည်းလမ်းကို မထောက်ပံ့သေးပါ။ မကြာမီ ထောက်ပံ့ပါမည်။</string>
+</resources>

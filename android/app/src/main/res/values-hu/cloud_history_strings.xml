@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_decode_progress_title">Konfiguráció dekódolása</string>
+    <string name="cloud_decode_progress_message">Ez eltarthat néhány percig. Kérjük, várjon.</string>
+    <string name="cloud_large_result_title">Nagy konfiguráció dekódolva</string>
+    <string name="cloud_large_result_body">A konfiguráció titkosított előzményekbe lett mentve. A nagyon nagy eredmények előnézete lelassíthatja vagy bezárhatja az alkalmazást. Javasoljuk, hogy az Előzmények menüben a hárompontos menü, majd az Exportálás segítségével exportálja a teljes JSON-t. Az Android lehetővé teszi a mappa és a fájlnév kiválasztását.</string>
+    <string name="cloud_large_result_acknowledge">Értem</string>
+    <string name="cloud_history_actions">További műveletek</string>
+</resources>

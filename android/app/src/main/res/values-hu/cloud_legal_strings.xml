@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_legal_title">Feltételek és adatvédelem</string>
+    <string name="cloud_legal_explanation">Az SP-DECODE Cloud a dekódolni kívánt fájlokat vagy szövegeket elküldi a szerverére. Naponta egyszer megszámolja a hozzávetőleges aktív telepítéseket is a szerverkapacitás tervezéséhez, véletlenszerű telepítési kód használatával. A konfigurációk tartalma nem szerepel ezekben a számlálásokban.</string>
+    <string name="cloud_legal_terms">A feltételek elolvasása</string>
+    <string name="cloud_legal_privacy">Az adatvédelmi szabályzat elolvasása</string>
+    <string name="cloud_legal_accept_check">Elolvastam és elfogadom a feltételeket és az adatvédelmi szabályzatot.</string>
+    <string name="cloud_legal_accept">Elfogadás</string>
+    <string name="cloud_legal_decline">Elutasítás</string>
+    <string name="server_vpn_loading">Szerver VPN katalógus betöltése…</string>
+    <string name="server_vpn_unavailable">A VPN-szerverkatalógus nem érhető el. Ellenőrizze a kapcsolatot, és próbálja újra.</string>
+    <string name="server_vpn_retry">Katalógus újrapróbálása</string>
+    <string name="cloud_legal_withdraw">Cloud-hozzájárulás visszavonása</string>
+    <string name="cloud_legal_withdraw_detail">A hozzájárulás visszavonása letiltja az új szerverkéréseket. A helyben titkosított előzményei ezen az eszközön maradnak. Később újra elfogadhatja.</string>
+</resources>

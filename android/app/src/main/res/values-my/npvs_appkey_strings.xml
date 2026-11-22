@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_failure_npvs_appkey_auth">ဤ NPVS app-key ဖိုင်ကို အတည်ပြု၍ မရပါ။ မတူသော မျိုးကွဲကို အသုံးပြုခြင်း သို့မဟုတ် ပြုပြင်ထားခြင်း ဖြစ်နိုင်ပါသည်။ ဤနည်းလမ်းအတွက် စကားဝှက်လည်း မလိုအပ်သလို လက်ခံသူ၏ သီးသန့်သော့လည်း မလိုအပ်ပါ။</string>
+</resources>

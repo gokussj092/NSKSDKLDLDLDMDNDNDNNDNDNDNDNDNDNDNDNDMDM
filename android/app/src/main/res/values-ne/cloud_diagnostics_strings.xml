@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_report_action">त्रुटि रिपोर्ट गर्नुहोस्</string>
+    <string name="cloud_report_sent">रिपोर्ट प्राप्त भयो: %1$s</string>
+    <string name="cloud_report_failed">रिपोर्ट पठाउन सकिएन। पछि पुनः प्रयास गर्नुहोस्।</string>
+    <string name="cloud_usage_title">अज्ञात स्थापना तथ्याङ्क</string>
+    <string name="cloud_usage_detail">SP-DECODE ले सर्भर क्षमता योजना गर्न दिनमा एक पटक अनुमानित सक्रिय स्थापनाहरू गन्छ। तपाईंको Android ID, HWID वा विज्ञापन ID होइन, एउटा यादृच्छिक स्थापना कोड प्रयोग गरिन्छ।</string>
+    <string name="cloud_usage_footnote">यसको गोपनीयता सर्तहरू स्वीकार गरेपछि Cloud प्रयोगसँग समावेश छ। फाइल सामग्री, पासवर्ड वा डिकोड गरिएका कन्फिगरेसनहरू समावेश हुँदैनन्।</string>
+</resources>

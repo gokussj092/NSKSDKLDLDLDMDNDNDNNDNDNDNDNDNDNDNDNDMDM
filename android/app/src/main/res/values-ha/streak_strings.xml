@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="streak_verified_date">Rana da sabar ta tabbatar</string>
+    <string name="streak_date_pending">Ana jiran ranar da aka tabbatar</string>
+    <string name="streak_today_done">An kammala yau</string>
+    <string name="streak_today_pending">Ka warware fayil ko rubutu yau don ci gaba da jerin nasarorinka</string>
+    <string name="streak_weekly_reward">Kowane kwanaki 7 a jere</string>
+    <string name="streak_reward">+1 kiredit na nazarin APK</string>
+    <string name="streak_reward_delivered">An bayar da lada</string>
+    <string name="streak_verified_note">Sabar ce ke tabbatar da kwanaki da lada.</string>
+    <plurals name="streak_days_left">
+        <item quantity="one">%1$d rana ta rage</item>
+        <item quantity="other">%1$d kwanaki sun rage</item>
+    </plurals>
+    <string name="streak_reminder_channel">Tunatarwar jerin nasarori</string>
+    <string name="streak_reminder_title">Jerin nasarorinka yana jiran ka</string>
+    <string name="streak_reminder_body">Ka warware fayil ko rubutu yau don ci gaba da jerin nasarorinka.</string>
+</resources>

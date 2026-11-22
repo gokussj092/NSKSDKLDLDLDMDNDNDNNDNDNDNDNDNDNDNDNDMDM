@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_failure_offline">ምንም የኢንተርኔት ግንኙነት የለም። ከአውታረ መረብ ጋር ይገናኙ እና እንደገና ይሞክሩ።</string>
+    <string name="cloud_failure_network">አገልግሎቱን ማግኘት አልተቻለም። ግንኙነትዎን ይፈትሹ እና እንደገና ይሞክሩ።</string>
+    <string name="cloud_failure_tls">ደህንነቱ የተጠበቀ ግንኙነት መፍጠር አልተቻለም። አውታረ መረብዎን እና የመሣሪያ ሰዓትዎን ይፈትሹ።</string>
+    <string name="cloud_failure_timeout">ጥያቄው ረጅም ጊዜ ወስዷል። ግንኙነቱ ሲረጋጋ እንደገና ይሞክሩ።</string>
+    <string name="cloud_failure_integrity">የመተግበሪያ ማረጋገጫ ሊጠናቀቅ አልቻለም። መተግበሪያውን ያዘምኑ ወይም የተፈቀደውን የQA መዳረሻ ይጠቀሙ።</string>
+    <string name="cloud_failure_qa_code">የQA መዳረሻ ጠፍቷል። SP-DECODE QA ን ይክፈቱ እና አዲስ ጊዜያዊ ኮድ ያስገቡ።</string>
+    <string name="cloud_failure_session">ክፍለ ጊዜዎ ጊዜው አልፎበታል ወይም ሊረጋገጥ አልቻለም። እባክዎ እንደገና ይሞክሩ።</string>
+    <string name="cloud_failure_forbidden">መዳረሻ ተከልክሏል። ፈቃድዎን ይፈትሹ እና እንደገና ይሞክሩ።</string>
+    <string name="cloud_failure_qa">የQA መዳረሻ ልክ ያልሆነ፣ የተሰናከለ ወይም ጊዜው ያለፈበት ነው። አዲስ የግል ኮድ ይጠይቁ።</string>
+    <string name="cloud_failure_consent">Cloud ዲኮዲንግን ለመጠቀም የአሁኑን ውሎች እና የግላዊነት ማስታወቂያ ይቀበሉ።</string>
+    <string name="cloud_failure_rate">በጣም ብዙ ጥያቄዎች። እባክዎ እንደገና ከመሞከርዎ በፊት ይጠብቁ።</string>
+    <string name="cloud_failure_large">ፋይሉ ወይም ውጤቱ የተፈቀደውን መጠን አልፏል።</string>
+    <string name="cloud_failure_invalid">ይህ ፋይል ወይም ጥያቄ ሊቀበል አልቻለም። ቅርጸቱን ይፈትሹ።</string>
+    <string name="cloud_failure_unsupported">ይህ የፋይል ቅርጸት በሰርቨሩ ላይ አይገኝም።</string>
+    <string name="cloud_failure_decode">ዲኮደሩ ይህን የፋይል ስሪት ማካሄድ አልቻለም። ፋይሉ የግድ የተበላሸ ነው ማለት አይደለም።</string>
+    <string name="cloud_failure_maintenance">ይህ አገልግሎት ለጊዜው በጥገና ላይ ነው። እባክዎ ቆይተው እንደገና ይሞክሩ።</string>
+    <string name="cloud_failure_unavailable">አገልግሎቱ ለጊዜው አይገኝም። ቆይተው እንደገና ይሞክሩ።</string>
+    <string name="cloud_failure_config_unavailable">ይህ የCloud ውቅር ከአሁን በኋላ አይገኝም። ጊዜው ያለፈበት፣ የተሰረዘ ወይም ለአንድ ጊዜ ብቻ የሚሰራ ሊሆን ይችላል። ይህ የዲኮደር ስህተት አይደለም።</string>
+    <string name="cloud_failure_remote">የርቀት አቅራቢው ልክ ያልሆነ ወይም ሊረጋገጥ የማይችል ምላሽ መልሷል።</string>
+    <string name="cloud_failure_credentials">ትክክል ያልሆነ የይለፍ ቃል ወይም HWID። መረጃውን ይፈትሹ እና እንደገና ይሞክሩ።</string>
+    <string name="cloud_failure_password">ይህ የተጠበቀ ፋይል የይለፍ ቃል ይፈልጋል።</string>
+    <string name="cloud_failure_hwid">ይህ የተጠበቀ ፋይል HWID ይፈልጋል።</string>
+    <string name="cloud_failure_both">ይህ የተጠበቀ ፋይል የይለፍ ቃል እና HWID ሁለቱንም ይፈልጋል።</string>
+    <string name="cloud_failure_not_found">የተጠየቀው ምንጭ አይገኝም ወይም አልተገኘም።</string>
+    <string name="cloud_failure_conflict">ጥያቄው ከአሁኑ ሁኔታ ጋር ይጋጫል። እባክዎ እንደገና ይሞክሩ።</string>
+    <string name="cloud_failure_partial">ውጤቱ ያልተሟላ ወይም ልክ ያልሆነ ነበር፣ እና አይታይም።</string>
+    <string name="cloud_failure_general">ክዋኔውን ማጠናቀቅ አልተቻለም። እንደገና ይሞክሩ ወይም ድጋፍን ያነጋግሩ።</string>
+    <string name="cloud_failure_notice_title">ማስታወቂያ</string>
+    <string name="cloud_password_title">የውቅር የይለፍ ቃል ያስፈልጋል</string>
+    <string name="cloud_password_description">%1$s በይለፍ ቃል የተጠበቀ ነው። ለመቀጠል የኤክስፖርት የይለፍ ቃል ያስገቡ። አይቀመጥም።</string>
+    <string name="cloud_failure_password_incorrect">ትክክል ያልሆነ የይለፍ ቃል።</string>
+    <string name="cloud_failure_private_key">ይህ የNPVS ፋይል የተቀባይ የህዝብ/የግል ቁልፍ ጥበቃን ይጠቀማል። ይህ ዘዴ ገና አይደገፍም፤ ድጋፍ በቅርቡ ይመጣል።</string>
+    <string name="cloud_failure_recipient">ይህ የNPVS ፋይል ገና ያልተደገፈ የተቀባይ ቁልፍ ዘዴን ይጠቀማል። ድጋፍ በቅርቡ ይመጣል።</string>
+    <string name="cloud_failure_npvs_unsupported">ይህ የNPVS ስሪት ወይም የጥበቃ ዘዴ ገና አይደገፍም። ድጋፍ በቅርቡ ይመጣል።</string>
+</resources>

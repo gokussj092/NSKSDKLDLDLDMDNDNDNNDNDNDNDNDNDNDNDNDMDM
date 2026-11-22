@@ -363,6 +363,12 @@
     <string name="app_analysis_error_busy">Terlalu banyak analisis berjalan. Coba lagi nanti.</string>
     <string name="app_analysis_error_generic">Operasi tidak dapat diselesaikan. Coba lagi.</string>
     <string name="app_analysis_title">Analisis APK</string>
+    <string name="apk_qa_sub_metadata">Membaca metadata paket</string>
+    <string name="apk_qa_sub_dex">Menganalisis bytecode dan metode DEX</string>
+    <string name="apk_qa_sub_native">Memeriksa pustaka native (.so)</string>
+    <string name="apk_qa_sub_jadx">Mendekompilasi kode dengan JADX Lite</string>
+    <string name="apk_qa_sub_recovery">Memulihkan output DEX parsial</string>
+    <string name="apk_qa_sub_evidence">Mengorelasikan referensi kriptografis</string>
     <string name="release_integrity_error_title">Verifikasi aplikasi gagal</string>
     <string name="release_integrity_error_message">Tanda tangan aplikasi yang terpasang tidak dapat diverifikasi. Perbarui SP-DECODE dari sumber resminya. Jika masalah berlanjut, hubungi dukungan dan sertakan kode RELEASE_SIGNER_REJECTED.</string>
 </resources>

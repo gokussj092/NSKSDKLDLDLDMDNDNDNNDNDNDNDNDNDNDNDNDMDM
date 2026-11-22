@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="server_vpn_filter_ssh_accounts">SSH اکاؤنٹس</string>
+    <string name="server_vpn_ssh_notice_text">یہ SSH اکاؤنٹس صرف درج ذیل ایپ میں استعمال ہو سکتے ہیں:</string>
+    <string name="server_vpn_ssh_no_matches">آپ کی تلاش سے کوئی SSH اکاؤنٹ مطابق نہیں ہے۔</string>
+</resources>

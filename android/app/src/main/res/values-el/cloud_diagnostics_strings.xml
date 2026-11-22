@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_report_action">Αναφορά σφάλματος</string>
+    <string name="cloud_report_sent">Η αναφορά ελήφθη: %1$s</string>
+    <string name="cloud_report_failed">Δεν ήταν δυνατή η υποβολή της αναφοράς. Δοκιμάστε ξανά αργότερα.</string>
+    <string name="cloud_usage_title">Ανώνυμα στατιστικά εγκατάστασης</string>
+    <string name="cloud_usage_detail">Το SP-DECODE μετράει περίπου τις ενεργές εγκαταστάσεις μία φορά την ημέρα για να σχεδιάσει τη χωρητικότητα του διακομιστή. Χρησιμοποιείται ένας τυχαίος κωδικός εγκατάστασης, όχι το Android ID, το HWID ή το διαφημιστικό ID σας.</string>
+    <string name="cloud_usage_footnote">Περιλαμβάνεται με τη χρήση Cloud αφού αποδεχθείτε τους όρους απορρήτου. Δεν περιλαμβάνονται περιεχόμενα αρχείων, κωδικοί πρόσβασης ή αποκωδικοποιημένες διαμορφώσεις.</string>
+</resources>

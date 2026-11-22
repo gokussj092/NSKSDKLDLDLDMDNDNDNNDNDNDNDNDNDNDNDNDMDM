@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="server_vpn_search_hint">የVPN መተግበሪያዎች ፈልግ</string>
+    <string name="server_vpn_filter_all">ሁሉም</string>
+    <string name="server_vpn_filter_enabled">የነቁ</string>
+    <string name="server_vpn_filter_favorites">ተወዳጆች</string>
+    <string name="server_vpn_favorite_add">ወደ ተወዳጆች ጨምር</string>
+    <string name="server_vpn_favorite_remove">ከተወዳጆች አስወግድ</string>
+    <string name="server_vpn_manual_refresh">አሁን ካታሎግ ፈትሽ</string>
+    <string name="server_vpn_catalog_refreshing">የሰርቨር ካታሎግ በመፈተሽ ላይ…</string>
+    <string name="server_vpn_no_matches">ከፍለጋዎ ወይም ከማጣሪያዎችዎ ጋር የሚዛመድ የVPN መተግበሪያ የለም።</string>
+    <string name="server_vpn_catalog_enabled">በካታሎግ ውስጥ ነቅቷል</string>
+    <string name="server_vpn_catalog_disabled">በካታሎግ ውስጥ አልነቃም</string>
+    <string name="server_vpn_new_badge">አዲስ</string>
+    <string name="server_vpn_catalog_update_title">የካታሎግ ዝመና ይገኛል</string>
+    <string name="server_vpn_catalog_update_question">የServer VPN ካታሎግ ስሪት %1$d ይገኛል። አሁን ማውረድ ይፈልጋሉ?</string>
+    <string name="server_vpn_catalog_download">አውርድ</string>
+    <string name="server_vpn_catalog_current">የእርስዎ Server VPN ካታሎግ ወቅታዊ ነው።</string>
+    <string name="server_vpn_catalog_updated">የServer VPN ካታሎግ ተዘምኗል።</string>
+    <string name="server_vpn_catalog_update_error">ካታሎጉን መፈተሽ ወይም ማውረድ አልተቻለም። እባክዎ እንደገና ይሞክሩ።</string>
+    <string name="server_vpn_updated_badge">የተዘመነ</string>
+    <string name="server_vpn_maintenance_badge">በጥገና ላይ</string>
+    <string name="server_vpn_maintenance_detail">ዘዴው ለጊዜው በጥገና ላይ ነው</string>
+    <plurals name="server_vpn_app_count">
+        <item quantity="one">%1$d መተግበሪያ ይገኛል</item>
+        <item quantity="other">%1$d መተግበሪያዎች ይገኛሉ</item>
+    </plurals>
+</resources>

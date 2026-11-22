@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_report_action">Nahlásit chybu</string>
+    <string name="cloud_report_sent">Hlášení přijato: %1$s</string>
+    <string name="cloud_report_failed">Hlášení se nepodařilo odeslat. Zkuste to prosím později.</string>
+    <string name="cloud_usage_title">Anonymní statistiky instalací</string>
+    <string name="cloud_usage_detail">SP-DECODE počítá přibližný počet aktivních instalací jednou denně, aby mohl plánovat kapacitu serveru. Používá se náhodný kód instalace, nikoli vaše Android ID, HWID ani reklamní ID.</string>
+    <string name="cloud_usage_footnote">Součástí používání Cloudu po přijetí jeho podmínek ochrany osobních údajů. Nejsou zahrnuty žádné obsahy souborů, hesla ani dekódované konfigurace.</string>
+</resources>

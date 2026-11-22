@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_legal_title">Mga tuntunin at privacy</string>
+    <string name="cloud_legal_explanation">Ipinapadala ng SP-DECODE Cloud sa server nito ang mga file o text na pipiliin mong i-decode. Binibilang din nito ang tinatayang aktibong pag-install isang beses bawat araw para planuhin ang kapasidad ng server, gamit ang isang random na installation code. Walang nilalaman ng configuration na kasama sa mga bilang na iyon.</string>
+    <string name="cloud_legal_terms">Basahin ang mga tuntunin at kundisyon</string>
+    <string name="cloud_legal_privacy">Basahin ang patakaran sa privacy</string>
+    <string name="cloud_legal_accept_check">Nabasa ko at tinatanggap ko ang mga tuntunin at patakaran sa privacy.</string>
+    <string name="cloud_legal_accept">Tanggapin</string>
+    <string name="cloud_legal_decline">Tanggihan</string>
+    <string name="server_vpn_loading">Naglo-load ang catalog ng server VPN…</string>
+    <string name="server_vpn_unavailable">Hindi available ang catalog ng VPN server. Suriin ang iyong koneksyon at subukan ulit.</string>
+    <string name="server_vpn_retry">Subukan ulit ang catalog</string>
+    <string name="cloud_legal_withdraw">Bawiin ang pahintulot sa Cloud</string>
+    <string name="cloud_legal_withdraw_detail">Hinaharangan ng pagbawi ng pahintulot ang mga bagong server request. Mananatili sa device na ito ang iyong lokal na naka-encrypt na kasaysayan. Maaari kang tumanggap ulit mamaya.</string>
+</resources>

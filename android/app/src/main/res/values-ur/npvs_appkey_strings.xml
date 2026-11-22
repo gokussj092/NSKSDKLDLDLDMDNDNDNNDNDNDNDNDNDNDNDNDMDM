@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_failure_npvs_appkey_auth">اس NPVS ایپ-کی فائل کی تصدیق نہیں ہو سکی۔ یہ کوئی مختلف قسم استعمال کرتی ہو یا اس میں ترمیم کی گئی ہو۔ اس طریقے کے لیے نہ پاس ورڈ درکار ہے اور نہ وصول کنندہ کی پرائیویٹ کی۔</string>
+</resources>

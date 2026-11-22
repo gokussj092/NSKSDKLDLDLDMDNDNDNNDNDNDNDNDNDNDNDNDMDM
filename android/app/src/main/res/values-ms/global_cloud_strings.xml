@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_global_title">Cloud (Online)</string>
+    <string name="cloud_global_auto">Kesan automatik</string>
+    <string name="cloud_global_hint">Tampal pautan, kunci, atau kod Cloud yang disokong</string>
+    <string name="cloud_global_action">Import dari Cloud</string>
+    <string name="cloud_global_detail">Pilih pembekal atau biarkan SP-DECODE mengesannya. Hanya perkhidmatan yang diluluskan.</string>
+    <string name="cloud_global_invalid">Rujukan ini tidak sesuai dengan pembekal Cloud yang dibenarkan.</string>
+</resources>

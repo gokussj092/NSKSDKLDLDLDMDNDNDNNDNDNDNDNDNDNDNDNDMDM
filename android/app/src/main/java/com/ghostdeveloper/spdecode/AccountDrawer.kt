@@ -30,6 +30,8 @@ import kotlinx.coroutines.launch
 internal fun AccountDrawer(busy:Boolean,onExternalLink:(String)->Unit,
     onLegalLink:(String)->Unit={},
     onCheckoutUrl:(String)->Unit={},
+    externalDestination:String?=null,
+    onExternalDestinationConsumed:()->Unit={},
     content:@Composable (openMenu:()->Unit)->Unit) {
     val state=rememberDrawerState(DrawerValue.Closed)
     val scope=rememberCoroutineScope()
@@ -60,6 +62,15 @@ internal fun AccountDrawer(busy:Boolean,onExternalLink:(String)->Unit,
         if(busy)return
         destination=route
         scope.launch{state.close()}
+    }
+    // External navigation request from the main content (e.g. "Sign in"
+    // from Settings): reuse the existing commerce routes, never a second
+    // login flow. Waits out a busy decode instead of dropping the request.
+    LaunchedEffect(externalDestination,busy){
+        val route=externalDestination ?: return@LaunchedEffect
+        if(busy)return@LaunchedEffect
+        navigate(route)
+        onExternalDestinationConsumed()
     }
     ModalNavigationDrawer(drawerState=state,gesturesEnabled=!busy && destination==null,
         drawerContent={

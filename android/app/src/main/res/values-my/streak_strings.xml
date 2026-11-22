@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="streak_verified_date">ဆာဗာမှ အတည်ပြုထားသော ရက်စွဲ</string>
+    <string name="streak_date_pending">အတည်ပြုထားသော ရက်စွဲကို စောင့်နေပါသည်</string>
+    <string name="streak_today_done">ယနေ့ ပြီးပါပြီ</string>
+    <string name="streak_today_pending">ဆက်တိုက်ရက်ကို ထိန်းရန် ယနေ့ ဖိုင် သို့မဟုတ် စာသားတစ်ခု ကုဒ်ဖြည်ပါ</string>
+    <string name="streak_weekly_reward">ဆက်တိုက် ၇ ရက် တိုင်း</string>
+    <string name="streak_reward">+1 APK လေ့လာမှု ခရက်ဒစ်</string>
+    <string name="streak_reward_delivered">ဆုလာဘ်ကို ပေးအပ်ပြီးပါပြီ</string>
+    <string name="streak_verified_note">ရက်များနှင့် ဆုလာဘ်များကို ဆာဗာမှ အတည်ပြုသည်။</string>
+    <plurals name="streak_days_left">
+        <item quantity="one">%1$d ရက် ကျန်သည်</item>
+        <item quantity="other">%1$d ရက် ကျန်သည်</item>
+    </plurals>
+    <string name="streak_reminder_channel">ဆက်တိုက်ရက် သတိပေးချက်များ</string>
+    <string name="streak_reminder_title">သင့်ဆက်တိုက်ရက် စောင့်နေပါသည်</string>
+    <string name="streak_reminder_body">ဆက်တိုက်ရက်ကို ဆက်လက်ထိန်းရန် ယနေ့ ဖိုင် သို့မဟုတ် စာသားတစ်ခု ကုဒ်ဖြည်ပါ။</string>
+</resources>

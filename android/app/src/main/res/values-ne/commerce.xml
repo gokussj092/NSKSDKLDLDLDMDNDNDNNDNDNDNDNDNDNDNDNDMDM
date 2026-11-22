@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="account_sign_in">साइन इन गर्नुहोस्</string>
+    <string name="account_web_description">आधिकारिक वेबसाइटमा तपाईंको खाता र खरिदहरू व्यवस्थापन गर्नुहोस्। निःशुल्क सुविधाहरू खाताबिना नै उपलब्ध रहन्छन्।</string>
+    <string name="account_continue_web">वेबमा जारी राख्नुहोस्</string>
+    <string name="account_my_account">मेरो खाता</string>
+    <string name="account_store">स्टोर</string>
+    <string name="account_open_menu">मेनु खोल्नुहोस्</string>
+    <string name="ads_privacy_options">विज्ञापन गोपनीयता विकल्पहरू</string>
+</resources>

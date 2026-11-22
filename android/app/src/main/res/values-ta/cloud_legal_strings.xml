@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_legal_title">விதிமுறைகள் மற்றும் தனியுரிமை</string>
+    <string name="cloud_legal_explanation">SP-DECODE கிளவுட், நீங்கள் மறைகுறியீடு நீக்கத் தேர்வுசெய்யும் கோப்புகள் அல்லது உரைகளை அதன் சர்வருக்கு அனுப்புகிறது. சர்வர் திறனைத் திட்டமிட, சீரற்ற நிறுவல் குறியீட்டைப் பயன்படுத்தி, தினமும் ஒரு முறை தோராயமான செயலில் உள்ள நிறுவல்களையும் எண்ணுகிறது. அந்த எண்ணிக்கைகளில் கட்டமைப்பு உள்ளடக்கங்கள் எதுவும் சேர்க்கப்படவில்லை.</string>
+    <string name="cloud_legal_terms">விதிமுறைகள் மற்றும் நிபந்தனைகளைப் படிக்கவும்</string>
+    <string name="cloud_legal_privacy">தனியுரிமைக் கொள்கையைப் படிக்கவும்</string>
+    <string name="cloud_legal_accept_check">விதிமுறைகள் மற்றும் தனியுரிமைக் கொள்கையைப் படித்து ஏற்றுக்கொள்கிறேன்.</string>
+    <string name="cloud_legal_accept">ஏற்கவும்</string>
+    <string name="cloud_legal_decline">மறுக்கவும்</string>
+    <string name="server_vpn_loading">சர்வர் VPN பட்டியல் ஏற்றப்படுகிறது…</string>
+    <string name="server_vpn_unavailable">VPN சர்வர் பட்டியல் கிடைக்கவில்லை. உங்கள் இணைப்பைச் சரிபார்த்து மீண்டும் முயலவும்.</string>
+    <string name="server_vpn_retry">பட்டியலை மீண்டும் முயலவும்</string>
+    <string name="cloud_legal_withdraw">கிளவுட் ஒப்புதலைத் திரும்பப் பெறு</string>
+    <string name="cloud_legal_withdraw_detail">ஒப்புதலைத் திரும்பப் பெறுவது புதிய சர்வர் கோரிக்கைகளைத் தடுக்கிறது. உங்கள் உள்ளூரில் குறியாக்கம் செய்யப்பட்ட வரலாறு இந்தச் சாதனத்தில் இருக்கும். பின்னர் மீண்டும் ஏற்கலாம்.</string>
+</resources>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_decode_progress_title">Se decodează configurația</string>
+    <string name="cloud_decode_progress_message">Poate dura câteva minute. Te rugăm să aștepți.</string>
+    <string name="cloud_large_result_title">Configurație mare decodată</string>
+    <string name="cloud_large_result_body">Configurația a fost salvată în istoricul criptat. Previzualizarea rezultatelor foarte mari poate încetini sau închide aplicația. Îți recomandăm să exporți JSON-ul complet din Istoric folosind meniul cu trei puncte, apoi Export. Android îți va permite să alegi folderul și numele fișierului.</string>
+    <string name="cloud_large_result_acknowledge">Am înțeles</string>
+    <string name="cloud_history_actions">Mai multe acțiuni</string>
+</resources>

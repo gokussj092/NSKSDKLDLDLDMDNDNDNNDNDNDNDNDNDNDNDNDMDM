@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_report_action">รายงานข้อผิดพลาด</string>
+    <string name="cloud_report_sent">ได้รับรายงานแล้ว: %1$s</string>
+    <string name="cloud_report_failed">ไม่สามารถส่งรายงานได้ โปรดลองอีกครั้งภายหลัง</string>
+    <string name="cloud_usage_title">สถิติการติดตั้งแบบไม่ระบุตัวตน</string>
+    <string name="cloud_usage_detail">SP-DECODE นับจำนวนการติดตั้งที่ใช้งานโดยประมาณวันละครั้งเพื่อวางแผนความจุของเซิร์ฟเวอร์ โดยใช้รหัสการติดตั้งแบบสุ่ม ไม่ใช่ Android ID, HWID หรือรหัสโฆษณาของคุณ</string>
+    <string name="cloud_usage_footnote">รวมอยู่กับการใช้ Cloud หลังจากคุณยอมรับข้อกำหนดความเป็นส่วนตัว ไม่รวมเนื้อหาไฟล์ รหัสผ่าน หรือการตั้งค่าที่ถอดรหัสแล้ว</string>
+</resources>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_legal_title">Terma dan privasi</string>
+    <string name="cloud_legal_explanation">SP-DECODE Cloud menghantarkan fail atau teks yang anda pilih ke server untuk diproses. Kami juga menganggarkan pemasangan aktif sekali sehari memakai kod rawak untuk merancang kapasiti server. Isi konfigurasi tidak termasuk dalam pengiraan.</string>
+    <string name="cloud_legal_terms">Baca syarat dan terma</string>
+    <string name="cloud_legal_privacy">Baca dasar privasi</string>
+    <string name="cloud_legal_accept_check">Saya telah membaca dan bersetuju terma dan dasar privasi.</string>
+    <string name="cloud_legal_accept">Setuju</string>
+    <string name="cloud_legal_decline">Tolak</string>
+    <string name="server_vpn_loading">Memuatkan katalog server VPN…</string>
+    <string name="server_vpn_unavailable">Katalog server VPN tidak tersedia. Semak sambungan anda lalu cuba lagi.</string>
+    <string name="server_vpn_retry">Cuba lagi</string>
+    <string name="cloud_legal_withdraw">Cabut persetujuan Cloud</string>
+    <string name="cloud_legal_withdraw_detail">Mencabut persetujuan akan menyekat permintaan baru ke server. Sejarah tersulit tempatan tetap berada di peranti ini. anda dapat bersetuju lagi nanti.</string>
+</resources>

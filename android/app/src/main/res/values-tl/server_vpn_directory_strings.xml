@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="server_vpn_search_hint">Maghanap ng mga VPN app</string>
+    <string name="server_vpn_filter_all">Lahat</string>
+    <string name="server_vpn_filter_enabled">Pinagana</string>
+    <string name="server_vpn_filter_favorites">Mga Paborito</string>
+    <string name="server_vpn_favorite_add">Idagdag sa mga paborito</string>
+    <string name="server_vpn_favorite_remove">Alisin sa mga paborito</string>
+    <string name="server_vpn_manual_refresh">Suriin ang catalog ngayon</string>
+    <string name="server_vpn_catalog_refreshing">Sinusuri ang catalog ng server…</string>
+    <string name="server_vpn_no_matches">Walang VPN app na tumutugma sa iyong paghahanap o mga filter.</string>
+    <string name="server_vpn_catalog_enabled">Pinagana sa catalog</string>
+    <string name="server_vpn_catalog_disabled">Hindi pinagana sa catalog</string>
+    <string name="server_vpn_new_badge">Bago</string>
+    <string name="server_vpn_catalog_update_title">May update sa catalog</string>
+    <string name="server_vpn_catalog_update_question">Available na ang bersyon %1$d ng catalog ng Server VPN. I-download ito ngayon?</string>
+    <string name="server_vpn_catalog_download">I-download</string>
+    <string name="server_vpn_catalog_current">Naka-update na ang iyong catalog ng Server VPN.</string>
+    <string name="server_vpn_catalog_updated">Na-update ang catalog ng Server VPN.</string>
+    <string name="server_vpn_catalog_update_error">Hindi masuri o ma-download ang catalog. Pakisubukan ulit.</string>
+    <string name="server_vpn_updated_badge">Na-update</string>
+    <string name="server_vpn_maintenance_badge">Naka-maintenance</string>
+    <string name="server_vpn_maintenance_detail">Pansamantalang naka-maintenance ang method</string>
+    <plurals name="server_vpn_app_count">
+        <item quantity="one">%1$d app ang available</item>
+        <item quantity="other">%1$d app ang available</item>
+    </plurals>
+</resources>

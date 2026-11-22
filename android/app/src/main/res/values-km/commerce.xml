@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="account_sign_in">ចូល</string>
+    <string name="account_web_description">គ្រប់គ្រងគណនី និងការទិញរបស់អ្នកនៅលើគេហទំព័រផ្លូវការ។ មុខងារឥតគិតថ្លៃនៅតែមានដោយគ្មានគណនី។</string>
+    <string name="account_continue_web">បន្តនៅលើគេហទំព័រ</string>
+    <string name="account_my_account">គណនីរបស់ខ្ញុំ</string>
+    <string name="account_store">ហាង</string>
+    <string name="account_open_menu">បើកម៉ឺនុយ</string>
+    <string name="ads_privacy_options">ជម្រើសឯកជនភាពនៃការផ្សាយពាណិជ្ជកម្ម</string>
+</resources>

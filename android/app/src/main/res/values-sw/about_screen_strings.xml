@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="about_screen_entry_detail">Toleo, usalama na viungo rasmi</string>
+    <string name="about_screen_description">Zana ya kuchambua na kusimbua usanidi wa VPN</string>
+    <string name="about_screen_version_badge">Toleo %1$s · Build %2$d</string>
+    <string name="about_screen_info">Taarifa za programu</string>
+    <string name="about_screen_languages">Lugha zinazopatikana</string>
+    <string name="about_screen_installed">Toleo lililosakinishwa</string>
+    <string name="about_screen_features">Vipengele vikuu</string>
+    <string name="about_screen_feature_decode">Usimbuaji wa faili za VPN</string>
+    <string name="about_screen_feature_catalog">Katalogi ya seva za VPN</string>
+    <string name="about_screen_feature_export">Uhamishaji wa JSON na uliofunguliwa</string>
+    <string name="about_screen_feature_history">Historia ya matokeo</string>
+    <string name="about_screen_security">Usalama na faragha</string>
+    <string name="about_screen_cloud_security">Mawasiliano ya Cloud V2 hutumia usimbaji wa HPKE na ukaguzi wa uadilifu kulingana na usanidi wa huduma.</string>
+    <string name="about_screen_local_security">Historia ya ndani imesimbwa kwa njia fiche kwenye kifaa hiki.</string>
+    <string name="about_screen_privacy">Sera ya faragha</string>
+    <string name="about_screen_terms">Masharti ya matumizi</string>
+    <string name="about_screen_links">Jamii na viungo rasmi</string>
+    <string name="about_screen_website">Tovuti rasmi</string>
+    <string name="about_screen_community_detail">Jamii rasmi ya Telegram</string>
+    <string name="about_screen_credit">Imetengenezwa na Ghost Developer</string>
+    <string name="about_screen_copyright">SP-DECODE · Haki zote zimehifadhiwa</string>
+</resources>

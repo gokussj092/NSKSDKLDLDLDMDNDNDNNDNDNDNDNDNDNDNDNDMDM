@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="streak_verified_date">Data zweryfikowana przez serwer</string>
+    <string name="streak_date_pending">Oczekiwanie na zweryfikowaną datę</string>
+    <string name="streak_today_done">Ukończone dzisiaj</string>
+    <string name="streak_today_pending">Zdekoduj dziś plik lub tekst, aby utrzymać passę</string>
+    <string name="streak_weekly_reward">Co 7 dni z rzędu</string>
+    <string name="streak_reward">+1 kredyt analizy APK</string>
+    <string name="streak_reward_delivered">Nagroda przyznana</string>
+    <string name="streak_verified_note">Dni i nagrody są weryfikowane przez serwer.</string>
+    <plurals name="streak_days_left">
+        <item quantity="one">Pozostał %1$d dzień</item>
+        <item quantity="other">Pozostało dni: %1$d</item>
+    </plurals>
+    <string name="streak_reminder_channel">Przypomnienia o passie</string>
+    <string name="streak_reminder_title">Twoja passa czeka</string>
+    <string name="streak_reminder_body">Zdekoduj dziś plik lub tekst, aby utrzymać passę.</string>
+</resources>

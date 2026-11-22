@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_global_title">Cloud (Online)</string>
+    <string name="cloud_global_auto">Detectare automată</string>
+    <string name="cloud_global_hint">Lipește un link, o cheie sau un cod Cloud acceptat</string>
+    <string name="cloud_global_action">Importă din Cloud</string>
+    <string name="cloud_global_detail">Lipește un link, o cheie sau un cod Cloud și SP-DECODE detectează automat furnizorul. Sunt acceptate doar serviciile aprobate.</string>
+    <string name="cloud_global_invalid">Această referință nu corespunde niciunui furnizor Cloud disponibil.</string>
+</resources>

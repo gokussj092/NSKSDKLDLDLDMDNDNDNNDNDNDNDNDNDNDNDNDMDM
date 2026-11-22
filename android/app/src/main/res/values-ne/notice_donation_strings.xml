@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="donations_title">दानहरू</string>
+    <string name="donation_copy_id">ID प्रतिलिपि गर्नुहोस्</string>
+    <string name="donation_id_copied">Binance ID प्रतिलिपि गरियो</string>
+    <string name="donation_coming_soon">चाँडै आउँदैछ</string>
+    <string name="catalog_loading_short">क्याटलग लोड गर्दै</string>
+    <string name="notifications_title">सूचनाहरू</string>
+    <string name="notifications_description">SP-DECODE बाट सेवा सूचनाहरू प्राप्त गर्नुहोस्। तपाईंले तिनीहरूलाई जुनसुकै बेला बन्द गर्न सक्नुहुन्छ।</string>
+    <string name="notifications_system_settings">प्रणाली सेटिङहरू</string>
+    <string name="notifications_enable">सक्षम गर्नुहोस्</string>
+    <string name="notifications_later">पछि</string>
+</resources>

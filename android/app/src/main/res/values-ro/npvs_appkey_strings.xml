@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_failure_npvs_appkey_auth">Acest fișier NPVS cu cheie de aplicație nu a putut fi autentificat. Este posibil să folosească o variantă diferită sau să fi fost modificat. Această metodă nu necesită nici parolă, nici cheie privată de destinatar.</string>
+</resources>

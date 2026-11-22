@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="server_vpn_search_hint">VPN செயலிகளைத் தேடுக</string>
+    <string name="server_vpn_filter_all">அனைத்தும்</string>
+    <string name="server_vpn_filter_enabled">இயக்கப்பட்டவை</string>
+    <string name="server_vpn_filter_favorites">பிடித்தவை</string>
+    <string name="server_vpn_favorite_add">பிடித்தவையில் சேர்</string>
+    <string name="server_vpn_favorite_remove">பிடித்தவையிலிருந்து நீக்கு</string>
+    <string name="server_vpn_manual_refresh">இப்போது பட்டியலைச் சரிபார்</string>
+    <string name="server_vpn_catalog_refreshing">சர்வர் பட்டியல் சரிபார்க்கப்படுகிறது…</string>
+    <string name="server_vpn_no_matches">உங்கள் தேடல் அல்லது வடிப்பான்களுடன் எந்த VPN செயலியும் பொருந்தவில்லை.</string>
+    <string name="server_vpn_catalog_enabled">பட்டியலில் இயக்கப்பட்டது</string>
+    <string name="server_vpn_catalog_disabled">பட்டியலில் இயக்கப்படவில்லை</string>
+    <string name="server_vpn_new_badge">புதியது</string>
+    <string name="server_vpn_catalog_update_title">பட்டியல் புதுப்பிப்பு கிடைக்கிறது</string>
+    <string name="server_vpn_catalog_update_question">Server VPN பட்டியலின் பதிப்பு %1$d கிடைக்கிறது. இப்போது பதிவிறக்கவா?</string>
+    <string name="server_vpn_catalog_download">பதிவிறக்கு</string>
+    <string name="server_vpn_catalog_current">உங்கள் Server VPN பட்டியல் புதுப்பித்த நிலையில் உள்ளது.</string>
+    <string name="server_vpn_catalog_updated">Server VPN பட்டியல் புதுப்பிக்கப்பட்டது.</string>
+    <string name="server_vpn_catalog_update_error">பட்டியலைச் சரிபார்க்கவோ பதிவிறக்கவோ முடியவில்லை. மீண்டும் முயலவும்.</string>
+    <string name="server_vpn_updated_badge">புதுப்பிக்கப்பட்டது</string>
+    <string name="server_vpn_maintenance_badge">பராமரிப்பில் உள்ளது</string>
+    <string name="server_vpn_maintenance_detail">முறை தற்காலிகமாகப் பராமரிப்பில் உள்ளது</string>
+    <plurals name="server_vpn_app_count">
+        <item quantity="one">%1$d செயலி கிடைக்கிறது</item>
+        <item quantity="other">%1$d செயலிகள் கிடைக்கின்றன</item>
+    </plurals>
+</resources>

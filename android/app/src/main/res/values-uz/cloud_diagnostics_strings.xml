@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_report_action">Xato haqida xabar berish</string>
+    <string name="cloud_report_sent">Xabar qabul qilindi: %1$s</string>
+    <string name="cloud_report_failed">Xabarni yuborib boʻlmadi. Keyinroq qayta urining.</string>
+    <string name="cloud_usage_title">Anonim oʻrnatish statistikasi</string>
+    <string name="cloud_usage_detail">SP-DECODE server quvvatini rejalashtirish uchun kuniga bir marta taxminiy faol oʻrnatishlar sonini hisoblaydi. Android ID, HWID yoki reklama ID oʻrniga tasodifiy oʻrnatish kodi ishlatiladi.</string>
+    <string name="cloud_usage_footnote">Cloud xizmatidan foydalanishda maxfiylik shartlarini qabul qilganingizdan soʻng qoʻshiladi. Fayl mazmuni, parollar yoki dekodlangan konfiguratsiyalar kiritilmaydi.</string>
+</resources>

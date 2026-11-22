@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="catalog_offer_title">نیا کیٹلاگ دستیاب ہے</string>
+    <string name="catalog_offer_body">کیٹلاگ ورژن %1$d تیار ہے۔ نئی سپورٹ شدہ ایپس، طریقوں اور بہتریوں تک رسائی کے لیے اپ ڈیٹ کریں۔</string>
+    <string name="catalog_offer_update">ابھی اپ ڈیٹ کریں</string>
+    <string name="catalog_offer_later">منسوخ کریں</string>
+    <string name="catalog_postpone_title">اپ ڈیٹ کیے بغیر جاری رکھیں؟</string>
+    <string name="catalog_postpone_body">اگر آپ منسوخ کرتے ہیں تو تازہ ترین کیٹلاگ کی ایپس، طریقے اور بہتریاں اپ ڈیٹ کرنے تک دستیاب نہیں ہوں گی۔ آپ بعد میں Server VPN میں اپ ڈیٹ کر سکتے ہیں۔</string>
+    <string name="catalog_postpone_confirm">اپ ڈیٹ کیے بغیر جاری رکھیں</string>
+    <string name="catalog_postpone_back">واپس جائیں</string>
+</resources>

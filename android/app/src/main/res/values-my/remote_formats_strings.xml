@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="file_extension_unsupported_contact">ဤဖိုင် extension ကို မထောက်ပံ့ပါ။ ထောက်ပံ့ရန် တောင်းဆိုလိုပါက ဖန်တီးသူထံ ဆက်သွယ်ပါ။</string>
+    <string name="text_format_unsupported_contact">ဤစာသား ဖော်မတ် သို့မဟုတ် ပရိုတိုကောကို မထောက်ပံ့ပါ။ ထောက်ပံ့ရန် တောင်းဆိုလိုပါက ဖန်တီးသူထံ ဆက်သွယ်ပါ။</string>
+    <string name="formats_remote_catalog_note">ထောက်ပံ့ထားသော extension များကို SP-DECODE Cloud မှ လုံခြုံစွာ ထပ်တူပြုပါသည်။ Cloud ဖော်မတ် အသစ်များသည် အက်ပ်ကို အပ်ဒိတ်လုပ်စရာမလိုဘဲ ပေါ်လာနိုင်ပါသည်။</string>
+    <string name="formats_cloud_ready_short">Cloud</string>
+</resources>

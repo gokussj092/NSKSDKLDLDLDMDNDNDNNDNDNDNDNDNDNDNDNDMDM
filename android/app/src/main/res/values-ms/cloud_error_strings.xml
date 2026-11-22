@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_failure_offline">Tiada sambungan internet. Sambungkan dan cuba lagi.</string>
+    <string name="cloud_failure_network">Tidak dapat menghubungi perkhidmatan. Semak sambungan anda dan cuba lagi.</string>
+    <string name="cloud_failure_tls">Sambungan selamat gagal. Semak rangkaian dan jam peranti.</string>
+    <string name="cloud_failure_timeout">Waktu permintaan habis. Cuba lagi dengan sambungan stabil.</string>
+    <string name="cloud_failure_integrity">Pengesahan aplikasi gagal. Kemas kini aplikasi atau gunakan akses QA rasmi.</string>
+    <string name="cloud_failure_qa_code">Akses QA belum tersedia. Buka SP-DECODE QA dan masukkan kod baru.</string>
+    <string name="cloud_failure_session">Sesi tamat tempoh atau gagal disahkan. Cuba lagi.</string>
+    <string name="cloud_failure_forbidden">Akses ditolak. Semak kebenaran anda.</string>
+    <string name="cloud_failure_qa">Akses QA tidak sah, tidak aktif, atau tamat tempoh.</string>
+    <string name="cloud_failure_consent">Setujui terma dan pemberitahuan privasi terkini.</string>
+    <string name="cloud_failure_rate">Terlalu banyak permintaan. Tunggu sebelum mencuba lagi.</string>
+    <string name="cloud_failure_large">Fail atau hasil melebihi had saiz.</string>
+    <string name="cloud_failure_invalid">Fail atau permintaan tidak sah. Semak format.</string>
+    <string name="cloud_failure_unsupported">Format fail ini belum tersedia di server.</string>
+    <string name="cloud_failure_decode">Penyahkod gagal memproses varian fail ini. Fail belum tentu rosak.</string>
+    <string name="cloud_failure_maintenance">Perkhidmatan ini sedang dalam penyelenggaraan sementara. Sila cuba lagi nanti.</string>
+    <string name="cloud_failure_unavailable">Perkhidmatan sementara tidak tersedia. Cuba lagi nanti.</string>
+    <string name="cloud_failure_config_unavailable">Konfigurasi Cloud ini sudah tidak tersedia. Mungkin telah tamat tempoh, dipadam, atau hanya boleh digunakan sekali. Ini bukan kegagalan penyahkod.</string>
+    <string name="cloud_failure_remote">Pembekal jarak jauh memberikan respons tidak sah.</string>
+    <string name="cloud_failure_credentials">Kata laluan atau HWID salah. Semak semula.</string>
+    <string name="cloud_failure_password">Fail dilindungi ini memerlukan kata laluan.</string>
+    <string name="cloud_failure_hwid">Fail dilindungi ini memerlukan HWID.</string>
+    <string name="cloud_failure_both">Fail dilindungi ini memerlukan kata laluan dan HWID.</string>
+    <string name="cloud_failure_not_found">Sumber tidak ditemui atau tidak tersedia.</string>
+    <string name="cloud_failure_conflict">Permintaan bercanggah dengan keadaan semasa. Sila cuba lagi.</string>
+    <string name="cloud_failure_partial">Hasil tidak lengkap atau tidak sah dan tidak dipaparkan.</string>
+    <string name="cloud_failure_general">Operasi gagal. Cuba lagi atau hubungi sokongan.</string>
+    <string name="cloud_failure_notice_title">Pemberitahuan</string>
+    <string name="cloud_password_title">Kata laluan konfigurasi diperlukan</string>
+    <string name="cloud_password_description">%1$s dilindungi kata laluan. Masukkan kata laluan eksport untuk meneruskan. Kata laluan tidak akan disimpan.</string>
+    <string name="cloud_failure_password_incorrect">Kata laluan salah.</string>
+    <string name="cloud_failure_private_key">Fail NPVS ini menggunakan perlindungan kunci awam dan peribadi penerima. Kaedah ini belum disokong dan akan segera tersedia.</string>
+    <string name="cloud_failure_recipient">Fail NPVS ini menggunakan kaedah kunci penerima yang belum disokong. Segera hadir.</string>
+    <string name="cloud_failure_npvs_unsupported">Versi atau kaedah perlindungan NPVS ini belum disokong. Segera hadir.</string>
+</resources>

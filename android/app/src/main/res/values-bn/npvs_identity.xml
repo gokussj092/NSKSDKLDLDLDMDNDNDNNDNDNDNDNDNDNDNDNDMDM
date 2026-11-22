@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="npv_title">NPV প্রাপকের কি</string>
+    <string name="npv_detail">আপনার জন্য তৈরি ফাইলগুলোর ক্ষেত্রে আপনার পরিচয় ব্যবহার করুন। কিগুলো এই ডিভাইসে এনক্রিপ্ট করা থাকে। SP Cloud-এর সঙ্গে ব্যবহার করতে এই বিকল্পটি চালু করুন।</string>
+    <string name="npv_enabled">আমার NPV পরিচয় ব্যবহার করুন</string>
+    <string name="npv_generate">SP Cloud দিয়ে তৈরি করুন</string>
+    <string name="npv_import">ক্যাপচার করা JSON ইমপোর্ট করুন</string>
+    <string name="npv_generated">SP Cloud দ্বারা তৈরি</string>
+    <string name="npv_captured">অফিসিয়াল অ্যাপ থেকে ক্যাপচার করা</string>
+    <string name="npv_file_only">কেবল এই ফাইলটি</string>
+    <string name="npv_view">দেখুন ও কপি করুন</string>
+    <string name="npv_delete">মুছুন</string>
+    <string name="npv_invalid">NPV কি পড়া যাচ্ছে না। JSON ও মিলে যাওয়া কিগুলো পরীক্ষা করুন।</string>
+    <string name="npv_saved">পরিচয় সংরক্ষিত হয়েছে। ব্যবহার করতে বিকল্পটি চালু করুন।</string>
+    <string name="npv_generation_notice">আপনার VPN সার্ভার বা কনফিগারেশন তৈরি করা ব্যক্তির সঙ্গে কেবল পাবলিক কি শেয়ার করুন। আপনার প্রাইভেট কি কখনও শেয়ার করবেন না।</string>
+    <string name="npv_choose_title">NPV পরিচয় বেছে নিন</string>
+    <string name="npv_send_notice">SP Cloud দিয়ে এই ফাইলটি খুলতে পরিচয়টি নির্বাচন করুন।</string>
+    <string name="npv_use">নির্বাচিত পরিচয় ব্যবহার করুন</string>
+    <string name="npv_copy_public">পাবলিক কি কপি করুন</string>
+    <string name="npv_copy_private">প্রাইভেট কি কপি করুন</string>
+    <string name="npv_reveal">প্রাইভেট কি দেখান বা লুকান</string>
+    <string name="npv_hardware_notice">হার্ডওয়্যার প্রাইভেট কি এক্সপোর্ট করা যায় না। এই ক্যাপচার কেবল মিলে যাওয়া ফাইলের ক্ষেত্রেই কাজ করে।</string>
+    <string name="npv_delete_title">এই পরিচয়টি মুছে ফেলবেন?</string>
+    <string name="npv_delete_warning">এই কিটি কেবল এই ডিভাইসে সংরক্ষিত। একবার মুছে ফেললে SP Cloud তা পুনরুদ্ধার করতে পারবে না। এই পরিচয়ের জন্য এনক্রিপ্ট করা ফাইলগুলোর অ্যাক্সেস হারাতে পারেন।</string>
+    <string name="npv_public_label">পাবলিক কি · P-256</string>
+    <string name="npv_private_label">প্রাইভেট কি · PKCS#8</string>
+    <string name="npv_cancel">বাতিল করুন</string>
+    <string name="npv_already_generated">একটি SP Cloud পরিচয় ইতিমধ্যে রয়েছে। আরেকটি তৈরি করার আগে সেটি মুছুন।</string>
+</resources>

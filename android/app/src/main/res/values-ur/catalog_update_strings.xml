@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="catalog_auto_title">سرور VPN کیٹلاگ کی خودکار اپ ڈیٹس</string>
+    <string name="catalog_auto_detail">ایپ کھلی رہنے کے دوران HTTPS کے ذریعے آپ کے اپنے SP-DECODE سرور سے کیٹلاگ ورژن چیک کرتا ہے، اور پس منظر میں کبھی کبھار ریکوری چیک بھی کرتا ہے۔ نیا کیٹلاگ ڈیٹا اور آئیکنز صرف ورژن تبدیل ہونے کے بعد ڈاؤن لوڈ ہوتے ہیں۔ Firebase، اکاؤنٹ یا پش ٹوکن کی ضرورت نہیں۔ آپ اسے کسی بھی وقت بند کر سکتے ہیں۔</string>
+    <string name="catalog_auto_switch">پس منظر میں کیٹلاگ سنک فعال کریں</string>
+</resources>

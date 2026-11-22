@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="server_vpn_filter_ssh_accounts">บัญชี SSH</string>
+    <string name="server_vpn_ssh_notice_text">บัญชี SSH เหล่านี้ใช้ได้เฉพาะในแอปต่อไปนี้เท่านั้น:</string>
+    <string name="server_vpn_ssh_no_matches">ไม่มีบัญชี SSH ตรงกับการค้นหาของคุณ</string>
+</resources>

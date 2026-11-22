@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="account_sign_in">Увійти</string>
+    <string name="account_web_description">Керуйте своїм обліковим записом і покупками на офіційному вебсайті. Безкоштовні функції залишаються доступними без облікового запису.</string>
+    <string name="account_continue_web">Продовжити у браузері</string>
+    <string name="account_my_account">Мій обліковий запис</string>
+    <string name="account_store">Магазин</string>
+    <string name="account_open_menu">Відкрити меню</string>
+    <string name="ads_privacy_options">Параметри конфіденційності реклами</string>
+</resources>

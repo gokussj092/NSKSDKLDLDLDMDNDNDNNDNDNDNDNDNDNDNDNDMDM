@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="catalog_auto_title">Automatické aktualizace katalogu Server VPN</string>
+    <string name="catalog_auto_detail">Kontroluje verze katalogu s vaším vlastním serverem SP-DECODE přes HTTPS, když je aplikace otevřená, a volitelně provádí občasné kontroly obnovení na pozadí. Nová data a ikony katalogu se stáhnou až po změně verze. Není potřeba Firebase, účet ani push token. Kdykoli to můžete vypnout.</string>
+    <string name="catalog_auto_switch">Povolit synchronizaci katalogu na pozadí</string>
+</resources>

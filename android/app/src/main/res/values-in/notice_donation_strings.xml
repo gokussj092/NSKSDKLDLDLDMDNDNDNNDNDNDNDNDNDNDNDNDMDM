@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="donations_title">Donasi</string>
+    <string name="donation_copy_id">Salin ID</string>
+    <string name="donation_id_copied">ID Binance disalin</string>
+    <string name="donation_coming_soon">Segera hadir</string>
+    <string name="catalog_loading_short">Memuat katalog</string>
+    <string name="notifications_title">Notifikasi</string>
+    <string name="notifications_description">Terima pemberitahuan layanan dari SP-DECODE. Anda dapat mematikannya kapan saja.</string>
+    <string name="notifications_system_settings">Pengaturan sistem</string>
+    <string name="notifications_enable">Aktifkan</string>
+    <string name="notifications_later">Nanti</string>
+</resources>

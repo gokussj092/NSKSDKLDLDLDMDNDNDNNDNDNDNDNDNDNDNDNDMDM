@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_decode_progress_title">Αποκωδικοποίηση διαμόρφωσης</string>
+    <string name="cloud_decode_progress_message">Μπορεί να διαρκέσει λίγα λεπτά. Περιμένετε.</string>
+    <string name="cloud_large_result_title">Αποκωδικοποιήθηκε μεγάλη διαμόρφωση</string>
+    <string name="cloud_large_result_body">Η διαμόρφωση αποθηκεύτηκε στο κρυπτογραφημένο ιστορικό. Η προεπισκόπηση πολύ μεγάλων αποτελεσμάτων μπορεί να επιβραδύνει ή να κλείσει την εφαρμογή. Συνιστούμε να εξαγάγετε το πλήρες JSON από το Ιστορικό χρησιμοποιώντας το μενού με τις τρεις τελείες και έπειτα την Εξαγωγή. Το Android θα σας επιτρέψει να επιλέξετε τον φάκελο και το όνομα αρχείου.</string>
+    <string name="cloud_large_result_acknowledge">Κατάλαβα</string>
+    <string name="cloud_history_actions">Περισσότερες ενέργειες</string>
+</resources>

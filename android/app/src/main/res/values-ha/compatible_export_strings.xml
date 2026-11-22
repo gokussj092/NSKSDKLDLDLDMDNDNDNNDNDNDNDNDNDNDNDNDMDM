@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="compatible_export_for">Fitar don %1$s</string>
+    <string name="compatible_export_redecode">Ka sake shigar da wannan fayil don kunna fitarwa zuwa %1$s.</string>
+    <string name="compatible_export_failed">Ba a iya ajiye fayil mai dacewa ba.</string>
+</resources>

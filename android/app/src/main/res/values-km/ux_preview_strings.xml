@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="apk_import_button">នាំចូល APK</string>
+    <string name="apk_future_message">ការវិភាគ APK នឹងមាននៅក្នុងបច្ចុប្បន្នភាពនាពេលអនាគត។</string>
+    <string name="apk_credits_title">មជ្ឈមណ្ឌលឥណទាន</string>
+    <string name="apk_credits_intro">គ្រប់គ្រងឥណទាននាពេលអនាគត និងការទិញការវិភាគ APK។</string>
+    <string name="apk_credits_notice">សមតុល្យ និងការទិញនឹងមាននៅពេលសេវាកម្មចាប់ផ្តើម។</string>
+    <string name="apk_credits_buy_title">ទិញឥណទាន</string>
+    <string name="apk_credits_one">1 ឥណទាន</string>
+    <string name="apk_credits_buy_one">ទិញ 1 ឥណទាន · មកដល់ឆាប់ៗនេះ</string>
+    <string name="apk_credits_packages">បណ្តុំឥណទាន</string>
+    <string name="apk_credits_buy_package">ទិញកញ្ចប់ · មកដល់ឆាប់ៗនេះ</string>
+    <string name="apk_credits_prices_title">តម្លៃ</string>
+    <string name="apk_credits_subscriptions">ការជាវ</string>
+    <string name="apk_credits_button">ឥណទាន៖ 1+</string>
+    <string name="apk_credits_back">ត្រឡប់មកវិញ</string>
+</resources>

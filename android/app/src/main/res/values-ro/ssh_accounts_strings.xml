@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="server_vpn_filter_ssh_accounts">Conturi SSH</string>
+    <string name="server_vpn_ssh_notice_text">Aceste conturi SSH pot fi folosite doar în următoarea aplicație:</string>
+    <string name="server_vpn_ssh_no_matches">Niciun cont SSH nu corespunde căutării tale.</string>
+</resources>

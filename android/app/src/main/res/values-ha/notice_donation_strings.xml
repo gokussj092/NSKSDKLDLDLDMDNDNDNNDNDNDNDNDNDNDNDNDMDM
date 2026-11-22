@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="donations_title">Gudummawa</string>
+    <string name="donation_copy_id">Kwafi ID</string>
+    <string name="donation_id_copied">An kwafi Binance ID</string>
+    <string name="donation_coming_soon">Yana zuwa nan ba da daɗewa ba</string>
+    <string name="catalog_loading_short">Ana loda kundin bayanai</string>
+    <string name="notifications_title">Sanarwa</string>
+    <string name="notifications_description">Ka karɓi sanarwar sabis daga SP-DECODE. Za ka iya kashe su a kowane lokaci.</string>
+    <string name="notifications_system_settings">Saitunan tsari</string>
+    <string name="notifications_enable">Kunna</string>
+    <string name="notifications_later">Daga baya</string>
+</resources>

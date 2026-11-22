@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_global_title">Cloud (Online)</string>
+    <string name="cloud_global_auto">ራስ-ሰር አግኝ</string>
+    <string name="cloud_global_hint">የሚደገፍ የCloud አገናኝ፣ ቁልፍ ወይም ኮድ ለጥፍ</string>
+    <string name="cloud_global_action">ከCloud አስመጣ</string>
+    <string name="cloud_global_detail">የCloud አገናኝ፣ ቁልፍ ወይም ኮድ ለጥፍ እና SP-DECODE አቅራቢውን በራስ-ሰር ያገኛል። የተፈቀዱ አገልግሎቶች ብቻ ይደገፋሉ።</string>
+    <string name="cloud_global_invalid">ይህ ማጣቀሻ ከሚገኝ የCloud አቅራቢ ጋር አይዛመድም።</string>
+</resources>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="account_sign_in">உள்நுழைக</string>
+    <string name="account_web_description">அதிகாரப்பூர்வ இணையதளத்தில் உங்கள் கணக்கு மற்றும் வாங்கல்களை நிர்வகிக்கவும். இலவச அம்சங்கள் கணக்கு இல்லாமலும் கிடைக்கும்.</string>
+    <string name="account_continue_web">இணையத்தில் தொடரவும்</string>
+    <string name="account_my_account">என் கணக்கு</string>
+    <string name="account_store">கடை</string>
+    <string name="account_open_menu">மெனுவைத் திற</string>
+    <string name="ads_privacy_options">விளம்பர தனியுரிமை விருப்பங்கள்</string>
+</resources>

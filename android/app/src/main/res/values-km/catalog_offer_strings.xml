@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="catalog_offer_title">មានកាតាឡុកថ្មី</string>
+    <string name="catalog_offer_body">កំណែកាតាឡុក %1$d គឺរួចរាល់ហើយ។ ធ្វើបច្ចុប្បន្នភាពដើម្បីចូលប្រើកម្មវិធី វិធីសាស្រ្ត និងការកែលម្អថ្មីៗដែលគាំទ្រ។</string>
+    <string name="catalog_offer_update">ធ្វើបច្ចុប្បន្នភាពឥឡូវនេះ</string>
+    <string name="catalog_offer_later">បោះបង់</string>
+    <string name="catalog_postpone_title">បន្តដោយមិនធ្វើបច្ចុប្បន្នភាព?</string>
+    <string name="catalog_postpone_body">ប្រសិនបើអ្នកបោះបង់ កម្មវិធីកាតាឡុក វិធីសាស្ត្រ និងការកែលម្អចុងក្រោយបំផុតនឹងមិនមានទេ រហូតដល់អ្នកធ្វើបច្ចុប្បន្នភាព។ អ្នកអាចធ្វើបច្ចុប្បន្នភាពនៅពេលក្រោយនៅក្នុងម៉ាស៊ីនមេ VPN។</string>
+    <string name="catalog_postpone_confirm">បន្តដោយមិនធ្វើបច្ចុប្បន្នភាព</string>
+    <string name="catalog_postpone_back">ត្រឡប់ទៅវិញ</string>
+</resources>

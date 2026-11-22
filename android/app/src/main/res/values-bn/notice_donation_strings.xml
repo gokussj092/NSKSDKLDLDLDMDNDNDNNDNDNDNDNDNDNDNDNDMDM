@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="donations_title">অনুদান</string>
+    <string name="donation_copy_id">ID কপি করুন</string>
+    <string name="donation_id_copied">Binance ID কপি করা হয়েছে</string>
+    <string name="donation_coming_soon">শীঘ্রই আসছে</string>
+    <string name="catalog_loading_short">ক্যাটালগ লোড হচ্ছে</string>
+    <string name="notifications_title">বিজ্ঞপ্তি</string>
+    <string name="notifications_description">SP-DECODE থেকে পরিষেবার বিজ্ঞপ্তি পান। যেকোনো সময় বন্ধ করতে পারেন।</string>
+    <string name="notifications_system_settings">সিস্টেম সেটিংস</string>
+    <string name="notifications_enable">চালু করুন</string>
+    <string name="notifications_later">পরে</string>
+</resources>
