@@ -343,21 +343,10 @@ test("PM Tunnel Lite original PNG and validated complete catalog follow provider
 });
 
 
-test("AM retains its original PNG while protected catalog support is pending",async t=>{
- const old=process.env.CLOUD_SERVER_VPN_ENABLED;process.env.CLOUD_SERVER_VPN_ENABLED="true";
- t.after(()=>{if(old===undefined)delete process.env.CLOUD_SERVER_VPN_ENABLED;else process.env.CLOUD_SERVER_VPN_ENABLED=old;});
- const app=catalog({availability:{"am-tunnel-lite-vpn":true}}).apps.find(x=>x.id==="am-tunnel-lite-vpn");
- assert.equal(app.name,"AM TUNNEL LITE VPN");assert.equal(app.decodeEnabled,false);
- assert.equal(app.iconSha256,"ad8aab869a41fd23aa1bff5c976c589ae73738192a8d475c3fcc36edd1da2d7a");
- assert(!providerIds().includes("am-tunnel-lite-vpn"));
- assert.equal(providerEnabled("am-tunnel-lite-vpn",{CLOUD_SERVER_VPN_ENABLED:"true"}),false);
- await assert.rejects(()=>downloadVpnCatalog("am-tunnel-lite-vpn"),{code:"UNSUPPORTED_FORMAT"});
-});
-
 // Live catalog validated 2026-11-22 (v4.6, 172 free servers, 137 payloads):
 // the card is decoding-enabled and serves the exact original 479x440 PNG
 // from the APK (30,105 bytes; no 512x512 icon exists in the APK). The old
-// am-tunnel-lite-vpn card (remote:null) is a different, still disabled id.
+// am-tunnel-lite-vpn card (remote:null) was removed 2026-11-22 by Pedro's decision.
 test("AM Tunnel Lite original PNG and validated complete catalog follow provider controls",()=>{
  const app=catalog({availability:{"am-tunnel-lite":true}}).apps.find(x=>x.id==="am-tunnel-lite");
  assert.equal(app.name,"AM Tunnel Lite");assert.equal(app.decodeEnabled,true);

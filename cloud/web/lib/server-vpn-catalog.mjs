@@ -7,7 +7,7 @@ import {providerEnabled} from "./server-vpn-provider.mjs";
 import {SUPPLIED_CATALOG_ITEMS,suppliedProviderConfigured} from "./supplied-integrations.mjs";
 import {catalogDefaultEnabled} from "./catalog-provider-policy.mjs";
 
-export const CATALOG_VERSION = 96; // AM Tunnel Lite (2026-11-22): AM Tunnel Lite (am-tunnel-lite, Version 4.6 live, 172 free servers / 137 payloads); one catalog revision for this batch.
+export const CATALOG_VERSION = 97; // Removed the legacy am-tunnel-lite-vpn card (remote:null) 2026-11-22 by Pedro's decision; AM Tunnel Lite stays as am-tunnel-lite (Version 4.6 live).
 export const RECHECK_SECONDS = 15 * 60; // Version-only recovery; full download occurs on version change.
 
 /** Monotonic deployment version. Bump this override for ANY metadata, icon
@@ -71,8 +71,6 @@ const BASE_ITEMS = [
   // Embedded catalog works; remote Play Integrity response remains unvalidated.
   {id:"creeb-vpn", name:"CREEB VPN", icon:"creeb-vpn.png", remote:null},
   {id:"abowaged-vpn", name:"AboWaged VPN", icon:"abowaged-vpn.png", remote:"abowaged-vpn"},
-  // Build 63 outer catalog remains protected; fixed source timed out during analysis.
-  {id:"am-tunnel-lite-vpn", name:"AM TUNNEL LITE VPN", icon:"am-tunnel-lite-vpn.png", remote:null},
   {id:"7net-vpn", name:"7NET VPN", icon:"7net-vpn.png", remote:"7net-vpn"},
   // Live catalog validated 2026-11-19 (Version 3304, 90 servers, 334 networks).
   {id:"gcp-vpn", name:"GCP VPN", icon:"gcp-vpn.png", remote:"gcp-vpn"},

@@ -642,11 +642,15 @@ descifrados. La integración queda en código del PR, pendiente de despliegue VP
 
 > Actualización 2026-11-22: el lector se recuperó y el proveedor nuevo
 > `am-tunnel-lite` se integró en la nube (versión pública 96); ver la
-> sección `## AM Tunnel Lite AM (63)` al final de este documento. Esta
-> ficha antigua (`am-tunnel-lite-vpn`, `remote:null`) no se toca en esa
-> entrega y queda pendiente de decidir si se retira.
+> sección `## AM Tunnel Lite AM (63)` al final de este documento. La
+> ficha antigua (`am-tunnel-lite-vpn`, `remote:null`) se RETIRÓ el
+> 2026-11-22 por decisión de Pedro (versión pública 97); su PNG era
+> byte-idéntico al del proveedor nuevo, así que no se perdió nada.
+>
+> La sección histórica de abajo se conserva como registro de la
+> investigación; la tarjeta ya no existe en el catálogo.
 
-La ficha `am-tunnel-lite-vpn` conserva el PNG original de 479×440 / 30105 bytes.
+El PNG original de 479×440 / 30105 bytes sigue en el proveedor nuevo `am-tunnel-lite` (mismos bytes); el archivo `am-tunnel-lite-vpn.png` se eliminó junto con la tarjeta.
 Catálogo mínimo **34 / 36 fichas**, respetando los switches y la versión
 persistente. `remote:null` impide habilitarla mediante una disponibilidad
 inyectada; el ID no está registrado en el broker ni el worker.
@@ -926,7 +930,7 @@ conocidos de `_C8_FILE_ENGINES` en `engine.py`, que incluye `rmplite`).
 ## AM Tunnel Lite AM (63) — catálogo en la nube, versión pública 96
 
 Proveedor fijo `am-tunnel-lite`, paquete `app.vpn.amtunnellite`, versionCode 63.
-App distinta de la ficha antigua `am-tunnel-lite-vpn` (`remote:null`): proveedor
+App distinta de la ficha antigua `am-tunnel-lite-vpn` (`remote:null`, retirada 2026-11-22 por decisión de Pedro): proveedor
 propio, sin fusión ni cambios en esa tarjeta. Carpeta
 `decoders/Python/apps/AM_Tunnel_Lite/` con `codec.py`, `file_decoder.py`,
 `server_catalog_decoder.py`, PNG original, manifest, README y TESTING. Sigue el
@@ -976,5 +980,5 @@ Pendiente fuera de esta entrega: una exportación `pdrv2.json` real del teléfon
 de Pedro (la ruta es `VERIFIED_REAL` por el catálogo remoto + embebido, no por
 exportación de usuario — la app no tiene importación por el usuario);
 confirmación extremo a extremo en un dispositivo; codificación de campo del
-token de cuenta superior (`Username` == `Password`, 16 B) sin recuperar;
-decidir si se retira la ficha antigua `am-tunnel-lite-vpn`.
+token de cuenta superior (`Username` == `Password`, 16 B) sin recuperar.
+La ficha antigua `am-tunnel-lite-vpn` se retiró 2026-11-22 por decisión de Pedro.

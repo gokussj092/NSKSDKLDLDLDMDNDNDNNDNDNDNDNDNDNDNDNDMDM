@@ -90,5 +90,4 @@ igual.
 - Codificación de campo del token de cuenta superior (`Username` ==
   `Password`, 16 B) sin recuperar; no afecta al listado.
 - Prueba en VPS tras el despliegue autorizado (`update all`).
-- Decidir con Pedro si se retira la ficha antigua `am-tunnel-lite-vpn`
-  (`remote:null`), distinta del proveedor nuevo `am-tunnel-lite`.
+- La ficha antigua `am-tunnel-lite-vpn` se retiró 2026-11-22 por decisión de Pedro.

@@ -117,10 +117,9 @@ roundtrip de exportador Android.
 
 ## Nota sobre la ficha antigua `am-tunnel-lite-vpn`
 
-El catálogo ya tenía una tarjeta `am-tunnel-lite-vpn` (`remote:null`,
+El catálogo tenía una tarjeta `am-tunnel-lite-vpn` (`remote:null`,
 desactivada) de cuando el lector aún no se había recuperado. El proveedor
-nuevo es `am-tunnel-lite` (id distinto, con broker y worker propios); la
-tarjeta antigua **no se toca en esta entrega** y queda pendiente de decidir
-con Pedro si se retira. Su test (`server-vpn-catalog.test.mjs`, "AM retains
-its original PNG while protected catalog support is pending") sigue
-vigente para esa ficha.
+nuevo es `am-tunnel-lite` (id distinto, con broker y worker propios). La
+tarjeta antigua se **retiró el 2026-11-22 por decisión de Pedro** (versión
+pública 97): se quitó su entrada del catálogo, su test y su PNG (mismos
+bytes que el icono nuevo, así que no se perdió nada).
