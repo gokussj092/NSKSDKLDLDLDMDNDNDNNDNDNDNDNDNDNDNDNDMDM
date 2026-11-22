@@ -539,6 +539,14 @@
       "credentialFields": []
     },
     {
+      "suffix": "pdtv2",
+      "name": "AM Tunnel Lite",
+      "kind": "file",
+      "offlineSupported": false,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
       "suffix": "sksrv",
       "name": "SKS Server",
       "kind": "file",

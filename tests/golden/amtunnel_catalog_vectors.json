@@ -1,0 +1,42 @@
+{
+ "catalog": "bnP3E16Qco53D+Ytk6aCJmH6ztwTKaTh15vHtZxtw93ldktMbwgm7FStIBujxJvpljKzCiV+nJKl1UfBr54XR0FeJ+JuqZtJ5DnzistSZKjLYyi7EgrON6P4CDvtOFIZ1l3AA3Ox/R5s1whLkJvKkyUuXBedqhKef/krjk8rEP0npZn3WzB/nVaW8B3pxbCr7sfmC9HoSfgmSO2xPGSrop+0JIpy26IZFLNCzS1jQKKNsZzUyILVC7nqJJ0EO8xe45XkY3gY77jjyOi4JR3WexY7uOe1NJE532ZVDcSB3xWyCvpqmH/jeovQ19oe+2MlqGZyIp97Ub4cUOvIDcI08CrEkUW2dA084NPfQV7i2/PnRFDMlG/Pu1eibXcIPRqfHhcFOHr57AZxrI6aq2X6mlShlQgzQEpbZ/zMBQLt5gnEA3JB5Ei/wx4R5WMx9mBefpkfTsi7e3SLFR/zGw25X6+fh1GqPd2KsLB0aAxG5ailAAwdTtUzy84kte5Rt1vWRD00Qpd+tSarHgrnhVZgxsmCCyehDUVMVF0lRiFOX2leKc4EYRsfb4Xs6E0e+6eQUUv/dGK9xQUjHmy8nhLdKnKlLcEbjT+WK8n+pRzIP1p5WdOFi2xFpXHQhiye984Hr9Bx7ne0MAPUd2sj+urGgApiPaysUcJmGeWlZbeTZeueRDxGmcN2c/d1OX9L0EyVWxZMWzDrFzJngl3iw3odRZd3UFbzT6J6nekZPKDwCUVOPLjYH4uUqUzd74cIEGSPtS+i5s8rCcsxQIvVzBLtp0bcZL9paniKUC1P0aMb0o76GSEGzp4qHiE+0+E4+GBcC3I8zQzolOOyRXQQAjmL/EXFDmR62snEg/gwh+bXYLPAupUVny7js38CU5rK5t6gI2HveDvRiE8Q/nH1Co64Dyp3a2M4iW6IJc5rzg==",
+ "expected": {
+  "UpdaterLink": "",
+  "Premium_servers": [],
+  "Vip_servers": [],
+  "Private_servers": [],
+  "Username": "dGVzdA==",
+  "Password": "dGVzdA==",
+  "UDPVersion": "v2",
+  "Free_servers": [
+   {
+    "server_name": "Testland - Demo 1",
+    "server_host": "demo1.example.invalid;demo2.example.invalid",
+    "server_port": "",
+    "server_udp_port": "",
+    "ssl_port": "",
+    "category": "ocsudp",
+    "username": "",
+    "password": "",
+    "custom_cert": ""
+   }
+  ],
+  "Payloads": [
+   {
+    "friendly_name": "Test Payload",
+    "payload": "GET http://192.0.2.1/ HTTP/1.1",
+    "sausage": "",
+    "host": "Pulled",
+    "port": "Pulled",
+    "dothost": "",
+    "message": "",
+    "method": "http",
+    "category": "ocsslow",
+    "query": "normal",
+    "sslws": "false"
+   }
+  ],
+  "Version": "9.9",
+  "Changelogs": "test"
+ }
+}

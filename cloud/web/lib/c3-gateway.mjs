@@ -496,6 +496,17 @@ export async function fetchWorker(kind,payload,cfg,{fetchImpl=fetch}={}) {
          parsed.Servers.some(x=>!isRecord(x)) || parsed.Tweaks.some(x=>!isRecord(x)) ||
          JSON.stringify(parsed)!==JSON.stringify(decoded.structuredJson))throw Error("INVALID_WORKER_RESULT");
     }
+    if(kind==="server-vpn" && payload?.providerId==="am-tunnel-lite"){
+      let parsed;
+      try{parsed=JSON.parse(decoded.rawText);}catch{throw Error("INVALID_WORKER_RESULT");}
+      if(decoded.kind!=="vpn_catalog" || decoded.providerId!==payload.providerId ||
+         !isRecord(parsed) || typeof parsed.Version!=="string" || !parsed.Version ||
+         !Array.isArray(parsed.Free_servers) || !parsed.Free_servers.length ||
+         !Array.isArray(parsed.Payloads) || !parsed.Payloads.length ||
+         ["Free_servers","Premium_servers","Vip_servers","Private_servers","Payloads"].some(k=>
+           Object.hasOwn(parsed,k) && (!Array.isArray(parsed[k]) || parsed[k].some(row=>!isRecord(row)))))
+        throw Error("INVALID_WORKER_RESULT");
+    }
     if(kind==="server-vpn" && payload?.providerId==="v2ray-tunnel-plus"){
       let parsed;
       try{parsed=JSON.parse(decoded.rawText);}catch{throw Error("INVALID_WORKER_RESULT");}

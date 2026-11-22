@@ -7,7 +7,7 @@ import {providerEnabled} from "./server-vpn-provider.mjs";
 import {SUPPLIED_CATALOG_ITEMS,suppliedProviderConfigured} from "./supplied-integrations.mjs";
 import {catalogDefaultEnabled} from "./catalog-provider-policy.mjs";
 
-export const CATALOG_VERSION = 95; // Batch 16 (2026-11-22): PM Tunnel Lite (pm-tunnel-lite, Version 159 live, 10 servers / 151 networks), RMP Tunnel Lite (rmp-tunnel-lite, Version 10.4 live, 40 free servers / 1255 payloads), MAYA TUN PRO (maya-tun-pro, Version 1.3.41 live, 27 servers / 376 tweaks); one catalog revision for this batch.
+export const CATALOG_VERSION = 96; // AM Tunnel Lite (2026-11-22): AM Tunnel Lite (am-tunnel-lite, Version 4.6 live, 172 free servers / 137 payloads); one catalog revision for this batch.
 export const RECHECK_SECONDS = 15 * 60; // Version-only recovery; full download occurs on version change.
 
 /** Monotonic deployment version. Bump this override for ANY metadata, icon
@@ -82,6 +82,8 @@ const BASE_ITEMS = [
   {id:"maya-tun-pro", name:"MAYA TUN PRO", icon:"maya-tun-pro.png", remote:"maya-tun-pro"},
   // Live catalog validated 2026-11-22 (Version 159, 10 servers, 151 networks).
   {id:"pm-tunnel-lite", name:"PM Tunnel Lite", icon:"pm-tunnel-lite.png", remote:"pm-tunnel-lite"},
+  // Live catalog validated 2026-11-22 (Version 4.6, 172 free servers, 137 payloads).
+  {id:"am-tunnel-lite", name:"AM Tunnel Lite", icon:"am-tunnel-lite.png", remote:"am-tunnel-lite"},
   {id:"xhypher-tunnel-pro", name:"Xhypher Tunnel Pro", icon:"xhypher-tunnel-pro.png", remote:"xhypher-tunnel-pro"},
   // Official endpoint returns HTML; a valid signed OTA response is still required.
   {id:"ut-loop-pro-vpn", name:"UT Loop Pro VPN", icon:"ut-loop-pro-vpn.png", remote:null},

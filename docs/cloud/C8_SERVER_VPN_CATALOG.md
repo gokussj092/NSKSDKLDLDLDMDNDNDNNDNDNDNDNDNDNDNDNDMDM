@@ -640,6 +640,12 @@ descifrados. La integración queda en código del PR, pendiente de despliegue VP
 
 ## AM TUNNEL LITE VPN build 63: ficha pendiente, proveedor desactivado
 
+> Actualización 2026-11-22: el lector se recuperó y el proveedor nuevo
+> `am-tunnel-lite` se integró en la nube (versión pública 96); ver la
+> sección `## AM Tunnel Lite AM (63)` al final de este documento. Esta
+> ficha antigua (`am-tunnel-lite-vpn`, `remote:null`) no se toca en esa
+> entrega y queda pendiente de decidir si se retira.
+
 La ficha `am-tunnel-lite-vpn` conserva el PNG original de 479×440 / 30105 bytes.
 Catálogo mínimo **34 / 36 fichas**, respetando los switches y la versión
 persistente. `remote:null` impide habilitarla mediante una disponibilidad
@@ -916,3 +922,59 @@ enlace `rmplite://` real del teléfono de Pedro (estado actual:
 `docs/cloud/C0_FORMAT_MATRIX.csv` como documentación (el conteo ya
 cuadra en 278 porque el test `file-formats.test.mjs` deriva los
 conocidos de `_C8_FILE_ENGINES` en `engine.py`, que incluye `rmplite`).
+
+## AM Tunnel Lite AM (63) — catálogo en la nube, versión pública 96
+
+Proveedor fijo `am-tunnel-lite`, paquete `app.vpn.amtunnellite`, versionCode 63.
+App distinta de la ficha antigua `am-tunnel-lite-vpn` (`remote:null`): proveedor
+propio, sin fusión ni cambios en esa tarjeta. Carpeta
+`decoders/Python/apps/AM_Tunnel_Lite/` con `codec.py`, `file_decoder.py`,
+`server_catalog_decoder.py`, PNG original, manifest, README y TESTING. Sigue el
+patrón 7NET/GCP/NetFlux (broker HTTPS fijo, worker aislado, contrato de documento
+completo, control administrativo individual, gateway enriquecido), con codec
+propio standalone (stdlib, sin `renz.py`): Base64 → XXTEA con la clave estática
+`'...|...'` y el delta NO estándar `0x9E5729B1` (con el delta estándar `0x9E3779B9`
+el catálogo no abre).
+
+Lectura pública autorizada del 2026-11-22: HTTP 200, **163960 bytes Base64,
+SHA-256 `38cca53786aa61f5842202b649b8e8a3bdff7aa6fa03ce9a34d387f2b31d49da`,
+Version 4.6, 172 servidores libres (3.341 endpoints) / 137 payloads, 0/0/0
+premium/vip/private** — bytes idénticos en dos descargas independientes el mismo
+día. Catálogo embebido `assets/pdrv2.json`: Version 1.5, 165 servidores,
+128 payloads, abre con el mismo esquema y clave. HMAC de autenticación de
+conexión: `NOT_OBSERVED`.
+
+El servidor corta cada respuesta a múltiplos de 16 KiB y cierra la conexión, así
+que la descarga es por rangos de 16 KiB con reanudación y reintentos, con la UA
+Android exacta del script (sin ella, 403): en el broker
+(`server-vpn-provider.mjs`, `downloadAmTunnelLite`, 206 + `Content-Range`) y en
+el CLI/worker (`codec.fetch_catalog`). Un GET plano verificado en vivo se corta
+a 98.304–114.688 bytes y se aborta; el broker nunca entrega un catálogo
+truncado (el worker rechaza el XXTEA incompleto). **Reserva de tiempo:**
+observado 11–18 s vía proxy de la VM, cerca del tope de 20 s del worker de
+archivos — pero el catálogo usa el worker de catálogos (límite 120 s) y el
+broker tiene su propio plazo de 30 s. **No se sube ningún tope.**
+
+La ruta `.pdtv2` es NUEVA: `pdrv2.json` es la copia local del catálogo (mismo
+formato exterior que el remoto); se registra en `_C8_FILE_ENGINES`
+(`engine.py`) y en `file-formats.json`. Los 1.000 assets `wg/am*.conf`
+embebidos parsean (`Endpoint`/`Hash1`/`Hash2`) con `file_decoder.py --wg`
+(uso directo/CLI, sin sufijo registrado: son assets internos del APK, no un
+formato de importación). **Sin importación por el usuario y sin esquema de
+texto:** nada se registra en `text-formats.json` ni en `text_bridge.py`;
+`udp://*` son opciones de DNS, no enlaces de importación. Nada se registra en
+`renz.py` ni en `android/`.
+
+PNG original exacto del icono `res/drawable/ic_app_icon.png`: 479×440,
+30105 bytes, SHA-256 `ad8aab869a41fd23aa1bff5c976c589ae73738192a8d475c3fcc36edd1da2d7a`.
+No existe un icono 512×512 en el APK; no se redibujó ni reescaló. Catálogo
+mínimo **96**; conserva switches y versión persistente. **Tests Python y web
+nuevos aprobados** (ver `decoders/Python/apps/AM_Tunnel_Lite/TESTING.md`). Sin
+despliegue, fusión ni cambios Android.
+
+Pendiente fuera de esta entrega: una exportación `pdrv2.json` real del teléfono
+de Pedro (la ruta es `VERIFIED_REAL` por el catálogo remoto + embebido, no por
+exportación de usuario — la app no tiene importación por el usuario);
+confirmación extremo a extremo en un dispositivo; codificación de campo del
+token de cuenta superior (`Username` == `Password`, 16 B) sin recuperar;
+decidir si se retira la ficha antigua `am-tunnel-lite-vpn`.

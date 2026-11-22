@@ -89,6 +89,7 @@ PROVIDERS = {
     "netflux-vpn": "decoders.Python.apps.NETFLUX_VPN.server_catalog_decoder",
     "maya-tun-pro": "decoders.Python.apps.Maya_Tun_Pro.server_catalog_decoder",
     "pm-tunnel-lite": "decoders.Python.apps.PM_Tunnel_Lite.server_catalog_decoder",
+    "am-tunnel-lite": "decoders.Python.apps.AM_Tunnel_Lite.server_catalog_decoder",
 }
 
 def decode(provider_id: str, payload: bytes) -> str:

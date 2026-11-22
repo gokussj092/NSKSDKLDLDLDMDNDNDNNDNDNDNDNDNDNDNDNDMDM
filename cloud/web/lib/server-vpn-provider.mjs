@@ -133,6 +133,12 @@ const PROVIDERS = Object.freeze({
   // fetches with a plain Volley GET (no headers) and plain curl/urllib
   // return the identical bytes, so the result does not depend on it.
   "pm-tunnel-lite": {url:"https://raw.githubusercontent.com/rajon-apps-2026/PM-Tunnel-Lite-Updater/refs/heads/main/update.js",agent:"PM Tunnel Lite"},
+  // Live catalog validated 2026-11-22 (Version 4.6, 172 free servers, 137 payloads).
+  // UA is the app's exact Android Chrome UA (without it the server answers 403).
+  // The server cuts every response to multiples of 16 KiB, so the download
+  // below (downloadAmTunnelLite) fetches by 16 KiB ranges with resumption;
+  // a plain GET aborts after 98-115 KiB (verified live).
+  "am-tunnel-lite": {url:"https://freedomnavigate.com/updater/8112011e98856d3ca814d0f8ce3231",agent:"Mozilla/5.0 (Linux; Android 14; Redmi 14C) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Mobile Safari/537.36"},
   "xhypher-tunnel-pro": {url:"https://raw.githubusercontent.com/XyrussProject/infinite88/refs/heads/main/xhyphertunnelpro888.hs",agent:"Xhypher Tunnel Pro/43"},
   "turbomx-vpn": {url:TURBOMX_SOURCES.servers,agent:"TurboMX VPN/143.1.26"},
   "superflash-vpn": {url:SUPERFLASH_SOURCES.servers,agent:"SuperFlash VPN/184.0.1"},
@@ -252,7 +258,7 @@ async function vettedIpv4(host) {
   return [...new Set(list.map(item=>item.address))].slice(0,8);
 }
 
-function pinnedRequest(url,ip,agent,timeout,headers={}, {method="GET",body=null,maxBytes=MAX_BYTES,allowUpdateRequired=false}={}){
+function pinnedRequest(url,ip,agent,timeout,headers={}, {method="GET",body=null,maxBytes=MAX_BYTES,allowUpdateRequired=false,allowPartial=false}={}){
   return new Promise((resolve,reject)=>{
     const parsed=new URL(url);
     let settled=false,bytes=0;
@@ -279,7 +285,7 @@ function pinnedRequest(url,ip,agent,timeout,headers={}, {method="GET",body=null,
         res.resume();
         return finish(null,{redirect:location});
       }
-      if(status!==200&&!(allowUpdateRequired&&status===426)){
+      if(status!==200&&!(allowUpdateRequired&&status===426)&&!(allowPartial&&status===206)){
         res.resume();
         // Retry only transient upstream throttling/outages, never auth, TLS or
         // a redirected origin. The bound IP, TLS hostname and deadline remain.
@@ -298,7 +304,11 @@ function pinnedRequest(url,ip,agent,timeout,headers={}, {method="GET",body=null,
         chunks.push(part);
       });
       res.on("error",err=>finish(err));
-      res.on("end",()=>finish(null,{data:Buffer.concat(chunks),...(status===426?{status}: {})}));
+      // A server that cuts the connection mid-body (AM Tunnel Lite does
+      // this on every plain response) otherwise hangs until the request
+      // timeout; fail fast with a retryable code instead.
+      res.on("aborted",()=>finish(Object.assign(new Error("response aborted"),{code:"ECONNRESET"})));
+      res.on("end",()=>finish(null,{data:Buffer.concat(chunks),...(status===426?{status}: {}),...(allowPartial&&status===206?{contentRange:res.headers["content-range"]||null}: {})}));
     });
     req.on("timeout",()=>req.destroy(Object.assign(new Error("timeout"),{code:"ETIMEDOUT"})));
     req.on("error",err=>finish(err));
@@ -415,6 +425,52 @@ async function downloadThailand(provider,{forceRefresh=false}={}){
   let config;
   try{config=await thailandResolver.get(request,{force:forceRefresh});}catch{fail("REMOTE_PROVIDER_UNAVAILABLE");}
   return request(config.source);
+}
+
+const AM_CHUNK=16384;
+const AM_MAX_RANGE_RETRIES=8;
+async function downloadAmTunnelLite(provider){
+  // Live catalog validated 2026-11-22 (Version 4.6, 172 free servers, 137
+  // payloads). LiteSpeed cuts every response to multiples of 16 KiB and
+  // closes the connection: a plain GET aborts after 98-115 KiB, so the
+  // catalog is fetched by 16 KiB ranges with resumption, exactly like the
+  // app and the Python decoder (codec.fetch_catalog). Without the Android
+  // UA the server answers 403. No redirects, ever.
+  const deadline=Date.now()+DEADLINE_MS;
+  const parsed=new URL(provider.url);
+  const chunks=[];let start=0,total=null,retries=0;
+  while(total===null||start<total){
+    const remaining=deadline-Date.now();if(remaining<=0)fail("REMOTE_PROVIDER_UNAVAILABLE");
+    const addresses=await vettedIpv4(parsed.hostname);
+    let answer;
+    try{answer=await pinnedRequest(provider.url,addresses[0],provider.agent,Math.min(CONNECT_MS,remaining),
+      {Range:`bytes=${start}-${start+AM_CHUNK-1}`},{allowPartial:true});}
+    catch(error){
+      if(error instanceof VpnProviderError && !error.retryable)throw error;
+      if(++retries>AM_MAX_RANGE_RETRIES)fail("REMOTE_PROVIDER_UNAVAILABLE");
+      continue;
+    }
+    if(Object.hasOwn(answer,"redirect"))fail("REMOTE_NETWORK_DENIED");
+    const data=answer.data;
+    if(!Buffer.isBuffer(data)||!data.length){
+      if(++retries>AM_MAX_RANGE_RETRIES)fail("REMOTE_PROVIDER_UNAVAILABLE");
+      continue;
+    }
+    if(answer.contentRange!==undefined){
+      const match=/^bytes \d+-\d+\/(\d+)$/.exec(answer.contentRange||"");
+      if(!match)fail("REMOTE_RESPONSE_INVALID");
+      total=Number(match[1]);
+    }else if(total===null){
+      // A 200 without ranges is the whole body (defensive; the live
+      // server always answers 206 to a Range request).
+      total=data.length;
+    }
+    retries=0;chunks.push(data);start+=data.length;
+    if(total!==null&&start>total)fail("REMOTE_RESPONSE_INVALID");
+  }
+  const body=Buffer.concat(chunks);
+  if(total===null||body.length!==total||!body.length)fail("REMOTE_RESPONSE_INVALID");
+  return body;
 }
 
 async function downloadTunneltweak(provider){
@@ -556,6 +612,10 @@ export async function downloadVpnCatalog(id,source=id==="jyfast-vpn-ultra"?"free
     if(source!=="servers")fail("UNSUPPORTED_FORMAT");
     return downloadThailand(provider,options);
   }
+  if(id==="am-tunnel-lite"){
+    if(source!=="servers")fail("UNSUPPORTED_FORMAT");
+    return downloadAmTunnelLite(provider);
+  }
   if(id==="tunneltweak"){
     if(source!=="servers")fail("UNSUPPORTED_FORMAT");
     return downloadTunneltweak(provider);
@@ -623,7 +683,7 @@ export async function downloadVpnCatalog(id,source=id==="jyfast-vpn-ultra"?"free
         continue;
       }
       if(answer.redirect!==undefined){
-        if(["kham-vpn","opentunnel-ssh","md-proxy-vpn","xxpicore-tunnel","speigo-vpn-configs","speigo-vpn-ssh","litron-vpn","litron-pro-vpn","genis-vpn","http-conexion","namo-vpn","fnf-tunnel-bd","alsaher-vip","ha-tunnel-plus","ultra-tunnel","mm-tunnel","zig-tunnel","enaa-tunnel","izph-vpn-pro","vip-snipher-pro","netcol-vpn","wolf-custom-vpn","tunneldoom-vpn","mtm-tunnel-lite","mnr-tunnel-plus","bd-net-vpn","aura-net-vpn","apna-vpn","any-vpn","speicers-pro-vpn","7net-vpn","gcp-vpn","netflux-vpn","maya-tun-pro","pm-tunnel-lite","xhypher-tunnel-pro","focus-vpn-cloud","freedom-vpn","http-internet-infinito","megatunnel","mx-tunnel-pro","rjc-tunnel-pro","rmp-tunnel-pro","rmp-tunnel-lite","http-jireh"].includes(id)||Object.hasOwn(PAIRED_SOURCES,id))fail("REMOTE_NETWORK_DENIED");
+        if(["kham-vpn","opentunnel-ssh","md-proxy-vpn","xxpicore-tunnel","speigo-vpn-configs","speigo-vpn-ssh","litron-vpn","litron-pro-vpn","genis-vpn","http-conexion","namo-vpn","fnf-tunnel-bd","alsaher-vip","ha-tunnel-plus","ultra-tunnel","mm-tunnel","zig-tunnel","enaa-tunnel","izph-vpn-pro","vip-snipher-pro","netcol-vpn","wolf-custom-vpn","tunneldoom-vpn","mtm-tunnel-lite","mnr-tunnel-plus","bd-net-vpn","aura-net-vpn","apna-vpn","any-vpn","speicers-pro-vpn","7net-vpn","gcp-vpn","netflux-vpn","maya-tun-pro","pm-tunnel-lite","am-tunnel-lite","xhypher-tunnel-pro","focus-vpn-cloud","freedom-vpn","http-internet-infinito","megatunnel","mx-tunnel-pro","rjc-tunnel-pro","rmp-tunnel-pro","rmp-tunnel-lite","http-jireh"].includes(id)||Object.hasOwn(PAIRED_SOURCES,id))fail("REMOTE_NETWORK_DENIED");
         const next=answer.redirect;
         if(typeof next!=="string"||next.length>2048)fail("REMOTE_NETWORK_DENIED");
         target=new URL(next,dest).href;

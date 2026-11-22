@@ -74,7 +74,7 @@ test("only registered icon identifiers are served",async()=>{
 
 import {providerIds,providerEnabled,downloadVpnCatalog} from "../lib/server-vpn-provider.mjs";
 test("only fixed catalog providers are eligible for remote broker",async()=>{
-  assert.deepEqual(providerIds().sort(),[...new Set(["24clan-green","4u-tunnel-lite","7net-vpn","abowaged-vpn","ac-tunnel-vpn","alfaisal-tunnel-plus","alsaher-vip","any-vpn","apna-vpn","aura-net-vpn","austroplus-vpn","bd-net-vpn","catnet-vpn","enaa-tunnel","fnf-tunnel-bd","focus-vpn-cloud","freedom-vpn","gcp-vpn","genis-vpn","ha-tunnel-plus","halcon-r-net","http-conexion","http-fenixvpn","http-internet-infinito","http-jireh","http-socketclay","http-wakko","hx-tunnel","izph-vpn-pro","jyfast-vpn-ultra","kham-vpn","ksh-vpn","litron-pro-vpn","litron-vpn","maya-tun-pro","md-proxy-vpn","megatunnel","mkk-hyper","mm-tunnel","mnr-tunnel-plus","mtm-tunnel-lite","mx-tunnel-pro","my-tunnel-proxy","namo-vpn","netcol-vpn","netflux-vpn","onspace-vpn","opentunnel-ssh","pm-tunnel-lite","rjc-tunnel-pro","rmp-tunnel-lite","rmp-tunnel-pro","robust-tunnel","royal-tunnel","speicers-pro-vpn","speicers-turbo-vpn","speigo-vpn-configs","speigo-vpn-ssh","superflash-vpn","thailand-vpn","trv-tunnel","tunneldoom-vpn","tunneltweak","turbomx-vpn","tx-tunnel","ultra-tunnel","v2ray-tunnel-plus","vip-snipher-pro","wolf-custom-vpn","xhypher-tunnel-pro","xxpicore-tunnel","zig-tunnel",...suppliedProviderIds()])].sort());
+  assert.deepEqual(providerIds().sort(),[...new Set(["24clan-green","4u-tunnel-lite","7net-vpn","abowaged-vpn","ac-tunnel-vpn","alfaisal-tunnel-plus","alsaher-vip","am-tunnel-lite","any-vpn","apna-vpn","aura-net-vpn","austroplus-vpn","bd-net-vpn","catnet-vpn","enaa-tunnel","fnf-tunnel-bd","focus-vpn-cloud","freedom-vpn","gcp-vpn","genis-vpn","ha-tunnel-plus","halcon-r-net","http-conexion","http-fenixvpn","http-internet-infinito","http-jireh","http-socketclay","http-wakko","hx-tunnel","izph-vpn-pro","jyfast-vpn-ultra","kham-vpn","ksh-vpn","litron-pro-vpn","litron-vpn","maya-tun-pro","md-proxy-vpn","megatunnel","mkk-hyper","mm-tunnel","mnr-tunnel-plus","mtm-tunnel-lite","mx-tunnel-pro","my-tunnel-proxy","namo-vpn","netcol-vpn","netflux-vpn","onspace-vpn","opentunnel-ssh","pm-tunnel-lite","rjc-tunnel-pro","rmp-tunnel-lite","rmp-tunnel-pro","robust-tunnel","royal-tunnel","speicers-pro-vpn","speicers-turbo-vpn","speigo-vpn-configs","speigo-vpn-ssh","superflash-vpn","thailand-vpn","trv-tunnel","tunneldoom-vpn","tunneltweak","turbomx-vpn","tx-tunnel","ultra-tunnel","v2ray-tunnel-plus","vip-snipher-pro","wolf-custom-vpn","xhypher-tunnel-pro","xxpicore-tunnel","zig-tunnel",...suppliedProviderIds()])].sort());
   for(const id of providerIds()) assert.equal(providerEnabled(id,{CLOUD_SERVER_VPN_ENABLED:"false"}),false);
   assert.equal(providerEnabled("https://attacker.invalid/",{CLOUD_SERVER_VPN_ENABLED:"true"}),false);
   await assert.rejects(()=>downloadVpnCatalog("https://attacker.invalid/"),{code:"UNSUPPORTED_FORMAT"});
@@ -352,6 +352,18 @@ test("AM retains its original PNG while protected catalog support is pending",as
  assert(!providerIds().includes("am-tunnel-lite-vpn"));
  assert.equal(providerEnabled("am-tunnel-lite-vpn",{CLOUD_SERVER_VPN_ENABLED:"true"}),false);
  await assert.rejects(()=>downloadVpnCatalog("am-tunnel-lite-vpn"),{code:"UNSUPPORTED_FORMAT"});
+});
+
+// Live catalog validated 2026-11-22 (v4.6, 172 free servers, 137 payloads):
+// the card is decoding-enabled and serves the exact original 479x440 PNG
+// from the APK (30,105 bytes; no 512x512 icon exists in the APK). The old
+// am-tunnel-lite-vpn card (remote:null) is a different, still disabled id.
+test("AM Tunnel Lite original PNG and validated complete catalog follow provider controls",()=>{
+ const app=catalog({availability:{"am-tunnel-lite":true}}).apps.find(x=>x.id==="am-tunnel-lite");
+ assert.equal(app.name,"AM Tunnel Lite");assert.equal(app.decodeEnabled,true);
+ assert.equal(app.iconSha256,"ad8aab869a41fd23aa1bff5c976c589ae73738192a8d475c3fcc36edd1da2d7a");
+ assert.equal(iconFor("am-tunnel-lite").bytes.length,30105);
+ assert.equal(catalog({availability:{"am-tunnel-lite":false}}).apps.find(x=>x.id==="am-tunnel-lite").decodeEnabled,false);
 });
 
 // CREEB VPN has a validated offline reader; this card cannot download yet.

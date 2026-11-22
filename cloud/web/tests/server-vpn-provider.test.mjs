@@ -166,3 +166,53 @@ test("MKK budget preserves complete approved sources and marks omissions explici
  assert.equal(body.sources[2].error,"REMOTE_PROVIDER_UNAVAILABLE");
  assert.equal(sources[1].status,"ok"); // no mutation or truncation
 });
+
+test("AM Tunnel Lite fixed endpoint downloads by 16 KiB ranges with the Android UA",async t=>{
+ const prior=process.env.CLOUD_SERVER_VPN_ENABLED;
+ process.env.CLOUD_SERVER_VPN_ENABLED="true";
+ t.after(()=>{if(prior===undefined)delete process.env.CLOUD_SERVER_VPN_ENABLED;else process.env.CLOUD_SERVER_VPN_ENABLED=prior;});
+ const host="freedomnavigate.com",path="/updater/8112011e98856d3ca814d0f8ce3231";
+ const agent="Mozilla/5.0 (Linux; Android 14; Redmi 14C) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Mobile Safari/537.36";
+ const bytes="fixed catalog bytes";
+ let dnsAddress="93.184.216.34",mode="success",calls=0;
+ t.mock.method(dns,"lookup",async h=>{assert.equal(h,host);return [{address:dnsAddress,family:4}];});
+ t.mock.method(https,"request",(url,options,callback)=>{
+  calls++;
+  assert.equal(url.hostname,host);
+  assert.equal(url.pathname,path);
+  assert.equal(url.search,"");
+  assert.equal(options.rejectUnauthorized,true);
+  assert.equal(options.minVersion,"TLSv1.2");
+  assert.equal(options.headers["User-Agent"],agent);
+  assert.equal(options.headers["x-api-key"],undefined);
+  options.lookup(host,{},(error,ip,family)=>{assert.equal(error,null);assert.equal(ip,dnsAddress);assert.equal(family,4);});
+  const request=new EventEmitter();request.destroy=()=>{};
+  request.end=()=>queueMicrotask(()=>{
+   const response=new EventEmitter();response.resume=()=>{};
+   const match=/^bytes=(\d+)-(\d+)$/.exec(String(options.headers.Range||""));
+   assert(match);
+   const start=Number(match[1]),end=Math.min(Number(match[2]),bytes.length-1);
+   response.statusCode=mode==="success"||mode==="abort-once"?206:302;
+   response.headers=mode==="success"||mode==="abort-once"?{"content-range":`bytes ${start}-${end}/${bytes.length}`,"content-length":String(end-start+1)}:{location:mode};
+   if(mode==="abort-once"&&calls===1){callback(response);response.emit("aborted");return;}
+   callback(response);
+   if(response.statusCode===206){response.emit("data",Buffer.from(bytes.slice(start,end+1)));response.emit("end");}
+  });
+  return request;
+ });
+ assert.equal((await downloadVpnCatalog("am-tunnel-lite")).toString(),bytes);
+ mode="abort-once";calls=0;
+ assert.equal((await downloadVpnCatalog("am-tunnel-lite")).toString(),bytes);
+ for(const redirect of [
+  `https://${host}${path}?json=changed`,
+  `https://${host}${path}`,
+  `https://other.invalid${path}`,
+  `http://${host}${path}`,
+ ]){
+  mode=redirect;
+  await assert.rejects(()=>downloadVpnCatalog("am-tunnel-lite"),{code:"REMOTE_NETWORK_DENIED"});
+ }
+ const before=calls;dnsAddress="127.0.0.1";
+ await assert.rejects(()=>downloadVpnCatalog("am-tunnel-lite"),{code:"REMOTE_NETWORK_DENIED"});
+ assert.equal(calls,before);
+});

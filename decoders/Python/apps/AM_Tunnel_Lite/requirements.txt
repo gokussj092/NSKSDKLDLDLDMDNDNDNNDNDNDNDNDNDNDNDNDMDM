@@ -1,0 +1,2 @@
+# Python >=3.10; standard library only.
+# Retain codec.py, file_decoder.py and server_catalog_decoder.py.
