@@ -6,10 +6,9 @@ from pathlib import Path
 
 
 def clean_filename(filename: str) -> str:
-    """Devuelve un nombre seguro sin permitir rutas relativas o absolutas."""
-    filename = Path(filename.replace("\\", "/")).name.replace("\x00", "")
-    cleaned = re.sub(r"[^\w.()\-\[\] ]+", "_", filename, flags=re.UNICODE).strip()
-    return cleaned[:180] or "archivo"
+    """Keep the basename and replace control characters for the attachment header."""
+    basename = Path(filename.replace("\\", "/")).name
+    return re.sub(r"[\x00-\x1f\x7f]", "_", basename).strip() or "file"
 
 
 def split_message(message: str, max_length: int = 3500) -> list[str]:

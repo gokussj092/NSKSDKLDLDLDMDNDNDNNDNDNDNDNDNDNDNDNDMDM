@@ -36,8 +36,8 @@ def is_authorized(message: Any, config: AppConfig) -> bool:
     return False
 
 
-def require_authorized(resource: str = "Este contenido"):
-    """Protege un handler con la política de acceso única de SP-DECODE."""
+def require_authorized(resource: str = "Content"):
+    """Apply the shared SP-DECODE access policy to a decoder handler."""
 
     def decorator(handler):
         @wraps(handler)
@@ -45,16 +45,11 @@ def require_authorized(resource: str = "Este contenido"):
             from .runtime import bot, settings
 
             if not is_authorized(message, settings):
-                access_hint = (
-                    "El bot acepta cualquier grupo, pero este chat no es un grupo autorizado."
-                    if settings.allow_all_groups
-                    else "Usa /id para consultar los identificadores y pedir acceso a un administrador."
-                )
                 bot.reply_to(
                     message,
-                    "<b>Acceso no autorizado</b>\n"
-                    f"{resource} solo se procesa en grupos o chats privados autorizados.\n"
-                    f"{access_hint}",
+                    "<b>Access denied</b>\n"
+                    f"{resource} can only be processed in authorized groups or private chats.\n"
+                    "Use /id to check your IDs and ask an administrator for access.",
                     parse_mode="HTML",
                     **thread_options(message),
                 )

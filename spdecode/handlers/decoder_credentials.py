@@ -19,22 +19,22 @@ _REQUIRED = {
     "HWID_REQUIRED": ("hwid",),
     "HWID_PASSWORD_REQUIRED": ("hwid", "password"),
 }
-_LABELS = {"password": "la contraseña del archivo o enlace", "hwid": "el HWID del archivo"}
+_LABELS = {"password": "the password for the file or link", "hwid": "the file's HWID"}
 _ERROR_MESSAGES = {
-    "AUTH_FAILED": "Las credenciales no coinciden o el contenido no superó la verificación.",
-    "INVALID_CREDENTIALS": "Las credenciales no tienen un formato válido.",
-    "PRIVATE_KEY_REQUIRED": "Este perfil necesita una clave privada. Usa SP-DECODE en el dispositivo que tiene esa clave.",
-    "RECIPIENT_MISMATCH": "El perfil está protegido para otro destinatario.",
-    "NPVS_PROTECTION_UNSUPPORTED": "Esta variante de protección NPV Tunnel no es compatible.",
-    "UNSUPPORTED_VERSION": "Esta versión del formato no es compatible.",
-    "UNSUPPORTED_METHOD": "Este método del formato no es compatible.",
-    "UNSUPPORTED_VARIANT": "Esta variante del formato no es compatible.",
-    "INPUT_TOO_LARGE": "El contenido supera el límite de procesamiento.",
-    "OUTPUT_TOO_LARGE": "El resultado supera el límite de entrega.",
-    "ENGINE_TIMEOUT": "El decodificador superó el tiempo permitido.",
-    "ENGINE_UNAVAILABLE": "El decodificador no está disponible en este momento.",
+    "AUTH_FAILED": "The credentials did not match or content verification failed.",
+    "INVALID_CREDENTIALS": "The credentials have an invalid format.",
+    "PRIVATE_KEY_REQUIRED": "This profile requires a private key. Use SP-DECODE on the device that has the key.",
+    "RECIPIENT_MISMATCH": "The profile is protected for a different recipient.",
+    "NPVS_PROTECTION_UNSUPPORTED": "This NPV Tunnel protection variant is unsupported.",
+    "UNSUPPORTED_VERSION": "This format version is unsupported.",
+    "UNSUPPORTED_METHOD": "This format method is unsupported.",
+    "UNSUPPORTED_VARIANT": "This format variant is unsupported.",
+    "INPUT_TOO_LARGE": "The input exceeds the processing limit.",
+    "OUTPUT_TOO_LARGE": "The result exceeds the delivery limit.",
+    "ENGINE_TIMEOUT": "The decoder timed out.",
+    "ENGINE_UNAVAILABLE": "The decoder is currently unavailable.",
 }
-_PROMPT = "SP-DECODE · Credencial pendiente"
+_PROMPT = "SP-DECODE · Credential required"
 _TTL_SECONDS = 180
 _MAX_ATTEMPTS = 3
 _MAX_PENDING = 16
@@ -117,12 +117,12 @@ def _prompt(key: _SessionKey, pending: _Pending, *, invalid=False) -> None:
             return
         missing = next(field for field in pending.required if field not in pending.credentials)
         pending.prompt_id = None
-    prefix = "Las credenciales no coincidieron. " if invalid else ""
+    prefix = "The credentials did not match. " if invalid else ""
     try:
         reply = _reply(
             pending.original,
-            f"{_PROMPT}\n{prefix}Responde aquí con {_LABELS[missing]}. "
-            "La solicitud caduca en 3 minutos y permite hasta 3 intentos. Usa /cancel para descartarla.",
+            f"{_PROMPT}\n{prefix}Reply here with {_LABELS[missing]}. "
+            "The request expires in 3 minutes and allows up to 3 attempts. Use /cancel to discard it.",
             reply_markup=ForceReply(selective=True),
         )
     except Exception:
@@ -139,7 +139,7 @@ def _begin_prompt(
 ) -> None:
     actor = _actor(message)
     if actor is None:
-        _reply(message, "Envía el contenido desde tu cuenta de Telegram para poder responder a la solicitud.")
+        _reply(message, "Send the content from your Telegram account so you can reply to the request.")
         return
 
     key = (actor, message.message_id)
@@ -162,7 +162,7 @@ def _begin_prompt(
     if accepted:
         _prompt(key, pending)
     else:
-        _reply(message, "Hay demasiadas solicitudes pendientes. Intenta de nuevo en unos minutos.")
+        _reply(message, "There are too many pending requests. Try again in a few minutes.")
 
 
 def decode_and_reply(
@@ -178,7 +178,7 @@ def decode_and_reply(
         elif legacy_text_fallback and error.code == "DECODE_FAILED":
             return False
         else:
-            _reply(message, _ERROR_MESSAGES.get(error.code, "No se pudo decodificar este contenido."))
+            _reply(message, _ERROR_MESSAGES.get(error.code, "Could not decode this content."))
     else:
         deliver(result)
     return True
@@ -191,18 +191,18 @@ def _is_credential_reply(message) -> bool:
     if actor is None or reply is None or not isinstance(text, str):
         return False
     command = text.split(None, 1)[0].split("@", 1)[0].lower() if text.strip() else ""
-    if command in {"/cancel", "/cancelar"}:
+    if command in {"/cancel", "/cancelar", "/restrictgroups"}:
         return False
     with _lock:
         if _find_reply(actor, reply.message_id) is not None:
             return True
     # Late or foreign replies to a bot prompt must bypass generic text handlers.
-    return ((getattr(reply, "text", "") or "").startswith(_PROMPT + "\n") and
+    return ((getattr(reply, "text", "") or "").startswith((_PROMPT + "\n", "SP-DECODE · Credencial pendiente\n")) and
             getattr(getattr(reply, "from_user", None), "is_bot", False))
 
 
 @bot.message_handler(func=_is_credential_reply)
-@require_authorized("Las credenciales del decodificador")
+@require_authorized("Decoder credentials")
 def handle_credential_reply(message) -> None:
     actor = _actor(message)
     value = getattr(message, "text", None) or ""
@@ -226,10 +226,10 @@ def handle_credential_reply(message) -> None:
     if target is None:
         reply = message.reply_to_message
         if reply.chat.id == message.chat.id and thread_options(reply) == thread_options(message):
-            _reply(reply, "Esta solicitud ya no está activa o se está procesando.")
+            _reply(reply, "This request has expired or is being processed.")
         return
     if not valid:
-        _reply(pending.original, "La credencial está vacía o es demasiado larga.")
+        _reply(pending.original, "The credential is empty or too long.")
         return
     if more:
         _prompt(key, pending)
@@ -254,7 +254,7 @@ def handle_credential_reply(message) -> None:
         if retry:
             _prompt(key, pending, invalid=required is None)
         elif active and _remove(key, pending.marker):
-            _reply(pending.original, _ERROR_MESSAGES.get(error.code, "No se pudo abrir el contenido. Envía el original para volver a intentar."))
+            _reply(pending.original, _ERROR_MESSAGES.get(error.code, "Could not open the content. Resend the original to try again."))
     else:
         from spdecode.runtime import settings as current_settings
 

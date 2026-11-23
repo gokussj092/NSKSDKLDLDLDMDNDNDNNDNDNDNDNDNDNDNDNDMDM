@@ -18,7 +18,7 @@ class DecoderExecutionResult:
 
     @property
     def output(self) -> str:
-        return self.stdout or self.stderr or "El script no generó ningún resultado."
+        return self.stdout or self.stderr or "The script produced no output."
 
 
 def build_decoder_command(spec: DecoderSpec, input_file: Path) -> list[str]:
@@ -29,11 +29,11 @@ def build_decoder_command(spec: DecoderSpec, input_file: Path) -> list[str]:
         if runtime is None:
             display_name = {"node": "Node.js", "php": "PHP"}.get(spec.runtime, spec.runtime)
             raise FileNotFoundError(
-                f"{display_name} no está instalado o no está disponible en PATH"
+                f"{display_name} is not installed or is unavailable on PATH"
             )
 
     if not spec.script_path.is_file():
-        raise FileNotFoundError(f"No se encontró el decodificador: {spec.script}")
+        raise FileNotFoundError(f"Could not find the decoder: {spec.script}")
 
     return [runtime, str(spec.script_path), str(input_file)]
 
@@ -44,7 +44,7 @@ def execute_decoder(
     *,
     timeout_seconds: int,
 ) -> DecoderExecutionResult:
-    """Ejecuta un decodificador conservando la raíz del proyecto como cwd."""
+    """Run a decoder from the project root."""
     command = build_decoder_command(spec, input_file)
     result = subprocess.run(
         command,

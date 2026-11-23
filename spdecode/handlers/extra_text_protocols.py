@@ -66,7 +66,7 @@ def _match(message) -> str | None:
 
 
 @bot.message_handler(func=lambda message: _match(message) is not None)
-@require_authorized("Los enlaces VPN por texto")
+@require_authorized("VPN configuration links")
 def decode_extra_text(message):
     raw = (getattr(message, "text", "") or "").strip()
     prefix = _match(message)
@@ -86,7 +86,7 @@ def decode_extra_text(message):
 
             envelope = text_structured_protocols.normalize_v2box_envelope(raw)
             if envelope is None:
-                bot.reply_to(message, "La exportación V2Box está dañada.")
+                bot.reply_to(message, "The V2Box export is invalid.")
                 return
             # Reuse the same normalized fields for the password prompt;
             # the original file decoder expects RFC4648 Base64.
@@ -100,9 +100,9 @@ def decode_extra_text(message):
         else:
             bot.reply_to(
                 message,
-                "No se pudo decodificar este texto con el formato "
-                "y las claves compatibles que tiene SP-DECODE.",
+                "Could not decode this text with the format "
+                "and keys supported by SP-DECODE.",
             )
     except Exception:
-        logger.exception("Fallo interno al decodificar texto de tipo %s", prefix)
-        bot.reply_to(message, "Ocurrió un error interno al procesar ese texto.")
+        logger.exception("Internal error decoding text format %s", prefix)
+        bot.reply_to(message, "An internal error occurred while processing this text.")

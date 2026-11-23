@@ -136,22 +136,23 @@ class TelegramHandlersTests(unittest.TestCase):
 
     def test_dual_http_custom_delivers_on_original_group_document_without_echoing_credentials(self):
         original = self._message(user=22, group=True, thread=50)
+        original.document.file_name = "My+profile.v2 (ñ).HC"
         self.documents.process_received_file(original)
         prompt = self.prompts[-1]
         self.assertIn("HWID", prompt.text)
         reply = self._message(user=22, group=True, thread=50, password=SYNTHETIC_HWID, reply=prompt)
         self.assertTrue(self.credentials._is_credential_reply(reply))
         self.credentials.handle_credential_reply(reply)
-        self.assertIn("contraseña", self.prompts[-1].text)
+        self.assertIn("password", self.prompts[-1].text)
         self.assertIs(self.bot.reply_to.call_args.args[0], original)
         self.credentials.handle_credential_reply(
             self._message(user=22, group=True, thread=50, password=S4_SYNTHETIC_PASSWORD, reply=original)
         )
         self.assertEqual(len(self.sent), 1)
         filename, report = self.sent[0]
-        self.assertEqual(filename, "spdecode-resultado.md")
+        self.assertEqual(filename, "My+profile.v2 (ñ).md")
         header, _, payload = report.partition("\n```\n")
-        self.assertIn("**Archivo original:** synthetic.HC", header)
+        self.assertIn("**Original file:** My+profile.v2 (ñ).HC", header)
         self.assertEqual(json.loads(payload.removesuffix("```\n"))["config"][0]["host"], "example.org")
         sent = self.bot.send_document.call_args.kwargs
         self.assertEqual((sent["chat_id"], sent["message_thread_id"], sent["reply_to_message_id"]), (-40, 50, 1))
@@ -168,11 +169,13 @@ class TelegramHandlersTests(unittest.TestCase):
         self.assertEqual(len(self.credentials._pending), 2)
         cancel = self._message(group=True, password="/cancel", reply=first)
         self.assertFalse(self.credentials._is_credential_reply(cancel))
+        restrict = self._message(group=True, password="/restrictgroups@SampleBot", reply=first)
+        self.assertFalse(self.credentials._is_credential_reply(restrict))
         self.assertTrue(self.credentials.cancel_pending_credentials(cancel))
         reply = self._message(group=True, password=SYNTHETIC_HWID, reply=second)
         self.assertTrue(self.credentials._is_credential_reply(reply))
         self.credentials.handle_credential_reply(reply)
-        self.assertIn("contraseña", self.prompts[-1].text)
+        self.assertIn("password", self.prompts[-1].text)
         self.assertEqual(len(self.credentials._pending), 1)
 
     def test_new_text_handler_and_existing_fallback(self):
@@ -191,20 +194,20 @@ class TelegramHandlersTests(unittest.TestCase):
         original = self._message(user=22, group=True, thread=50)
         original.from_user.username = "test_sender"
         output = "  example.org\n```\nvmess://example\nhttps://example.invalid/?a=*\n"
-        send_markdown_result(original, "Prueba", output, partial=True)
+        send_markdown_result(original, "Test", output, partial=True)
         filename, report = self.sent[0]
-        self.assertTrue(filename.endswith(".md"))
-        self.assertIn("**Solicitado por:** [@test_sender](https://t.me/test_sender)", report)
-        self.assertIn("**Resultado parcial.**", report)
+        self.assertEqual(filename, "spdecode-result.md")
+        self.assertIn("**Requested by:** [@test_sender](https://t.me/test_sender)", report)
+        self.assertIn("**Partial result.**", report)
         self.assertTrue(report.endswith(f"\n````\n{output}````\n"))
         sent = self.bot.send_document.call_args.kwargs
         self.assertEqual((sent["chat_id"], sent["message_thread_id"], sent["reply_to_message_id"]), (-40, 50, 1))
-        self.assertIn("Resultado parcial", sent["caption"])
+        self.assertIn("Partial result", sent["caption"])
         self.assertEqual(
             [(button.text, button.url) for row in sent["reply_markup"].keyboard for button in row],
             [
-                ("Canal", "https://t.me/GhostDeve"),
-                ("Grupo", "https://t.me/CodeBreakersHub"),
+                ("Channel", "https://t.me/GhostDeve"),
+                ("Group", "https://t.me/CodeBreakersHub"),
                 ("Ghost Developer", "https://t.me/Gh0stDeveloper"),
             ],
         )

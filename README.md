@@ -290,16 +290,16 @@ spdecode validate
 These commands are for the bot's launcher, not the Cloud management CLI.
 
 In Telegram, reply to the bot's credential prompt in the same chat and
-topic as the original file or link. The bot posts decoded files, texts, and
-supported links as Markdown attachments with the requester and the official
-channel, group, and developer links. Bot administrators can manage access without
-restarting the service.
+topic as the original file or link. The bot replies with a Markdown attachment
+that lists the requester and the official channel, group, and developer links.
+For file uploads it replaces the original extension with `.md`. Text and link
+results use `spdecode-result.md`. Administrators can manage access without a restart.
 
-- `/permitirgrupo [GROUP_ID]` adds the current group or a specific group.
-- `/revocargrupo [GROUP_ID]` removes a group from the allowlist. If
-  `allow_all_groups` is enabled, group decoding remains available.
-- `/privados` checks your own private access. Administrators see the list
-  and can use `/privados permitir USER_ID` or `/privados revocar USER_ID`.
+- `/allowgroup [GROUP_ID]` adds the current group or a specific group to the allowlist.
+- `/revokegroup [GROUP_ID]` removes a group from the allowlist.
+- `/restrictgroups` disables all-groups access and enforces the saved allowlist.
+- `/private` checks your private access. Administrators see the list and can
+  use `/private allow USER_ID` or `/private revoke USER_ID`.
 
 
 ---

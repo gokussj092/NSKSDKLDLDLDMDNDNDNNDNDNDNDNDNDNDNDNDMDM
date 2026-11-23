@@ -26,34 +26,34 @@ def _protocol_label(protocol: str) -> str:
 
 
 BOT_COMMANDS = [
-    BotCommand("start", "Abrir el menú principal"),
-    BotCommand("help", "Ver cómo utilizar el bot"),
-    BotCommand("formats", "Ver formatos de archivo soportados"),
-    BotCommand("texts", "Ver protocolos de texto soportados"),
-    BotCommand("session", "Ver el estado de una cadena dividida"),
-    BotCommand("ssc", "Ver la sesión SSC activa"),
-    BotCommand("dark", "Ver la sesión Dark Tunnel activa"),
-    BotCommand("cancel", "Cancelar la cadena pendiente"),
-    BotCommand("id", "Mostrar tu ID y el ID del chat"),
-    BotCommand("permitirgrupo", "Autorizar un grupo (administradores)"),
-    BotCommand("revocargrupo", "Retirar permiso de grupo (administradores)"),
-    BotCommand("privados", "Consultar o gestionar acceso al chat privado"),
-    BotCommand("ping", "Comprobar si el bot está activo"),
-    BotCommand("status", "Estado interno para administradores"),
-    BotCommand("about", "Información de SP-DECODE"),
+    BotCommand("start", "Open the main menu"),
+    BotCommand("help", "Learn how to use the bot"),
+    BotCommand("formats", "Show supported file formats"),
+    BotCommand("texts", "Show supported text protocols"),
+    BotCommand("session", "Show the current multipart session"),
+    BotCommand("ssc", "Show the active SSC session"),
+    BotCommand("dark", "Show the active Dark Tunnel session"),
+    BotCommand("cancel", "Cancel the pending session"),
+    BotCommand("id", "Show your user ID and chat ID"),
+    BotCommand("allowgroup", "Authorize a group (administrators)"),
+    BotCommand("revokegroup", "Remove a group from the allowlist (administrators)"),
+    BotCommand("restrictgroups", "Restrict access to allowed groups (administrators)"),
+    BotCommand("private", "Check or manage private chat access"),
+    BotCommand("ping", "Check whether the bot is online"),
+    BotCommand("status", "Show bot status (administrators)"),
+    BotCommand("about", "About SP-DECODE"),
 ]
 
 
 TEXT_PROTOCOLS = (
-    "<b>Protocolos de texto soportados</b>\n\n"
+    "<b>Supported text protocols</b>\n\n"
     "<b>SSC Custom</b>\n"
-    "<code>ssc://...</code> — admite 1, 2, 3 o más mensajes, según sea necesario.\n\n"
+    "<code>ssc://...</code> — send it in as many messages as needed.\n\n"
     "<b>TLS Tunnel</b>\n"
-    "<code>tls://...</code> — configuración completa en un solo mensaje.\n\n"
+    "<code>tls://...</code> — send the complete configuration in one message.\n\n"
     "<b>Dark Tunnel</b>\n"
-    "Enlaces con un esquema que identifique Dark Tunnel, por ejemplo "
-    "<code>dark://...</code> o <code>darktunnel://...</code>. "
-    "También admite una cantidad variable de fragmentos.\n\n"
+    "Send a link such as <code>dark://...</code> or <code>darktunnel://...</code>. "
+    "You can split it across multiple messages.\n\n"
     "<b>NetMod</b>\n"
     "<code>nm-vmess://</code>, <code>nm-vless://</code>, <code>nm-dns://</code>, "
     "<code>nm-trojan://</code>, <code>nm-ssh://</code>, <code>nm-ssr://</code>, "
@@ -67,27 +67,27 @@ TEXT_PROTOCOLS = (
     "<b>XrayPB</b>\n"
     "<code>pb-vmess://</code>, <code>pb-ss://</code>, <code>pb-socks://</code>, "
     "<code>pb-vless://</code>, <code>pb-trojan://</code>, <code>pb-ssh://</code>\n\n"
-    "<b>Otros</b>\n"
+    "<b>Other protocols</b>\n"
     "<code>vmess://</code>, <code>zivpn://</code>, <code>v2box://locked=...</code>"
 )
 
 
 def configure_bot_commands() -> None:
-    """Publica el menú de comandos de Telegram; un fallo aquí no detiene el bot."""
+    """Publish the Telegram command menu without interrupting startup on failure."""
     try:
         bot.set_my_commands(BOT_COMMANDS)
     except Exception:
-        logger.exception("No se pudo actualizar el menú de comandos de Telegram")
+        logger.exception("Could not update the Telegram command menu")
 
 
 def _main_keyboard() -> InlineKeyboardMarkup:
     keyboard = InlineKeyboardMarkup(row_width=2)
     keyboard.add(
-        InlineKeyboardButton("Formatos de archivo", callback_data="show_files"),
-        InlineKeyboardButton("Protocolos de texto", callback_data="show_texts"),
-        InlineKeyboardButton("Canal", url="https://t.me/GhostDeve"),
-        InlineKeyboardButton("Grupo", url="https://t.me/CodeBreakersHub"),
-        InlineKeyboardButton("Desarrollador", url="https://t.me/Gh0stDeveloper"),
+        InlineKeyboardButton("File formats", callback_data="show_files"),
+        InlineKeyboardButton("Text protocols", callback_data="show_texts"),
+        InlineKeyboardButton("Channel", url="https://t.me/GhostDeve"),
+        InlineKeyboardButton("Group", url="https://t.me/CodeBreakersHub"),
+        InlineKeyboardButton("Developer", url="https://t.me/Gh0stDeveloper"),
         InlineKeyboardButton("GitHub", url="https://github.com/Gh0stDeveloper"),
     )
     return keyboard
@@ -95,7 +95,7 @@ def _main_keyboard() -> InlineKeyboardMarkup:
 
 def _format_registry() -> str:
     lines = [
-        "<b>Formatos de archivo soportados</b>",
+        "<b>Supported file formats</b>",
         f"Total: <b>{len(FILE_FORMATS)}</b>",
         "",
     ]
@@ -126,12 +126,10 @@ def _send_html_parts(
 def send_welcome(message):
     text = (
         "<b>SP-DECODE</b>\n"
-        "Decodificador de archivos y configuraciones de texto.\n\n"
-        "Puedes enviar directamente un archivo compatible o una cadena de texto soportada. "
-        "Para SSC Custom y Dark Tunnel, el bot puede reconstruir automáticamente una cadena "
-        "que llegue completa en un mensaje o dividida en cualquier cantidad de fragmentos.\n\n"
-        "Usa /help para ver el flujo de uso, /formats para los archivos soportados y "
-        "/texts para los protocolos de texto."
+        "Decode supported configuration files, text and links.\n\n"
+        "For SSC Custom and Dark Tunnel, send the full text in one message or split it "
+        "across multiple messages. The bot assembles the fragments automatically.\n\n"
+        "Use /help for instructions, /formats for file formats and /texts for text protocols."
     )
     bot.reply_to(message, text, parse_mode="HTML", reply_markup=_main_keyboard())
 
@@ -139,26 +137,24 @@ def send_welcome(message):
 @bot.message_handler(commands=["help", "ayuda"])
 def show_help(message):
     text = (
-        "<b>Cómo utilizar SP-DECODE</b>\n\n"
-        "<b>Archivos</b>\n"
-        "Envía un documento con una extensión soportada. El bot detectará el decodificador, "
-        "lo ejecutará y responderá con un archivo Markdown (.md). "
-        "Si hace falta una credencial, responde a la solicitud que aparece junto al archivo.\n\n"
-        "Los resultados de textos y enlaces compatibles también se entregan en .md.\n\n"
-        "<b>SSC y Dark Tunnel por texto</b>\n"
-        "1. Envía la cadena completa o su primer fragmento con el prefijo correspondiente.\n"
-        "2. Si está incompleta, continúa enviando los fragmentos siguientes en orden.\n"
-        "3. No existe una cantidad fija: puede completarse con 1, 2, 3 o más mensajes.\n"
-        "4. El bot intenta descifrar después de cada fragmento y cierra la sesión cuando el resultado es válido.\n"
-        "5. Usa /session para consultar la cadena pendiente o /cancel para descartarla.\n\n"
-        "<b>Comandos útiles</b>\n"
-        "/formats — archivos soportados\n"
-        "/texts — textos soportados\n"
-        "/id — IDs de usuario y chat\n"
-        "/permitirgrupo — autorizar un grupo (administradores)\n"
-        "/privados — consultar acceso al bot por privado\n"
-        "/ping — comprobar el bot\n"
-        "/about — información del proyecto"
+        "<b>How to use SP-DECODE</b>\n\n"
+        "Send a supported file, text or link. The bot replies with a Markdown (.md) file. "
+        "For files, it keeps the original name and replaces the extension with .md. "
+        "If the bot asks for a credential, reply to the prompt in the same chat.\n\n"
+        "<b>SSC and Dark Tunnel text</b>\n"
+        "Send the full text or its first fragment with the appropriate prefix. "
+        "Send any remaining fragments in order. The bot tries to decode the text after each fragment "
+        "and closes the session when decoding succeeds. Use /session to check progress or /cancel to discard it.\n\n"
+        "<b>Commands</b>\n"
+        "/formats — supported file formats\n"
+        "/texts — supported text protocols\n"
+        "/id — user and chat IDs\n"
+        "/allowgroup — authorize a group (administrators)\n"
+        "/revokegroup — remove a group from the allowlist (administrators)\n"
+        "/restrictgroups — allow only groups on the allowlist (administrators)\n"
+        "/private — check or manage private chat access\n"
+        "/ping — check whether the bot is online\n"
+        "/about — about SP-DECODE"
     )
     bot.reply_to(message, text, parse_mode="HTML")
 
@@ -173,7 +169,7 @@ def show_formats(message):
 
 
 def _send_text_formats(chat_id, *, reply_to_message_id=None):
-    lines = [TEXT_PROTOCOLS, "", "<b>Formatos compartidos con Cloud</b>"]
+    lines = [TEXT_PROTOCOLS, "", "<b>Formats shared with Cloud</b>"]
     for prefix, label in sorted(TEXT_FORMATS.items(), key=lambda item: (item[1].casefold(), item[0])):
         lines.append(f"<b>{html_pre(label)}</b> — <code>{html_pre(prefix)}</code>")
     _send_html_parts(chat_id, "\n".join(lines), reply_to_message_id=reply_to_message_id)
@@ -192,7 +188,7 @@ def show_text_session(message):
     if session is None:
         bot.reply_to(
             message,
-            "<b>Sesiones de texto</b>\nNo tienes ninguna cadena multipart pendiente en este chat.",
+            "<b>Text sessions</b>\nYou have no pending multipart session in this chat.",
             parse_mode="HTML",
         )
         return
@@ -200,7 +196,7 @@ def show_text_session(message):
     if requested == "ssc" and session.protocol != "ssc":
         bot.reply_to(
             message,
-            "<b>SSC</b>\nNo hay una sesión SSC activa. La sesión pendiente corresponde a "
+            "<b>SSC</b>\nThere is no active SSC session. The pending session is for "
             f"<b>{html_pre(_protocol_label(session.protocol))}</b>.",
             parse_mode="HTML",
         )
@@ -209,7 +205,7 @@ def show_text_session(message):
     if requested == "dark" and session.protocol != "dark":
         bot.reply_to(
             message,
-            "<b>Dark Tunnel</b>\nNo hay una sesión Dark Tunnel activa. La sesión pendiente corresponde a "
+            "<b>Dark Tunnel</b>\nThere is no active Dark Tunnel session. The pending session is for "
             f"<b>{html_pre(_protocol_label(session.protocol))}</b>.",
             parse_mode="HTML",
         )
@@ -218,11 +214,10 @@ def show_text_session(message):
 
     bot.reply_to(
         message,
-        f"<b>Sesión {_protocol_label(session.protocol)} activa</b>\n"
-        f"Partes recibidas: <b>{session.parts}</b>\n"
-        f"Caracteres acumulados: <b>{session.char_count:,}</b>\n\n"
-        "El bot intentará descifrar nuevamente después de cada fragmento. "
-        "No hay una cantidad fija de partes. Usa /cancel para descartar la sesión.",
+        f"<b>Active {_protocol_label(session.protocol)} session</b>\n"
+        f"Fragments received: <b>{session.parts}</b>\n"
+        f"Characters received: <b>{session.char_count:,}</b>\n\n"
+        "The bot tries to decode the text after each fragment. Use /cancel to discard the session.",
         parse_mode="HTML",
     )
 
@@ -236,16 +231,16 @@ def cancel_pending_session(message):
     if session is not None and clear_session(message):
         bot.reply_to(
             message,
-            f"<b>Sesión cancelada</b>\nLa cadena pendiente de "
-            f"<b>{html_pre(_protocol_label(session.protocol))}</b> fue eliminada.",
+            f"<b>Session canceled</b>\nThe pending "
+            f"<b>{html_pre(_protocol_label(session.protocol))}</b> text was discarded.",
             parse_mode="HTML",
         )
     elif credentials_canceled:
-        bot.reply_to(message, "Solicitud de credenciales cancelada.", **thread_options(message))
+        bot.reply_to(message, "Credential request canceled.", **thread_options(message))
     else:
         bot.reply_to(
             message,
-            "<b>Sin cambios</b>\nNo había ninguna sesión pendiente.",
+            "There was no pending session to cancel.",
             parse_mode="HTML",
         )
 
@@ -256,8 +251,8 @@ def show_ids(message):
     chat_id = getattr(getattr(message, "chat", None), "id", None)
     bot.reply_to(
         message,
-        "<b>Identificadores</b>\n"
-        f"Usuario: <code>{user_id}</code>\n"
+        "<b>Telegram IDs</b>\n"
+        f"User: <code>{user_id}</code>\n"
         f"Chat: <code>{chat_id}</code>",
         parse_mode="HTML",
     )
@@ -276,16 +271,16 @@ def _permission_reply(message, text: str) -> None:
     bot.reply_to(message, text, **thread_options(message))
 
 
-@bot.message_handler(commands=["permitirgrupo", "revocargrupo"])
+@bot.message_handler(commands=["allowgroup", "revokegroup", "permitirgrupo", "revocargrupo"])
 def manage_group_permission(message):
     from spdecode.runtime import set_chat_permission, settings as current_settings
 
     user_id = getattr(getattr(message, "from_user", None), "id", None)
     if not is_admin(user_id, current_settings):
-        _permission_reply(message, "Solo los administradores de SP-DECODE pueden cambiar permisos de grupo.")
+        _permission_reply(message, "Only SP-DECODE administrators can change group permissions.")
         return
 
-    command = _message_command(message)
+    allowed = _message_command(message) in {"allowgroup", "permitirgrupo"}
     args = (message.text or "").split()[1:]
     if len(args) == 1:
         group_id = _telegram_id(args[0], group=True)
@@ -294,25 +289,50 @@ def manage_group_permission(message):
     else:
         group_id = None
     if group_id is None:
-        _permission_reply(message, f"Usa /{command} en el grupo o /{command} seguido de su ID negativo.")
+        command = "allowgroup" if allowed else "revokegroup"
+        _permission_reply(message, f"Use /{command} in the group or follow it with the group's negative ID.")
         return
-    allowed = command == "permitirgrupo"
     try:
         changed = set_chat_permission(group_id, allowed)
     except (OSError, ValueError):
-        _permission_reply(message, "No se pudo guardar el permiso del grupo.")
+        _permission_reply(message, "Could not save the group permission.")
         return
 
     if allowed:
-        result = "Grupo autorizado." if changed else "El grupo ya estaba en la lista de permitidos."
+        result = "Group added to the allowlist." if changed else "The group is already on the allowlist."
     else:
-        result = "Permiso de grupo retirado." if changed else "El grupo no estaba en la lista de permitidos."
+        result = "Group removed from the allowlist." if changed else "The group was not on the allowlist."
     if current_settings.allow_all_groups:
-        result += " El modo de todos los grupos sigue activo."
+        result += " All-groups access is enabled. Use /restrictgroups to enforce the allowlist."
     _permission_reply(message, result)
 
 
-@bot.message_handler(commands=["privados"])
+@bot.message_handler(commands=["restrictgroups"])
+def restrict_group_access(message):
+    from spdecode.runtime import restrict_groups, settings as current_settings
+
+    user_id = getattr(getattr(message, "from_user", None), "id", None)
+    if not is_admin(user_id, current_settings):
+        _permission_reply(message, "Only SP-DECODE administrators can change group access.")
+        return
+
+    if len((message.text or "").split()) != 1:
+        _permission_reply(message, "Use /restrictgroups to restrict access to allowed groups.")
+        return
+
+    try:
+        changed = restrict_groups()
+    except (OSError, ValueError):
+        _permission_reply(message, "Could not save the group access mode.")
+        return
+
+    result = "Group access is now restricted to allowed groups." if changed else (
+        "Group access is already restricted to allowed groups."
+    )
+    _permission_reply(message, result)
+
+
+@bot.message_handler(commands=["private", "privados"])
 def manage_private_permissions(message):
     from spdecode.runtime import set_chat_permission, settings as current_settings
 
@@ -320,43 +340,43 @@ def manage_private_permissions(message):
     args = (message.text or "").split()[1:]
     if not is_admin(user_id, current_settings):
         if args:
-            _permission_reply(message, "Solo los administradores de SP-DECODE pueden gestionar estos permisos.")
+            _permission_reply(message, "Only SP-DECODE administrators can manage private chat permissions.")
         else:
             allowed = can_use_private_chat(user_id, current_settings)
-            _permission_reply(message, "Tu cuenta tiene acceso al bot por privado." if allowed else
-                              "Tu cuenta necesita autorización para usar el bot por privado.")
+            _permission_reply(message, "Your account can use the bot in private chats." if allowed else
+                              "Your account needs permission to use the bot in private chats.")
         return
 
     if not args:
-        admins = ", ".join(map(str, sorted(current_settings.admins))) or "Ninguno"
-        users = ", ".join(map(str, sorted(current_settings.allowed_private_users - current_settings.admins))) or "Ninguno"
+        admins = ", ".join(map(str, sorted(current_settings.admins))) or "None"
+        users = ", ".join(map(str, sorted(current_settings.allowed_private_users - current_settings.admins))) or "None"
         _send_html_parts(
             message.chat.id,
-            f"<b>Acceso al chat privado</b>\nAdministradores: {admins}\nUsuarios autorizados: {users}\n\n"
-            "/privados permitir ID · /privados revocar ID",
+            f"<b>Private chat access</b>\nAdministrators: {admins}\nAllowed users: {users}\n\n"
+            "/private allow ID · /private revoke ID",
             reply_to_message_id=message.message_id,
             **thread_options(message),
         )
         return
 
     target = _telegram_id(args[1], group=False) if len(args) == 2 else None
-    if target is None or args[0] not in {"permitir", "revocar"}:
-        _permission_reply(message, "Usa /privados permitir ID o /privados revocar ID con un ID de usuario positivo.")
+    if target is None or args[0] not in {"allow", "revoke", "permitir", "revocar"}:
+        _permission_reply(message, "Use /private allow ID or /private revoke ID with a positive user ID.")
         return
     if is_admin(target, current_settings):
-        _permission_reply(message, "Ese usuario tiene acceso por su rol de administrador.")
+        _permission_reply(message, "This user has access as an administrator.")
         return
-    allowed = args[0] == "permitir"
+    allowed = args[0] in {"allow", "permitir"}
     try:
         changed = set_chat_permission(target, allowed)
     except (OSError, ValueError):
-        _permission_reply(message, "No se pudo guardar el permiso de chat privado.")
+        _permission_reply(message, "Could not save the private chat permission.")
         return
 
     if allowed:
-        result = "Usuario autorizado por privado." if changed else "El usuario ya tenía autorización por privado."
+        result = "Private chat access granted." if changed else "The user already has private chat access."
     else:
-        result = "Permiso de chat privado retirado." if changed else "El usuario no tenía permiso de chat privado."
+        result = "Private chat access revoked." if changed else "The user did not have private chat access."
     _permission_reply(message, result)
 
 
@@ -364,7 +384,7 @@ def manage_private_permissions(message):
 def ping(message):
     bot.reply_to(
         message,
-        "<b>SP-DECODE operativo</b>\nEl bot está recibiendo y procesando mensajes.",
+        "<b>SP-DECODE is online</b>\nThe bot is receiving and processing messages.",
         parse_mode="HTML",
     )
 
@@ -377,28 +397,28 @@ def show_status(message):
     if not is_admin(user_id, settings):
         bot.reply_to(
             message,
-            "<b>Acceso restringido</b>\nEste comando está disponible solo para administradores.",
+            "<b>Restricted access</b>\nThis command is available to administrators only.",
             parse_mode="HTML",
         )
         return
 
     session = get_session(message, settings.text_session_timeout_seconds)
-    session_status = _protocol_label(session.protocol) if session is not None else "ninguna"
+    session_status = _protocol_label(session.protocol) if session is not None else "none"
     group_access = (
-        "todos los grupos y supergrupos"
+        "all groups and supergroups"
         if settings.allow_all_groups
-        else f"{len(settings.allowed_groups)} grupo(s) seleccionado(s)"
+        else f"allowlist only ({len(settings.allowed_groups)} groups)"
     )
     bot.reply_to(
         message,
-        "<b>Estado de SP-DECODE</b>\n"
-        "Estado: <b>activo</b>\n"
-        f"Administradores: <b>{len(settings.admins)}</b>\n"
-        f"Acceso de grupos: <b>{html_pre(group_access)}</b>\n"
-        f"Usuarios de chat privado autorizados: <b>{len(settings.allowed_private_users)}</b>\n"
-        f"Decodificadores registrados: <b>{len(FILE_FORMATS)}</b>\n"
-        f"Sesión multipart para este usuario/chat: <b>{html_pre(session_status)}</b>\n"
-        f"Timeout de decodificadores: <b>{settings.decoder_timeout_seconds}s</b>",
+        "<b>SP-DECODE status</b>\n"
+        "Status: <b>online</b>\n"
+        f"Administrators: <b>{len(settings.admins)}</b>\n"
+        f"Group access: <b>{html_pre(group_access)}</b>\n"
+        f"Allowed private chat users: <b>{len(settings.allowed_private_users)}</b>\n"
+        f"Registered file formats: <b>{len(FILE_FORMATS)}</b>\n"
+        f"Multipart session for this chat and user: <b>{html_pre(session_status)}</b>\n"
+        f"Decoder timeout: <b>{settings.decoder_timeout_seconds}s</b>",
         parse_mode="HTML",
     )
 
@@ -408,10 +428,10 @@ def about(message):
     bot.reply_to(
         message,
         "<b>SP-DECODE</b>\n"
-        "Bot modular para procesar configuraciones mediante decodificadores Python, Node.js y PHP.\n\n"
-        "Desarrollador: @Gh0stDeveloper\n"
-        "Canal: @GhostDeve\n"
-        "Grupo: @CodeBreakersHub",
+        "Configuration decoder bot powered by Python, Node.js and PHP.\n\n"
+        "Developer: @Gh0stDeveloper\n"
+        "Channel: @GhostDeve\n"
+        "Group: @CodeBreakersHub",
         parse_mode="HTML",
         reply_markup=_main_keyboard(),
     )

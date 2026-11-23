@@ -51,7 +51,7 @@ def process_encrypted_content(encrypted_content):
         return None  
         
 @bot.message_handler(func=lambda message: getattr(message, "text", None) is not None)
-@require_authorized("Los textos cifrados")
+@require_authorized("Encrypted text")
 def handle_message(message):
     encrypted_content = message.text.strip()
     try:
@@ -60,13 +60,13 @@ def handle_message(message):
             send_markdown_result(message, "NetMod Syna", response)
             return
     except Exception as e:
-        print(f"Error al manejar el mensaje: {e}")
+        print(f"Error processing the message: {e}")
     fallback_processing(message)
 
 def fallback_processing(message):
     try:
         pass 
     except Exception as e:
-        print(f"Error en fallback_processing: {e}")
+        print(f"Error in the fallback handler: {e}")
                         
 ########################################        

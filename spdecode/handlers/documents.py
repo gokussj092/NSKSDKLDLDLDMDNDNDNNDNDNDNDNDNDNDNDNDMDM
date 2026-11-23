@@ -14,7 +14,7 @@ logger = logging.getLogger("sp-decode")
 
 
 @bot.message_handler(content_types=["document"])
-@require_authorized("Los archivos")
+@require_authorized("Files")
 def process_received_file(message):
     document = message.document
     if document is None:
@@ -22,24 +22,24 @@ def process_received_file(message):
 
     size_limit = min(settings.max_file_size_bytes, MAX_INPUT_BYTES)
     if (getattr(document, "file_size", 0) or 0) > size_limit:
-        bot.reply_to(message, f"El archivo supera el límite de {size_limit // (1024 * 1024)} MB.")
+        bot.reply_to(message, f"The file exceeds the {size_limit // (1024 * 1024)} MB limit.")
         return
 
-    file_name = clean_filename(document.file_name or "archivo")
+    file_name = clean_filename(document.file_name or "file")
     suffix = file_suffix(file_name)
     if suffix is None:
-        bot.reply_to(message, "Formato no soportado. Usa /formats para consultar los formatos disponibles.")
+        bot.reply_to(message, "Unsupported file format. Use /formats to see the supported formats.")
         return
 
     try:
         file_info = bot.get_file(document.file_id)
         payload = bot.download_file(file_info.file_path)
     except Exception as error:
-        logger.warning("No se pudo descargar el documento de Telegram (%s)", type(error).__name__)
-        bot.reply_to(message, "No se pudo descargar el archivo de Telegram.")
+        logger.warning("Could not download the Telegram document (%s)", type(error).__name__)
+        bot.reply_to(message, "Could not download the file from Telegram.")
         return
     if len(payload) > size_limit:
-        bot.reply_to(message, f"El archivo supera el límite de {size_limit // (1024 * 1024)} MB.")
+        bot.reply_to(message, f"The file exceeds the {size_limit // (1024 * 1024)} MB limit.")
         return
 
     decode_and_reply(

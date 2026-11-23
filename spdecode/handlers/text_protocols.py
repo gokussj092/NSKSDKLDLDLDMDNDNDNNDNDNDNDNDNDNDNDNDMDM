@@ -53,7 +53,7 @@ def _is_tls_text_message(message) -> bool:
 
 
 @bot.message_handler(func=_is_tls_text_message)
-@require_authorized("Los textos TLS Tunnel")
+@require_authorized("TLS Tunnel text")
 def decode_tls_text(message):
     """Descifra enlaces tls:// completos usando el mismo motor que los archivos .tls."""
     payload = _extract_tls_text(_message_text(message))
@@ -62,12 +62,12 @@ def decode_tls_text(message):
 
     try:
         result = decode_tls_payload(payload.encode("utf-8"))
-    except Exception as exc:
-        logger.exception("Error interno al decodificar TLS Tunnel de texto")
+    except Exception:
+        logger.exception("Internal error decoding TLS Tunnel text")
         bot.reply_to(
             message,
-            "<b>Error al procesar TLS Tunnel</b>\n"
-            f"El decodificador produjo un error interno: <code>{html_pre(str(exc))}</code>",
+            "<b>Could not process TLS Tunnel</b>\n"
+            "The decoder reported an internal error.",
             parse_mode="HTML",
         )
         return
@@ -77,8 +77,8 @@ def decode_tls_text(message):
     else:
         bot.reply_to(
             message,
-            "<b>No se pudo descifrar TLS Tunnel</b>\n"
-            "La cadena no coincide con el formato de cifrado soportado actualmente.",
+            "<b>Could not decode TLS Tunnel</b>\n"
+            "The text does not match a supported encryption format.",
             parse_mode="HTML",
         )
 
@@ -179,21 +179,21 @@ def _send_incomplete_session(message, session, title: str, continuation_hint: st
     timeout_minutes = max(1, settings.text_session_timeout_seconds // 60)
     bot.reply_to(
         message,
-        f"<b>{html_pre(title)} detectado</b>\n"
-        f"Partes recibidas: <b>{session.parts}</b>. "
-        f"Caracteres acumulados: <b>{session.char_count:,}</b>.\n\n"
-        "La cadena todavía está incompleta o aún no forma una configuración válida. "
-        "Se volverá a intentar automáticamente con cada fragmento nuevo, sin asumir "
-        "si el contenido total ocupa 1, 2, 3 o más mensajes.\n"
+        f"<b>{html_pre(title)} detected</b>\n"
+        f"Fragments received: <b>{session.parts}</b>. "
+        f"Characters received: <b>{session.char_count:,}</b>.\n\n"
+        "The text is still incomplete or invalid. "
+        "The bot will try again after each fragment, "
+        "regardless of how many messages are needed.\n"
         f"{continuation_hint}\n"
-        f"La sesión caduca tras {timeout_minutes} minuto(s) de inactividad. "
-        "Usa /cancel para descartarla.",
+        f"The session expires after {timeout_minutes} minute(s) of inactivity. "
+        "Use /cancel to discard it.",
         parse_mode="HTML",
     )
 
 
 @bot.message_handler(func=_is_ssc_text_message)
-@require_authorized("Los textos SSC Custom")
+@require_authorized("SSC Custom text")
 def decode_ssc_text(message):
     """Decodifica SSC con el mismo patrón multipart dinámico usado por Dark Tunnel."""
     text = _message_text(message)
@@ -217,7 +217,7 @@ def decode_ssc_text(message):
     if session is None:
         bot.reply_to(
             message,
-            "No hay una sesión SSC activa. Envía primero un mensaje que contenga ssc://.",
+            "There is no active SSC session. Send a message containing ssc:// first.",
         )
         return
 
@@ -225,9 +225,9 @@ def decode_ssc_text(message):
         clear_session(message, _SSC_PROTOCOL)
         bot.reply_to(
             message,
-            "<b>Cadena SSC cancelada</b>\n"
-            f"El texto ensamblado superó el límite configurado de "
-            f"{settings.text_session_max_chars:,} caracteres.",
+            "<b>SSC session canceled</b>\n"
+            f"The assembled text exceeded the configured limit of "
+            f"{settings.text_session_max_chars:,} characters.",
             parse_mode="HTML",
         )
         return
@@ -236,15 +236,15 @@ def decode_ssc_text(message):
         # Mismo patrón de Dark Tunnel: el decodificador recibe directamente el
         # payload reconstruido completo después de cada parte recibida.
         result = decode_ssc_payload(session.payload.encode("utf-8"))
-    except Exception as exc:
-        logger.exception("Error interno al decodificar SSC de texto")
+    except Exception:
+        logger.exception("Internal error decoding SSC text")
         # Un error de decodificación durante multipart puede significar que aún
         # falta contenido. Conservamos la sesión, igual que en el flujo Dark.
         _send_incomplete_session(
             message,
             session,
             "SSC Custom",
-            "Envía el siguiente fragmento hexadecimal. No es necesario repetir <code>ssc://</code>.",
+            "Send the next hexadecimal fragment without repeating <code>ssc://</code>.",
         )
         return
 
@@ -257,7 +257,7 @@ def decode_ssc_text(message):
         message,
         session,
         "SSC Custom",
-        "Envía el siguiente fragmento hexadecimal. No es necesario repetir <code>ssc://</code>.",
+        "Send the next hexadecimal fragment without repeating <code>ssc://</code>.",
     )
 
 
@@ -302,7 +302,7 @@ def _is_dark_text_message(message) -> bool:
 
 
 @bot.message_handler(func=_is_dark_text_message)
-@require_authorized("Los textos Dark Tunnel")
+@require_authorized("Dark Tunnel text")
 def decode_dark_text(message):
     """Decodifica enlaces Dark Tunnel aunque estén divididos en una cantidad variable de mensajes."""
     text = _message_text(message)
@@ -324,7 +324,7 @@ def decode_dark_text(message):
     if session is None:
         bot.reply_to(
             message,
-            "No hay una sesión Dark Tunnel activa. Envía primero el enlace que contiene el prefijo Dark Tunnel.",
+            "There is no active Dark Tunnel session. Send the link with the Dark Tunnel prefix first.",
         )
         return
 
@@ -332,22 +332,22 @@ def decode_dark_text(message):
         clear_session(message, _DARK_PROTOCOL)
         bot.reply_to(
             message,
-            "<b>Cadena Dark Tunnel cancelada</b>\n"
-            f"El texto ensamblado superó el límite configurado de "
-            f"{settings.text_session_max_chars:,} caracteres.",
+            "<b>Dark Tunnel session canceled</b>\n"
+            f"The assembled text exceeded the configured limit of "
+            f"{settings.text_session_max_chars:,} characters.",
             parse_mode="HTML",
         )
         return
 
     try:
         result = decode_dark_payload(session.payload.encode("utf-8"))
-    except Exception as exc:
-        logger.exception("Error interno al decodificar Dark Tunnel de texto")
+    except Exception:
+        logger.exception("Internal error decoding Dark Tunnel text")
         clear_session(message, _DARK_PROTOCOL)
         bot.reply_to(
             message,
-            "<b>Error al procesar Dark Tunnel</b>\n"
-            f"El decodificador produjo un error interno: <code>{html_pre(str(exc))}</code>",
+            "<b>Could not process Dark Tunnel</b>\n"
+            "The decoder reported an internal error.",
             parse_mode="HTML",
         )
         return
@@ -361,7 +361,7 @@ def decode_dark_text(message):
         message,
         session,
         "Dark Tunnel",
-        "Envía únicamente el siguiente fragmento de la cadena, sin repetir el prefijo <code>...://</code>.",
+        "Send the next fragment without repeating the <code>...://</code> prefix.",
     )
 
 
@@ -384,7 +384,7 @@ def encode_base64(data):
         raise ValueError(f"Error in encoding: {e}")
 
 @bot.message_handler(func=lambda message: 'howdy://' in _message_text(message) or 'N7pr://' in _message_text(message))
-@require_authorized("Las configuraciones Howdy")
+@require_authorized("Howdy configurations")
 def handle_message(message):
     chat_id = message.chat.id
     text = message.text
@@ -413,13 +413,12 @@ def handle_message(message):
         
         encoded_config = encode_base64(linkserver)
         send_markdown_result(
-            message, "Howdy VPN", f"{linkserver}\n\nConfiguración codificada:\nvmess://{encoded_config}",
+            message, "Howdy VPN", f"{linkserver}\n\nEncoded configuration:\nvmess://{encoded_config}",
         )
     except Exception as e:
         bot.send_message(
             chat_id, 
-            "Sorry, if there was an error decoding, could I send it again?\n\n"
-            "Lo siento, hubo un error al decodificar, ¿podría enviarlo otra vez?",
+            "Could not decode the Howdy configuration. Resend it to try again.",
             reply_to_message_id=message_id
         )
         print(f"Error occurred: {str(e)}")
@@ -435,7 +434,7 @@ def obfuscate_text(text):
     return ''.join(chr(ord(c) + 1) for c in text)
 
 @bot.message_handler(func=lambda message: any(token in _message_text(message) for token in ['nm-vmess://', 'nm-dns://', 'nm-vless://', 'nm-trojan://', 'nm-ssr://', 'nm-ssh://', 'nm-xray-json://']))
-@require_authorized("Las configuraciones NetMod")
+@require_authorized("NetMod configurations")
 def decrypted_config(message):
     encrypted_text_base64 = message.text.strip()
     cle = 'X25ldHN5bmFfbmV0bW9kXw==' 
@@ -457,15 +456,14 @@ def decrypted_config(message):
                 extracted_data = json.loads(decrypt_text)
                 json_output = json.dumps(extracted_data, ensure_ascii=False, indent=4)
                 encoded_config = base64.b64encode(decrypt_text.encode('utf-8')).decode('utf-8')
-                output = f"{json_output}\n\nConfiguración codificada:\n{protocol}://{encoded_config}"
+                output = f"{json_output}\n\nEncoded configuration:\n{protocol}://{encoded_config}"
             except json.JSONDecodeError:
                 output = obfuscate_text(decrypt_text)
             send_markdown_result(message, f"NetMod · {protocol}", output)
         else:
             bot.reply_to(message, "Please enter a valid format.")
     except Exception as e:
-        error_message = f"An error occurred while dewinding the flangeر: {str(e)}. Please try to submit the data again."
-        bot.reply_to(message, error_message)
+        bot.reply_to(message, "Could not decode the NetMod configuration. Resend it to try again.")
         print(f"Error occurred: {str(e)}")
 #######################################################
 def decodificar_base64(data):
@@ -476,7 +474,7 @@ def decodificar_base64(data):
         return str(e)
         
 @bot.message_handler(func=lambda message: "vmess://" in _message_text(message))
-@require_authorized("Las configuraciones VMess")
+@require_authorized("VMess configurations")
 def decodificar_vmess(message):
     start_index = message.text.find("vmess://")
     if start_index != -1:
@@ -519,7 +517,7 @@ class AESDecryptor:
         return unpadded_text.decode()
 
 @bot.message_handler(func=lambda message: 'zivpn://' in _message_text(message))
-@require_authorized("Las configuraciones ZIVPN")
+@require_authorized("ZI VPN configurations")
 def handle_decryption(message):
     try:
         encoded_data = message.text.replace('zivpn://', '')
@@ -539,8 +537,8 @@ def handle_decryption(message):
                     GhostDeveloper += f"│[۞] {key}: ***\n"
 
         send_markdown_result(message, "ZI VPN", GhostDeveloper)
-    except Exception as error:
-        bot.reply_to(message, f"‼️Oops! An error occurred:\n{error}‼️")
+    except Exception:
+        bot.reply_to(message, "Could not decode the ZI VPN configuration.")
     
 ######################################
 
@@ -562,7 +560,7 @@ def format_output(json_data):
     return f"│[۞] Decoded Config:\n{formatted}"
 
 @bot.message_handler(func=lambda message: any(proto in _message_text(message) for proto in ['pb-ssh://', 'pb-vless://', 'pb-vmess://', 'pb-trojan://', 'pb-socks://', 'pb-ss://']))
-@require_authorized("Las configuraciones XrayPB")
+@require_authorized("XrayPB configurations")
 def nmqwd_ksmns(message):
     protocols = ['pb-ssh://', 'pb-vless://', 'pb-vmess://', 'pb-trojan://', 'pb-socks://', 'pb-ss://']
     data = None
@@ -583,11 +581,10 @@ def nmqwd_ksmns(message):
             json_data = json.loads(decrypted_data)
             send_markdown_result(message, "XrayPB", format_output(json_data))
         else:
-            bot.reply_to(message, "Ocurrió un error: Los datos descifrados no son un JSON válido.")
+            bot.reply_to(message, "The decoded data is not valid JSON.")
 
-    except Exception as e:
-        error_message = f"Ocurrió un error: {str(e)}"
-        bot.reply_to(message, error_message)
+    except Exception:
+        bot.reply_to(message, "Could not decode the XrayPB configuration.")
 ########################################################        
 def dec_ssh(ld):
     try:
@@ -607,7 +604,7 @@ def dec_ssh(ld):
 
 
 @bot.message_handler(commands=['decssh'])
-@require_authorized("Las credenciales SSH")
+@require_authorized("SSH credentials")
 def dec_ssh_command(message):
     encoded_data = message.text.replace("/decssh", "").strip()
     if '@' in encoded_data and ':' in encoded_data.split('@')[1]:
@@ -621,13 +618,13 @@ def dec_ssh_command(message):
             if user is not None and password is not None:
                 send_markdown_result(
                     message, "SSH",
-                    f"IP/Dominio: {ip_or_domain}\nUsuario: {user}\nContraseña: {password}\n"
+                    f"IP address or domain: {ip_or_domain}\nUsername: {user}\nPassword: {password}\n"
                     f"SSH: {ip_or_domain}@{user}:{password}",
                 )
             else:
                 bot.reply_to(message, "Error decoding user or password. Please check the input.")
-        except Exception as e:
-            bot.reply_to(message, f"An error occurred: {str(e)}")
+        except Exception:
+            bot.reply_to(message, "Could not decode the SSH credentials.")
     else:
         bot.reply_to(message, 'Data not detected in the command. Please provide valid data to decode.')
 #######################################################
@@ -647,7 +644,7 @@ Ghost_keys = {
 }
 
 @bot.message_handler(func=lambda message: _message_text(message).startswith('ar-'))
-@require_authorized("Las configuraciones ARMOD")
+@require_authorized("AR Tunnel configurations")
 def handle_armod(message):
     encrypted_text_base64 = message.text.strip()
     cle = 'YXJ0dW5uZWw3ODc5Nzg5eA==' 
@@ -693,8 +690,8 @@ def handle_armod(message):
         send_markdown_result(message, "AR Tunnel", result)
 
     except Exception as e:
-        logger.exception("Error al decodificar el formato ar-: %s", e)
-        bot.reply_to(message, f"Error al decodificar: {e}")
+        logger.exception("Internal error decoding the ar- format: %s", e)
+        bot.reply_to(message, "Could not decode the AR Tunnel configuration.")
 
 def format_profile(profile_raw):
     try:
@@ -708,7 +705,7 @@ def format_profile(profile_raw):
         return profile_raw
 #######################################################
 @bot.message_handler(func=lambda message: _message_text(message).startswith("v2box://"))
-@require_authorized("Las configuraciones V2Box")
+@require_authorized("V2Box configurations")
 def decode_v2box(message):
     try:
         encoded_part = message.text.split("locked=")[1]
@@ -721,8 +718,8 @@ def decode_v2box(message):
         output = "\n".join(f"{key}: {', '.join(value)}" for key, value in params.items())
         send_markdown_result(message, "V2Box", output)
 
-    except Exception as e:
-        bot.reply_to(message, f"Error al decodificar: {str(e)}")
+    except Exception:
+        bot.reply_to(message, "Could not decode the V2Box configuration.")
 
         
 #######################################################
@@ -748,19 +745,19 @@ def _is_renz_text_message(message) -> bool:
 
 
 @bot.message_handler(func=_is_renz_text_message)
-@require_authorized("Los textos RENZ / 7NET")
+@require_authorized("RENZ / 7NET text")
 def decode_renz_text(message):
     payload = _message_text(message).strip()
     try:
         result = decode_renz_payload(payload)
     except Exception:
-        logger.exception("Error interno al descifrar RENZ/7NET por texto")
-        bot.reply_to(message, "Error al procesar RENZ / 7NET.")
+        logger.exception("Internal error decoding RENZ/7NET text")
+        bot.reply_to(message, "Could not process RENZ / 7NET.")
         return
     if result is not None:
         send_markdown_result(message, "RENZ / 7NET", result)
     else:
         bot.reply_to(
             message,
-            "No se pudo descifrar RENZ / 7NET: protocolo o configuracion no compatible.",
+            "Could not decode RENZ / 7NET. The protocol or configuration is unsupported.",
         )

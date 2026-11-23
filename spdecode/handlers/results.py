@@ -8,11 +8,11 @@ from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
 from spdecode.utils import thread_options
 
 _RESULT_LINKS = (
-    ("Canal", "https://t.me/GhostDeve"),
-    ("Grupo", "https://t.me/CodeBreakersHub"),
+    ("Channel", "https://t.me/GhostDeve"),
+    ("Group", "https://t.me/CodeBreakersHub"),
     ("Ghost Developer", "https://t.me/Gh0stDeveloper"),
 )
-_PARTIAL_NOTICE = "Algunos campos quedaron sin resolver."
+_PARTIAL_NOTICE = "Some fields could not be resolved."
 
 
 def _markdown_label(value: str) -> str:
@@ -28,7 +28,7 @@ def _request_author(message: Message) -> str:
     name = getattr(author, "title", None) or " ".join(
         part for part in (getattr(author, "first_name", None), getattr(author, "last_name", None)) if part
     )
-    return _markdown_label(name) or "Usuario de Telegram"
+    return _markdown_label(name) or "Telegram user"
 
 
 def send_markdown_result(
@@ -43,15 +43,15 @@ def send_markdown_result(
         output += "\n"
 
     metadata = [
-        "# SP-DECODE · Resultado",
+        "# SP-DECODE · Result",
         "",
-        f"**Formato:** {_markdown_label(title)}",
-        f"**Solicitado por:** {_request_author(message)}",
+        f"**Format:** {_markdown_label(title)}",
+        f"**Requested by:** {_request_author(message)}",
     ]
     if source_file:
-        metadata.append(f"**Archivo original:** {_markdown_label(source_file)}")
+        metadata.append(f"**Original file:** {_markdown_label(source_file)}")
     if partial:
-        metadata.append(f"**Resultado parcial.** {_PARTIAL_NOTICE}")
+        metadata.append(f"**Partial result.** {_PARTIAL_NOTICE}")
 
     links = " · ".join(f"[{label}]({url})" for label, url in _RESULT_LINKS)
     markdown = "\n".join((*metadata, "", links, "", fence, output + fence, ""))
@@ -59,10 +59,11 @@ def send_markdown_result(
     keyboard.add(*(InlineKeyboardButton(label, url=url) for label, url in _RESULT_LINKS))
     caption = f"SP-DECODE · {title}"
     if partial:
-        caption += f"\nResultado parcial. {_PARTIAL_NOTICE}"
+        caption += f"\nPartial result. {_PARTIAL_NOTICE}"
 
+    stem = source_file.rpartition(".")[0] if source_file else ""
     with BytesIO(markdown.encode("utf-8")) as document:
-        document.name = "spdecode-resultado.md"
+        document.name = f"{stem or 'spdecode-result'}.md"
         bot.send_document(
             chat_id=message.chat.id,
             document=document,

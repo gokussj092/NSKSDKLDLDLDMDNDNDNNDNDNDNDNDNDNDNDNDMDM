@@ -6,6 +6,7 @@ import json
 import stat
 import sys
 from concurrent.futures import ThreadPoolExecutor
+from dataclasses import replace
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from types import SimpleNamespace
@@ -58,29 +59,34 @@ class TelegramPermissionCommandTests(TestCase):
             text=text, message_id=1,
         )
 
+    def _enable_all_groups(self):
+        config = replace(self.runtime.settings, allow_all_groups=True)
+        save_chat_permissions(config, self.config_path)
+        self.runtime.settings = config
+
     def test_admin_can_authorize_current_group_then_revoke_without_restart(self):
-        allow = self._message(20, -50, "/permitirgrupo@SampleBot", group=True)
+        allow = self._message(20, -50, "/allowgroup@SampleBot", group=True)
         member = self._message(22, -50, "", group=True)
         self.assertFalse(is_authorized(allow, self.runtime.settings))
         self.commands.manage_group_permission(allow)
         self.assertTrue(is_authorized(member, self.runtime.settings))
         self.assertTrue(is_authorized(member, load_config(self.config_path)))
-        self.commands.manage_group_permission(self._message(20, 20, "/revocargrupo -50"))
+        self.commands.manage_group_permission(self._message(20, 20, "/revokegroup -50"))
         self.assertFalse(is_authorized(member, self.runtime.settings))
         self.assertFalse(is_authorized(member, load_config(self.config_path)))
 
     def test_private_permissions_and_legacy_private_allowance(self):
         migrated = self._message(21, 21, "/privados")
         self.assertTrue(is_authorized(migrated, self.runtime.settings))
-        applicant = self._message(22, 22, "/privados")
+        applicant = self._message(22, 22, "/private")
         self.commands.manage_private_permissions(applicant)
-        self.assertIn("necesita autorización", self.bot.reply_to.call_args.args[1])
-        self.commands.manage_private_permissions(self._message(20, 20, "/privados permitir 22"))
+        self.assertIn("needs permission", self.bot.reply_to.call_args.args[1])
+        self.commands.manage_private_permissions(self._message(20, 20, "/private allow 22"))
         self.assertTrue(is_authorized(applicant, self.runtime.settings))
         self.assertFalse(is_authorized(self._message(22, -55, "", group=True), self.runtime.settings))
         self.commands.manage_private_permissions(self._message(20, 20, "/privados"))
-        self.assertIn("Usuarios autorizados: 21, 22", self.bot.send_message.call_args.kwargs["text"])
-        self.commands.manage_private_permissions(self._message(20, 20, "/privados revocar 22"))
+        self.assertIn("Allowed users: 21, 22", self.bot.send_message.call_args.kwargs["text"])
+        self.commands.manage_private_permissions(self._message(20, 20, "/private revoke 22"))
         self.assertFalse(is_authorized(applicant, load_config(self.config_path)))
         data = json.loads(self.config_path.read_text())
         self.assertEqual(data["other"], {"preserved": True})
@@ -94,15 +100,45 @@ class TelegramPermissionCommandTests(TestCase):
         self.save.assert_not_called()
 
     def test_concurrent_permissions_are_persisted_together(self):
-        with ThreadPoolExecutor(max_workers=2) as pool:
-            self.assertEqual(list(pool.map(lambda identifier: self.runtime.set_chat_permission(identifier, True),
-                                           (-50, 25))), [True, True])
+        self._enable_all_groups()
+        with ThreadPoolExecutor(max_workers=3) as pool:
+            changed = [pool.submit(self.runtime.set_chat_permission, identifier, True) for identifier in (-50, 25)]
+            changed.append(pool.submit(self.runtime.restrict_groups))
+            self.assertTrue(all(change.result() for change in changed))
         saved = load_config(self.config_path)
         self.assertEqual(saved.allowed_groups, {-40, -50})
         self.assertEqual(saved.allowed_private_users, {21, 25})
+        self.assertFalse(saved.allow_all_groups)
+
+    def test_only_admin_can_restrict_group_access_and_keep_allowlists(self):
+        self._enable_all_groups()
+        unlisted = self._message(22, -55, "/restrictgroups", group=True)
+        listed = self._message(22, -40, "", group=True)
+        allowed_private = self._message(21, 21, "")
+        self.assertTrue(is_authorized(unlisted, self.runtime.settings))
+
+        self.commands.restrict_group_access(unlisted)
+        self.commands.restrict_group_access(self._message(20, 20, "/restrictgroups all"))
+        self.save.assert_not_called()
+        self.assertTrue(self.runtime.settings.allow_all_groups)
+
+        admin_command = self._message(20, 20, "/restrictgroups@SampleBot")
+        self.commands.restrict_group_access(admin_command)
+        self.assertIn("now restricted", self.bot.reply_to.call_args.args[1])
+        self.commands.restrict_group_access(admin_command)
+        self.assertIn("already restricted", self.bot.reply_to.call_args.args[1])
+        self.save.assert_called_once()
+        for config in (self.runtime.settings, load_config(self.config_path)):
+            self.assertFalse(is_authorized(unlisted, config))
+            self.assertTrue(is_authorized(listed, config))
+            self.assertTrue(is_authorized(allowed_private, config))
 
     def test_save_failure_leaves_current_permissions_unchanged(self):
+        self._enable_all_groups()
         self.save.side_effect = OSError("synthetic failure")
         self.commands.manage_group_permission(self._message(20, 20, "/permitirgrupo -50"))
         self.assertNotIn(-50, self.runtime.settings.allowed_groups)
-        self.assertIn("No se pudo guardar", self.bot.reply_to.call_args.args[1])
+        self.assertIn("Could not save", self.bot.reply_to.call_args.args[1])
+        self.commands.restrict_group_access(self._message(20, 20, "/restrictgroups"))
+        self.assertTrue(self.runtime.settings.allow_all_groups)
+        self.assertIn("Could not save", self.bot.reply_to.call_args.args[1])
