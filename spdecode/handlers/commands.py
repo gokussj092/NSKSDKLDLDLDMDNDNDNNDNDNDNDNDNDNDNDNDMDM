@@ -5,7 +5,7 @@ import logging
 from telebot.types import BotCommand, InlineKeyboardButton, InlineKeyboardMarkup
 
 from spdecode.access import is_admin
-from spdecode.registry import DECODER_REGISTRY
+from spdecode.decoder_runtime import FILE_FORMATS, TEXT_FORMATS
 from spdecode.runtime import bot, settings
 from spdecode.text_sessions import clear_session, get_session
 from spdecode.utils import html_pre, split_message
@@ -92,15 +92,15 @@ def _main_keyboard() -> InlineKeyboardMarkup:
 def _format_registry() -> str:
     lines = [
         "<b>Formatos de archivo soportados</b>",
-        f"Total: <b>{len(DECODER_REGISTRY)}</b>",
+        f"Total: <b>{len(FILE_FORMATS)}</b>",
         "",
     ]
     for extension, spec in sorted(
-        DECODER_REGISTRY.items(),
-        key=lambda item: (item[1].name.casefold(), item[0].casefold()),
+        FILE_FORMATS.items(),
+        key=lambda item: (item[1]["name"].casefold(), item[0].casefold()),
     ):
         lines.append(
-            f"<b>{html_pre(spec.name)}</b> — <code>.{html_pre(extension)}</code>"
+            f"<b>{html_pre(spec['name'])}</b> — <code>.{html_pre(extension)}</code>"
         )
     return "\n".join(lines)
 
@@ -159,9 +159,16 @@ def show_formats(message):
     )
 
 
+def _send_text_formats(chat_id, *, reply_to_message_id=None):
+    lines = [TEXT_PROTOCOLS, "", "<b>Formatos compartidos con Cloud</b>"]
+    for prefix, label in sorted(TEXT_FORMATS.items(), key=lambda item: (item[1].casefold(), item[0])):
+        lines.append(f"<b>{html_pre(label)}</b> — <code>{html_pre(prefix)}</code>")
+    _send_html_parts(chat_id, "\n".join(lines), reply_to_message_id=reply_to_message_id)
+
+
 @bot.message_handler(commands=["texts", "textos"])
 def show_texts(message):
-    bot.reply_to(message, TEXT_PROTOCOLS, parse_mode="HTML")
+    _send_text_formats(message.chat.id, reply_to_message_id=message.message_id)
 
 
 @bot.message_handler(commands=["session", "sesion", "ssc", "dark"])
@@ -209,6 +216,9 @@ def show_text_session(message):
 
 @bot.message_handler(commands=["cancel", "cancelar"])
 def cancel_pending_session(message):
+    from spdecode.handlers.decoder_credentials import cancel_pending_credentials
+
+    credentials_canceled = cancel_pending_credentials(message)
     session = get_session(message, settings.text_session_timeout_seconds)
     if session is not None and clear_session(message):
         bot.reply_to(
@@ -217,10 +227,12 @@ def cancel_pending_session(message):
             f"<b>{html_pre(_protocol_label(session.protocol))}</b> fue eliminada.",
             parse_mode="HTML",
         )
+    elif credentials_canceled:
+        bot.reply_to(message, "Solicitud de credenciales cancelada.")
     else:
         bot.reply_to(
             message,
-            "<b>Sin cambios</b>\nNo había ninguna cadena multipart pendiente.",
+            "<b>Sin cambios</b>\nNo había ninguna sesión pendiente.",
             parse_mode="HTML",
         )
 
@@ -271,7 +283,7 @@ def show_status(message):
         "Estado: <b>activo</b>\n"
         f"Administradores: <b>{len(settings.admins)}</b>\n"
         f"Acceso de grupos: <b>{html_pre(group_access)}</b>\n"
-        f"Decodificadores registrados: <b>{len(DECODER_REGISTRY)}</b>\n"
+        f"Decodificadores registrados: <b>{len(FILE_FORMATS)}</b>\n"
         f"Sesión multipart para este usuario/chat: <b>{html_pre(session_status)}</b>\n"
         f"Timeout de decodificadores: <b>{settings.decoder_timeout_seconds}s</b>",
         parse_mode="HTML",
@@ -307,4 +319,4 @@ def handle_supported_texts(call):
         bot.answer_callback_query(call.id)
     except Exception:
         pass
-    bot.send_message(call.message.chat.id, TEXT_PROTOCOLS, parse_mode="HTML")
+    _send_text_formats(call.message.chat.id)
