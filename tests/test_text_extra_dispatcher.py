@@ -91,8 +91,7 @@ class ExtraTextDispatcherTests(unittest.TestCase):
         fake_runtime=types.SimpleNamespace(bot=bot,settings=fake_settings)
         with patch.dict(sys.modules,{"spdecode.runtime":fake_runtime}):
             handler.decode_extra_text(message)
-        self.assertEqual(len(bot.replies),1)
-        self.assertIn("Access denied",bot.replies[0][1])
+        self.assertFalse(bot.replies)
         self.assertFalse(bot.documents)
 
     def test_authorized_handler_delivers_full_payload_in_markdown(self):

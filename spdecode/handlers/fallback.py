@@ -51,7 +51,7 @@ def process_encrypted_content(encrypted_content):
         return None  
         
 @bot.message_handler(func=lambda message: getattr(message, "text", None) is not None)
-@require_authorized("Encrypted text")
+@require_authorized
 def handle_message(message):
     encrypted_content = message.text.strip()
     try:

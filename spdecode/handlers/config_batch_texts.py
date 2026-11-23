@@ -52,7 +52,7 @@ def _match(message):
 
 
 @bot.message_handler(func=lambda message: _match(message) is not None)
-@require_authorized("VPN configuration text")
+@require_authorized
 def decode_config_batch_text(message):
     text=(getattr(message,"text","") or "").strip()
     prefix=_match(message)
@@ -64,16 +64,10 @@ def decode_config_batch_text(message):
         if isinstance(output,(dict,list)):
             import json
             output=json.dumps(output,ensure_ascii=False,indent=2)
-        if not output:
-            if prefix.startswith("happ://"):
-                bot.reply_to(message, "Could not decode HAPP. Check the RSA private keys configured on the server.")
-            else:
-                bot.reply_to(message, "Could not decode the configuration in this format.")
-            return
-        send_markdown_result(message, name, str(output))
+        if output:
+            send_markdown_result(message, name, str(output))
     except Exception:
         logger.exception("Configuration text decoding failed for %s",prefix)
-        bot.reply_to(message,"An internal error occurred while decoding the configuration.")
 
 
 # ---------------------------------------------------------------------------

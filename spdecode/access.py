@@ -4,7 +4,6 @@ from functools import wraps
 from typing import Any
 
 from .config import AppConfig
-from .utils import thread_options
 
 
 def is_admin(user_id: Any, config: AppConfig) -> bool:
@@ -36,27 +35,15 @@ def is_authorized(message: Any, config: AppConfig) -> bool:
     return False
 
 
-def require_authorized(resource: str = "Content"):
-    """Apply the shared SP-DECODE access policy to a decoder handler."""
+def require_authorized(handler):
+    """Silently gate decoder handlers with the shared chat access policy."""
+    @wraps(handler)
+    def wrapped(message, *args, **kwargs):
+        from .runtime import settings
 
-    def decorator(handler):
-        @wraps(handler)
-        def wrapped(message, *args, **kwargs):
-            from .runtime import bot, settings
-
-            if not is_authorized(message, settings):
-                bot.reply_to(
-                    message,
-                    "<b>Access denied</b>\n"
-                    f"{resource} can only be processed in authorized groups or private chats.\n"
-                    "Use /id to check your IDs and ask an administrator for access.",
-                    parse_mode="HTML",
-                    **thread_options(message),
-                )
-                return None
+        if is_authorized(message, settings):
             return handler(message, *args, **kwargs)
+        return None
 
-        wrapped.__spdecode_requires_authorization__ = True
-        return wrapped
-
-    return decorator
+    wrapped.__spdecode_requires_authorization__ = True
+    return wrapped

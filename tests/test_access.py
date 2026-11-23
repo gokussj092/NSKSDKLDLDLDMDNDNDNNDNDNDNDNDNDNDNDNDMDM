@@ -62,7 +62,7 @@ class AccessPolicyTests(unittest.TestCase):
         self.assertFalse(is_authorized(private, settings))
 
     def test_authorization_decorator_is_marked_for_validation(self):
-        @require_authorized("Prueba")
+        @require_authorized
         def handler(message):
             return message
 

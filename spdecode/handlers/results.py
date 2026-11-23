@@ -1,12 +1,13 @@
 from __future__ import annotations
 
+import json
 import re
 from datetime import datetime, timezone
 from io import BytesIO
 
 from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
 
-from spdecode.utils import thread_options
+from spdecode.utils import split_copy_suffix, thread_options
 
 _RESULT_LINKS = (
     ("Channel", "https://t.me/GhostDeve"),
@@ -33,16 +34,61 @@ def _request_author(message: Message) -> tuple[str, str]:
     return name, _markdown_label(name)
 
 
+def _code_block(text: str, language: str = "") -> str:
+    # Keep the decoded content literal even when it contains Markdown delimiters.
+    longest_run = max((len(match[0]) for match in re.finditer(r"`+", text)), default=0)
+    fence = "`" * max(3, longest_run + 1)
+    if not text.endswith("\n"):
+        text += "\n"
+    return f"{fence}{language}\n{text}{fence}"
+
+
+def _legacy_result_blocks(output: str) -> str:
+    """Highlight compact JSON values inside legacy key-value output."""
+    blocks = []
+    cursor = 0
+    for label in re.finditer(r"(?m)^│\[۞\] [^:\r\n]+:[ \t]*(?=[{\[])", output):
+        start = label.end()
+        newline = output.find("\n", start)
+        stop = len(output) if newline == -1 else newline + 1
+        value = output[start:stop]
+        try:
+            json.loads(value)
+        except (ValueError, RecursionError):
+            continue
+        blocks.extend((_code_block(output[cursor:start]), _code_block(value, "json")))
+        cursor = stop
+    if cursor < len(output) or not blocks:
+        blocks.append(_code_block(output[cursor:]))
+    return "\n\n".join(blocks)
+
+
+def _result_blocks(output: str) -> str:
+    start = re.search(r"(?m)^[ \t]*(?=[{\[])", output)
+    if start is None:
+        return _legacy_result_blocks(output)
+
+    try:
+        _, end = json.JSONDecoder().raw_decode(output, start.end())
+    except (ValueError, RecursionError):
+        return _legacy_result_blocks(output)
+
+    # Some decoders surround their JSON with a banner or append import links.
+    newline = output.find("\n", end)
+    stop = len(output) if newline == -1 else newline + 1
+    if output[end:stop].strip():
+        return _legacy_result_blocks(output)
+    before, after = output[:start.start()], output[stop:]
+    if not (before.strip() or after.strip()):
+        return _code_block(output, "json")
+    parts = ((before, ""), (output[start.start():stop], "json"), (after, ""))
+    return "\n\n".join(_code_block(text, language) for text, language in parts if text.strip())
+
+
 def send_markdown_result(
     message: Message, application: str, output: str, *, source_file: str | None = None, partial: bool = False,
 ) -> None:
     from spdecode.runtime import bot
-
-    # Keep the decoded text literal, including Markdown delimiters and links.
-    longest_run = max((len(match[0]) for match in re.finditer(r"`+", output)), default=0)
-    fence = "`" * max(3, longest_run + 1)
-    if not output.endswith("\n"):
-        output += "\n"
 
     author, author_label = _request_author(message)
     date = getattr(message, "date", None)
@@ -59,15 +105,19 @@ def send_markdown_result(
         metadata.append(f"**Partial result.** {_PARTIAL_NOTICE}")
 
     links = " · ".join(f"[{label}]({url})" for label, url in _RESULT_LINKS)
-    markdown = "\n\n".join((*metadata, links, f"{fence}\n{output}{fence}")) + "\n"
+    markdown = "\n\n".join((*metadata, links, _result_blocks(output))) + "\n"
     keyboard = InlineKeyboardMarkup(row_width=3)
     keyboard.add(*(InlineKeyboardButton(label, url=url) for label, url in _RESULT_LINKS))
     caption = f"SP-DECODE\nApplication: {application}\nSent by: {author}\nSent at: {sent_at}"
     if partial:
         caption += f"\nPartial result. {_PARTIAL_NOTICE}"
 
-    app_prefix = re.sub(r"[^\w.-]+", "-", application).strip("._-") or "SP-DECODE"
-    stem = (source_file.rpartition(".")[0] or source_file) if source_file else f"{app_prefix}-spdecode-result"
+    if source_file:
+        base_name, copy_suffix = split_copy_suffix(source_file)
+        stem = (base_name.rpartition(".")[0] or base_name) + copy_suffix
+    else:
+        app_prefix = re.sub(r"[^\w.-]+", "-", application).strip("._-") or "SP-DECODE"
+        stem = f"{app_prefix}-spdecode-result"
     with BytesIO(markdown.encode("utf-8")) as document:
         document.name = f"{stem}.md"
         bot.send_document(

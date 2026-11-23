@@ -303,6 +303,11 @@ and the official channel, group, and developer links. The Telegram caption
 also shows the application, sender, and timestamp. For file uploads the bot
 replaces the original extension with `.md`. Text and link results prefix
 `spdecode-result.md` with the app name, as in `V2Box-spdecode-result.md`.
+Copy numbers after the input extension are supported. Both `profile.hc (1)`
+and `profile.hc(1)` use the HTTP Custom decoder and keep the copy number in
+the result filename. JSON results are labeled for syntax highlighting in
+compatible Markdown viewers. Unsupported inputs, failed decodes, and
+incomplete SSC Custom and Dark Tunnel fragments are handled silently.
 Administrators can manage access without a restart.
 
 - `/allowgroup [GROUP_ID]` adds the current group or a specific group to the allowlist.

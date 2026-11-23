@@ -11,9 +11,10 @@ from unittest.mock import Mock, patch
 
 from cloud.workers.python.engine import DecodeFailure
 from decoders.Python.apps.XVEON_Tunnel_Pro.xveon import encrypt_envelope
-from spdecode.decoder_runtime import FILE_FORMATS, TEXT_FORMATS, decode, file_suffix, text_prefix
+from spdecode.decoder_runtime import FILE_FORMATS, TEXT_FORMATS, DecodeResult, decode, file_suffix, text_prefix
 from spdecode.handlers.results import send_markdown_result
 from spdecode.registry import DECODER_REGISTRY
+from tests.golden.a23_generators import FIXTURE_DOMAIN, dark_bytes, ssc_bytes
 from tests.golden.hc_sip_new_variants import S4_SYNTHETIC_PASSWORD, SYNTHETIC_HWID, hccfg_hwid_file
 from tests.test_hc_legacy57 import CASES, wire
 
@@ -77,6 +78,7 @@ class TelegramHandlersTests(unittest.TestCase):
         settings = types.SimpleNamespace(
             admins={20, 21}, allowed_groups={-40}, allow_all_groups=False, allowed_private_users=set(),
             decoder_timeout_seconds=20, max_file_size_bytes=16 * 1024 * 1024,
+            text_session_timeout_seconds=600, text_session_max_chars=250000,
         )
         runtime = types.SimpleNamespace(bot=self.bot, settings=settings)
         self.runtime_patch = patch.dict(sys.modules, {"spdecode.runtime": runtime})
@@ -153,7 +155,7 @@ class TelegramHandlersTests(unittest.TestCase):
         self.assertEqual(len(self.sent), 1)
         filename, report = self.sent[0]
         self.assertEqual(filename, "My+profile.v2 (ñ).md")
-        header, _, payload = report.partition("\n```\n")
+        header, _, payload = report.partition("\n```json\n")
         self.assertIn("**Application:** HTTP Custom", header)
         self.assertIn("**Sent by:** [@file_author](https://t.me/file_author)", header)
         self.assertIn("**Sent at:** 2025-11-23 11:30:00 UTC", header)
@@ -166,6 +168,75 @@ class TelegramHandlersTests(unittest.TestCase):
         self.bot.send_message.assert_not_called()
         displayed = [call.args[1] for call in self.bot.reply_to.call_args_list]
         self.assertTrue(all(SYNTHETIC_HWID not in text and S4_SYNTHETIC_PASSWORD not in text for text in displayed))
+
+    def test_numbered_http_custom_files_preserve_the_copy_number(self):
+        self.bot.download_file.return_value = wire(CASES["build564-hwid0"], 1)
+        for index, separator in enumerate((" ", ""), 1):
+            filename = f"file_example.HC{separator}(1)"
+            with self.subTest(filename=filename):
+                original = self._message(message_id=index)
+                original.document.file_name = filename
+                self.documents.process_received_file(original)
+                result_name, report = self.sent[-1]
+                self.assertEqual(result_name, f"file_example{separator}(1).md")
+                self.assertIn(f"**Original file:** file\\_example.HC{separator}(1)", report)
+                self.assertIn("\n```json\n", report)
+        self.assertEqual(len(self.sent), 2)
+        self.bot.reply_to.assert_not_called()
+
+    def test_unsupported_file_and_decode_errors_are_silent(self):
+        original = self._message()
+        original.document.file_name = "file_example.unsupported (1)"
+        self.documents.process_received_file(original)
+        self.bot.get_file.assert_not_called()
+
+        original.document.file_name = "file_example.hc"
+        with patch.object(self.credentials, "decode", side_effect=DecodeFailure("DECODE_FAILED")):
+            self.documents.process_received_file(original)
+            self.texts.decode_cloud_text(self._message(password="xveon://broken"))
+
+        self.assertFalse(self.sent)
+        self.bot.reply_to.assert_not_called()
+
+    def test_wrong_password_allows_silent_retry_to_same_prompt(self):
+        original = self._message(password="xveon://synthetic")
+        results = [
+            DecodeFailure("PASSWORD_REQUIRED"), DecodeFailure("AUTH_FAILED"), DecodeResult('{"test": true}'),
+        ]
+        with patch.object(self.credentials, "decode", side_effect=results):
+            self.texts.decode_cloud_text(original)
+            prompt = self.prompts[0]
+            self.credentials.handle_credential_reply(self._message(password="wrong", reply=prompt))
+            self.assertFalse(self.sent)
+            self.bot.reply_to.assert_called_once()
+            self.credentials.handle_credential_reply(self._message(password="right", reply=prompt))
+        self.assertEqual(len(self.sent), 1)
+        self.assertFalse(self.credentials._pending)
+
+    def test_ssc_and_dark_fragments_stay_silent_until_complete(self):
+        from spdecode.handlers import text_protocols
+        from spdecode.text_sessions import clear_session, get_session
+
+        for protocol, prefix, payload, handler in (
+            ("ssc", "ssc://", ssc_bytes()[::-1], text_protocols.decode_ssc_text),
+            ("dark", "darktunnel://", dark_bytes(), text_protocols.decode_dark_text),
+        ):
+            with self.subTest(protocol=protocol), patch.object(text_protocols, "settings", sys.modules["spdecode.runtime"].settings):
+                first = self._message(password=prefix + payload[:12].decode(), message_id=1)
+                second = self._message(password=payload[12:24].decode(), message_id=2)
+                third = self._message(password=payload[24:].decode(), message_id=3)
+                self.addCleanup(clear_session, first)
+                before = len(self.sent)
+                handler(first)
+                handler(second)
+                self.assertEqual(len(self.sent), before)
+                self.assertEqual(get_session(first, 600).parts, 2)
+                handler(third)
+                self.assertEqual(len(self.sent), before + 1)
+                self.assertIn(FIXTURE_DOMAIN, self.sent[-1][1])
+                self.assertIn("\n```json\n", self.sent[-1][1])
+                self.assertIsNone(get_session(first, 600))
+        self.bot.reply_to.assert_not_called()
 
     def test_multiple_pending_files_are_independent(self):
         first = self._message(group=True, message_id=1)

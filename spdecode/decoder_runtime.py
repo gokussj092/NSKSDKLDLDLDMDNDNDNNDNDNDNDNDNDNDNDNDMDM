@@ -11,6 +11,7 @@ from tempfile import TemporaryDirectory
 
 from cloud.workers.python import engine
 from .config import PROJECT_DIR
+from .utils import split_copy_suffix
 
 
 FILE_FORMATS = engine.load_runtime_file_engines()
@@ -29,7 +30,8 @@ _TEXT_PREFIXES = tuple(sorted(TEXT_FORMATS, key=len, reverse=True))
 
 
 def file_suffix(filename: str) -> str | None:
-    lower = filename.lower()
+    base_name, _ = split_copy_suffix(filename)
+    lower = base_name.lower()
     return next((suffix for suffix in _FILE_SUFFIXES if lower.endswith("." + suffix)), None)
 
 

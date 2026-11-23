@@ -20,20 +20,6 @@ _REQUIRED = {
     "HWID_PASSWORD_REQUIRED": ("hwid", "password"),
 }
 _LABELS = {"password": "the password for the file or link", "hwid": "the file's HWID"}
-_ERROR_MESSAGES = {
-    "AUTH_FAILED": "The credentials did not match or content verification failed.",
-    "INVALID_CREDENTIALS": "The credentials have an invalid format.",
-    "PRIVATE_KEY_REQUIRED": "This profile requires a private key. Use SP-DECODE on the device that has the key.",
-    "RECIPIENT_MISMATCH": "The profile is protected for a different recipient.",
-    "NPVS_PROTECTION_UNSUPPORTED": "This NPV Tunnel protection variant is unsupported.",
-    "UNSUPPORTED_VERSION": "This format version is unsupported.",
-    "UNSUPPORTED_METHOD": "This format method is unsupported.",
-    "UNSUPPORTED_VARIANT": "This format variant is unsupported.",
-    "INPUT_TOO_LARGE": "The input exceeds the processing limit.",
-    "OUTPUT_TOO_LARGE": "The result exceeds the delivery limit.",
-    "ENGINE_TIMEOUT": "The decoder timed out.",
-    "ENGINE_UNAVAILABLE": "The decoder is currently unavailable.",
-}
 _PROMPT = "SP-DECODE · Credential required"
 _TTL_SECONDS = 180
 _MAX_ATTEMPTS = 3
@@ -111,17 +97,16 @@ def _reply(message, text: str, **kwargs):
     return bot.reply_to(message, text, **thread_options(message), **kwargs)
 
 
-def _prompt(key: _SessionKey, pending: _Pending, *, invalid=False) -> None:
+def _prompt(key: _SessionKey, pending: _Pending) -> None:
     with _lock:
         if _pending.get(key) is not pending:
             return
         missing = next(field for field in pending.required if field not in pending.credentials)
         pending.prompt_id = None
-    prefix = "The credentials did not match. " if invalid else ""
     try:
         reply = _reply(
             pending.original,
-            f"{_PROMPT}\n{prefix}Reply here with {_LABELS[missing]}. "
+            f"{_PROMPT}\nReply here with {_LABELS[missing]}. "
             "The request expires in 3 minutes and allows up to 3 attempts. Use /cancel to discard it.",
             reply_markup=ForceReply(selective=True),
         )
@@ -139,7 +124,6 @@ def _begin_prompt(
 ) -> None:
     actor = _actor(message)
     if actor is None:
-        _reply(message, "Send the content from your Telegram account so you can reply to the request.")
         return
 
     key = (actor, message.message_id)
@@ -161,8 +145,6 @@ def _begin_prompt(
 
     if accepted:
         _prompt(key, pending)
-    else:
-        _reply(message, "There are too many pending requests. Try again in a few minutes.")
 
 
 def decode_and_reply(
@@ -177,8 +159,6 @@ def decode_and_reply(
             _begin_prompt(message, payload, suffix, deliver, error.code)
         elif legacy_text_fallback and error.code == "DECODE_FAILED":
             return False
-        else:
-            _reply(message, _ERROR_MESSAGES.get(error.code, "Could not decode this content."))
     else:
         deliver(result)
     return True
@@ -202,7 +182,7 @@ def _is_credential_reply(message) -> bool:
 
 
 @bot.message_handler(func=_is_credential_reply)
-@require_authorized("Decoder credentials")
+@require_authorized
 def handle_credential_reply(message) -> None:
     actor = _actor(message)
     value = getattr(message, "text", None) or ""
@@ -223,13 +203,7 @@ def handle_credential_reply(message) -> None:
                         pending.attempts += 1
                         credentials = pending.credentials.copy()
 
-    if target is None:
-        reply = message.reply_to_message
-        if reply.chat.id == message.chat.id and thread_options(reply) == thread_options(message):
-            _reply(reply, "This request has expired or is being processed.")
-        return
-    if not valid:
-        _reply(pending.original, "The credential is empty or too long.")
+    if target is None or not valid:
         return
     if more:
         _prompt(key, pending)
@@ -240,6 +214,7 @@ def handle_credential_reply(message) -> None:
                         timeout_seconds=settings.decoder_timeout_seconds, credentials=credentials)
     except DecodeFailure as error:
         required = _REQUIRED.get(error.code)
+        needs_prompt = False
         with _lock:
             active = _pending.get(key) is pending
             retry = active and pending.attempts < _MAX_ATTEMPTS and (
@@ -249,12 +224,14 @@ def handle_credential_reply(message) -> None:
                 if required and any(field not in pending.credentials for field in required):
                     pending.required = tuple(dict.fromkeys((*pending.required, *required)))
                     pending.attempts -= 1
+                    needs_prompt = True
                 else:
-                    pending.credentials.clear()
-        if retry:
-            _prompt(key, pending, invalid=required is None)
-        elif active and _remove(key, pending.marker):
-            _reply(pending.original, _ERROR_MESSAGES.get(error.code, "Could not open the content. Resend the original to try again."))
+                    pending.credentials.pop(missing)
+                    pending.busy = False
+        if needs_prompt:
+            _prompt(key, pending)
+        elif active and not retry:
+            _remove(key, pending.marker)
     else:
         from spdecode.runtime import settings as current_settings
 

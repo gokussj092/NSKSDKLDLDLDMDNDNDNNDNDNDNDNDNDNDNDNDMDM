@@ -27,7 +27,7 @@ def _match(message) -> str | None:
 
 
 @bot.message_handler(func=lambda message: _match(message) is not None)
-@require_authorized("VPN configuration text")
+@require_authorized
 def decode_cloud_text(message):
     prefix = _match(message)
     if prefix is None:

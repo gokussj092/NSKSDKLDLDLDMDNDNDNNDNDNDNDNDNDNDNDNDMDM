@@ -11,6 +11,12 @@ def clean_filename(filename: str) -> str:
     return re.sub(r"[\x00-\x1f\x7f]", "_", basename).strip() or "file"
 
 
+def split_copy_suffix(filename: str) -> tuple[str, str]:
+    """Separate a trailing copy number from the name used for format detection."""
+    match = re.search(r" *\([0-9]+\)$", filename)
+    return (filename[:match.start()], match[0]) if match else (filename, "")
+
+
 def split_message(message: str, max_length: int = 3500) -> list[str]:
     parts: list[str] = []
     while len(message) > max_length:
