@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import re
+from datetime import datetime, timezone
 from io import BytesIO
 
 from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
@@ -19,20 +20,21 @@ def _markdown_label(value: str) -> str:
     return re.sub(r"([\\`*_{}\[\]<>|&])", r"\\\1", " ".join(value.split()))
 
 
-def _request_author(message: Message) -> str:
+def _request_author(message: Message) -> tuple[str, str]:
     author = getattr(message, "sender_chat", None) or getattr(message, "from_user", None)
     username = getattr(author, "username", None)
     if username and re.fullmatch(r"[A-Za-z0-9_]{1,32}", username):
-        return f"[@{username}](https://t.me/{username})"
+        return f"@{username}", f"[@{username}](https://t.me/{username})"
 
     name = getattr(author, "title", None) or " ".join(
         part for part in (getattr(author, "first_name", None), getattr(author, "last_name", None)) if part
     )
-    return _markdown_label(name) or "Telegram user"
+    name = " ".join(name.split()) or "Telegram user"
+    return name, _markdown_label(name)
 
 
 def send_markdown_result(
-    message: Message, title: str, output: str, *, source_file: str | None = None, partial: bool = False,
+    message: Message, application: str, output: str, *, source_file: str | None = None, partial: bool = False,
 ) -> None:
     from spdecode.runtime import bot
 
@@ -42,11 +44,14 @@ def send_markdown_result(
     if not output.endswith("\n"):
         output += "\n"
 
+    author, author_label = _request_author(message)
+    date = getattr(message, "date", None)
+    sent_at = "Unknown" if date is None else datetime.fromtimestamp(date, timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
     metadata = [
         "# SP-DECODE · Result",
-        "",
-        f"**Format:** {_markdown_label(title)}",
-        f"**Requested by:** {_request_author(message)}",
+        f"**Application:** {_markdown_label(application)}",
+        f"**Sent by:** {author_label}",
+        f"**Sent at:** {sent_at}",
     ]
     if source_file:
         metadata.append(f"**Original file:** {_markdown_label(source_file)}")
@@ -54,16 +59,17 @@ def send_markdown_result(
         metadata.append(f"**Partial result.** {_PARTIAL_NOTICE}")
 
     links = " · ".join(f"[{label}]({url})" for label, url in _RESULT_LINKS)
-    markdown = "\n".join((*metadata, "", links, "", fence, output + fence, ""))
+    markdown = "\n\n".join((*metadata, links, f"{fence}\n{output}{fence}")) + "\n"
     keyboard = InlineKeyboardMarkup(row_width=3)
     keyboard.add(*(InlineKeyboardButton(label, url=url) for label, url in _RESULT_LINKS))
-    caption = f"SP-DECODE · {title}"
+    caption = f"SP-DECODE\nApplication: {application}\nSent by: {author}\nSent at: {sent_at}"
     if partial:
         caption += f"\nPartial result. {_PARTIAL_NOTICE}"
 
-    stem = source_file.rpartition(".")[0] if source_file else ""
+    app_prefix = re.sub(r"[^\w.-]+", "-", application).strip("._-") or "SP-DECODE"
+    stem = (source_file.rpartition(".")[0] or source_file) if source_file else f"{app_prefix}-spdecode-result"
     with BytesIO(markdown.encode("utf-8")) as document:
-        document.name = f"{stem or 'spdecode-result'}.md"
+        document.name = f"{stem}.md"
         bot.send_document(
             chat_id=message.chat.id,
             document=document,

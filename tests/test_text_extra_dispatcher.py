@@ -137,7 +137,7 @@ class ExtraTextDispatcherTests(unittest.TestCase):
         download.assert_called_once_with(reference)
         self.assertFalse(bot.replies)
         filename, report, sent = bot.documents[0]
-        self.assertTrue(filename.endswith(".md"))
+        self.assertEqual(filename, "MNR-TUNNEL-PLUS-spdecode-result.md")
         self.assertIn(r"\[Invitado\] \*prueba\*", report)
         self.assertIn("vless://fixture", report)
         self.assertEqual((sent["chat_id"], sent["message_thread_id"], sent["reply_to_message_id"]), (-42, 13, 12))

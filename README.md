@@ -170,7 +170,8 @@ Online processing, administrative operations, offline processing and the Telegra
 
 ## Deployment and server management
 
-The Cloud installer and the standalone Telegram bot installer are different deployment paths. Do not run both management scripts under the same system-wide command name without isolating the installations.
+The Cloud service uses `spdecode`. The standalone VPS bot uses `spdecode-telegram`
+for its management command and systemd service.
 
 ### Cloud: first installation
 
@@ -263,37 +264,43 @@ Replace the placeholder with an eligible successful CI run ID. Publication is ga
 
 ### Telegram bot: Termux and Linux
 
-For the standalone bot, clone the repository and run the installer appropriate to the target:
+Run the installer from a checkout dedicated to the standalone bot:
 
 ```bash
 # Termux
 bash installers/install-termux.sh
 
-# Linux VPS — standalone bot only
+# Linux VPS
 bash installers/install-vps.sh
 ```
 
-Configure the bot token and access policy through the setup wizard. The default
-administrator ID is `5325631223` when no administrator is configured. In the
-standalone bot environment, use:
+On the VPS, the installer prompts for the BotFather token on the terminal
+with echo disabled. It reuses an existing bot configuration. The default
+administrator ID is `5325631223` when administrator configuration is omitted.
+Manage or update the installed VPS bot with:
 
 ```bash
-spdecode status
-spdecode start
-spdecode stop
-spdecode restart
-spdecode logs
-spdecode config
-spdecode validate
+spdecode-telegram status
+spdecode-telegram start
+spdecode-telegram stop
+spdecode-telegram restart
+spdecode-telegram logs
+spdecode-telegram config
+spdecode-telegram update
 ```
 
-These commands are for the bot's launcher, not the Cloud management CLI.
+The updater fast-forwards the bot's checkout, refreshes dependencies when their
+manifests change, validates startup, and restarts the bot if it was running.
+The Termux launcher uses `spdecode` on the device.
 
 In Telegram, reply to the bot's credential prompt in the same chat and
 topic as the original file or link. The bot replies with a Markdown attachment
-that lists the requester and the official channel, group, and developer links.
-For file uploads it replaces the original extension with `.md`. Text and link
-results use `spdecode-result.md`. Administrators can manage access without a restart.
+that shows the application, sender, original message date and time in UTC,
+and the official channel, group, and developer links. The Telegram caption
+also shows the application, sender, and timestamp. For file uploads the bot
+replaces the original extension with `.md`. Text and link results prefix
+`spdecode-result.md` with the app name, as in `V2Box-spdecode-result.md`.
+Administrators can manage access without a restart.
 
 - `/allowgroup [GROUP_ID]` adds the current group or a specific group to the allowlist.
 - `/revokegroup [GROUP_ID]` removes a group from the allowlist.

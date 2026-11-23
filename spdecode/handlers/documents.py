@@ -4,7 +4,7 @@ import logging
 
 from cloud.workers.python.engine import MAX_INPUT_BYTES
 from spdecode.access import require_authorized
-from spdecode.decoder_runtime import file_suffix
+from spdecode.decoder_runtime import FILE_FORMATS, file_suffix
 from spdecode.handlers.decoder_credentials import decode_and_reply
 from spdecode.handlers.results import send_markdown_result
 from spdecode.runtime import bot, settings
@@ -47,6 +47,6 @@ def process_received_file(message):
         payload,
         suffix=suffix,
         deliver=lambda result: send_markdown_result(
-            message, f".{suffix}", result.text, source_file=file_name, partial=result.partial,
+            message, FILE_FORMATS[suffix]["name"], result.text, source_file=file_name, partial=result.partial,
         ),
     )

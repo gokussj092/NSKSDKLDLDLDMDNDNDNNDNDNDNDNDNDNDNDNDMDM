@@ -110,6 +110,7 @@ class TelegramHandlersTests(unittest.TestCase):
             chat=types.SimpleNamespace(id=-40 if group else user, type="supergroup" if group else "private"),
             from_user=types.SimpleNamespace(id=user),
             message_thread_id=thread, message_id=message_id, text=password, reply_to_message=reply,
+            date=1763897400,
             document=types.SimpleNamespace(file_name="synthetic.HC", file_id="test", file_size=200),
         )
 
@@ -137,6 +138,7 @@ class TelegramHandlersTests(unittest.TestCase):
     def test_dual_http_custom_delivers_on_original_group_document_without_echoing_credentials(self):
         original = self._message(user=22, group=True, thread=50)
         original.document.file_name = "My+profile.v2 (ñ).HC"
+        original.from_user.username = "file_author"
         self.documents.process_received_file(original)
         prompt = self.prompts[-1]
         self.assertIn("HWID", prompt.text)
@@ -152,10 +154,14 @@ class TelegramHandlersTests(unittest.TestCase):
         filename, report = self.sent[0]
         self.assertEqual(filename, "My+profile.v2 (ñ).md")
         header, _, payload = report.partition("\n```\n")
+        self.assertIn("**Application:** HTTP Custom", header)
+        self.assertIn("**Sent by:** [@file_author](https://t.me/file_author)", header)
+        self.assertIn("**Sent at:** 2025-11-23 11:30:00 UTC", header)
         self.assertIn("**Original file:** My+profile.v2 (ñ).HC", header)
         self.assertEqual(json.loads(payload.removesuffix("```\n"))["config"][0]["host"], "example.org")
         sent = self.bot.send_document.call_args.kwargs
         self.assertEqual((sent["chat_id"], sent["message_thread_id"], sent["reply_to_message_id"]), (-40, 50, 1))
+        self.assertIn("Application: HTTP Custom\nSent by: @file_author\nSent at: 2025-11-23 11:30:00 UTC", sent["caption"])
         self.assertFalse(self.credentials._pending)
         self.bot.send_message.assert_not_called()
         displayed = [call.args[1] for call in self.bot.reply_to.call_args_list]
@@ -194,10 +200,11 @@ class TelegramHandlersTests(unittest.TestCase):
         original = self._message(user=22, group=True, thread=50)
         original.from_user.username = "test_sender"
         output = "  example.org\n```\nvmess://example\nhttps://example.invalid/?a=*\n"
-        send_markdown_result(original, "Test", output, partial=True)
+        send_markdown_result(original, "RENZ / 7NET", output, partial=True)
         filename, report = self.sent[0]
-        self.assertEqual(filename, "spdecode-result.md")
-        self.assertIn("**Requested by:** [@test_sender](https://t.me/test_sender)", report)
+        self.assertEqual(filename, "RENZ-7NET-spdecode-result.md")
+        self.assertIn("**Application:** RENZ / 7NET", report)
+        self.assertIn("**Sent by:** [@test_sender](https://t.me/test_sender)", report)
         self.assertIn("**Partial result.**", report)
         self.assertTrue(report.endswith(f"\n````\n{output}````\n"))
         sent = self.bot.send_document.call_args.kwargs
