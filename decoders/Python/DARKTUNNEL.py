@@ -62,12 +62,65 @@ class DTConstants:
 class DTDecryptor:
     """Core decryption and parsing engine for Dark Tunnel configs."""
 
+    # Marker that opens the "encryptedLockedConfig" value inside the JSON
+    # header of a darktunnel:// outer envelope.
+    _ELC_MARKER: bytes = b'"encryptedLockedConfig":"'
+    _B64_CHARS = frozenset(
+        b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=_-"
+    )
+
     @staticmethod
     def _base64_decode_safe(data: str) -> bytes:
         clean_data = data.replace("-", "+").replace("_", "/")
         if pad := len(clean_data) % 4:
             clean_data += "=" * (4 - pad)
         return base64.b64decode(clean_data)
+
+    @staticmethod
+    def _unpack_first(data: bytes) -> Any:
+        """Unpack the first MessagePack object, ignoring trailing bytes.
+
+        Some envelopes carry opaque bytes after the first object (the VLESS
+        split-blob variant appends 272 trailing bytes after the outer map);
+        unpackb would raise "extra data" on them. The app reads the first
+        object and ignores the rest, so we do the same.
+        """
+        unpacker = msgpack.Unpacker(raw=False, strict_map_key=False)
+        unpacker.feed(data)
+        return next(unpacker)
+
+    @classmethod
+    def _split_blob_outer(cls, decoded: bytes) -> tuple:
+        """Parse a split-blob outer envelope (VLESS variant).
+
+        The outer payload is NOT valid JSON: it is a JSON header
+        ({"type":"VLESS","name":...,"vlessTunnelConfig":{...},
+        "encryptedLockedConfig":"<base64 part>") followed by the rest of the
+        encrypted blob as raw bytes. Returns (header_dict, blob_bytes) or
+        (None, None) when the shape does not match.
+        """
+        pos = decoded.find(cls._ELC_MARKER)
+        if pos < 0:
+            return None, None
+        try:
+            header = json.loads(decoded[: pos + len(cls._ELC_MARKER)] + b'"}')
+        except Exception:
+            return None, None
+        b64_start = pos + len(cls._ELC_MARKER)
+        end = b64_start
+        while end < len(decoded) and decoded[end] in cls._B64_CHARS:
+            end += 1
+        if end == b64_start or end >= len(decoded):
+            return None, None
+        try:
+            blob = cls._base64_decode_safe(
+                decoded[b64_start:end].decode("ascii")
+            ) + decoded[end:]
+        except Exception:
+            return None, None
+        if not blob:
+            return None, None
+        return header, blob
 
     @staticmethod
     def _aes_cfb_decrypt(data: bytes, key: bytes, iv: bytes) -> bytes:
@@ -140,17 +193,25 @@ class DTDecryptor:
             if "://" in raw_input:
                 raw_input = raw_input.split("://", 1)[1]
 
-            outer = json.loads(cls._base64_decode_safe(raw_input).decode("utf-8"))
-            if "encryptedLockedConfig" not in outer:
-                return None 
+            outer = None
+            encrypted_blob = None
+            decoded_outer = cls._base64_decode_safe(raw_input)
+            with contextlib.suppress(Exception):
+                outer = json.loads(decoded_outer.decode("utf-8"))
+                encrypted_blob = cls._base64_decode_safe(outer["encryptedLockedConfig"])
+            if outer is None or encrypted_blob is None:
+                # VLESS variant: the outer payload is a JSON header plus the
+                # encrypted blob split between a base64 value and raw bytes.
+                outer, encrypted_blob = cls._split_blob_outer(decoded_outer)
+            if outer is None or not encrypted_blob:
+                return None
 
-            encrypted_locked_config = cls._base64_decode_safe(outer["encryptedLockedConfig"])
-            decrypted_outer = cls._aes_cfb_decrypt(encrypted_locked_config, DTConstants.KEY_256, DTConstants.IV)
-            unpacked_outer = msgpack.unpackb(decrypted_outer, raw=False, strict_map_key=False)
-            
+            decrypted_outer = cls._aes_cfb_decrypt(encrypted_blob, DTConstants.KEY_256, DTConstants.IV)
+            unpacked_outer = cls._unpack_first(decrypted_outer)
+
             if "EncryptedLockedConfig" in unpacked_outer:
                 decrypted_inner = cls._aes_cfb_decrypt(unpacked_outer["EncryptedLockedConfig"], DTConstants.KEY_192, DTConstants.IV)
-                unpacked_inner = msgpack.unpackb(decrypted_inner, raw=False, strict_map_key=False)
+                unpacked_inner = cls._unpack_first(decrypted_inner)
                 unpacked_outer["EncryptedLockedConfig"] = cls._clean_encrypted(unpacked_inner, DTConstants.KEY_192, DTConstants.IV)
 
             outer["encryptedLockedConfig"] = unpacked_outer
