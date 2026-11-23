@@ -88,7 +88,6 @@ def _main_keyboard() -> InlineKeyboardMarkup:
         InlineKeyboardButton("Channel", url="https://t.me/GhostDeve"),
         InlineKeyboardButton("Group", url="https://t.me/CodeBreakersHub"),
         InlineKeyboardButton("Developer", url="https://t.me/Gh0stDeveloper"),
-        InlineKeyboardButton("GitHub", url="https://github.com/Gh0stDeveloper"),
     )
     return keyboard
 
