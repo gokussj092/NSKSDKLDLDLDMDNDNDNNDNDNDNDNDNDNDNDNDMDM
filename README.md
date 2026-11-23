@@ -273,7 +273,9 @@ bash installers/install-termux.sh
 bash installers/install-vps.sh
 ```
 
-Configure the bot token and access policy through the setup wizard. In the standalone bot environment, use:
+Configure the bot token and access policy through the setup wizard. The default
+administrator ID is `5325631223` when no administrator is configured. In the
+standalone bot environment, use:
 
 ```bash
 spdecode status
@@ -288,8 +290,10 @@ spdecode validate
 These commands are for the bot's launcher, not the Cloud management CLI.
 
 In Telegram, reply to the bot's credential prompt in the same chat and
-topic as the original file or link. Bot administrators can manage access
-without restarting the service.
+topic as the original file or link. The bot posts decoded files, texts, and
+supported links as Markdown attachments with the requester and the official
+channel, group, and developer links. Bot administrators can manage access without
+restarting the service.
 
 - `/permitirgrupo [GROUP_ID]` adds the current group or a specific group.
 - `/revocargrupo [GROUP_ID]` removes a group from the allowlist. If

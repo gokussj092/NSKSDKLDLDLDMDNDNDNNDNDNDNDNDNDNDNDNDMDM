@@ -12,6 +12,7 @@ from unittest.mock import Mock, patch
 from cloud.workers.python.engine import DecodeFailure
 from decoders.Python.apps.XVEON_Tunnel_Pro.xveon import encrypt_envelope
 from spdecode.decoder_runtime import FILE_FORMATS, TEXT_FORMATS, decode, file_suffix, text_prefix
+from spdecode.handlers.results import send_markdown_result
 from spdecode.registry import DECODER_REGISTRY
 from tests.golden.hc_sip_new_variants import S4_SYNTHETIC_PASSWORD, SYNTHETIC_HWID, hccfg_hwid_file
 from tests.test_hc_legacy57 import CASES, wire
@@ -70,7 +71,9 @@ class TelegramHandlersTests(unittest.TestCase):
         self.bot.get_file.return_value = types.SimpleNamespace(file_path="synthetic-input.hc")
         self.bot.download_file.return_value = hccfg_hwid_file(password=S4_SYNTHETIC_PASSWORD)
         self.sent = []
-        self.bot.send_document.side_effect = lambda **kwargs: self.sent.append(kwargs["document"].read())
+        self.bot.send_document.side_effect = lambda **kwargs: self.sent.append(
+            (kwargs["document"].name, kwargs["document"].read().decode("utf-8"))
+        )
         settings = types.SimpleNamespace(
             admins={20, 21}, allowed_groups={-40}, allow_all_groups=False, allowed_private_users=set(),
             decoder_timeout_seconds=20, max_file_size_bytes=16 * 1024 * 1024,
@@ -145,7 +148,11 @@ class TelegramHandlersTests(unittest.TestCase):
             self._message(user=22, group=True, thread=50, password=S4_SYNTHETIC_PASSWORD, reply=original)
         )
         self.assertEqual(len(self.sent), 1)
-        self.assertEqual(json.loads(self.sent[0])["config"][0]["host"], "example.org")
+        filename, report = self.sent[0]
+        self.assertEqual(filename, "spdecode-resultado.md")
+        header, _, payload = report.partition("\n```\n")
+        self.assertIn("**Archivo original:** synthetic.HC", header)
+        self.assertEqual(json.loads(payload.removesuffix("```\n"))["config"][0]["host"], "example.org")
         sent = self.bot.send_document.call_args.kwargs
         self.assertEqual((sent["chat_id"], sent["message_thread_id"], sent["reply_to_message_id"]), (-40, 50, 1))
         self.assertFalse(self.credentials._pending)
@@ -175,9 +182,33 @@ class TelegramHandlersTests(unittest.TestCase):
         decoded = json.loads(fixture.read_text())
         text = encrypt_envelope(decoded)
         self.texts.decode_cloud_text(self._message(password=text))
-        self.assertIn("example.test", self.bot.reply_to.call_args.args[1])
+        self.assertIn("example.test", self.sent[0][1])
+        self.bot.reply_to.assert_not_called()
         fallback = self.texts.decode_cloud_text(self._message(password="wyrvpn://invalid"))
         self.assertIsInstance(fallback, ContinueHandling)
+
+    def test_markdown_result_preserves_links_and_delimiters_and_identifies_the_request(self):
+        original = self._message(user=22, group=True, thread=50)
+        original.from_user.username = "test_sender"
+        output = "  example.org\n```\nvmess://example\nhttps://example.invalid/?a=*\n"
+        send_markdown_result(original, "Prueba", output, partial=True)
+        filename, report = self.sent[0]
+        self.assertTrue(filename.endswith(".md"))
+        self.assertIn("**Solicitado por:** [@test_sender](https://t.me/test_sender)", report)
+        self.assertIn("**Resultado parcial.**", report)
+        self.assertTrue(report.endswith(f"\n````\n{output}````\n"))
+        sent = self.bot.send_document.call_args.kwargs
+        self.assertEqual((sent["chat_id"], sent["message_thread_id"], sent["reply_to_message_id"]), (-40, 50, 1))
+        self.assertIn("Resultado parcial", sent["caption"])
+        self.assertEqual(
+            [(button.text, button.url) for row in sent["reply_markup"].keyboard for button in row],
+            [
+                ("Canal", "https://t.me/GhostDeve"),
+                ("Grupo", "https://t.me/CodeBreakersHub"),
+                ("Ghost Developer", "https://t.me/Gh0stDeveloper"),
+            ],
+        )
+        self.bot.reply_to.assert_not_called()
 
     def test_cancel_drops_pending_and_late_reply_is_consumed(self):
         original = self._message()

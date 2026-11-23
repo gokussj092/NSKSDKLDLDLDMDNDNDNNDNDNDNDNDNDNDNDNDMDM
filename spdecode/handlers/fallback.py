@@ -6,6 +6,7 @@ import json
 from Crypto.Cipher import AES
 
 from spdecode.access import require_authorized
+from spdecode.handlers.results import send_markdown_result
 from spdecode.runtime import bot
 
 BASE64_KEY = "X25ldHN5bmFfbmV0bW9kXw=="
@@ -24,14 +25,13 @@ def format_common_data(common_data):
     return formatted_text
 
 def format_result(data):
-    result = "┌───────────────\n│𝗦𝗣 - 𝗗𝗘𝗖𝗢𝗗𝗘 (Net Mod Syna)\n│𝗗𝗘𝗩𝗘𝗟𝗢𝗣𝗘𝗥 : https://bit.ly/3TOrZEu\n├───────────────\n"
+    result = ""
     for key, value in data.items():
         if key == "Common":
             result += f"│[۞] {key}:\n{format_common_data(value)}"
         else:
             result += f"│[۞] {key}: {value}\n"
-    result += "├───────────────\n│[۞] 𝗚𝗥𝗢𝗨𝗣 : @CodeBreakersHub \n│[۞] 𝗖𝗛𝗔𝗡𝗡𝗘𝗟 : @GhostDeve\n└───────────────\n"
-    return result
+    return result or "{}"
 
 def process_encrypted_content(encrypted_content):
     try:
@@ -57,7 +57,7 @@ def handle_message(message):
     try:
         response = process_encrypted_content(encrypted_content)
         if response:
-            bot.reply_to(message, response)
+            send_markdown_result(message, "NetMod Syna", response)
             return
     except Exception as e:
         print(f"Error al manejar el mensaje: {e}")

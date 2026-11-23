@@ -122,11 +122,15 @@ def main() -> int:
     if existing_token == "PUT_YOUR_TELEGRAM_BOT_TOKEN_HERE":
         existing_token = ""
 
+    defaults = json.loads((PROJECT_DIR / "config.example.json").read_text(encoding="utf-8"))
+    legacy_admin = existing.get("chat_privado_especial_id")
+    default_admins = defaults["access"]["admins"] if legacy_admin is None else []
     existing_admins = [
-        int(item)
-        for item in access_cfg.get("admins", [])
-        if isinstance(item, int) and not isinstance(item, bool)
+        item for item in (access_cfg.get("admins", existing.get("admins", default_admins)) or [])
+        if type(item) is int
     ]
+    if type(legacy_admin) is int and legacy_admin not in existing_admins:
+        existing_admins.append(legacy_admin)
     existing_groups = [
         int(item)
         for item in access_cfg.get("allowed_groups", [])

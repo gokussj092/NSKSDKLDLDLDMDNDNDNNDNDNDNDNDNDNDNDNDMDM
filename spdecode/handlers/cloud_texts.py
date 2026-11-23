@@ -6,6 +6,7 @@ from telebot.handler_backends import ContinueHandling
 from spdecode.access import require_authorized
 from spdecode.decoder_runtime import TEXT_FORMATS, text_prefix
 from spdecode.handlers.decoder_credentials import decode_and_reply
+from spdecode.handlers.results import send_markdown_result
 from spdecode.runtime import bot
 
 
@@ -28,8 +29,6 @@ def _match(message) -> str | None:
 @bot.message_handler(func=lambda message: _match(message) is not None)
 @require_authorized("Los textos de configuraciones VPN")
 def decode_cloud_text(message):
-    from spdecode.handlers.documents import send_decoder_output
-
     prefix = _match(message)
     if prefix is None:
         return ContinueHandling()
@@ -38,7 +37,7 @@ def decode_cloud_text(message):
         message,
         message.text.strip().encode("utf-8"),
         suffix=None,
-        deliver=lambda result: send_decoder_output(message, result, caption=f"SP-DECODE — {label}"),
+        deliver=lambda result: send_markdown_result(message, label, result.text, partial=result.partial),
         legacy_text_fallback=prefix in _LEGACY_PREFIXES,
     ):
         return ContinueHandling()

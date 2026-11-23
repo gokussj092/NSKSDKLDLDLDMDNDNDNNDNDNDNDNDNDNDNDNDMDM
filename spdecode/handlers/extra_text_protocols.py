@@ -5,8 +5,8 @@ of formats needing a correct source-based implementation. Existing SSC,
 TLS, RENZ, IZPH, XOR, HAPP and other shared file/text decoders are
 untouched and retain their own handlers.
 
-All outputs use the existing centralized authorization and safe HTML
-escaping. V2Box credential requests stay in the chat that received the original.
+Results use centralized authorization and Markdown attachments.
+V2Box credential requests stay in the chat that received the original.
 """
 from __future__ import annotations
 
@@ -14,8 +14,8 @@ import logging
 
 from decoders.Python import text_legacy_protocols, text_structured_protocols
 from spdecode.access import require_authorized
+from spdecode.handlers.results import send_markdown_result
 from spdecode.runtime import bot
-from spdecode.utils import html_pre, split_message
 
 logger = logging.getLogger("sp-decode")
 MAX_TEXT_CHARS = 2 * 1024 * 1024
@@ -65,16 +65,6 @@ def _match(message) -> str | None:
     return "__creeb__" if text_structured_protocols.is_creeb(value) else None
 
 
-def _reply_result(message, title: str, text: str) -> None:
-    parts = split_message(text, max_length=3300)
-    for i, part in enumerate(parts, start=1):
-        suffix = f" — parte {i}/{len(parts)}" if len(parts) > 1 else ""
-        bot.reply_to(message,
-                     f"<b>{html_pre(title + suffix)}</b>\n"
-                     f"<pre>{html_pre(part)}</pre>",
-                     parse_mode="HTML")
-
-
 @bot.message_handler(func=lambda message: _match(message) is not None)
 @require_authorized("Los enlaces VPN por texto")
 def decode_extra_text(message):
@@ -106,7 +96,7 @@ def decode_extra_text(message):
             prompt_v2box_password(message, normalized)
             return
         if isinstance(result, str) and result.strip():
-            _reply_result(message, label, result)
+            send_markdown_result(message, label, result)
         else:
             bot.reply_to(
                 message,

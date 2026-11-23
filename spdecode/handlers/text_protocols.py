@@ -16,6 +16,7 @@ from decoders.Python.DARKTUNNEL import run as decode_dark_payload
 from decoders.Python.SSCCUSTOM import run as decode_ssc_payload
 from decoders.Python.TLS import run as decode_tls_payload
 from spdecode.access import require_authorized
+from spdecode.handlers.results import send_markdown_result
 from spdecode.runtime import bot, settings
 from spdecode.text_sessions import (
     append_to_session,
@@ -24,7 +25,7 @@ from spdecode.text_sessions import (
     get_session,
     start_session,
 )
-from spdecode.utils import html_pre, split_message
+from spdecode.utils import html_pre
 
 logger = logging.getLogger("sp-decode")
 
@@ -72,7 +73,7 @@ def decode_tls_text(message):
         return
 
     if result:
-        _send_decoder_text_result(message, "TLS Tunnel", result)
+        send_markdown_result(message, "TLS Tunnel", result)
     else:
         bot.reply_to(
             message,
@@ -174,18 +175,6 @@ def _is_ssc_text_message(message) -> bool:
     return _extract_ssc_continuation(text) is not None
 
 
-def _send_decoder_text_result(message, title: str, output: str) -> None:
-    # SSC/Dark ya devuelven su salida final formateada desde el propio decodificador.
-    parts = split_message(output, max_length=3300)
-    for index, part in enumerate(parts, start=1):
-        suffix = f" — parte {index}/{len(parts)}" if len(parts) > 1 else ""
-        bot.reply_to(
-            message,
-            f"<b>{html_pre(title)}{suffix}</b>\n<pre>{html_pre(part)}</pre>",
-            parse_mode="HTML",
-        )
-
-
 def _send_incomplete_session(message, session, title: str, continuation_hint: str) -> None:
     timeout_minutes = max(1, settings.text_session_timeout_seconds // 60)
     bot.reply_to(
@@ -261,7 +250,7 @@ def decode_ssc_text(message):
 
     if result:
         clear_session(message, _SSC_PROTOCOL)
-        _send_decoder_text_result(message, "SSC Custom", result)
+        send_markdown_result(message, "SSC Custom", result)
         return
 
     _send_incomplete_session(
@@ -365,7 +354,7 @@ def decode_dark_text(message):
 
     if result:
         clear_session(message, _DARK_PROTOCOL)
-        _send_decoder_text_result(message, "Dark Tunnel", result)
+        send_markdown_result(message, "Dark Tunnel", result)
         return
 
     _send_incomplete_session(
@@ -410,18 +399,7 @@ def handle_message(message):
         port = json_data['port']
         server = cbc_iv(json_data['server'])
         sni = cbc_iv(json_data['sni'])
-        type = json_data['type']        
-        processed_json = {
-            "username": username,
-            "password": password,
-            "server": server,
-            "port": port,
-            "sni": sni,
-            "type": type
-        }
-        
-        
-        # Formatear la respuesta
+        config_type = json_data['type']
         linkserver = (
             "{\n"
             f" \"Username\": \"{username}\",\n"
@@ -429,32 +407,13 @@ def handle_message(message):
             f" \"Server\": \"{server}\",\n"
             f" \"Sni\": \"{sni if sni else 'No SNI info'}\",\n"
             f" \"Port\": \"{port}\",\n"
-            f" \"Type\": \"{type}\"\n"
+            f" \"Type\": \"{config_type}\"\n"
             "}"
         )
         
         encoded_config = encode_base64(linkserver)
-        Anal = (
-            f"┌───────────────\n"
-            f"│𝗦𝗣 - 𝗗𝗘𝗖𝗢𝗗𝗘 (howdy://)\n"
-            f"│𝗗𝗘𝗩𝗘𝗟𝗢𝗣𝗘𝗥 : https://bit.ly/3TOrZEu\n"
-            f"├───────────────\n"
-            f"│[[۞]] Decode Config:\n```JSON\n{linkserver}```\n"
-            f"├───────────────\n"
-            f"│[[۞]] Encoded Config:\n"
-            f"```SP-DECODE\nvmess://{encoded_config}```\n"
-            f"├───────────────\n"
-            f"│[[۞]] 𝗚𝗥𝗢𝗨𝗣 : @CodeBreakersHub \n"
-            f"│[[۞]] 𝗖𝗛𝗔𝗡𝗡𝗘𝗟 : @GhostDeve\n"
-            f"└───────────────"
-        )
-        bot.send_message(
-            chat_id, 
-            f"[SP-DECODE](https://t.me/GhostDeve)\n{Anal}\n"
-            "🧿 **Thank you for using the best Bot** 🥳\n"
-            "🧑🏻‍💻 **Websites, Telegram bots, WhatsApp bots, Scripts with different types of functions and among other things are created. For more information contact  [SP-FUCKER](https://t.me/Gh0stDeveloper) now**",
-            parse_mode="Markdown",
-            reply_to_message_id=message_id
+        send_markdown_result(
+            message, "Howdy VPN", f"{linkserver}\n\nConfiguración codificada:\nvmess://{encoded_config}",
         )
     except Exception as e:
         bot.send_message(
@@ -498,18 +457,10 @@ def decrypted_config(message):
                 extracted_data = json.loads(decrypt_text)
                 json_output = json.dumps(extracted_data, ensure_ascii=False, indent=4)
                 encoded_config = base64.b64encode(decrypt_text.encode('utf-8')).decode('utf-8')
-                obfuscated_decrypted = obfuscate_text(decrypt_text)
-                obfuscated_encoded = obfuscate_text(encoded_config)
-                response_message = (
-                    f'┌───────────────\n│𝗦𝗣 - 𝗗𝗘𝗖𝗢𝗗𝗘 ({protocol})\n│𝗗𝗘𝗩𝗘𝗟𝗢𝗣𝗘𝗥 : https://bit.ly/3TOrZEu\n├───────────────\n'
-                    f'│[[۞]] Decoded Config:\n```JSON\n{json_output}```\n'
-                    f'│[[۞]] Encoded Config:\n```SP-DECODE\n{protocol}://{encoded_config}```\n'
-                    '├───────────────\n│[۞] 𝗚𝗥𝗢𝗨𝗣 : @CodeBreakersHub \n│[۞] 𝗖𝗛𝗔𝗡𝗡𝗘𝗟 : @GhostDeve\n└───────────────\n'
-                )
-                bot.reply_to(message, response_message, parse_mode= 'Markdown')
+                output = f"{json_output}\n\nConfiguración codificada:\n{protocol}://{encoded_config}"
             except json.JSONDecodeError:
-                obfuscated_decrypted = obfuscate_text(decrypt_text)
-                bot.reply_to(message, f'┌┌───────────────\n│𝗦𝗣 - 𝗗𝗘𝗖𝗢𝗗𝗘 ({protocol})\n│𝗗𝗘𝗩𝗘𝗟𝗢𝗣𝗘𝗥 : https://bit.ly/3TOrZEu\n├───────────────\n```JSON\n{obfuscated_decrypted}```\n├───────────────\n│[۞] 𝗚𝗥𝗢𝗨𝗣 : @CodeBreakersHub \n│[۞] 𝗖𝗛𝗔𝗡𝗡𝗘𝗟 : @GhostDeve\n└───────────────\n', parse_mode= 'Markdown')
+                output = obfuscate_text(decrypt_text)
+            send_markdown_result(message, f"NetMod · {protocol}", output)
         else:
             bot.reply_to(message, "Please enter a valid format.")
     except Exception as e:
@@ -532,17 +483,7 @@ def decodificar_vmess(message):
         encoded_data = message.text[start_index + len("vmess://"):]
         decoded_data = decodificar_base64(encoded_data)
         configdict = json.loads(decoded_data)
-        json_formatted = "│[[۞]] Config Decode:\n```JSON\n " + json.dumps(configdict, indent=4) + "```"
-        mensaje_final = ("┌───────────────\n"
-                         "│𝗦𝗣 - 𝗗𝗘𝗖𝗢𝗗𝗘 (vmess://)\n"
-                         "│𝗗𝗘𝗩𝗘𝗟𝗢𝗣𝗘𝗥 : https://bit.ly/3TOrZEu\n"
-                         "├───────────────\n"
-                         f"{json_formatted}\n"
-                         "├───────────────\n"
-                         "│[[۞]] 𝗚𝗥𝗢𝗨𝗣 : @CodeBreakersHub \n"
-                         "│[[۞]] 𝗖𝗛𝗔𝗡𝗡𝗘𝗟 : @GhostDeve\n"
-                         "└───────────────\n")
-        bot.reply_to(message, mensaje_final, parse_mode='Markdown')
+        send_markdown_result(message, "VMess", json.dumps(configdict, indent=4))
 
 ######################################    
 # Función para manejar mensajes con enlaces 'zivpn://'
@@ -597,12 +538,7 @@ def handle_decryption(message):
                     key = key_value_pair[0]
                     GhostDeveloper += f"│[۞] {key}: ***\n"
 
-        final_message = (
-            '┌───────────────\n│𝗦𝗣 - 𝗗𝗘𝗖𝗢𝗗𝗘 (zivpn-??)\n│𝗗𝗘𝗩𝗘𝗟𝗢𝗣𝗘𝗥 : https://bit.ly/3TOrZEu\n├───────────────\n' +
-            GhostDeveloper +
-            '├───────────────\n│[۞] 𝗚𝗥𝗢𝗨𝗣 : @CodeBreakersHub \n│[۞] 𝗖𝗛𝗔𝗡𝗡𝗘𝗟 : @GhostDeve\n└───────────────\n'
-        )
-        bot.reply_to(message, final_message)
+        send_markdown_result(message, "ZI VPN", GhostDeveloper)
     except Exception as error:
         bot.reply_to(message, f"‼️Oops! An error occurred:\n{error}‼️")
     
@@ -645,13 +581,9 @@ def nmqwd_ksmns(message):
         decrypted_data = zkjfh_wkef(decoded_data, key, iv)
         if es_json(decrypted_data):
             json_data = json.loads(decrypted_data)
-            response_message = f"┌───────────────\n│𝗦𝗣 - 𝗗𝗘𝗖𝗢𝗗𝗘\n│𝗗𝗘𝗩𝗘𝗟𝗢𝗣𝗘𝗥 : https://bit.ly/3TOrZEu\n├───────────────\n"
-            response_message += format_output(json_data)
-            response_message += "\n├───────────────\n│[۞] 𝗚𝗥𝗢𝗨𝗣 : @CodeBreakersHub\n│[۞] 𝗖𝗛𝗔𝗡𝗡𝗘𝗟 : @GhostDeve\n└───────────────"
+            send_markdown_result(message, "XrayPB", format_output(json_data))
         else:
-            response_message = "Ocurrió un error: Los datos descifrados no son un JSON válido."
-
-        bot.reply_to(message, response_message)
+            bot.reply_to(message, "Ocurrió un error: Los datos descifrados no son un JSON válido.")
 
     except Exception as e:
         error_message = f"Ocurrió un error: {str(e)}"
@@ -687,13 +619,11 @@ def dec_ssh_command(message):
             password = dec_ssh(pass_encoded)
 
             if user is not None and password is not None:
-                bot.reply_to(message, f"┌───────────────\n│𝗦𝗣 - 𝗗𝗘𝗖𝗢𝗗𝗘 (Decode ssh)\n│𝗗𝗘𝗩𝗘𝗟𝗢𝗣𝗘𝗥 : https://bit.ly/3TOrZEu\n├───────────────\n"
-                                      f"│[[۞]] IP/Dominio: `{ip_or_domain}`\n"
-                                      f"│[[۞]] User: `{user}`\n"
-                                      f"│[[۞]] Password: `{password}`\n"
-                                      f"├───────────────\n"
-                                      f"│[[۞]] SSH: `{ip_or_domain}@{user}:{password}`\n"
-                                      f"├───────────────\n│[[۞]] 𝗚𝗥𝗢𝗨𝗣 : @CodeBreakersHub \n│[[۞]] 𝗖𝗛𝗔𝗡𝗡𝗘𝗟 : @GhostDeve\n└───────────────\n", parse_mode= "Markdown")
+                send_markdown_result(
+                    message, "SSH",
+                    f"IP/Dominio: {ip_or_domain}\nUsuario: {user}\nContraseña: {password}\n"
+                    f"SSH: {ip_or_domain}@{user}:{password}",
+                )
             else:
                 bot.reply_to(message, "Error decoding user or password. Please check the input.")
         except Exception as e:
@@ -749,12 +679,7 @@ def handle_armod(message):
         no_wifi = parsed_data.get('nowifi', [''])[0]
         security = parsed_data.get('security', [''])[0]
         profile = format_profile(profile_raw)
-        result = f"""
-┌───────────────
-│𝗦𝗣 - 𝗗𝗘𝗖𝗢𝗗𝗘 (ar-??)
-│𝗗𝗘𝗩𝗘𝗟𝗢𝗣𝗘𝗥 : https://bit.ly/3TOrZEu
-├───────────────
-│[۞] Allow edit : {allow_edit}
+        result = f"""│[۞] Allow edit : {allow_edit}
 │[۞] Comp : {comp}
 │[۞] Index : {index}
 │[۞] No WiFi : {no_wifi}
@@ -763,10 +688,9 @@ def handle_armod(message):
 │[۞] Profile :\n{profile}
 │[۞] Security : {security}
 │[۞] SSH : {ssh_data if ssh_data else 'No SSH info'}
-└───────────────
 """
 
-        bot.reply_to(message, result)
+        send_markdown_result(message, "AR Tunnel", result)
 
     except Exception as e:
         logger.exception("Error al decodificar el formato ar-: %s", e)
@@ -794,14 +718,8 @@ def decode_v2box(message):
         parsed_url = urlparse(decoded_part)
         params = parse_qs(parsed_url.query)
 
-        Y = "┌───────────────\n│𝗦𝗣 - 𝗗𝗘𝗖𝗢𝗗𝗘 (v2box)\n│𝗗𝗘𝗩𝗘𝗟𝗢𝗣𝗘𝗥 : https://bit.ly/3TOrZEu\n├───────────────"
-        X = ""
-        for key, value in params.items():
-            X += f"│[۞] {key}: {', '.join(value)}\n"
-        Z = "├───────────────\n│[۞] 𝗚𝗥𝗢𝗨𝗣 : @CodeBreakersHub \n│[۞] 𝗖𝗛𝗔𝗡𝗡𝗘𝗟 : @GhostDeve\n└───────────────\n"
-
-        response = f"{Y}\n{X}{Z}"
-        bot.reply_to(message, response)
+        output = "\n".join(f"{key}: {', '.join(value)}" for key, value in params.items())
+        send_markdown_result(message, "V2Box", output)
 
     except Exception as e:
         bot.reply_to(message, f"Error al decodificar: {str(e)}")
@@ -840,7 +758,7 @@ def decode_renz_text(message):
         bot.reply_to(message, "Error al procesar RENZ / 7NET.")
         return
     if result is not None:
-        _send_decoder_text_result(message, "RENZ / 7NET", result)
+        send_markdown_result(message, "RENZ / 7NET", result)
     else:
         bot.reply_to(
             message,

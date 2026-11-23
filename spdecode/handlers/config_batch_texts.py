@@ -13,8 +13,8 @@ from decoders.Python import (
 )
 from decoders.Python.HTTPTWEAK import run as decode_http_tweak
 from spdecode.access import require_authorized
+from spdecode.handlers.results import send_markdown_result
 from spdecode.runtime import bot
-from spdecode.handlers.text_protocols import _send_decoder_text_result
 
 logger = logging.getLogger("sp-decode")
 
@@ -70,7 +70,7 @@ def decode_config_batch_text(message):
             else:
                 bot.reply_to(message, "No se pudo descifrar la configuración con este formato.")
             return
-        _send_decoder_text_result(message,name,str(output))
+        send_markdown_result(message, name, str(output))
     except Exception:
         logger.exception("Configuration text decoding failed for %s",prefix)
         bot.reply_to(message,"Error interno al descifrar la configuración.")
@@ -82,9 +82,8 @@ def decode_config_batch_text(message):
 # ---------------------------------------------------------------------------
 def prompt_v2box_password(message, encrypted: bytes) -> None:
     from spdecode.handlers.decoder_credentials import decode_and_reply
-    from spdecode.handlers.documents import send_decoder_output
 
     decode_and_reply(
         message, encrypted, suffix="v2box",
-        deliver=lambda result: send_decoder_output(message, result, caption="SP-DECODE — V2Box"),
+        deliver=lambda result: send_markdown_result(message, "V2Box", result.text, partial=result.partial),
     )

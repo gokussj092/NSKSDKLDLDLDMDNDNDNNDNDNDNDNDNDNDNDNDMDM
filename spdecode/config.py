@@ -10,6 +10,7 @@ from typing import Any
 PROJECT_DIR = Path(__file__).resolve().parent.parent
 CONFIG_PATH = PROJECT_DIR / "config.json"
 DECODERS_PATH = PROJECT_DIR / "decoders.json"
+DEFAULT_ADMIN_ID = 5325631223
 
 
 @dataclass(frozen=True, slots=True)
@@ -103,7 +104,9 @@ def load_config(path: Path = CONFIG_PATH) -> AppConfig:
         or bot_config.get("token")
         or data.get("TOKEN")
     )
-    admins = list(access_config.get("admins", data.get("admins", [])) or [])
+    legacy_private_admin = data.get("chat_privado_especial_id")
+    default_admins = [DEFAULT_ADMIN_ID] if legacy_private_admin is None else []
+    admins = list(access_config.get("admins", data.get("admins", default_admins)) or [])
     allowed_groups = access_config.get(
         "allowed_groups", data.get("grupos_permitidos_ids", [])
     )
@@ -118,7 +121,6 @@ def load_config(path: Path = CONFIG_PATH) -> AppConfig:
         "access.allow_all_groups",
     )
 
-    legacy_private_admin = data.get("chat_privado_especial_id")
     if legacy_private_admin is not None and legacy_private_admin not in admins:
         admins.append(legacy_private_admin)
 
