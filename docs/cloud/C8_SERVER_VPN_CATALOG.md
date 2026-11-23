@@ -982,3 +982,66 @@ exportación de usuario — la app no tiene importación por el usuario);
 confirmación extremo a extremo en un dispositivo; codificación de campo del
 token de cuenta superior (`Username` == `Password`, 16 B) sin recuperar.
 La ficha antigua `am-tunnel-lite-vpn` se retiró 2026-11-22 por decisión de Pedro.
+
+## HTTP WinzapVPN 1.1.61 (76) — catálogo en la nube, versión pública 98
+
+Proveedor fijo `winzap-vpn`, paquete `com.winzap.winzap_vpn`, versionCode 76.
+Carpeta `decoders/Python/apps/WinzapVPN/` con `server_catalog_decoder.py`,
+`codec.py`, PNG, manifest, README y TESTING — **sin `file_decoder.py` a
+propósito**: la app no registra sufijo de archivo ni importa
+configuraciones por archivo; tampoco hay esquema de texto (`winzap://` no
+existe), así que nada se registra en `file-formats.json`,
+`text-formats.json`, `text_bridge.py` ni `_C8_FILE_ENGINES`; el precedente
+`RMP_TUNNEL_PRO`/`Maya_Tun_Pro` envía módulos solo-catálogo igual. Sigue el
+patrón GCP/NetFlux/Maya (broker HTTPS fijo, worker aislado, contrato de
+documento completo, control administrativo individual, gateway con rama
+propia `countries`+`servers` — la rama RENZ de `c3-gateway.mjs` exige
+`Servers`/`Networks` y NO aplica a Winzap). El bootstrap es JSON en claro
+por HTTPS, sin firma ni autenticación; el codec valida la estructura y
+redacta todo lo que no es catálogo (sesión por dispositivo, controles de
+anuncios, notificaciones, URLs de assets, tokens por servidor como
+`change_token`). El blob `Winzap01` (`encrypted_mobile_config` del perfil)
+es Base64 → `Winzap01` + salt(8) + AES-256-CBC con clave/IV
+EVP_BytesToKey-MD5 sobre la clave maestra de la app, con campos de capa 3
+AES-256-CBC + ROT13 y claves cortas renombradas a largas. Sin perfil nuevo
+en `renz.py` y sin cambios en `android/`.
+
+Lectura pública autorizada del 2026-11-23: HTTP 200, **249,350 bytes,
+SHA-256 `85272d084d9cb89a8bf25659c5e2a0a484e593ce8aca40ecc50e1cef2cfd0b49`,
+`config_version` 1, 19 países, 177 servidores, 0 VIP** — dos descargas
+seguidas byte-idénticas (solo los contadores volátiles `online_users`
+cambian entre ventanas). El catálogo creció desde la ventana del
+2026-11-22 (174 servidores): 3 altas, 0 bajas. El servidor anuncia
+`latest_version` **1.1.62** — un build más nuevo que el 1.1.61 analizado;
+no se afirma compatibilidad con él. El bootstrap sin `device_id` responde
+422 (`Field required`); el perfil por servidor exige la firma HMAC-SHA256
+de la app (no reproducida ni falsificada) y responde 401 sin ella, así que
+el catálogo completo de configuraciones queda PENDING. HMAC de
+autenticación de conexión: `NOT_OBSERVED`.
+
+El puerto no estándar (2083) y el `device_id` obligatorio obligan a un
+descargador dedicado en el broker (`server-vpn-provider.mjs`,
+`downloadWinzapVpn`, `pinnedRequest` directo): la ruta genérica rechaza
+cualquier puerto distinto de 443 y `downloadSupplied` también rechaza
+`url.port`; mismo patrón que AM Tunnel Lite / OpenTunnel / Tunneltweak.
+La rama de despacho va antes de la comprobación genérica de puerto y el
+id está en la lista de rechazo de redirecciones. El `device_id` es el id
+de prueba sintético verificado `WINZAP-TEST0001`; si el owner emite un id
+dedicado de SP-DECODE, se cambia en 4 lugares de producción (`codec.py`
+`CATALOG_URL` y `DEVICE_ID`, `manifest.json` `catalog.source`, y la URL
+de `PROVIDERS` en `server-vpn-provider.mjs`) más los fixtures de pruebas.
+
+PNG del icono launcher del .apks 1.1.61, **bytes exactos del APK**
+(`res/mipmap-xxxhdpi-v4/ic_launcher.png`, 192×192, **21,447 bytes**;
+SHA-256 `319b2dbfdf696276d87c6135c104113e750b4dbb663f96b1e9fc6573d4d538ea`),
+no remuestreado a 512×512. Catálogo mínimo **98**; conserva switches y
+versión persistente. **Tests Python y web nuevos aprobados** (ver
+`decoders/Python/apps/WinzapVPN/TESTING.md`). Sin despliegue, fusión ni
+cambios Android.
+
+Pendiente fuera de esta entrega: un blob `Winzap01` real
+(`encrypted_mobile_config` de un perfil) para cerrar el blob como
+`VERIFIED_REAL` (hoy `VERIFIED_SYNTHETIC`); cabeceras firmadas válidas de
+una sesión real de la app para descargar perfiles por servidor; build
+1.1.62 anunciado por el servidor, sin analizar; prueba en VPS tras el
+despliegue autorizado (`update all`).

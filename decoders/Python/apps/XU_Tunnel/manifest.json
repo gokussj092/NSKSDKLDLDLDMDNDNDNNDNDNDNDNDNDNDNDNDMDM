@@ -1,0 +1,27 @@
+{
+  "id": "xu-tunnel",
+  "name": "XU Tunnel",
+  "package": "com.technore.xrptunnelplus",
+  "versionName": "6.0",
+  "versionCode": 6,
+  "kind": "file",
+  "extensions": [
+    "xu"
+  ],
+  "fileDecoder": "xutunnel_archivos.py",
+  "serverCatalogDecoder": null,
+  "runtime": "python",
+  "dependencies": [],
+  "requiresApkAtRuntime": false,
+  "requiresUserCredentials": false,
+  "cloudSupported": true,
+  "androidOfflineSupported": false,
+  "compatibleExportCertified": false,
+  "validation": {
+    "androidImportTested": false,
+    "authorizedRealFiles": 0,
+    "reference": "PyCryptodome cross-check at build time; self-test vector in xutunnel_archivos.py",
+    "syntheticRejectedCases": 7,
+    "syntheticValidCases": 3
+  }
+}

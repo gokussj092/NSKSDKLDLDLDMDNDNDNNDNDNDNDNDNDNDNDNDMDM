@@ -139,6 +139,15 @@ def dispatch(text: str, *, password: str | None = None) -> str | None:
         # fallback to another format.
         module = importlib.import_module("decoders.Python.apps.RMP_Tunnel_Lite.file_decoder")
         return module.decode_text(value)
+    if lowered.startswith(("xveontunnel://", "xveon://", "xvn://")):
+        # XVEON Tunnel Pro 8.1: explicit dispatch to the file decoder
+        # (PBKDF2-HMAC-SHA256 + AES-256-GCM, no catalog). The supplied
+        # TEXT_ROUTES serve these schemes first; this block is the
+        # explicit fallback, matching the netflux/maya/pmtunnel/rmplite
+        # pattern. The scheme is unambiguous: a None result is final,
+        # never a fallback to another format.
+        module = importlib.import_module("decoders.Python.apps.XVEON_Tunnel_Pro.file_decoder")
+        return module.decode_text(value, password=password)
     # C8 isolated original application codecs. These prefixes are unambiguous.
     c8_links = (
         ("bdnet://", "decoders.Python.apps.BD_NET_VPN.file_decoder"),
@@ -196,7 +205,7 @@ def main() -> int:
         if password is not None and (not isinstance(password, str) or
                 not 0 < len(password.encode("utf-8")) <= 4096):
             return 2
-        if password is not None and not (text.strip().lower().startswith(("ua://", "v2box://")) or
+        if password is not None and not (text.strip().lower().startswith(("ua://", "v2box://", "xveontunnel://", "xveon://", "xvn://")) or
                 onef or npv):
             return 2
         output = dispatch(text, password=password)

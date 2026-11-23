@@ -7,7 +7,7 @@ import {providerEnabled} from "./server-vpn-provider.mjs";
 import {SUPPLIED_CATALOG_ITEMS,suppliedProviderConfigured} from "./supplied-integrations.mjs";
 import {catalogDefaultEnabled} from "./catalog-provider-policy.mjs";
 
-export const CATALOG_VERSION = 97; // Removed the legacy am-tunnel-lite-vpn card (remote:null) 2026-11-22 by Pedro's decision; AM Tunnel Lite stays as am-tunnel-lite (Version 4.6 live).
+export const CATALOG_VERSION = 98; // Removed the legacy am-tunnel-lite-vpn card (remote:null) 2026-11-22 by Pedro's decision; AM Tunnel Lite stays as am-tunnel-lite (Version 4.6 live).
 export const RECHECK_SECONDS = 15 * 60; // Version-only recovery; full download occurs on version change.
 
 /** Monotonic deployment version. Bump this override for ANY metadata, icon
@@ -82,6 +82,8 @@ const BASE_ITEMS = [
   {id:"pm-tunnel-lite", name:"PM Tunnel Lite", icon:"pm-tunnel-lite.png", remote:"pm-tunnel-lite"},
   // Live catalog validated 2026-11-22 (Version 4.6, 172 free servers, 137 payloads).
   {id:"am-tunnel-lite", name:"AM Tunnel Lite", icon:"am-tunnel-lite.png", remote:"am-tunnel-lite"},
+  // Live catalog validated 2026-11-23 (config_version 1, 19 countries, 177 servers, 0 VIP).
+  {id:"winzap-vpn", name:"HTTP WinzapVPN", icon:"winzap-vpn.png", remote:"winzap-vpn"},
   {id:"xhypher-tunnel-pro", name:"Xhypher Tunnel Pro", icon:"xhypher-tunnel-pro.png", remote:"xhypher-tunnel-pro"},
   // Official endpoint returns HTML; a valid signed OTA response is still required.
   {id:"ut-loop-pro-vpn", name:"UT Loop Pro VPN", icon:"ut-loop-pro-vpn.png", remote:null},

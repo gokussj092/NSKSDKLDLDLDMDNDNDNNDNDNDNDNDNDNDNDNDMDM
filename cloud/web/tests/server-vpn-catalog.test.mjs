@@ -74,7 +74,7 @@ test("only registered icon identifiers are served",async()=>{
 
 import {providerIds,providerEnabled,downloadVpnCatalog} from "../lib/server-vpn-provider.mjs";
 test("only fixed catalog providers are eligible for remote broker",async()=>{
-  assert.deepEqual(providerIds().sort(),[...new Set(["24clan-green","4u-tunnel-lite","7net-vpn","abowaged-vpn","ac-tunnel-vpn","alfaisal-tunnel-plus","alsaher-vip","am-tunnel-lite","any-vpn","apna-vpn","aura-net-vpn","austroplus-vpn","bd-net-vpn","catnet-vpn","enaa-tunnel","fnf-tunnel-bd","focus-vpn-cloud","freedom-vpn","gcp-vpn","genis-vpn","ha-tunnel-plus","halcon-r-net","http-conexion","http-fenixvpn","http-internet-infinito","http-jireh","http-socketclay","http-wakko","hx-tunnel","izph-vpn-pro","jyfast-vpn-ultra","kham-vpn","ksh-vpn","litron-pro-vpn","litron-vpn","maya-tun-pro","md-proxy-vpn","megatunnel","mkk-hyper","mm-tunnel","mnr-tunnel-plus","mtm-tunnel-lite","mx-tunnel-pro","my-tunnel-proxy","namo-vpn","netcol-vpn","netflux-vpn","onspace-vpn","opentunnel-ssh","pm-tunnel-lite","rjc-tunnel-pro","rmp-tunnel-lite","rmp-tunnel-pro","robust-tunnel","royal-tunnel","speicers-pro-vpn","speicers-turbo-vpn","speigo-vpn-configs","speigo-vpn-ssh","superflash-vpn","thailand-vpn","trv-tunnel","tunneldoom-vpn","tunneltweak","turbomx-vpn","tx-tunnel","ultra-tunnel","v2ray-tunnel-plus","vip-snipher-pro","wolf-custom-vpn","xhypher-tunnel-pro","xxpicore-tunnel","zig-tunnel",...suppliedProviderIds()])].sort());
+  assert.deepEqual(providerIds().sort(),[...new Set(["24clan-green","4u-tunnel-lite","7net-vpn","abowaged-vpn","ac-tunnel-vpn","alfaisal-tunnel-plus","alsaher-vip","am-tunnel-lite","any-vpn","apna-vpn","aura-net-vpn","austroplus-vpn","bd-net-vpn","catnet-vpn","enaa-tunnel","fnf-tunnel-bd","focus-vpn-cloud","freedom-vpn","gcp-vpn","genis-vpn","ha-tunnel-plus","halcon-r-net","http-conexion","http-fenixvpn","http-internet-infinito","http-jireh","http-socketclay","http-wakko","hx-tunnel","izph-vpn-pro","jyfast-vpn-ultra","kham-vpn","ksh-vpn","litron-pro-vpn","litron-vpn","maya-tun-pro","md-proxy-vpn","megatunnel","mkk-hyper","mm-tunnel","mnr-tunnel-plus","mtm-tunnel-lite","mx-tunnel-pro","my-tunnel-proxy","namo-vpn","netcol-vpn","netflux-vpn","onspace-vpn","opentunnel-ssh","pm-tunnel-lite","rjc-tunnel-pro","rmp-tunnel-lite","rmp-tunnel-pro","robust-tunnel","royal-tunnel","speicers-pro-vpn","speicers-turbo-vpn","speigo-vpn-configs","speigo-vpn-ssh","superflash-vpn","thailand-vpn","trv-tunnel","tunneldoom-vpn","tunneltweak","turbomx-vpn","tx-tunnel","ultra-tunnel","v2ray-tunnel-plus","vip-snipher-pro","wolf-custom-vpn","winzap-vpn","xhypher-tunnel-pro","xxpicore-tunnel","zig-tunnel",...suppliedProviderIds()])].sort());
   for(const id of providerIds()) assert.equal(providerEnabled(id,{CLOUD_SERVER_VPN_ENABLED:"false"}),false);
   assert.equal(providerEnabled("https://attacker.invalid/",{CLOUD_SERVER_VPN_ENABLED:"true"}),false);
   await assert.rejects(()=>downloadVpnCatalog("https://attacker.invalid/"),{code:"UNSUPPORTED_FORMAT"});
@@ -354,6 +354,18 @@ test("AM Tunnel Lite original PNG and validated complete catalog follow provider
  assert.equal(iconFor("am-tunnel-lite").bytes.length,30105);
  assert.equal(catalog({availability:{"am-tunnel-lite":false}}).apps.find(x=>x.id==="am-tunnel-lite").decodeEnabled,false);
 });
+
+// Live catalog validated 2026-11-23 (config_version 1, 19 countries, 177 servers, 0 VIP):
+// the card is decoding-enabled and serves the exact original 192x192 launcher PNG
+// from the APK (21,447 bytes; NOT resized to 512x512).
+test("WinzapVPN original PNG and validated complete catalog follow provider controls",()=>{
+ const app=catalog({availability:{"winzap-vpn":true}}).apps.find(x=>x.id==="winzap-vpn");
+ assert.equal(app.name,"HTTP WinzapVPN");assert.equal(app.decodeEnabled,true);
+ assert.equal(app.iconSha256,"319b2dbfdf696276d87c6135c104113e750b4dbb663f96b1e9fc6573d4d538ea");
+ assert.equal(iconFor("winzap-vpn").bytes.length,21447);
+ assert.equal(catalog({availability:{"winzap-vpn":false}}).apps.find(x=>x.id==="winzap-vpn").decodeEnabled,false);
+});
+
 
 // CREEB VPN has a validated offline reader; this card cannot download yet.
 test("CREEB VPN remains disabled even with global availability",()=>{

@@ -496,6 +496,20 @@ export async function fetchWorker(kind,payload,cfg,{fetchImpl=fetch}={}) {
          parsed.Servers.some(x=>!isRecord(x)) || parsed.Tweaks.some(x=>!isRecord(x)) ||
          JSON.stringify(parsed)!==JSON.stringify(decoded.structuredJson))throw Error("INVALID_WORKER_RESULT");
     }
+    if(kind==="server-vpn" && payload?.providerId==="winzap-vpn"){
+      let parsed;
+      try{parsed=JSON.parse(decoded.rawText);}catch{throw Error("INVALID_WORKER_RESULT");}
+      if(decoded.kind!=="vpn_catalog" || decoded.providerId!==payload.providerId ||
+         !isRecord(parsed) || parsed.app!=="HTTP WinzapVPN" || parsed.package!=="com.winzap.winzap_vpn" ||
+         typeof parsed.version!=="string" || !parsed.version ||
+         !Number.isSafeInteger(parsed.version_code) || !Number.isSafeInteger(parsed.config_version) ||
+         !Array.isArray(parsed.countries) || !parsed.countries.length ||
+         parsed.countries.some(c=>!isRecord(c) || typeof c.id!=="string" || !c.id ||
+           typeof c.name!=="string" || !c.name || !Array.isArray(c.servers) || !c.servers.length ||
+           c.servers.some(s=>!isRecord(s) || typeof s.id!=="string" || !s.id ||
+             typeof s.name!=="string" || !s.name)) ||
+         JSON.stringify(parsed)!==JSON.stringify(decoded.structuredJson))throw Error("INVALID_WORKER_RESULT");
+    }
     if(kind==="server-vpn" && payload?.providerId==="am-tunnel-lite"){
       let parsed;
       try{parsed=JSON.parse(decoded.rawText);}catch{throw Error("INVALID_WORKER_RESULT");}

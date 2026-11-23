@@ -1,0 +1,3 @@
+# Standard library only — no third-party dependencies.
+# (PyCryptodome is used only by tests/test_xutunnel.py to build vectors;
+# the decoder itself is pure stdlib.)

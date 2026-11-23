@@ -90,6 +90,7 @@ PROVIDERS = {
     "maya-tun-pro": "decoders.Python.apps.Maya_Tun_Pro.server_catalog_decoder",
     "pm-tunnel-lite": "decoders.Python.apps.PM_Tunnel_Lite.server_catalog_decoder",
     "am-tunnel-lite": "decoders.Python.apps.AM_Tunnel_Lite.server_catalog_decoder",
+    "winzap-vpn": "decoders.Python.apps.WinzapVPN.server_catalog_decoder",
 }
 
 def decode(provider_id: str, payload: bytes) -> str:

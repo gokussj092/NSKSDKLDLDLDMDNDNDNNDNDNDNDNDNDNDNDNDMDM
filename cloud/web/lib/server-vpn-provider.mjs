@@ -139,6 +139,16 @@ const PROVIDERS = Object.freeze({
   // below (downloadAmTunnelLite) fetches by 16 KiB ranges with resumption;
   // a plain GET aborts after 98-115 KiB (verified live).
   "am-tunnel-lite": {url:"https://freedomnavigate.com/updater/8112011e98856d3ca814d0f8ce3231",agent:"Mozilla/5.0 (Linux; Android 14; Redmi 14C) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Mobile Safari/537.36"},
+  // Live catalog validated 2026-11-23 (config_version 1, 19 countries, 177 servers, 0 VIP).
+  // Plain GET, no headers, no auth, no signature — exactly like the app; UA "WinZapVPN/1.1.61"
+  // is the app's own User-Agent (a curl control fetch with a default UA returned byte-identical
+  // bodies, so the result does not depend on it). The bootstrap URL carries a non-standard
+  // port (2083) and a mandatory device_id query, so the generic path rejects it (port check);
+  // the dedicated downloader below (downloadWinzapVpn) fetches it with pinnedRequest instead.
+  // device_id is the verified synthetic test id WINZAP-TEST0001 (the bootstrap answers 422
+  // without it); see §0 of the edit spec for the 4 production places to swap if the owner
+  // issues a dedicated SP-DECODE id.
+  "winzap-vpn": {url:"https://vpnapi.winzapg.online:2083/api/v1/bootstrap?device_id=WINZAP-TEST0001",agent:"WinZapVPN/1.1.61"},
   "xhypher-tunnel-pro": {url:"https://raw.githubusercontent.com/XyrussProject/infinite88/refs/heads/main/xhyphertunnelpro888.hs",agent:"Xhypher Tunnel Pro/43"},
   "turbomx-vpn": {url:TURBOMX_SOURCES.servers,agent:"TurboMX VPN/143.1.26"},
   "superflash-vpn": {url:SUPERFLASH_SOURCES.servers,agent:"SuperFlash VPN/184.0.1"},
@@ -515,6 +525,34 @@ async function downloadOpentunnelPublic(provider,deadline){
   fail("REMOTE_PROVIDER_UNAVAILABLE");
 }
 
+async function downloadWinzapVpn(provider){
+  // Live catalog validated 2026-11-23 (config_version 1, 19 countries, 177 servers, 0 VIP;
+  // two consecutive downloads byte-identical). Single fixed GET, same pinned transport as
+  // the generic path: vetted public IPv4, TLS >= 1.2, exact approved path on port 2083 with
+  // the mandatory device_id query. This id never follows redirects (see the deny list in
+  // downloadVpnCatalog). No auth, no signature; the server answers 422 without device_id.
+  const deadline=Date.now()+DEADLINE_MS;
+  const dest=new URL(provider.url);
+  const addresses=await vettedIpv4(dest.hostname);
+  const attempts=addresses.length===1?[addresses[0],addresses[0]]:addresses;
+  for(const ip of attempts){
+    const remaining=deadline-Date.now();
+    if(remaining<=0)fail("REMOTE_PROVIDER_UNAVAILABLE");
+    let answer;
+    try{answer=await pinnedRequest(dest.href,ip,provider.agent,Math.min(CONNECT_MS,remaining),{});}
+    catch(error){
+      if(error instanceof VpnProviderError){if(!error.retryable)throw error;continue;}
+      if(!RETRY_CODES.has(error?.code))fail("REMOTE_PROVIDER_UNAVAILABLE");
+      continue;
+    }
+    if(Object.hasOwn(answer,"redirect"))fail("REMOTE_NETWORK_DENIED");
+    if(!Buffer.isBuffer(answer.data)||!answer.data.length||answer.data.length>MAX_BYTES)
+      fail("REMOTE_RESPONSE_INVALID");
+    return answer.data;
+  }
+  fail("REMOTE_PROVIDER_UNAVAILABLE");
+}
+
 // OpenTunnel variant B (Pedro, 2026-11-19): the app sends the user's own
 // device_id in the op 12 request; the broker invents that device's pair
 // (spdecode-... / spdecode-...), registers it with ONE POST generate for
@@ -620,6 +658,10 @@ export async function downloadVpnCatalog(id,source=id==="jyfast-vpn-ultra"?"free
     if(source!=="servers")fail("UNSUPPORTED_FORMAT");
     return downloadTunneltweak(provider);
   }
+  if(id==="winzap-vpn"){
+    if(source!=="servers")fail("UNSUPPORTED_FORMAT");
+    return downloadWinzapVpn(provider);
+  }
   if(id==="catnet-vpn"){
     if(source!=="servers")fail("UNSUPPORTED_FORMAT");
     return downloadCatnet(provider);
@@ -683,7 +725,7 @@ export async function downloadVpnCatalog(id,source=id==="jyfast-vpn-ultra"?"free
         continue;
       }
       if(answer.redirect!==undefined){
-        if(["kham-vpn","opentunnel-ssh","md-proxy-vpn","xxpicore-tunnel","speigo-vpn-configs","speigo-vpn-ssh","litron-vpn","litron-pro-vpn","genis-vpn","http-conexion","namo-vpn","fnf-tunnel-bd","alsaher-vip","ha-tunnel-plus","ultra-tunnel","mm-tunnel","zig-tunnel","enaa-tunnel","izph-vpn-pro","vip-snipher-pro","netcol-vpn","wolf-custom-vpn","tunneldoom-vpn","mtm-tunnel-lite","mnr-tunnel-plus","bd-net-vpn","aura-net-vpn","apna-vpn","any-vpn","speicers-pro-vpn","7net-vpn","gcp-vpn","netflux-vpn","maya-tun-pro","pm-tunnel-lite","am-tunnel-lite","xhypher-tunnel-pro","focus-vpn-cloud","freedom-vpn","http-internet-infinito","megatunnel","mx-tunnel-pro","rjc-tunnel-pro","rmp-tunnel-pro","rmp-tunnel-lite","http-jireh"].includes(id)||Object.hasOwn(PAIRED_SOURCES,id))fail("REMOTE_NETWORK_DENIED");
+        if(["kham-vpn","opentunnel-ssh","md-proxy-vpn","xxpicore-tunnel","speigo-vpn-configs","speigo-vpn-ssh","litron-vpn","litron-pro-vpn","genis-vpn","http-conexion","namo-vpn","fnf-tunnel-bd","alsaher-vip","ha-tunnel-plus","ultra-tunnel","mm-tunnel","zig-tunnel","enaa-tunnel","izph-vpn-pro","vip-snipher-pro","netcol-vpn","wolf-custom-vpn","tunneldoom-vpn","mtm-tunnel-lite","mnr-tunnel-plus","bd-net-vpn","aura-net-vpn","apna-vpn","any-vpn","speicers-pro-vpn","7net-vpn","gcp-vpn","netflux-vpn","maya-tun-pro","pm-tunnel-lite","am-tunnel-lite","xhypher-tunnel-pro","focus-vpn-cloud","freedom-vpn","http-internet-infinito","megatunnel","mx-tunnel-pro","rjc-tunnel-pro","rmp-tunnel-pro","rmp-tunnel-lite","http-jireh","winzap-vpn"].includes(id)||Object.hasOwn(PAIRED_SOURCES,id))fail("REMOTE_NETWORK_DENIED");
         const next=answer.redirect;
         if(typeof next!=="string"||next.length>2048)fail("REMOTE_NETWORK_DENIED");
         target=new URL(next,dest).href;

@@ -133,6 +133,7 @@ _C8_FILE_ENGINES = {
     "lnk": ("decoders/Python/apps/LinkLayer/LinkLayer_archivos.py", "LinkLayer VPN 3.11.2"),
     "xj": ("decoders/Python/apps/XJ_VPN/XJ_VPN_archivos.py", "XJ VPN 1.9.7"),
     "xui": ("decoders/Python/apps/XUI_Tunnel/XUI_Tunnel_archivos.py", "XUI Tunnel VPN 6.0"),
+    "xu": ("decoders/Python/apps/XU_Tunnel/xutunnel_archivos.py", "XU Tunnel VPN 6.0"),
     "sn": ("decoders/Python/apps/SN_VPN/SN_VPN_archivos.py", "SN VPN 5.0.7"),
     "vcv": ("decoders/Python/apps/VC_VPN/VC_VPN_archivos.py", "VC VPN 8.0"),
     # C8 (2026-11-15 integration): new suffixes of the 20-app batch. The
@@ -159,6 +160,12 @@ _C8_FILE_ENGINES = {
     # static key, non-standard delta 0x9E5729B1). No user import, no text
     # scheme; the wg am*.conf assets parse direct/CLI only.
     "pdtv2": ("decoders/Python/apps/AM_Tunnel_Lite/file_decoder.py", "AM Tunnel Lite AM"),
+    # C8 (2026-11-23 integration): XVEON Tunnel Pro 8.1, FILE_ONLY, no
+    # catalog. The supplied FILE_ROUTES override these in
+    # load_runtime_file_engines(); the entries below keep the C0/C8
+    # inventory test (file-formats vs _C8_FILE_ENGINES) consistent.
+    "xveon": ("decoders/Python/apps/XVEON_Tunnel_Pro/file_decoder.py", "XVEON Tunnel Pro 8.1"),
+    "xvn": ("decoders/Python/apps/XVEON_Tunnel_Pro/file_decoder.py", "XVEON Tunnel Pro 8.1"),
 }
 
 def load_runtime_file_engines() -> dict[str, dict[str, str]]:
@@ -549,7 +556,7 @@ def decode_file(suffix: str, contents: bytes, *, timeout: int = TIMEOUT_SECONDS,
     elif suffix == "eut" and not is_eut_new:
         engine = load_file_engines()["eut"]
     if credentials is not None:
-        allowed = {"password", "hwid"} if suffix in ("hc", "sn") else {"password", "publicKey", "recipientKey"} if suffix == "npvs" else {"password"} if suffix in ("tut", "ua", "1ftnl", "v2box") or is_hex_custom else None
+        allowed = {"password", "hwid"} if suffix in ("hc", "sn") else {"password", "publicKey", "recipientKey"} if suffix == "npvs" else {"password"} if suffix in ("tut", "ua", "1ftnl", "v2box", "xveon", "xvn") or is_hex_custom else None
         if allowed is None or not isinstance(credentials, dict) or set(credentials) - allowed:
             raise DecodeFailure("CREDENTIALS_NOT_ALLOWED")
         for name, maximum in (("password", 4096), ("hwid", 128), ("publicKey", 128), ("recipientKey", 16384)):
@@ -693,7 +700,7 @@ def decode_file(suffix: str, contents: bytes, *, timeout: int = TIMEOUT_SECONDS,
 def decode_provider_catalog(provider_id: str, contents: bytes) -> dict:
     """One fixed provider codec, child-isolated; broker performs all network I/O."""
     from cloud.workers.python.supplied_bridge import BY_ID as supplied_providers
-    if provider_id not in ("thailand-vpn", "kham-vpn", "opentunnel-ssh", "md-proxy-vpn", "xxpicore-tunnel", "catnet-vpn", "litron-vpn", "litron-pro-vpn", "speigo-vpn-configs", "speigo-vpn-ssh", "genis-vpn", "speicers-turbo-vpn", "http-conexion", "namo-vpn", "fnf-tunnel-bd", "alsaher-vip", "halcon-r-net", "ha-tunnel-plus", "ultra-tunnel", "zig-tunnel", "enaa-tunnel", "alfaisal-tunnel-plus", "izph-vpn-pro", "vip-snipher-pro", "netcol-vpn", "wolf-custom-vpn", "jyfast-vpn-ultra", "tunneldoom-vpn", "mtm-tunnel-lite", "mnr-tunnel-plus", "bd-net-vpn", "aura-net-vpn", "apna-vpn", "any-vpn", "speicers-pro-vpn", "tx-tunnel", "mm-tunnel", "creeb-vpn", "abowaged-vpn", "7net-vpn", "xhypher-tunnel-pro", "ut-loop-pro-vpn", "turbomx-vpn", "superflash-vpn", "rmp-tunnel-pro", "rmp-tunnel-lite", "rjc-tunnel-pro", "proneet-vpn", "onspace-vpn", "mx-tunnel-pro", "megatunnel", "http-internet-infinito", "24clan-green", "hx-tunnel", "mkk-hyper", "my-tunnel-proxy", "robust-tunnel", "royal-tunnel", "trv-tunnel", "4u-tunnel-lite", "ac-tunnel-vpn", "austroplus-vpn", "http-fenixvpn", "http-jireh", "http-socketclay", "http-wakko", "v2ray-tunnel-plus", "eut-vpn", "focus-vpn-cloud", "freedom-vpn", "tunelguard-vpn", "tunneltweak", "ksh-vpn", "dtunnel-mod", "gcp-vpn", "netflux-vpn", "maya-tun-pro", "pm-tunnel-lite", "am-tunnel-lite"):
+    if provider_id not in ("thailand-vpn", "kham-vpn", "opentunnel-ssh", "md-proxy-vpn", "xxpicore-tunnel", "catnet-vpn", "litron-vpn", "litron-pro-vpn", "speigo-vpn-configs", "speigo-vpn-ssh", "genis-vpn", "speicers-turbo-vpn", "http-conexion", "namo-vpn", "fnf-tunnel-bd", "alsaher-vip", "halcon-r-net", "ha-tunnel-plus", "ultra-tunnel", "zig-tunnel", "enaa-tunnel", "alfaisal-tunnel-plus", "izph-vpn-pro", "vip-snipher-pro", "netcol-vpn", "wolf-custom-vpn", "jyfast-vpn-ultra", "tunneldoom-vpn", "mtm-tunnel-lite", "mnr-tunnel-plus", "bd-net-vpn", "aura-net-vpn", "apna-vpn", "any-vpn", "speicers-pro-vpn", "tx-tunnel", "mm-tunnel", "creeb-vpn", "abowaged-vpn", "7net-vpn", "xhypher-tunnel-pro", "ut-loop-pro-vpn", "turbomx-vpn", "superflash-vpn", "rmp-tunnel-pro", "rmp-tunnel-lite", "rjc-tunnel-pro", "proneet-vpn", "onspace-vpn", "mx-tunnel-pro", "megatunnel", "http-internet-infinito", "24clan-green", "hx-tunnel", "mkk-hyper", "my-tunnel-proxy", "robust-tunnel", "royal-tunnel", "trv-tunnel", "4u-tunnel-lite", "ac-tunnel-vpn", "austroplus-vpn", "http-fenixvpn", "http-jireh", "http-socketclay", "http-wakko", "v2ray-tunnel-plus", "eut-vpn", "focus-vpn-cloud", "freedom-vpn", "tunelguard-vpn", "tunneltweak", "ksh-vpn", "dtunnel-mod", "gcp-vpn", "netflux-vpn", "maya-tun-pro", "pm-tunnel-lite", "am-tunnel-lite", "winzap-vpn"):
         if provider_id not in supplied_providers:
             raise DecodeFailure("UNSUPPORTED_FORMAT")
     if not isinstance(contents, bytes) or not contents:
@@ -808,7 +815,7 @@ def decode_text(text: str, *, timeout: int = TIMEOUT_SECONDS, credentials: dict 
         raise DecodeFailure("INVALID_REQUEST")
     if credentials is not None:
         if (not isinstance(credentials, dict) or set(credentials) != {"password"} or
-                not (text.strip().lower().startswith(("ua://", "v2box://", "1ftunnel://")) or text.strip().startswith(
+                not (text.strip().lower().startswith(("ua://", "v2box://", "1ftunnel://", "xveontunnel://", "xveon://", "xvn://")) or text.strip().startswith(
                     ("1FTnl.", "1FT1.", "1FTlb.", "1ftunnel://1FTnl/", "1ftunnel://1FT1/")) or
                     any(text.strip().lower().startswith(prefix) and
                         len(text.strip()) > len(prefix) for prefix in

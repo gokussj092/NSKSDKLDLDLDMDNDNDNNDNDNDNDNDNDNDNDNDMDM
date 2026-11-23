@@ -145,6 +145,21 @@ test("Hex Tunnel and supplied HXS3 share .hexcm with an optional password and re
   assert(!body.apps.some(app=>app.id==="hex-tunnel"));
 });
 
+test("XU Tunnel publishes its .xu file route without adding a server provider",async()=>{
+  const format=publicFormats().find(f=>f.suffix==="xu");
+  assert.deepEqual(format,{
+    suffix:"xu",name:"XU Tunnel VPN 6.0",kind:"file",
+    offlineSupported:false,cloudSupported:true,credentialFields:[],
+  });
+  const response=await endpoint(request(60));
+  assert.equal(response.status,200);
+  const body=await response.json();
+  assert.equal(body.unchanged,false);
+  assert(body.catalogVersion>60);
+  assert.deepEqual(body.formats.find(f=>f.suffix==="xu"),format);
+  assert(!body.apps.some(app=>app.id==="xu-tunnel"));
+});
+
 test("schema rejects duplicate, invented or executable fields",()=>{
   const clean=JSON.parse(project("cloud/web/content/file-formats.json"));
   const clone=()=>JSON.parse(JSON.stringify(clean));

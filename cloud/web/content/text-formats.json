@@ -498,6 +498,24 @@
       "name": "EUT VPN",
       "suffix": "eut",
       "kind": "text"
+    },
+    {
+      "prefix": "xveontunnel://",
+      "name": "XVEON Tunnel Pro",
+      "suffix": "xveon",
+      "kind": "text"
+    },
+    {
+      "prefix": "xveon://",
+      "name": "XVEON Tunnel Pro",
+      "suffix": "xveon",
+      "kind": "text"
+    },
+    {
+      "prefix": "xvn://",
+      "name": "XVEON Tunnel Pro",
+      "suffix": "xveon",
+      "kind": "text"
     }
   ]
 }

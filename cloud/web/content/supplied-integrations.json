@@ -1391,6 +1391,28 @@
       "catalogState": "CONNECTED"
     },
     {
+      "id": "xveon-tunnel-pro",
+      "appDir": "XVEON_Tunnel_Pro",
+      "name": "XVEON Tunnel Pro",
+      "package": "com.xveon.tunnelpro",
+      "versionCode": 8,
+      "versionName": "8.1",
+      "extensions": [
+        "xveon",
+        "xvn"
+      ],
+      "textPrefixes": [
+        "xveontunnel://",
+        "xveon://",
+        "xvn://"
+      ],
+      "fileModule": "file_decoder.py",
+      "requests": [],
+      "sourceIcon": "XVEON_Tunnel_Pro.png",
+      "icon": "xveon-tunnel-pro.png",
+      "catalogState": "FILE_ONLY"
+    },
+    {
       "id": "xtravpn",
       "appDir": "XtraVPN",
       "name": "XtraVPN",
@@ -2065,6 +2087,23 @@
       "requests": [],
       "sourceIcon": "HexVPN.png",
       "icon": "hexvpn.png",
+      "catalogState": "FILE_ONLY"
+    },
+    {
+      "id": "xu-tunnel",
+      "appDir": "XU_Tunnel",
+      "name": "XU Tunnel",
+      "package": "com.technore.xrptunnelplus",
+      "versionCode": 6,
+      "versionName": "6.0",
+      "extensions": [
+        "xu"
+      ],
+      "textPrefixes": [],
+      "fileModule": "xutunnel_archivos.py",
+      "requests": [],
+      "sourceIcon": "xu-tunnel.png",
+      "icon": "xu-tunnel.png",
       "catalogState": "FILE_ONLY"
     }
   ]

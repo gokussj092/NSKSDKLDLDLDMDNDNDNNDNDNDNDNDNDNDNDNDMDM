@@ -589,6 +589,14 @@
       "credentialFields": []
     },
     {
+      "suffix": "xveon",
+      "name": "XVEON Tunnel Pro 8.1",
+      "kind": "file",
+      "offlineSupported": false,
+      "cloudSupported": true,
+      "credentialFields": ["password"]
+    },
+    {
       "suffix": "1300",
       "name": "Generic AES-GCM / PBKDF2",
       "kind": "file",
@@ -2007,6 +2015,14 @@
       "credentialFields": []
     },
     {
+      "suffix": "xvn",
+      "name": "XVEON Tunnel Pro 8.1",
+      "kind": "file",
+      "offlineSupported": false,
+      "cloudSupported": true,
+      "credentialFields": ["password"]
+    },
+    {
       "suffix": "ziv",
       "name": "ZIVPN",
       "kind": "file",
@@ -2278,6 +2294,14 @@
     {
       "suffix": "xj",
       "name": "XJ VPN 1.9.7",
+      "kind": "file",
+      "offlineSupported": false,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "xu",
+      "name": "XU Tunnel VPN 6.0",
       "kind": "file",
       "offlineSupported": false,
       "cloudSupported": true,
