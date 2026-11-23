@@ -27,3 +27,8 @@ def split_message(message: str, max_length: int = 3500) -> list[str]:
 
 def html_pre(text: str) -> str:
     return html.escape(text)
+
+
+def thread_options(message) -> dict[str, int]:
+    thread_id = getattr(message, "message_thread_id", None)
+    return {"message_thread_id": thread_id} if thread_id is not None else {}

@@ -4,6 +4,7 @@ import json
 import os
 from dataclasses import dataclass
 from pathlib import Path
+from tempfile import NamedTemporaryFile
 from typing import Any
 
 PROJECT_DIR = Path(__file__).resolve().parent.parent
@@ -23,6 +24,7 @@ class AppConfig:
     max_file_size_bytes: int
     text_session_timeout_seconds: int
     text_session_max_chars: int
+    allowed_private_users: frozenset[int] = frozenset()
 
     @property
     def ssc_session_timeout_seconds(self) -> int:
@@ -105,6 +107,12 @@ def load_config(path: Path = CONFIG_PATH) -> AppConfig:
     allowed_groups = access_config.get(
         "allowed_groups", data.get("grupos_permitidos_ids", [])
     )
+    group_ids = _normalize_id_list(allowed_groups, "access.allowed_groups")
+    if "allowed_private_users" in access_config:
+        private_ids = _normalize_id_list(access_config["allowed_private_users"], "access.allowed_private_users")
+    else:
+        # Older configs could authorize private chats via positive IDs.
+        private_ids = group_ids
     allow_all_groups = _normalize_bool(
         access_config.get("allow_all_groups", False),
         "access.allow_all_groups",
@@ -153,7 +161,8 @@ def load_config(path: Path = CONFIG_PATH) -> AppConfig:
     return AppConfig(
         token=token.strip(),
         admins=_normalize_id_list(admins, "access.admins"),
-        allowed_groups=_normalize_id_list(allowed_groups, "access.allowed_groups"),
+        allowed_groups=frozenset(value for value in group_ids if value < 0),
+        allowed_private_users=frozenset(value for value in private_ids if value > 0),
         allow_all_groups=allow_all_groups,
         downloads_dir=_resolve_project_path(runtime_config.get("downloads_dir"), "Downloads"),
         results_dir=_resolve_project_path(runtime_config.get("results_dir"), "Results"),
@@ -162,3 +171,29 @@ def load_config(path: Path = CONFIG_PATH) -> AppConfig:
         text_session_timeout_seconds=text_session_timeout_seconds,
         text_session_max_chars=text_session_max_chars,
     )
+
+
+
+def save_chat_permissions(config: AppConfig, path: Path = CONFIG_PATH) -> None:
+    """Atomically persist managed chat permissions and preserve other settings."""
+    path = path.resolve(strict=True)
+    data = json.loads(path.read_text(encoding="utf-8"))
+    if not isinstance(data, dict) or not isinstance(data.get("access", {}), dict):
+        raise ValueError("La configuración de acceso debe ser un objeto JSON.")
+
+    access = data.setdefault("access", {})
+    access["allowed_groups"] = sorted(config.allowed_groups)
+    access["allowed_private_users"] = sorted(config.allowed_private_users)
+    temporary: Path | None = None
+    try:
+        # NamedTemporaryFile creates a mode-0600 file containing existing secrets.
+        with NamedTemporaryFile("w", encoding="utf-8", dir=path.parent, prefix=".access-", delete=False) as stream:
+            temporary = Path(stream.name)
+            json.dump(data, stream, indent=4, ensure_ascii=False)
+            stream.write("\n")
+            stream.flush()
+            os.fsync(stream.fileno())
+        os.replace(temporary, path)
+    finally:
+        if temporary is not None:
+            temporary.unlink(missing_ok=True)

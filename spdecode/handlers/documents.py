@@ -8,20 +8,22 @@ from spdecode.access import require_authorized
 from spdecode.decoder_runtime import DecodeResult, file_suffix
 from spdecode.handlers.decoder_credentials import decode_and_reply
 from spdecode.runtime import bot, settings
-from spdecode.utils import clean_filename, html_pre
+from spdecode.utils import clean_filename, html_pre, thread_options
 
 logger = logging.getLogger("sp-decode")
 
 
 def send_decoder_output(message, result: DecodeResult, *, caption: str, attach: bool = False) -> None:
+    topic = thread_options(message)
     if result.partial:
-        bot.reply_to(message, "Resultado parcial. El archivo de salida identifica los campos que quedaron sin resolver.")
+        bot.reply_to(message, "Resultado parcial. El archivo de salida identifica los campos que quedaron sin resolver.", **topic)
         attach = True
     if len(result.text.encode("utf-16-le")) <= 7000:
         bot.reply_to(
             message,
             f"<b>SP-DECODE</b>\n<pre>{html_pre(result.text)}</pre>",
             parse_mode="HTML",
+            **topic,
         )
     else:
         attach = True
@@ -33,6 +35,7 @@ def send_decoder_output(message, result: DecodeResult, *, caption: str, attach: 
                 document=output,
                 caption=caption,
                 reply_to_message_id=message.message_id,
+                **topic,
             )
 
 

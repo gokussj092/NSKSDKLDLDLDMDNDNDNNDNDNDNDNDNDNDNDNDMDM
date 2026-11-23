@@ -77,7 +77,7 @@ def decode_config_batch_text(message):
 
 
 # ---------------------------------------------------------------------------
-# Password-protected V2Box exports: short-lived private-chat reply workflow.
+# Password-protected V2Box exports: short-lived reply workflow in the original chat.
 # No extra commands and no persistence or logging of the user password.
 # ---------------------------------------------------------------------------
 def prompt_v2box_password(message, encrypted: bytes) -> None:

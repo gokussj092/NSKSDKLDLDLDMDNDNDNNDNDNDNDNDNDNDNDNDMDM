@@ -65,14 +65,14 @@ class TelegramHandlersTests(unittest.TestCase):
     def setUp(self):
         self.bot = Mock()
         self.bot.message_handler.side_effect = lambda **kwargs: lambda fn: fn
-        self.bot.send_message.side_effect = self._send_message
+        self.bot.reply_to.side_effect = self._reply_to
         self.prompts = []
         self.bot.get_file.return_value = types.SimpleNamespace(file_path="synthetic-input.hc")
         self.bot.download_file.return_value = hccfg_hwid_file(password=S4_SYNTHETIC_PASSWORD)
         self.sent = []
         self.bot.send_document.side_effect = lambda **kwargs: self.sent.append(kwargs["document"].read())
         settings = types.SimpleNamespace(
-            admins={20, 21}, allowed_groups={-40}, allow_all_groups=False,
+            admins={20, 21}, allowed_groups={-40}, allow_all_groups=False, allowed_private_users=set(),
             decoder_timeout_seconds=20, max_file_size_bytes=16 * 1024 * 1024,
         )
         runtime = types.SimpleNamespace(bot=self.bot, settings=settings)
@@ -90,53 +90,83 @@ class TelegramHandlersTests(unittest.TestCase):
         self.addCleanup(documents_patch.stop)
         self.addCleanup(lambda: [self.credentials._remove(key) for key in list(self.credentials._pending)])
 
-    def _send_message(self, chat_id, text, **kwargs):
-        prompt = types.SimpleNamespace(
+    def _reply_to(self, original, text, **kwargs):
+        reply = types.SimpleNamespace(
             message_id=100 + len(self.prompts), text=text,
-            from_user=types.SimpleNamespace(is_bot=True),
+            chat=original.chat, message_thread_id=kwargs.get("message_thread_id"),
+            from_user=types.SimpleNamespace(id=99, is_bot=True),
         )
-        self.prompts.append(prompt)
-        return prompt
+        if text.startswith(self.credentials._PROMPT):
+            self.prompts.append(reply)
+            self.assertEqual(original.chat.id, reply.chat.id)
+            self.assertEqual(getattr(original, "message_thread_id", None), reply.message_thread_id)
+        return reply
 
-    def _message(self, *, user=20, group=False, password="", reply=None):
+    def _message(self, *, user=20, group=False, password="", reply=None, thread=None, message_id=1):
         return types.SimpleNamespace(
-            chat=types.SimpleNamespace(id=-40 if group else 20, type="group" if group else "private"),
+            chat=types.SimpleNamespace(id=-40 if group else user, type="supergroup" if group else "private"),
             from_user=types.SimpleNamespace(id=user),
-            message_id=1, text=password, reply_to_message=reply,
+            message_thread_id=thread, message_id=message_id, text=password, reply_to_message=reply,
             document=types.SimpleNamespace(file_name="synthetic.HC", file_id="test", file_size=200),
         )
 
-    def test_locked_http_custom_never_asks_group_or_wrong_user_for_credentials(self):
-        self.documents.process_received_file(self._message(group=True))
-        self.assertEqual(self.prompts, [])
-        self.assertFalse(self.sent)
-        self.assertIn("chat privado", self.bot.reply_to.call_args.args[1])
-        self.documents.process_received_file(self._message())
+    def test_group_credentials_are_bound_to_author_chat_and_topic(self):
+        original = self._message(user=22, group=True, thread=50)
+        self.documents.process_received_file(original)
         prompt = self.prompts[-1]
-        self.credentials.handle_credential_reply(self._message(user=21, password=SYNTHETIC_HWID, reply=prompt))
+        self.assertIs(self.bot.reply_to.call_args.args[0], original)
+        self.assertTrue(self.bot.reply_to.call_args.kwargs["reply_markup"].selective)
+        self.credentials.handle_credential_reply(
+            self._message(user=21, group=True, thread=50, password=SYNTHETIC_HWID, reply=prompt)
+        )
+        same_chat_replies = self.bot.reply_to.call_count
+        self.credentials.handle_credential_reply(
+            self._message(user=22, group=True, thread=51, password=SYNTHETIC_HWID, reply=prompt)
+        )
+        self.credentials.handle_credential_reply(
+            self._message(user=20, password=SYNTHETIC_HWID, reply=prompt)
+        )
+        self.assertEqual(self.bot.reply_to.call_count, same_chat_replies)
         self.assertFalse(self.sent)
         self.assertEqual(len(self.prompts), 1)
+        self.bot.send_message.assert_not_called()
 
-    def test_dual_http_custom_delivers_on_original_document_without_echoing_credentials(self):
-        self.documents.process_received_file(self._message())
+    def test_dual_http_custom_delivers_on_original_group_document_without_echoing_credentials(self):
+        original = self._message(user=22, group=True, thread=50)
+        self.documents.process_received_file(original)
         prompt = self.prompts[-1]
         self.assertIn("HWID", prompt.text)
-        reply = self._message(password=SYNTHETIC_HWID, reply=prompt)
+        reply = self._message(user=22, group=True, thread=50, password=SYNTHETIC_HWID, reply=prompt)
         self.assertTrue(self.credentials._is_credential_reply(reply))
         self.credentials.handle_credential_reply(reply)
         self.assertIn("contraseña", self.prompts[-1].text)
+        self.assertIs(self.bot.reply_to.call_args.args[0], original)
         self.credentials.handle_credential_reply(
-            self._message(password=S4_SYNTHETIC_PASSWORD, reply=self.prompts[-1])
+            self._message(user=22, group=True, thread=50, password=S4_SYNTHETIC_PASSWORD, reply=original)
         )
         self.assertEqual(len(self.sent), 1)
         self.assertEqual(json.loads(self.sent[0])["config"][0]["host"], "example.org")
-        self.assertEqual(self.bot.send_document.call_args.kwargs["reply_to_message_id"], 1)
+        sent = self.bot.send_document.call_args.kwargs
+        self.assertEqual((sent["chat_id"], sent["message_thread_id"], sent["reply_to_message_id"]), (-40, 50, 1))
         self.assertFalse(self.credentials._pending)
-        # The fake no-op Telegram calls retain passed Message objects, so
-        # check displayed text separately rather than their object reprs.
-        displayed = [call.args[1] for method in (self.bot.send_message, self.bot.reply_to)
-                     for call in method.call_args_list]
+        self.bot.send_message.assert_not_called()
+        displayed = [call.args[1] for call in self.bot.reply_to.call_args_list]
         self.assertTrue(all(SYNTHETIC_HWID not in text and S4_SYNTHETIC_PASSWORD not in text for text in displayed))
+
+    def test_multiple_pending_files_are_independent(self):
+        first = self._message(group=True, message_id=1)
+        second = self._message(group=True, message_id=2)
+        self.documents.process_received_file(first)
+        self.documents.process_received_file(second)
+        self.assertEqual(len(self.credentials._pending), 2)
+        cancel = self._message(group=True, password="/cancel", reply=first)
+        self.assertFalse(self.credentials._is_credential_reply(cancel))
+        self.assertTrue(self.credentials.cancel_pending_credentials(cancel))
+        reply = self._message(group=True, password=SYNTHETIC_HWID, reply=second)
+        self.assertTrue(self.credentials._is_credential_reply(reply))
+        self.credentials.handle_credential_reply(reply)
+        self.assertIn("contraseña", self.prompts[-1].text)
+        self.assertEqual(len(self.credentials._pending), 1)
 
     def test_new_text_handler_and_existing_fallback(self):
         from telebot.handler_backends import ContinueHandling

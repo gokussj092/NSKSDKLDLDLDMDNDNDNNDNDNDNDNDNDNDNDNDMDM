@@ -98,7 +98,7 @@ def _prompt_access_mode(existing_all_groups: bool) -> bool:
     print("Group access mode:")
     print("  1) Only selected Telegram groups")
     print("  2) Every group/supergroup where the bot is a member")
-    print("     (private chats remain restricted to administrators)")
+    print("     (private chat permissions are configured separately)")
     while True:
         raw = input(f"Choose 1 or 2 [{default}]: ").strip() or default
         if raw == "1":
@@ -132,6 +132,11 @@ def main() -> int:
         for item in access_cfg.get("allowed_groups", [])
         if isinstance(item, int) and not isinstance(item, bool)
     ]
+    existing_private_users = [
+        item for item in (access_cfg.get("allowed_private_users", existing_groups) or [])
+        if type(item) is int and item > 0
+    ]
+    existing_groups = [item for item in existing_groups if item < 0]
     existing_all_groups = bool(access_cfg.get("allow_all_groups", False))
 
     print("=" * 64)
@@ -170,6 +175,7 @@ def main() -> int:
             "admins": admins,
             "allow_all_groups": allow_all_groups,
             "allowed_groups": allowed_groups,
+            "allowed_private_users": existing_private_users,
         },
         "runtime": runtime,
     }
@@ -197,7 +203,7 @@ def main() -> int:
     else:
         print(f"Group access: {len(allowed_groups)} selected group(s)")
 
-    if not admins:
+    if not admins and not existing_private_users:
         print(
             "WARNING: no administrator IDs were configured. "
             "Private decoding access will not be available."
@@ -205,7 +211,7 @@ def main() -> int:
     if not allow_all_groups and not allowed_groups:
         print(
             "WARNING: no allowed groups were configured. "
-            "Only administrators will be able to use protected decoders."
+            "Decoding in groups will be unavailable until a group is authorized."
         )
 
     return 0

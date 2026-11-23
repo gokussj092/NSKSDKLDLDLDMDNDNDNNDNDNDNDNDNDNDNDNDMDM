@@ -287,6 +287,17 @@ spdecode validate
 
 These commands are for the bot's launcher, not the Cloud management CLI.
 
+In Telegram, reply to the bot's credential prompt in the same chat and
+topic as the original file or link. Bot administrators can manage access
+without restarting the service.
+
+- `/permitirgrupo [GROUP_ID]` adds the current group or a specific group.
+- `/revocargrupo [GROUP_ID]` removes a group from the allowlist. If
+  `allow_all_groups` is enabled, group decoding remains available.
+- `/privados` checks your own private access. Administrators see the list
+  and can use `/privados permitir USER_ID` or `/privados revocar USER_ID`.
+
+
 ---
 
 ## Repository structure

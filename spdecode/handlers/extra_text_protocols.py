@@ -6,7 +6,7 @@ TLS, RENZ, IZPH, XOR, HAPP and other shared file/text decoders are
 untouched and retain their own handlers.
 
 All outputs use the existing centralized authorization and safe HTML
-escaping. A V2Box password request is only ever accepted in private chat.
+escaping. V2Box credential requests stay in the chat that received the original.
 """
 from __future__ import annotations
 

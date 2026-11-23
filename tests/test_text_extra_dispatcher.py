@@ -83,7 +83,7 @@ class ExtraTextDispatcherTests(unittest.TestCase):
         )
         fake_settings=types.SimpleNamespace(
             admins=frozenset({999}), allowed_groups=frozenset(),
-            allow_all_groups=False,
+            allow_all_groups=False, allowed_private_users=frozenset(),
         )
         fake_runtime=types.SimpleNamespace(bot=bot,settings=fake_settings)
         with patch.dict(sys.modules,{"spdecode.runtime":fake_runtime}):
@@ -102,7 +102,7 @@ class ExtraTextDispatcherTests(unittest.TestCase):
         )
         fake_settings=types.SimpleNamespace(
             admins=frozenset({999}), allowed_groups=frozenset(),
-            allow_all_groups=False,
+            allow_all_groups=False, allowed_private_users=frozenset(),
         )
         fake_runtime=types.SimpleNamespace(bot=bot,settings=fake_settings)
         with patch.dict(sys.modules,{"spdecode.runtime":fake_runtime}):

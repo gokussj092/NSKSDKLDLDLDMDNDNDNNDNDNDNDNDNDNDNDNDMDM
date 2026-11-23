@@ -5,8 +5,8 @@ import time
 from pathlib import Path
 
 # El orden de importación conserva la prioridad de los handlers específicos.
-from spdecode.handlers import commands as _commands  # noqa: F401
 from spdecode.handlers import decoder_credentials as _decoder_credentials  # noqa: F401
+from spdecode.handlers import commands as _commands  # noqa: F401
 from spdecode.handlers import cloud_texts as _cloud_texts  # noqa: F401
 from spdecode.handlers import extra_text_protocols as _extra_text_protocols  # noqa: F401
 from spdecode.handlers import text_protocols as _text_protocols  # noqa: F401
