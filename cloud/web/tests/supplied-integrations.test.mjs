@@ -36,12 +36,13 @@ function network(t,answer=()=>({body:Buffer.from("synthetic encrypted response")
  t.mock.method(https,"request",request);t.mock.method(http,"request",request);return calls;
 }
 test("PausaVPN (M Light) is discoverable without changing m-light or .pausa routes",t=>{
- environment(t);
- const card=catalog().apps.find(x=>x.id==="m-light");
+ environment(t,{CLOUD_SERVER_VPN_CATALOG_VERSION:""});
+ const snapshot=catalog();
+ const card=snapshot.apps.find(x=>x.id==="m-light");
  assert(card);
  assert.equal(card.name,"PausaVPN (M Light)");
  assert.equal(card.decodeEnabled,true); // enabled provider with unchanged id and remote
- assert.equal(catalog().catalogVersion,93);
+ assert(snapshot.catalogVersion>=93,"PausaVPN is published from catalog version 93 onward");
  const supplied=SUPPLIED_INTEGRATIONS.find(x=>x.id==="m-light");
  assert(supplied);
  assert.equal(supplied.name,card.name);
