@@ -40,7 +40,9 @@ class AndroidAabLanguagesTests(unittest.TestCase):
         self.assertEqual(
             set(supported),
             {"en", "es", "pt-BR", "ar", "fa", "fr", "id", "ru",
-             "de", "tr", "vi", "hi", "ja", "it"},
+             "de", "tr", "vi", "hi", "ja", "it", "tl", "ur", "bn", "th", "am",
+             "uk", "ko", "zh-CN", "ms", "pl", "ro", "sw", "ha", "ta", "my",
+             "km", "ne", "uz", "sr", "el", "cs", "hu"},
         )
 
     def test_config_rejects_play_language_splits(self):

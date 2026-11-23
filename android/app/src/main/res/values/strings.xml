@@ -50,6 +50,7 @@
     <string name="language_help_sent">Report sent. Thank you for helping improve the language.</string>
     <string name="language_help_error">Could not send the report. Please try again later.</string>
     <string name="language_help_required">Language, wrong text and suggested correction are required.</string>
+    <string name="language_help_invalid_input">Shorten the report or remove unsupported characters.</string>
     <string name="show">Show</string>
     <string name="hide">Hide</string>
     <string name="raw_text">Original decoder output</string>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="language_help_title">ဘာသာပြန်ဆိုချက်များ ပိုကောင်းလာအောင် ကူညီပါ</string>
+    <string name="language_help_detail">ဘာသာပြန်အမှားများကို ပြင်ဆင်နိုင်ရန် အသိပေးပါ။</string>
+    <string name="language_help_signin_title">တိုင်ကြားရန် အကောင့်ဝင်ပါ</string>
+    <string name="language_help_signin_detail">ဘာသာပြန်အမှားကို တိုင်ကြားရန် သင့်အကောင့်သို့ ဝင်ပါ။</string>
+    <string name="language_help_signin_button">အကောင့်ဝင်ရန်</string>
+    <string name="language_help_form_title">ဘာသာပြန်အမှား တိုင်ကြားရန်</string>
+    <string name="language_help_language_label">ဘာသာစကား</string>
+    <string name="language_help_where_label">အမှားကို ဘယ်နေရာမှာ တွေ့ခဲ့ပါသလဲ။</string>
+    <string name="language_help_wrong_label">မှားနေသည့်စာသား (ပြထားသည့်အတိုင်း)</string>
+    <string name="language_help_correct_label">မည်သို့ ရေးထားသင့်ပါသလဲ။</string>
+    <string name="language_help_comment_label">မှတ်ချက် (မထည့်လည်းရပါသည်)</string>
+    <string name="language_help_send">တိုင်ကြားချက် ပို့ရန်</string>
+    <string name="language_help_sent">တိုင်ကြားချက် ပို့ပြီးပါပြီ။ ဘာသာပြန်ဆိုချက်များ ပိုကောင်းလာအောင် ကူညီသည့်အတွက် ကျေးဇူးတင်ပါသည်။</string>
+    <string name="language_help_error">တိုင်ကြားချက် မပို့နိုင်ပါ။ နောက်မှ ထပ်စမ်းကြည့်ပါ။</string>
+    <string name="language_help_required">ဘာသာစကား၊ မှားနေသည့်စာသားနှင့် ပြင်ဆင်ရန် အကြံပြုချက် လိုအပ်ပါသည်။</string>
+    <string name="language_help_invalid_input">တိုင်ကြားချက်ကို တိုအောင်ရေးပါ သို့မဟုတ် အသုံးမပြုနိုင်သော အက္ခရာများကို ဖယ်ရှားပါ။</string>
+</resources>

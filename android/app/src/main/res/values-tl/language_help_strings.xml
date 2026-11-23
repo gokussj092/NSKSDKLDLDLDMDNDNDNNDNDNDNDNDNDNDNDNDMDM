@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="language_help_title">Tumulong sa pagpapahusay ng mga salin</string>
+    <string name="language_help_detail">Iulat ang mga mali sa salin upang maitama namin ang mga ito.</string>
+    <string name="language_help_signin_title">Mag-sign in upang mag-ulat</string>
+    <string name="language_help_signin_detail">Mag-sign in sa iyong account upang makapag-ulat ng mali sa salin.</string>
+    <string name="language_help_signin_button">Mag-sign in</string>
+    <string name="language_help_form_title">Mag-ulat ng mali sa salin</string>
+    <string name="language_help_language_label">Wika</string>
+    <string name="language_help_where_label">Saan mo nakita ang mali?</string>
+    <string name="language_help_wrong_label">Maling teksto (gaya ng nakikita)</string>
+    <string name="language_help_correct_label">Ano ang dapat nakasulat?</string>
+    <string name="language_help_comment_label">Komento (opsyonal)</string>
+    <string name="language_help_send">Ipadala ang ulat</string>
+    <string name="language_help_sent">Naipadala ang ulat. Salamat sa pagtulong na mapahusay ang mga salin.</string>
+    <string name="language_help_error">Hindi naipadala ang ulat. Subukang muli mamaya.</string>
+    <string name="language_help_required">Kailangan ang wika, maling teksto, at mungkahing pagwawasto.</string>
+    <string name="language_help_invalid_input">Paikliin ang ulat o alisin ang mga character na hindi sinusuportahan.</string>
+</resources>

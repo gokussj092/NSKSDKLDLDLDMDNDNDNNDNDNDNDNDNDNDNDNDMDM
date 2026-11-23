@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="language_help_title">ជួយកែលម្អការបកប្រែ</string>
+    <string name="language_help_detail">រាយការណ៍កំហុសក្នុងការបកប្រែ ដើម្បីឱ្យយើងអាចកែតម្រូវបាន។</string>
+    <string name="language_help_signin_title">ចូលគណនីដើម្បីរាយការណ៍</string>
+    <string name="language_help_signin_detail">ចូលគណនីរបស់អ្នក ដើម្បីផ្ញើរបាយការណ៍កំហុសក្នុងការបកប្រែ។</string>
+    <string name="language_help_signin_button">ចូលគណនី</string>
+    <string name="language_help_form_title">រាយការណ៍កំហុសក្នុងការបកប្រែ</string>
+    <string name="language_help_language_label">ភាសា</string>
+    <string name="language_help_where_label">តើអ្នកឃើញកំហុសនៅកន្លែងណា?</string>
+    <string name="language_help_wrong_label">អត្ថបទខុស (ដូចដែលបានបង្ហាញ)</string>
+    <string name="language_help_correct_label">តើអត្ថបទត្រឹមត្រូវគួរសរសេរដូចម្តេច?</string>
+    <string name="language_help_comment_label">មតិយោបល់ (មិនចាំបាច់)</string>
+    <string name="language_help_send">ផ្ញើរបាយការណ៍</string>
+    <string name="language_help_sent">បានផ្ញើរបាយការណ៍។ សូមអរគុណដែលបានជួយកែលម្អការបកប្រែ។</string>
+    <string name="language_help_error">មិនអាចផ្ញើរបាយការណ៍បានទេ។ សូមព្យាយាមម្តងទៀតនៅពេលក្រោយ។</string>
+    <string name="language_help_required">ត្រូវបញ្ចូលភាសា អត្ថបទខុស និងសំណើកែតម្រូវ។</string>
+    <string name="language_help_invalid_input">កាត់បន្ថយប្រវែងរបាយការណ៍ ឬលុបតួអក្សរដែលមិនគាំទ្រ។</string>
+</resources>

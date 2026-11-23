@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="language_help_title">번역 개선에 도움 주기</string>
+    <string name="language_help_detail">번역 오류를 알려 주시면 수정하는 데 도움이 됩니다.</string>
+    <string name="language_help_signin_title">로그인하여 신고하기</string>
+    <string name="language_help_signin_detail">번역 오류를 신고하려면 계정에 로그인하세요.</string>
+    <string name="language_help_signin_button">로그인</string>
+    <string name="language_help_form_title">번역 오류 신고</string>
+    <string name="language_help_language_label">언어</string>
+    <string name="language_help_where_label">어디에서 오류를 발견했나요?</string>
+    <string name="language_help_wrong_label">잘못된 문구 (표시된 그대로)</string>
+    <string name="language_help_correct_label">어떻게 쓰면 되나요?</string>
+    <string name="language_help_comment_label">의견 (선택 사항)</string>
+    <string name="language_help_send">신고 보내기</string>
+    <string name="language_help_sent">신고를 보냈습니다. 번역 개선에 도움을 주셔서 감사합니다.</string>
+    <string name="language_help_error">신고를 보내지 못했습니다. 나중에 다시 시도하세요.</string>
+    <string name="language_help_required">언어, 잘못된 문구, 수정 제안은 필수입니다.</string>
+    <string name="language_help_invalid_input">신고를 줄이거나 지원되지 않는 문자를 삭제하세요.</string>
+</resources>

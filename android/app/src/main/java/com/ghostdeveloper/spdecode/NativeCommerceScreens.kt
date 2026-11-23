@@ -150,7 +150,8 @@ private fun SimpleFeature(title:String,subtitle:String?=null){
 /** Customer storefront: display real purchasable offers only. */
 @Composable
 internal fun NativeCommerceScreens(start:String,onExit:()->Unit,
-    onLegalLink:(String)->Unit={},onCheckoutUrl:(String)->Unit={}) {
+    onLegalLink:(String)->Unit={},onCheckoutUrl:(String)->Unit={},
+    onSignedIn:(()->Unit)?=null) {
     val entryPage=start
     var page by rememberSaveable(start){mutableStateOf(entryPage)}
     var detail by rememberSaveable {mutableStateOf("home")}
@@ -210,7 +211,7 @@ internal fun NativeCommerceScreens(start:String,onExit:()->Unit,
         resetEmailStep()
         email = ""
         CloudNoticePush.syncAccount(context)
-        page = "account"
+        if(onSignedIn==null) page="account" else onSignedIn()
     }
     fun back(){
         if (page == "login") {

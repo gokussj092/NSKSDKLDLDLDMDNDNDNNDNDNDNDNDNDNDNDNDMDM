@@ -838,7 +838,9 @@ android {
                 arguments += "-DSPDECODE_OFFLINE_NATIVE=" + (if(nativeOffline) "ON" else "OFF")
             }
         }
-        resourceConfigurations += listOf("en", "es", "pt-rBR", "ar", "fa", "fr", "in", "ru", "de", "tr", "vi", "hi", "ja", "it")
+        resourceConfigurations += listOf("en", "es", "pt-rBR", "ar", "fa", "fr", "in", "ru", "de", "tr", "vi", "hi", "ja", "it",
+            "tl", "ur", "bn", "th", "am", "uk", "ko", "zh-rCN", "ms", "pl", "ro",
+            "sw", "ha", "ta", "my", "km", "ne", "uz", "sr", "el", "cs", "hu")
     }
     buildFeatures { compose = true; buildConfig = true }
     externalNativeBuild {

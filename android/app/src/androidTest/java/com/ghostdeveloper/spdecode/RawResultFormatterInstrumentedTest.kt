@@ -60,7 +60,7 @@ class RawResultFormatterInstrumentedTest {
     @Test fun extensibleLanguageRegistryRetainsCurrentChoices() {
         assertEquals(listOf("system","es","en","pt-BR","ar","fa","fr","id","ru","de",
             "tr","vi","hi","ja","it"),
-            SupportedLanguages.options.map{it.tag})
+            SupportedLanguages.options.map{it.tag}.take(15))
         assertTrue(SupportedLanguages.supports("pt-BR"))
         assertFalse(SupportedLanguages.supports("unknown"))
     }

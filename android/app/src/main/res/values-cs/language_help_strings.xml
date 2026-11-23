@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="language_help_title">Pomozte zlepšit překlady</string>
+    <string name="language_help_detail">Nahlaste chyby v překladech, abychom je mohli opravit.</string>
+    <string name="language_help_signin_title">Pro nahlášení se přihlaste</string>
+    <string name="language_help_signin_detail">Přihlaste se ke svému účtu, abyste mohli nahlásit chybu v překladu.</string>
+    <string name="language_help_signin_button">Přihlásit se</string>
+    <string name="language_help_form_title">Nahlásit chybu v překladu</string>
+    <string name="language_help_language_label">Jazyk</string>
+    <string name="language_help_where_label">Kde jste chybu viděli?</string>
+    <string name="language_help_wrong_label">Chybný text (jak se zobrazuje)</string>
+    <string name="language_help_correct_label">Jak by měl text správně znít?</string>
+    <string name="language_help_comment_label">Komentář (nepovinný)</string>
+    <string name="language_help_send">Odeslat hlášení</string>
+    <string name="language_help_sent">Hlášení bylo odesláno. Děkujeme, že pomáháte zlepšovat překlady.</string>
+    <string name="language_help_error">Hlášení se nepodařilo odeslat. Zkuste to znovu později.</string>
+    <string name="language_help_required">Vyplňte jazyk, chybný text a navrhovanou opravu.</string>
+    <string name="language_help_invalid_input">Zkraťte hlášení nebo odstraňte nepodporované znaky.</string>
+</resources>

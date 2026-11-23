@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="language_help_title">ساعد في تحسين الترجمة</string>
+    <string name="language_help_detail">أخبرنا بأخطاء الترجمة كي نتمكن من تصحيحها.</string>
+    <string name="language_help_signin_title">سجّل الدخول للإبلاغ</string>
+    <string name="language_help_signin_detail">سجّل الدخول إلى حسابك لإرسال بلاغ عن الترجمة.</string>
+    <string name="language_help_signin_button">تسجيل الدخول</string>
+    <string name="language_help_form_title">الإبلاغ عن خطأ في الترجمة</string>
+    <string name="language_help_language_label">اللغة</string>
+    <string name="language_help_where_label">أين ظهر الخطأ؟</string>
+    <string name="language_help_wrong_label">النص الخاطئ كما يظهر</string>
+    <string name="language_help_correct_label">كيف ينبغي أن يُكتب؟</string>
+    <string name="language_help_comment_label">ملاحظات (اختيارية)</string>
+    <string name="language_help_send">إرسال البلاغ</string>
+    <string name="language_help_sent">تم إرسال البلاغ. شكرًا لمساعدتك في تحسين الترجمة.</string>
+    <string name="language_help_error">تعذّر إرسال البلاغ. حاول مجددًا لاحقًا.</string>
+    <string name="language_help_required">يجب تحديد اللغة وإدخال النص الخاطئ والتصحيح المقترح.</string>
+    <string name="language_help_invalid_input">اختصر البلاغ أو احذف الأحرف غير المدعومة.</string>
+</resources>

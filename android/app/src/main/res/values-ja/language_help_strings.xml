@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="language_help_title">翻訳の改善に協力する</string>
+    <string name="language_help_detail">翻訳の誤りを報告すると、修正に役立ちます。</string>
+    <string name="language_help_signin_title">報告するにはログイン</string>
+    <string name="language_help_signin_detail">翻訳の誤りを報告するにはログインしてください。</string>
+    <string name="language_help_signin_button">ログイン</string>
+    <string name="language_help_form_title">翻訳の誤りを報告</string>
+    <string name="language_help_language_label">言語</string>
+    <string name="language_help_where_label">どこで誤りを見つけましたか？</string>
+    <string name="language_help_wrong_label">誤っている文（表示どおり）</string>
+    <string name="language_help_correct_label">どのような文が適切ですか？</string>
+    <string name="language_help_comment_label">コメント（任意）</string>
+    <string name="language_help_send">報告を送信</string>
+    <string name="language_help_sent">報告を送信しました。翻訳の改善にご協力いただきありがとうございます。</string>
+    <string name="language_help_error">報告を送信できませんでした。後でもう一度お試しください。</string>
+    <string name="language_help_required">言語、誤っている文、修正案は必須です。</string>
+    <string name="language_help_invalid_input">報告を短くするか、未対応の文字を削除してください。</string>
+</resources>

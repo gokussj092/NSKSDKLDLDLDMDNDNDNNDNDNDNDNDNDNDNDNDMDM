@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="language_help_title">Bantu memperbaiki terjemahan</string>
+    <string name="language_help_detail">Laporkan kesalahan terjemahan agar kami dapat memperbaikinya.</string>
+    <string name="language_help_signin_title">Masuk untuk melapor</string>
+    <string name="language_help_signin_detail">Masuk ke akun untuk mengirim laporan terjemahan.</string>
+    <string name="language_help_signin_button">Masuk</string>
+    <string name="language_help_form_title">Laporkan kesalahan terjemahan</string>
+    <string name="language_help_language_label">Bahasa</string>
+    <string name="language_help_where_label">Di mana Anda melihat kesalahannya?</string>
+    <string name="language_help_wrong_label">Teks yang salah (seperti yang ditampilkan)</string>
+    <string name="language_help_correct_label">Bagaimana seharusnya teks itu ditulis?</string>
+    <string name="language_help_comment_label">Komentar (opsional)</string>
+    <string name="language_help_send">Kirim laporan</string>
+    <string name="language_help_sent">Laporan terkirim. Terima kasih telah membantu memperbaiki terjemahan.</string>
+    <string name="language_help_error">Laporan tidak dapat dikirim. Coba lagi nanti.</string>
+    <string name="language_help_required">Bahasa, teks yang salah, dan usulan perbaikan wajib diisi.</string>
+    <string name="language_help_invalid_input">Persingkat laporan atau hapus karakter yang tidak didukung.</string>
+</resources>

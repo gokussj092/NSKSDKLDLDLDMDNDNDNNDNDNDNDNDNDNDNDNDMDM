@@ -11,6 +11,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -40,7 +42,8 @@ internal fun AccountDrawer(busy:Boolean,onExternalLink:(String)->Unit,
     val local:(String,String)->String={es,en->CommerceI18n.translate(language,es,en)}
     val auth=remember(context){NativeCommerceAuth(context)}
     val user=CommerceSession.user
-    var destination by remember {mutableStateOf<String?>(null)}
+    var destination by rememberSaveable {mutableStateOf<String?>(null)}
+    val mainContentState=rememberSaveableStateHolder()
     var supportUnread by remember {mutableStateOf(0)}
     LaunchedEffect(Unit) {
         auth.restoreCachedIdentity()
@@ -174,8 +177,20 @@ internal fun AccountDrawer(busy:Boolean,onExternalLink:(String)->Unit,
             }
         }){
         val route=destination
-        if(route==null)content {if(!busy)scope.launch{state.open()}}
-        else NativeCommerceScreens(start=route,onExit={destination=null},
-            onLegalLink=onLegalLink,onCheckoutUrl=onCheckoutUrl)
+        if(route==null) {
+            mainContentState.SaveableStateProvider("main") {
+                content {if(!busy)scope.launch{state.open()}}
+            }
+        } else {
+            val fromLanguageHelp=route=="language-help-login"
+            val exit:()->Unit={destination=null}
+            NativeCommerceScreens(
+                start=if(fromLanguageHelp) "login" else route,
+                onExit=exit,
+                onLegalLink=onLegalLink,
+                onCheckoutUrl=onCheckoutUrl,
+                onSignedIn=if(fromLanguageHelp) exit else null,
+            )
+        }
     }
 }

@@ -12,6 +12,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
@@ -27,16 +28,15 @@ private val helpMuted=Color(0xFFABABAB)
 private val helpGreen=Color(0xFF38A36D)
 private val helpError=Color(0xFFFF8585)
 
-/** Prefill with the native name of the app language; "system" resolves to the device locale. */
-private fun defaultLanguageName(language:String):String{
-    if(language!="system")
-        return SupportedLanguages.options.firstOrNull{it.tag==language}?.nativeName.orEmpty()
-    val systemTag=Locale.getDefault().toLanguageTag()
-    SupportedLanguages.options.firstOrNull{it.tag==systemTag}?.nativeName
-        ?.takeIf{it.isNotBlank()}?.let{return it}
-    val systemLanguage=Locale.getDefault().language
-    return SupportedLanguages.options
-        .firstOrNull{it.tag.substringBefore('-')==systemLanguage}?.nativeName.orEmpty()
+private const val reportCategory="technical"
+private val unsupportedReportCharacters=Regex("[\u0000-\u0008\u000B\u000C\u000E-\u001F]")
+
+private fun defaultLanguageName(language:String,locale:Locale):String {
+    val tag=if(language=="system") locale.toLanguageTag() else language
+    val code=if(locale.language=="fil") "tl" else locale.language
+    return (SupportedLanguages.options.firstOrNull{it.tag==tag}
+        ?:SupportedLanguages.options.firstOrNull{it.tag.substringBefore('-')==code})
+        ?.nativeName ?: locale.getDisplayName(locale)
 }
 
 /**
@@ -57,9 +57,12 @@ internal fun LanguageHelpScreen(
     // Read fresh on every composition: returning from the sign-in flow must
     // show the form without reopening this page.
     val signedIn=auth.sessionToken()!=null
+    val locked=NativeDeviceAccountGuard.enabled(context) && !NativeDeviceAccountGuard.unlocked
+    val locale=LocalConfiguration.current.locales[0]
+    val initialLanguage=defaultLanguageName(language,locale)
     val scope=rememberCoroutineScope()
-    var languageField by rememberSaveable(language){
-        mutableStateOf(defaultLanguageName(language))
+    var languageField by rememberSaveable(initialLanguage){
+        mutableStateOf(initialLanguage)
     }
     var where by rememberSaveable{mutableStateOf("")}
     var wrong by rememberSaveable{mutableStateOf("")}
@@ -69,27 +72,30 @@ internal fun LanguageHelpScreen(
     var sent by remember{mutableStateOf(false)}
     var sendError by remember{mutableStateOf(false)}
 
-    val canSend=!busy && languageField.isNotBlank() &&
-        wrong.isNotBlank() && correct.isNotBlank()
+    val complete=languageField.isNotBlank() && wrong.isNotBlank() && correct.isNotBlank()
+    val subject=("Error de traducción: "+languageField.trim()).take(60).trim()
+    val body=buildString {
+        appendLine("[Error de traducción]")
+        appendLine("Idioma: "+languageField.trim())
+        appendLine("Dónde: "+where.trim())
+        appendLine("Texto actual: "+wrong.trim())
+        appendLine("Corrección sugerida: "+correct.trim())
+        append("Comentarios: "+comment.trim())
+    }
+    val invalidReport=body.toByteArray(Charsets.UTF_8).size>4096 ||
+        unsupportedReportCharacters.containsMatchIn(body) ||
+        supportThreadPayload(subject,reportCategory,body).toString().toByteArray(Charsets.UTF_8).size>6200
+    val canSend=signedIn && !locked && !busy && complete && !invalidReport
 
     fun send(){
-        if(!canSend)return
+        if(!canSend || NativeDeviceAccountGuard.enabled(context) && !NativeDeviceAccountGuard.unlocked)return
         busy=true
         sendError=false
         sent=false
-        val subject=("Error de traducción: "+languageField.trim()).take(60).trim()
-        val body=buildString{
-            appendLine("[Error de traducción]")
-            appendLine("Idioma: "+languageField.trim())
-            appendLine("Dónde: "+where.trim())
-            appendLine("Texto actual: "+wrong.trim())
-            appendLine("Corrección sugerida: "+correct.trim())
-            append("Comentarios: "+comment.trim())
-        }
         scope.launch{
             try{
-                auth.openSupportThread(subject,"technical",body)
-                languageField=defaultLanguageName(language)
+                auth.openSupportThread(subject,reportCategory,body)
+                languageField=initialLanguage
                 where=""
                 wrong=""
                 correct=""
@@ -133,10 +139,13 @@ internal fun LanguageHelpScreen(
                     contentColor=Color.Black)){
                 Text(stringResource(R.string.language_help_signin_button))
             }
+        }else if(locked) {
+            CommerceAccountUnlockPage(locale.language)
         }else{
             Text(stringResource(R.string.language_help_form_title),
                 color=helpText,fontSize=18.sp,fontWeight=FontWeight.SemiBold)
             OutlinedTextField(
+                enabled=!busy,
                 value=languageField,
                 onValueChange={languageField=it.take(60);sent=false},
                 label={Text(stringResource(R.string.language_help_language_label))},
@@ -145,6 +154,7 @@ internal fun LanguageHelpScreen(
                     .testTag("language_help_language")
             )
             OutlinedTextField(
+                enabled=!busy,
                 value=where,
                 onValueChange={where=it.take(200);sent=false},
                 label={Text(stringResource(R.string.language_help_where_label))},
@@ -153,6 +163,7 @@ internal fun LanguageHelpScreen(
                     .testTag("language_help_where")
             )
             OutlinedTextField(
+                enabled=!busy,
                 value=wrong,
                 onValueChange={wrong=it.take(2000);sent=false},
                 label={Text(stringResource(R.string.language_help_wrong_label))},
@@ -161,6 +172,7 @@ internal fun LanguageHelpScreen(
                     .testTag("language_help_wrong")
             )
             OutlinedTextField(
+                enabled=!busy,
                 value=correct,
                 onValueChange={correct=it.take(2000);sent=false},
                 label={Text(stringResource(R.string.language_help_correct_label))},
@@ -169,6 +181,7 @@ internal fun LanguageHelpScreen(
                     .testTag("language_help_correct")
             )
             OutlinedTextField(
+                enabled=!busy,
                 value=comment,
                 onValueChange={comment=it.take(2000);sent=false},
                 label={Text(stringResource(R.string.language_help_comment_label))},
@@ -176,8 +189,10 @@ internal fun LanguageHelpScreen(
                 modifier=Modifier.fillMaxWidth()
                     .testTag("language_help_comment")
             )
-            if(!canSend)Text(stringResource(R.string.language_help_required),
+            if(!complete)Text(stringResource(R.string.language_help_required),
                 color=helpMuted,fontSize=12.sp,lineHeight=17.sp)
+            if(invalidReport)Text(stringResource(R.string.language_help_invalid_input),
+                color=helpError,fontSize=13.sp,lineHeight=19.sp)
             Button(onClick={send()},enabled=canSend,
                 modifier=Modifier.fillMaxWidth()
                     .testTag("language_help_send"),

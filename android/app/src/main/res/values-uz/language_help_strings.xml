@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="language_help_title">Tarjimalarni yaxshilashga yordam bering</string>
+    <string name="language_help_detail">Tarjimadagi xatolarni tuzatishimiz uchun ularni bizga bildiring.</string>
+    <string name="language_help_signin_title">Xabar berish uchun hisobga kiring</string>
+    <string name="language_help_signin_detail">Tarjima xatosi haqida xabar yuborish uchun hisobingizga kiring.</string>
+    <string name="language_help_signin_button">Kirish</string>
+    <string name="language_help_form_title">Tarjima xatosi haqida xabar berish</string>
+    <string name="language_help_language_label">Til</string>
+    <string name="language_help_where_label">Xatoni qayerda ko‘rdingiz?</string>
+    <string name="language_help_wrong_label">Xato matn (ko‘rsatilganidek)</string>
+    <string name="language_help_correct_label">Qanday yozilishi kerak?</string>
+    <string name="language_help_comment_label">Izohlar (ixtiyoriy)</string>
+    <string name="language_help_send">Xabarni yuborish</string>
+    <string name="language_help_sent">Xabar yuborildi. Tarjimalarni yaxshilashga yordam berganingiz uchun rahmat.</string>
+    <string name="language_help_error">Xabarni yuborib bo‘lmadi. Keyinroq qayta urinib ko‘ring.</string>
+    <string name="language_help_required">Til, xato matn va taklif etilgan tuzatish kiritilishi kerak.</string>
+    <string name="language_help_invalid_input">Xabarni qisqartiring yoki qo‘llanmaydigan belgilarni olib tashlang.</string>
+</resources>

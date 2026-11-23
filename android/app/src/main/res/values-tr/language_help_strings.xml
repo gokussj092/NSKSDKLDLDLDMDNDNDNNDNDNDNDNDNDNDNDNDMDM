@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="language_help_title">Çevirileri iyileştirmeye yardım edin</string>
+    <string name="language_help_detail">Çeviri hatalarını bildirin, böylece düzeltebiliriz.</string>
+    <string name="language_help_signin_title">Bildirmek için giriş yapın</string>
+    <string name="language_help_signin_detail">Çeviri hatası bildirmek için hesabınıza giriş yapın.</string>
+    <string name="language_help_signin_button">Giriş yap</string>
+    <string name="language_help_form_title">Çeviri hatası bildir</string>
+    <string name="language_help_language_label">Dil</string>
+    <string name="language_help_where_label">Hatayı nerede gördünüz?</string>
+    <string name="language_help_wrong_label">Hatalı metin (göründüğü gibi)</string>
+    <string name="language_help_correct_label">Doğrusu nasıl olmalı?</string>
+    <string name="language_help_comment_label">Yorum (isteğe bağlı)</string>
+    <string name="language_help_send">Bildirimi gönder</string>
+    <string name="language_help_sent">Bildirim gönderildi. Çevirileri iyileştirmemize yardım ettiğiniz için teşekkürler.</string>
+    <string name="language_help_error">Bildirim gönderilemedi. Daha sonra tekrar deneyin.</string>
+    <string name="language_help_required">Dil, hatalı metin ve düzeltme önerisi zorunludur.</string>
+    <string name="language_help_invalid_input">Bildirimi kısaltın veya desteklenmeyen karakterleri kaldırın.</string>
+</resources>

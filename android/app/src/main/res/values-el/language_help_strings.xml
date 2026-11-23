@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="language_help_title">Βοηθήστε στη βελτίωση των μεταφράσεων</string>
+    <string name="language_help_detail">Αναφέρετε μεταφραστικά λάθη για να μπορούμε να τα διορθώσουμε.</string>
+    <string name="language_help_signin_title">Συνδεθείτε για να κάνετε αναφορά</string>
+    <string name="language_help_signin_detail">Συνδεθείτε στον λογαριασμό σας για να αναφέρετε μεταφραστικό λάθος.</string>
+    <string name="language_help_signin_button">Σύνδεση</string>
+    <string name="language_help_form_title">Αναφορά μεταφραστικού λάθους</string>
+    <string name="language_help_language_label">Γλώσσα</string>
+    <string name="language_help_where_label">Πού είδατε το λάθος;</string>
+    <string name="language_help_wrong_label">Λανθασμένο κείμενο (όπως εμφανίζεται)</string>
+    <string name="language_help_correct_label">Πώς θα έπρεπε να γράφεται;</string>
+    <string name="language_help_comment_label">Σχόλια (προαιρετικά)</string>
+    <string name="language_help_send">Υποβολή αναφοράς</string>
+    <string name="language_help_sent">Η αναφορά υποβλήθηκε. Ευχαριστούμε που βοηθάτε στη βελτίωση των μεταφράσεων.</string>
+    <string name="language_help_error">Δεν ήταν δυνατή η υποβολή της αναφοράς. Δοκιμάστε ξανά αργότερα.</string>
+    <string name="language_help_required">Η γλώσσα, το λανθασμένο κείμενο και η προτεινόμενη διόρθωση είναι υποχρεωτικά.</string>
+    <string name="language_help_invalid_input">Συντομεύστε την αναφορά ή αφαιρέστε τους μη υποστηριζόμενους χαρακτήρες.</string>
+</resources>

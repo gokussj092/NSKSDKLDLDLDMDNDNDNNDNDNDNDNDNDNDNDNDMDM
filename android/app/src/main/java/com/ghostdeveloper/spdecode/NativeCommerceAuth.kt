@@ -384,8 +384,7 @@ internal class NativeCommerceAuth(private val context:Context) {
         http("/api/support","POST",
             JSONObject().put("action","read").put("threadId",threadId),true).first
     suspend fun openSupportThread(subject:String,category:String,message:String):JSONObject =
-        http("/api/support","POST",JSONObject().put("action","new")
-            .put("subject",subject).put("category",category).put("message",message),true).first
+        http("/api/support","POST",supportThreadPayload(subject,category,message),true).first
     suspend fun sendSupportMessage(threadId:String,message:String):JSONObject =
         http("/api/support","POST",JSONObject().put("action","send")
             .put("threadId",threadId).put("message",message),true).first
@@ -494,3 +493,7 @@ internal class NativeCommerceAuth(private val context:Context) {
         }finally{wipeSession()}
     }
 }
+
+internal fun supportThreadPayload(subject:String,category:String,message:String):JSONObject =
+    JSONObject().put("action","new").put("subject",subject)
+        .put("category",category).put("message",message)

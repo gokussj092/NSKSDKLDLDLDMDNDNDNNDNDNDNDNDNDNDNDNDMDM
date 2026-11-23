@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="language_help_title">帮助改进翻译</string>
+    <string name="language_help_detail">请报告翻译错误，以便我们修正。</string>
+    <string name="language_help_signin_title">登录后报告</string>
+    <string name="language_help_signin_detail">请登录账号后再提交翻译反馈。</string>
+    <string name="language_help_signin_button">登录</string>
+    <string name="language_help_form_title">报告翻译错误</string>
+    <string name="language_help_language_label">语言</string>
+    <string name="language_help_where_label">您在哪里看到这个错误？</string>
+    <string name="language_help_wrong_label">错误文本（按显示内容填写）</string>
+    <string name="language_help_correct_label">正确的写法是什么？</string>
+    <string name="language_help_comment_label">备注（可选）</string>
+    <string name="language_help_send">提交报告</string>
+    <string name="language_help_sent">报告已提交。感谢您帮助改进翻译。</string>
+    <string name="language_help_error">无法提交报告，请稍后重试。</string>
+    <string name="language_help_required">请填写语言、错误文本和建议的修正内容。</string>
+    <string name="language_help_invalid_input">请缩短报告或删除不支持的字符。</string>
+</resources>

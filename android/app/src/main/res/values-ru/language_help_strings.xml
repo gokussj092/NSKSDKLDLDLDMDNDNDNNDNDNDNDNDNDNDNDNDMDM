@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="language_help_title">Помогите улучшить перевод</string>
+    <string name="language_help_detail">Сообщайте об ошибках перевода, чтобы мы могли их исправить.</string>
+    <string name="language_help_signin_title">Войдите, чтобы сообщить об ошибке</string>
+    <string name="language_help_signin_detail">Войдите в аккаунт, чтобы отправить сообщение об ошибке перевода.</string>
+    <string name="language_help_signin_button">Войти</string>
+    <string name="language_help_form_title">Сообщить об ошибке перевода</string>
+    <string name="language_help_language_label">Язык</string>
+    <string name="language_help_where_label">Где вы заметили ошибку?</string>
+    <string name="language_help_wrong_label">Текст с ошибкой (как в приложении)</string>
+    <string name="language_help_correct_label">Как должен выглядеть текст?</string>
+    <string name="language_help_comment_label">Комментарий (необязательно)</string>
+    <string name="language_help_send">Отправить сообщение</string>
+    <string name="language_help_sent">Сообщение отправлено. Спасибо за помощь в улучшении перевода.</string>
+    <string name="language_help_error">Не удалось отправить сообщение. Повторите попытку позже.</string>
+    <string name="language_help_required">Укажите язык, текст с ошибкой и предлагаемый вариант.</string>
+    <string name="language_help_invalid_input">Сократите сообщение или удалите неподдерживаемые символы.</string>
+</resources>

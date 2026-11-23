@@ -158,10 +158,7 @@ internal fun SpDecodeApp(
 ){
     var dialog by remember{mutableStateOf<String?>(null)}
     var confirmCatalogPostpone by remember(pendingServerVpnCatalogVersion){mutableStateOf(false)}
-    // External commerce request (e.g. "Sign in" from Settings → language
-    // help): AccountDrawer owns the destination state, this only asks for
-    // the existing "login" route; nothing is invented here.
-    var commerceDestination by remember{mutableStateOf<String?>(null)}
+    var commerceDestination by rememberSaveable{mutableStateOf<String?>(null)}
     SpDecodeAmoledTheme {
       AccountDrawer(busy,onExternalLink,onLegalLink,onCheckoutUrl,
         externalDestination=commerceDestination,
@@ -209,7 +206,7 @@ internal fun SpDecodeApp(
                         retentionDays,onRetention,onShowGuide=onGuideRestart,
                         onLegalLink=onLegalLink,onWithdrawConsent=onWithdrawCloudConsent,
                         onAdsPrivacyOptions=onAdsPrivacyOptions,
-                        onSignIn={commerceDestination="login"},
+                        onSignIn={commerceDestination="language-help-login"},
                         catalogDownloadChunks=catalogDownloadChunks,onCatalogDownloadChunks=onCatalogDownloadChunks,
                         catalogUpdatesEnabled=catalogUpdatesEnabled,onCatalogUpdates=onCatalogUpdates,
                         usageAnalyticsEnabled=usageAnalyticsEnabled,onUsageAnalytics=onUsageAnalytics,

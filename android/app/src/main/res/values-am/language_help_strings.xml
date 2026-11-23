@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="language_help_title">ትርጉሞችን ለማሻሻል ያግዙ</string>
+    <string name="language_help_detail">የትርጉም ስህተቶችን እንድናስተካክል ያሳውቁን።</string>
+    <string name="language_help_signin_title">ሪፖርት ለማድረግ ይግቡ</string>
+    <string name="language_help_signin_detail">የትርጉም ሪፖርት ለመላክ ወደ መለያዎ ይግቡ።</string>
+    <string name="language_help_signin_button">ግባ</string>
+    <string name="language_help_form_title">የትርጉም ስህተት ያሳውቁ</string>
+    <string name="language_help_language_label">ቋንቋ</string>
+    <string name="language_help_where_label">ስህተቱን የት አዩት?</string>
+    <string name="language_help_wrong_label">የተሳሳተ ጽሑፍ (እንደሚታየው)</string>
+    <string name="language_help_correct_label">ትክክለኛው ጽሑፍ ምን መሆን አለበት?</string>
+    <string name="language_help_comment_label">አስተያየት (አማራጭ)</string>
+    <string name="language_help_send">ሪፖርት ላክ</string>
+    <string name="language_help_sent">ሪፖርቱ ተልኳል። ትርጉሞችን ለማሻሻል ስለረዱን እናመሰግናለን።</string>
+    <string name="language_help_error">ሪፖርቱን መላክ አልተቻለም። ቆይተው ይሞክሩ።</string>
+    <string name="language_help_required">ቋንቋ፣ የተሳሳተው ጽሑፍ እና የማስተካከያ ሐሳብ ያስፈልጋሉ።</string>
+    <string name="language_help_invalid_input">ሪፖርቱን ያሳጥሩ ወይም የማይደገፉ ቁምፊዎችን ያስወግዱ።</string>
+</resources>

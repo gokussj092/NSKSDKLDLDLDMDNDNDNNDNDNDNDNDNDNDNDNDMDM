@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="language_help_title">Помозите да побољшамо преводе</string>
+    <string name="language_help_detail">Пријавите грешке у преводу да бисмо их исправили.</string>
+    <string name="language_help_signin_title">Пријавите се да бисте послали извештај</string>
+    <string name="language_help_signin_detail">Пријавите се на налог да бисте пријавили грешку у преводу.</string>
+    <string name="language_help_signin_button">Пријавите се</string>
+    <string name="language_help_form_title">Пријавите грешку у преводу</string>
+    <string name="language_help_language_label">Језик</string>
+    <string name="language_help_where_label">Где сте видели грешку?</string>
+    <string name="language_help_wrong_label">Погрешан текст (како је приказан)</string>
+    <string name="language_help_correct_label">Како би текст требало да гласи?</string>
+    <string name="language_help_comment_label">Коментар (необавезно)</string>
+    <string name="language_help_send">Пошаљите извештај</string>
+    <string name="language_help_sent">Извештај је послат. Хвала што помажете да побољшамо преводе.</string>
+    <string name="language_help_error">Извештај није послат. Покушајте поново касније.</string>
+    <string name="language_help_required">Потребно је унети језик, погрешан текст и предложену исправку.</string>
+    <string name="language_help_invalid_input">Скратите извештај или уклоните неподржане знакове.</string>
+</resources>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="language_help_title">Hilf uns, Übersetzungen zu verbessern</string>
+    <string name="language_help_detail">Melde Übersetzungsfehler, damit wir sie korrigieren können.</string>
+    <string name="language_help_signin_title">Zum Melden anmelden</string>
+    <string name="language_help_signin_detail">Melde dich an, um einen Übersetzungsfehler zu melden.</string>
+    <string name="language_help_signin_button">Anmelden</string>
+    <string name="language_help_form_title">Übersetzungsfehler melden</string>
+    <string name="language_help_language_label">Sprache</string>
+    <string name="language_help_where_label">Wo hast du den Fehler gesehen?</string>
+    <string name="language_help_wrong_label">Fehlerhafter Text (wie angezeigt)</string>
+    <string name="language_help_correct_label">Wie sollte der Text lauten?</string>
+    <string name="language_help_comment_label">Kommentar (optional)</string>
+    <string name="language_help_send">Meldung senden</string>
+    <string name="language_help_sent">Meldung gesendet. Danke für deine Hilfe bei der Verbesserung der Übersetzungen.</string>
+    <string name="language_help_error">Die Meldung konnte nicht gesendet werden. Versuche es später erneut.</string>
+    <string name="language_help_required">Sprache, fehlerhafter Text und Korrekturvorschlag sind erforderlich.</string>
+    <string name="language_help_invalid_input">Kürze die Meldung oder entferne nicht unterstützte Zeichen.</string>
+</resources>

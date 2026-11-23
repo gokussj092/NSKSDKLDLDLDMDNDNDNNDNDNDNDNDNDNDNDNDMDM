@@ -2,7 +2,7 @@ name: SP-DECODE Online Play AAB (Unity Ads, signed)
 # Builds a Play upload bundle only. Does not publish to Play Console.
 on:
   push:
-    branches: [ci/unity-ads-online-qa]
+    branches: [ci/unity-ads-online-qa, feat/settings-language-help]
     paths:
       - '.github/workflows/android-online-play-aab-signed.yml'
       - 'android/app/build.gradle.kts'
@@ -21,7 +21,10 @@ concurrency:
 
 jobs:
   play-aab:
-    if: github.repository_owner == 'gokussj092' && github.ref == 'refs/heads/ci/unity-ads-online-qa'
+    if: >-
+      github.repository_owner == 'gokussj092' &&
+      (github.ref == 'refs/heads/ci/unity-ads-online-qa' ||
+       github.ref == 'refs/heads/feat/settings-language-help')
     runs-on: ubuntu-latest
     timeout-minutes: 80
     env:

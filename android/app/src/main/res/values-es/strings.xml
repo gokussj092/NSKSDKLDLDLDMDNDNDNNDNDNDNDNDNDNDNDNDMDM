@@ -50,6 +50,7 @@
     <string name="language_help_sent">Reporte enviado. Gracias por ayudar a mejorar el idioma.</string>
     <string name="language_help_error">No se pudo enviar el reporte. Inténtalo de nuevo más tarde.</string>
     <string name="language_help_required">El idioma, el texto erróneo y la corrección son obligatorios.</string>
+    <string name="language_help_invalid_input">Acorta el reporte o quita los caracteres no admitidos.</string>
     <string name="show">Mostrar</string>
     <string name="hide">Ocultar</string>
     <string name="raw_text">Texto original del decodificador</string>
