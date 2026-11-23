@@ -36,7 +36,29 @@ private val languageFlags=mapOf(
     "vi" to "🇻🇳",
     "hi" to "🇮🇳",
     "ja" to "🇯🇵",
-    "it" to "🇮🇹"
+    "it" to "🇮🇹",
+    "tl" to "🇵🇭",
+    "ur" to "🇵🇰",
+    "bn" to "🇧🇩",
+    "th" to "🇹🇭",
+    "am" to "🇪🇹",
+    "uk" to "🇺🇦",
+    "ko" to "🇰🇷",
+    "zh-CN" to "🇨🇳",
+    "ms" to "🇲🇾",
+    "pl" to "🇵🇱",
+    "ro" to "🇷🇴",
+    "sw" to "🇹🇿",
+    "ha" to "🇳🇬",
+    "ta" to "🇮🇳",
+    "my" to "🇲🇲",
+    "km" to "🇰🇭",
+    "ne" to "🇳🇵",
+    "uz" to "🇺🇿",
+    "sr" to "🇷🇸",
+    "el" to "🇬🇷",
+    "cs" to "🇨🇿",
+    "hu" to "🇭🇺"
 )
 private val LanguageAccent=Color(0xFFAE8AE6)
 private val LanguageText=Color(0xFFF7F7F7)
