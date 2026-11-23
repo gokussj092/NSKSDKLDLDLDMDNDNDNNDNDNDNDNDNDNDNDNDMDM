@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="harness_preparing">Ilova tayyorlanmoqda…</string>
+    <string name="harness_review">Koʻrib chiqilmoqda</string>
+    <string name="harness_metadata">Ilova metamaʻlumotlari tekshirilmoqda…</string>
+    <string name="harness_code">Ilova kodi tekshirilmoqda…</string>
+    <string name="harness_details">Tahlil tafsilotlari</string>
+    <string name="harness_filename">Fayl</string>
+    <string name="harness_size">Hajm</string>
+    <string name="harness_unknown_size">Hajm kutilmoqda</string>
+    <string name="harness_updated">Yangilangan: %1$s</string>
+    <string name="harness_local_copy">Natijalar ushbu qurilmada saqlandi</string>
+    <string name="harness_normal">Oddiy uzatish</string>
+    <string name="harness_chunks">Boʻlaklarga boʻlib uzatish</string>
+    <string name="harness_support_ai">Qoʻllab-quvvatlash AI</string>
+    <string name="harness_history_hint">Tahlili va saqlangan natijalarini koʻrish uchun ilovani oching.</string>
+    <string name="harness_queued_hint">Yuklash yakunlandi. Tahlil joyi kutilmoqda.</string>
+    <string name="harness_review_hint">Tahlil koʻrib chiqilishi kutilmoqda.</string>
+    <string name="harness_transfer_title">Uzatish rejimi</string>
+    <string name="harness_transfer_scope">Keyingi katalog yuklab olish yoki APK yuklashga qoʻllaniladi.</string>
+    <string name="harness_stable">Barqaror ulanish · uzluksiz uzatish</string>
+    <string name="harness_unstable">Sekin yoki beqaror ulanish · qismlarga boʻlib uzatish</string>
+</resources>

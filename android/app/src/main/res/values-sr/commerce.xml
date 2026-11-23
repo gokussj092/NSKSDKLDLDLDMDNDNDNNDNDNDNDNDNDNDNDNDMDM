@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="account_sign_in">Пријави се</string>
+    <string name="account_web_description">Управљајте налогом и куповинама на званичној веб-страници. Бесплатне функције остају доступне без налога.</string>
+    <string name="account_continue_web">Настави на вебу</string>
+    <string name="account_my_account">Мој налог</string>
+    <string name="account_store">Продавница</string>
+    <string name="account_open_menu">Отвори мени</string>
+    <string name="ads_privacy_options">Опције приватности оглашавања</string>
+</resources>

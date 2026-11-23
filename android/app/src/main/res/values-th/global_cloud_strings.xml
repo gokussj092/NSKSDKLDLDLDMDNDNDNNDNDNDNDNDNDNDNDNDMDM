@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_global_title">Cloud (ออนไลน์)</string>
+    <string name="cloud_global_auto">ตรวจจับอัตโนมัติ</string>
+    <string name="cloud_global_hint">วางลิงก์ Cloud คีย์ หรือรหัสที่รองรับ</string>
+    <string name="cloud_global_action">นำเข้าจาก Cloud</string>
+    <string name="cloud_global_detail">วางลิงก์ Cloud คีย์ หรือรหัส แล้ว SP-DECODE จะตรวจหาผู้ให้บริการโดยอัตโนมัติ รองรับเฉพาะบริการที่ได้รับอนุมัติเท่านั้น</string>
+    <string name="cloud_global_invalid">ข้อมูลอ้างอิงนี้ไม่ตรงกับผู้ให้บริการ Cloud ที่มีอยู่</string>
+</resources>

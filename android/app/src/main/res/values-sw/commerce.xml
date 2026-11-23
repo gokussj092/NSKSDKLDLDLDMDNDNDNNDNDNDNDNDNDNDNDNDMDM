@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="account_sign_in">Ingia</string>
+    <string name="account_web_description">Simamia akaunti yako na ununuzi kwenye tovuti rasmi. Vipengele vya bure vinabaki kupatikana bila akaunti.</string>
+    <string name="account_continue_web">Endelea kwenye wavuti</string>
+    <string name="account_my_account">Akaunti yangu</string>
+    <string name="account_store">Duka</string>
+    <string name="account_open_menu">Fungua menyu</string>
+    <string name="ads_privacy_options">Chaguo za faragha za matangazo</string>
+</resources>

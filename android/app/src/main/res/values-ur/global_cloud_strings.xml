@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_global_title">کلاؤڈ (آن لائن)</string>
+    <string name="cloud_global_auto">خودکار شناخت</string>
+    <string name="cloud_global_hint">سپورٹ شدہ کلاؤڈ لنک، کی یا کوڈ پیسٹ کریں</string>
+    <string name="cloud_global_action">کلاؤڈ سے امپورٹ کریں</string>
+    <string name="cloud_global_detail">کلاؤڈ لنک، کی یا کوڈ پیسٹ کریں اور SP-DECODE فراہم کنندہ کی خودکار شناخت کرتا ہے۔ صرف منظور شدہ سروسز سپورٹ ہوتی ہیں۔</string>
+    <string name="cloud_global_invalid">یہ حوالہ کسی دستیاب کلاؤڈ فراہم کنندہ سے مطابق نہیں ہے۔</string>
+</resources>

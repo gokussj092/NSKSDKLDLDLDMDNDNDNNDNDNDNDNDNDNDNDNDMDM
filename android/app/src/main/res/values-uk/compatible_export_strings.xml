@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="compatible_export_for">Експорт для %1$s</string>
+    <string name="compatible_export_redecode">Імпортуйте цей файл ще раз, щоб увімкнути експорт у %1$s.</string>
+    <string name="compatible_export_failed">Не вдалося зберегти сумісний файл.</string>
+</resources>

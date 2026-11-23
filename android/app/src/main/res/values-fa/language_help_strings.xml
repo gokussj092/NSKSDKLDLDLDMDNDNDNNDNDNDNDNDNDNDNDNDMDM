@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="language_help_title">به بهبود ترجمه‌ها کمک کنید</string>
+    <string name="language_help_detail">خطاهای ترجمه را گزارش دهید تا آن‌ها را اصلاح کنیم.</string>
+    <string name="language_help_signin_title">برای گزارش وارد شوید</string>
+    <string name="language_help_signin_detail">برای ارسال گزارش ترجمه وارد حساب خود شوید.</string>
+    <string name="language_help_signin_button">ورود</string>
+    <string name="language_help_form_title">گزارش خطای ترجمه</string>
+    <string name="language_help_language_label">زبان</string>
+    <string name="language_help_where_label">خطا را کجا دیدید؟</string>
+    <string name="language_help_wrong_label">متن نادرست (همان‌طور که نمایش داده می‌شود)</string>
+    <string name="language_help_correct_label">متن درست چه باید باشد؟</string>
+    <string name="language_help_comment_label">توضیحات (اختیاری)</string>
+    <string name="language_help_send">ارسال گزارش</string>
+    <string name="language_help_sent">گزارش ارسال شد. از کمک شما به بهبود ترجمه‌ها سپاسگزاریم.</string>
+    <string name="language_help_error">گزارش ارسال نشد. بعداً دوباره تلاش کنید.</string>
+    <string name="language_help_required">زبان، متن نادرست و اصلاح پیشنهادی الزامی است.</string>
+    <string name="language_help_invalid_input">گزارش را کوتاه کنید یا نویسه‌های پشتیبانی‌نشده را حذف کنید.</string>
+</resources>

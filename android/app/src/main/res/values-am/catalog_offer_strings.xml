@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="catalog_offer_title">አዲስ ካታሎግ ይገኛል</string>
+    <string name="catalog_offer_body">የካታሎግ ስሪት %1$d ዝግጁ ነው። አዲስ የተደገፉ መተግበሪያዎችን፣ ዘዴዎችን እና ማሻሻያዎችን ለማግኘት ያዘምኑ።</string>
+    <string name="catalog_offer_update">አሁን አዘምን</string>
+    <string name="catalog_offer_later">ይቅር</string>
+    <string name="catalog_postpone_title">ያለ ማዘመን መቀጠል ይፈልጋሉ?</string>
+    <string name="catalog_postpone_body">ከሰረዙ፣ እስኪያዘምኑ ድረስ የቅርብ ጊዜ ካታሎግ መተግበሪያዎች፣ ዘዴዎች እና ማሻሻያዎች አይገኙም። በኋላ በServer VPN ውስጥ ማዘመን ይችላሉ።</string>
+    <string name="catalog_postpone_confirm">ያለ ማዘመን ቀጥል</string>
+    <string name="catalog_postpone_back">ተመለስ</string>
+</resources>

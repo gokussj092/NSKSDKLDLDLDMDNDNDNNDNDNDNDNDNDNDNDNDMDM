@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="language_help_title">Aiutaci a migliorare le traduzioni</string>
+    <string name="language_help_detail">Segnala gli errori di traduzione così possiamo correggerli.</string>
+    <string name="language_help_signin_title">Accedi per inviare una segnalazione</string>
+    <string name="language_help_signin_detail">Accedi al tuo account per segnalare un errore di traduzione.</string>
+    <string name="language_help_signin_button">Accedi</string>
+    <string name="language_help_form_title">Segnala un errore di traduzione</string>
+    <string name="language_help_language_label">Lingua</string>
+    <string name="language_help_where_label">Dove hai visto l’errore?</string>
+    <string name="language_help_wrong_label">Testo errato (come appare)</string>
+    <string name="language_help_correct_label">Come dovrebbe essere scritto?</string>
+    <string name="language_help_comment_label">Commenti (facoltativi)</string>
+    <string name="language_help_send">Invia segnalazione</string>
+    <string name="language_help_sent">Segnalazione inviata. Grazie per aver contribuito a migliorare le traduzioni.</string>
+    <string name="language_help_error">Impossibile inviare la segnalazione. Riprova più tardi.</string>
+    <string name="language_help_required">Lingua, testo errato e correzione proposta sono obbligatori.</string>
+    <string name="language_help_invalid_input">Accorcia la segnalazione o rimuovi i caratteri non supportati.</string>
+</resources>

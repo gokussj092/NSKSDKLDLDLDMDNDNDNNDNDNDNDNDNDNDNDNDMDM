@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_legal_title">条款与隐私</string>
+    <string name="cloud_legal_explanation">SP-DECODE Cloud 会将您选择解码的文件或文本发送到其服务器。它还会每天统计一次大致的活跃安装数以规划服务器容量，使用随机安装代码。这些统计不包括任何配置内容。</string>
+    <string name="cloud_legal_terms">阅读条款与条件</string>
+    <string name="cloud_legal_privacy">阅读隐私政策</string>
+    <string name="cloud_legal_accept_check">我已阅读并接受条款与隐私政策。</string>
+    <string name="cloud_legal_accept">接受</string>
+    <string name="cloud_legal_decline">拒绝</string>
+    <string name="server_vpn_loading">正在加载 Server VPN 目录…</string>
+    <string name="server_vpn_unavailable">VPN 服务器目录不可用。请检查连接后重试。</string>
+    <string name="server_vpn_retry">重试目录</string>
+    <string name="cloud_legal_withdraw">撤回云端授权</string>
+    <string name="cloud_legal_withdraw_detail">撤回授权后将阻止新的服务器请求。您本地加密的历史记录将保留在本设备上。您稍后可以再次接受。</string>
+</resources>

@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_http_injector_not_configured">HTTP Injector Cloud មិនទាន់កំណត់រចនាសម្ព័ន្ធនៅលើម៉ាស៊ីនមេនៅឡើយទេ។ ព្យាយាមម្តងទៀតនៅពេលដែលសេវាកម្មត្រូវបានបើក។</string>
+</resources>

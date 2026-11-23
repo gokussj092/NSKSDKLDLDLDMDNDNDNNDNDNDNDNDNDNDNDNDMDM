@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="catalog_offer_title">Sabon kundin bayanai ya zo</string>
+    <string name="catalog_offer_body">Sigar kundin bayanai %1$d a shirye take. Sabunta domin samun sabbin apps, hanyoyi da ingantawa.</string>
+    <string name="catalog_offer_update">Sabunta yanzu</string>
+    <string name="catalog_offer_later">Soke</string>
+    <string name="catalog_postpone_title">Ci gaba ba tare da sabuntawa ba?</string>
+    <string name="catalog_postpone_body">Idan ka soke, sabbin apps, hanyoyi da ingantawa na kundin bayanai ba za su samu ba har sai ka sabunta. Za ka iya sabuntawa daga baya a cikin Server VPN.</string>
+    <string name="catalog_postpone_confirm">Ci gaba ba tare da sabuntawa ba</string>
+    <string name="catalog_postpone_back">Komawa baya</string>
+</resources>

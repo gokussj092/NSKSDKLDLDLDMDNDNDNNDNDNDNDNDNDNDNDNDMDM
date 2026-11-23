@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="compatible_export_for">Eksportuj dla %1$s</string>
+    <string name="compatible_export_redecode">Zaimportuj ten plik ponownie, aby włączyć eksport do %1$s.</string>
+    <string name="compatible_export_failed">Nie można zapisać zgodnego pliku.</string>
+</resources>

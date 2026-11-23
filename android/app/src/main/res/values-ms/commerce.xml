@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="account_sign_in">Log masuk</string>
+    <string name="account_web_description">Urus akaun dan pembelian di laman web rasmi. Ciri percuma tetap tersedia tanpa akaun.</string>
+    <string name="account_continue_web">Teruskan di web</string>
+    <string name="account_my_account">Akaun saya</string>
+    <string name="account_store">Kedai</string>
+    <string name="account_open_menu">Buka menu</string>
+    <string name="ads_privacy_options">Pilihan privasi pengiklanan</string>
+</resources>

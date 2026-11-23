@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="language_help_title">Giúp cải thiện bản dịch</string>
+    <string name="language_help_detail">Hãy báo lỗi dịch để chúng tôi có thể sửa.</string>
+    <string name="language_help_signin_title">Đăng nhập để báo lỗi</string>
+    <string name="language_help_signin_detail">Bạn cần đăng nhập để gửi báo cáo lỗi dịch.</string>
+    <string name="language_help_signin_button">Đăng nhập</string>
+    <string name="language_help_form_title">Báo lỗi dịch</string>
+    <string name="language_help_language_label">Ngôn ngữ</string>
+    <string name="language_help_where_label">Bạn thấy lỗi ở đâu?</string>
+    <string name="language_help_wrong_label">Văn bản sai (như hiển thị)</string>
+    <string name="language_help_correct_label">Nên viết thế nào?</string>
+    <string name="language_help_comment_label">Ghi chú (không bắt buộc)</string>
+    <string name="language_help_send">Gửi báo cáo</string>
+    <string name="language_help_sent">Đã gửi báo cáo. Cảm ơn bạn đã giúp cải thiện bản dịch.</string>
+    <string name="language_help_error">Không thể gửi báo cáo. Vui lòng thử lại sau.</string>
+    <string name="language_help_required">Vui lòng nhập ngôn ngữ, văn bản sai và đề xuất sửa.</string>
+    <string name="language_help_invalid_input">Hãy rút ngắn báo cáo hoặc xóa ký tự không được hỗ trợ.</string>
+</resources>

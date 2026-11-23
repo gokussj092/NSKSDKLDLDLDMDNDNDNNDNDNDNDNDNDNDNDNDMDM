@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_report_action">ত্রুটি রিপোর্ট করুন</string>
+    <string name="cloud_report_sent">রিপোর্ট গৃহীত হয়েছে: %1$s</string>
+    <string name="cloud_report_failed">রিপোর্ট জমা দেওয়া যায়নি। পরে আবার চেষ্টা করুন।</string>
+    <string name="cloud_usage_title">বেনামি ইনস্টলেশন পরিসংখ্যান</string>
+    <string name="cloud_usage_detail">সার্ভারের ধারণক্ষমতা পরিকল্পনার জন্য SP-DECODE দিনে একবার আনুমানিক সক্রিয় ইনস্টলেশন গণনা করে। আপনার Android ID, HWID বা বিজ্ঞাপন ID নয়, একটি এলোমেলো ইনস্টলেশন কোড ব্যবহৃত হয়।</string>
+    <string name="cloud_usage_footnote">গোপনীয়তার শর্ত মেনে নেওয়ার পর Cloud ব্যবহারের সঙ্গে এটি অন্তর্ভুক্ত। এতে ফাইলের বিষয়বস্তু, পাসওয়ার্ড বা ডিকোড করা কনফিগারেশন অন্তর্ভুক্ত থাকে না।</string>
+</resources>

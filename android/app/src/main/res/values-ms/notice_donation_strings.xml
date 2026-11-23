@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="donations_title">Derma</string>
+    <string name="donation_copy_id">Salin ID</string>
+    <string name="donation_id_copied">ID Binance disalin</string>
+    <string name="donation_coming_soon">Segera hadir</string>
+    <string name="catalog_loading_short">Memuatkan katalog</string>
+    <string name="notifications_title">Pemberitahuan</string>
+    <string name="notifications_description">Terima pemberitahuan perkhidmatan dari SP-DECODE. anda dapat mematikannya bila sahaja.</string>
+    <string name="notifications_system_settings">Tetapan sistem</string>
+    <string name="notifications_enable">Aktifkan</string>
+    <string name="notifications_later">Nanti</string>
+</resources>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="file_extension_unsupported_contact">不支持此文件扩展名。请联系开发者请求支持。</string>
+    <string name="text_format_unsupported_contact">不支持此文本格式或协议。请联系开发者请求支持。</string>
+    <string name="formats_remote_catalog_note">受支持的扩展名通过 SP-DECODE Cloud 安全同步。新的云端格式无需更新应用即可出现。</string>
+    <string name="formats_cloud_ready_short">云端</string>
+</resources>

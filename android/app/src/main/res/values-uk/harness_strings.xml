@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="harness_preparing">Підготовка застосунку…</string>
+    <string name="harness_review">На перевірці</string>
+    <string name="harness_metadata">Перевірка метаданих застосунку…</string>
+    <string name="harness_code">Перевірка коду застосунку…</string>
+    <string name="harness_details">Деталі аналізу</string>
+    <string name="harness_filename">Файл</string>
+    <string name="harness_size">Розмір</string>
+    <string name="harness_unknown_size">Розмір очікується</string>
+    <string name="harness_updated">Оновлено: %1$s</string>
+    <string name="harness_local_copy">Результати збережено на цьому пристрої</string>
+    <string name="harness_normal">Звичайне передавання</string>
+    <string name="harness_chunks">Передавання частинами</string>
+    <string name="harness_support_ai">ШІ підтримки</string>
+    <string name="harness_history_hint">Відкрийте застосунок, щоб переглянути його аналіз і збережені результати.</string>
+    <string name="harness_queued_hint">Завантаження завершено. Очікування слота аналізу.</string>
+    <string name="harness_review_hint">Аналіз очікує перевірки.</string>
+    <string name="harness_transfer_title">Режим передавання</string>
+    <string name="harness_transfer_scope">Застосовується до наступного завантаження каталогу або завантаження APK.</string>
+    <string name="harness_stable">Стабільне з’єднання · безперервне передавання</string>
+    <string name="harness_unstable">Повільне або нестабільне з’єднання · передавання частинами</string>
+</resources>

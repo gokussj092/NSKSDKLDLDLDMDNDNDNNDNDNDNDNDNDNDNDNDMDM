@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="compatible_export_for">%1$s کے لیے ایکسپورٹ کریں</string>
+    <string name="compatible_export_redecode">%1$s میں ایکسپورٹ فعال کرنے کے لیے یہ فائل دوبارہ امپورٹ کریں۔</string>
+    <string name="compatible_export_failed">مطابق فائل محفوظ نہیں ہو سکی۔</string>
+</resources>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="about_screen_entry_detail">Верзија, безбедност и званичне везе</string>
+    <string name="about_screen_description">Алатка за анализу и декодирање VPN конфигурација</string>
+    <string name="about_screen_version_badge">Верзија %1$s · Издање %2$d</string>
+    <string name="about_screen_info">Информације о апликацији</string>
+    <string name="about_screen_languages">Доступни језици</string>
+    <string name="about_screen_installed">Инсталирана верзија</string>
+    <string name="about_screen_features">Главне функције</string>
+    <string name="about_screen_feature_decode">Декодирање VPN датотека</string>
+    <string name="about_screen_feature_catalog">Каталог Server VPN</string>
+    <string name="about_screen_feature_export">JSON и откључани извоз</string>
+    <string name="about_screen_feature_history">Историја резултата</string>
+    <string name="about_screen_security">Безбедност и приватност</string>
+    <string name="about_screen_cloud_security">Cloud V2 комуникација користи HPKE шифровање и провере интегритета према конфигурацији услуге.</string>
+    <string name="about_screen_local_security">Локална историја је шифрована на овом уређају.</string>
+    <string name="about_screen_privacy">Политика приватности</string>
+    <string name="about_screen_terms">Услови коришћења</string>
+    <string name="about_screen_links">Заједница и званичне везе</string>
+    <string name="about_screen_website">Званична веб-страница</string>
+    <string name="about_screen_community_detail">Званична Telegram заједница</string>
+    <string name="about_screen_credit">Развио Ghost Developer</string>
+    <string name="about_screen_copyright">SP-DECODE · Сва права задржана</string>
+</resources>

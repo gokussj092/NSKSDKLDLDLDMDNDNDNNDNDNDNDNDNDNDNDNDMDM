@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="catalog_offer_title">มีแค็ตตาล็อกใหม่</string>
+    <string name="catalog_offer_body">แค็ตตาล็อกเวอร์ชัน %1$d พร้อมแล้ว อัปเดตเพื่อเข้าถึงแอป วิธีการ และการปรับปรุงใหม่ที่รองรับ</string>
+    <string name="catalog_offer_update">อัปเดตตอนนี้</string>
+    <string name="catalog_offer_later">ยกเลิก</string>
+    <string name="catalog_postpone_title">ดำเนินการต่อโดยไม่อัปเดตใช่ไหม?</string>
+    <string name="catalog_postpone_body">หากคุณยกเลิก แอป วิธีการ และการปรับปรุงล่าสุดของแค็ตตาล็อกจะไม่พร้อมใช้งานจนกว่าคุณจะอัปเดต คุณสามารถอัปเดตภายหลังได้ใน Server VPN</string>
+    <string name="catalog_postpone_confirm">ดำเนินการต่อโดยไม่อัปเดต</string>
+    <string name="catalog_postpone_back">กลับไป</string>
+</resources>

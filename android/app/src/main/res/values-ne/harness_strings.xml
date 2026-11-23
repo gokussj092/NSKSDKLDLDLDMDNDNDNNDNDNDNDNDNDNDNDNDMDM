@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="harness_preparing">एप तयार गर्दै…</string>
+    <string name="harness_review">समीक्षामा</string>
+    <string name="harness_metadata">एप मेटाडाटा निरीक्षण गर्दै…</string>
+    <string name="harness_code">एप कोड निरीक्षण गर्दै…</string>
+    <string name="harness_details">विश्लेषण विवरण</string>
+    <string name="harness_filename">फाइल</string>
+    <string name="harness_size">आकार</string>
+    <string name="harness_unknown_size">आकार बाँकी छ</string>
+    <string name="harness_updated">अपडेट गरिएको: %1$s</string>
+    <string name="harness_local_copy">नतिजाहरू यस यन्त्रमा सुरक्षित गरिए</string>
+    <string name="harness_normal">सामान्य स्थानान्तरण</string>
+    <string name="harness_chunks">टुक्राहरूमा स्थानान्तरण</string>
+    <string name="harness_support_ai">सहयोग AI</string>
+    <string name="harness_history_hint">यसको विश्लेषण र सुरक्षित गरिएका नतिजाहरू हेर्न एप खोल्नुहोस्।</string>
+    <string name="harness_queued_hint">अपलोड पूरा भयो। विश्लेषण स्लटको प्रतीक्षा गर्दै।</string>
+    <string name="harness_review_hint">विश्लेषण समीक्षाको प्रतीक्षामा छ।</string>
+    <string name="harness_transfer_title">स्थानान्तरण मोड</string>
+    <string name="harness_transfer_scope">अर्को क्याटलग डाउनलोड वा APK अपलोडमा लागू हुन्छ।</string>
+    <string name="harness_stable">स्थिर जडान · निरन्तर स्थानान्तरण</string>
+    <string name="harness_unstable">ढिलो वा अस्थिर जडान · भागहरूमा स्थानान्तरण</string>
+</resources>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="about_screen_entry_detail">Έκδοση, ασφάλεια και επίσημοι σύνδεσμοι</string>
+    <string name="about_screen_description">Εργαλείο ανάλυσης και αποκωδικοποίησης διαμορφώσεων VPN</string>
+    <string name="about_screen_version_badge">Έκδοση %1$s · Build %2$d</string>
+    <string name="about_screen_info">Πληροφορίες εφαρμογής</string>
+    <string name="about_screen_languages">Διαθέσιμες γλώσσες</string>
+    <string name="about_screen_installed">Εγκατεστημένη έκδοση</string>
+    <string name="about_screen_features">Κύριες λειτουργίες</string>
+    <string name="about_screen_feature_decode">Αποκωδικοποίηση αρχείων VPN</string>
+    <string name="about_screen_feature_catalog">Κατάλογος διακομιστών VPN</string>
+    <string name="about_screen_feature_export">Εξαγωγή JSON και ξεκλειδωμένη εξαγωγή</string>
+    <string name="about_screen_feature_history">Ιστορικό αποτελεσμάτων</string>
+    <string name="about_screen_security">Ασφάλεια και απόρρητο</string>
+    <string name="about_screen_cloud_security">Οι επικοινωνίες Cloud V2 χρησιμοποιούν κρυπτογράφηση HPKE και ελέγχους ακεραιότητας σύμφωνα με τη διαμόρφωση της υπηρεσίας.</string>
+    <string name="about_screen_local_security">Το τοπικό ιστορικό είναι κρυπτογραφημένο σε αυτήν τη συσκευή.</string>
+    <string name="about_screen_privacy">Πολιτική απορρήτου</string>
+    <string name="about_screen_terms">Όροι χρήσης</string>
+    <string name="about_screen_links">Κοινότητα και επίσημοι σύνδεσμοι</string>
+    <string name="about_screen_website">Επίσημη ιστοσελίδα</string>
+    <string name="about_screen_community_detail">Επίσημη κοινότητα Telegram</string>
+    <string name="about_screen_credit">Αναπτύχθηκε από τον Ghost Developer</string>
+    <string name="about_screen_copyright">SP-DECODE · Με επιφύλαξη παντός δικαιώματος</string>
+</resources>

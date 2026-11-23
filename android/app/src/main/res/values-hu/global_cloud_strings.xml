@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_global_title">Cloud (Online)</string>
+    <string name="cloud_global_auto">Automatikus észlelés</string>
+    <string name="cloud_global_hint">Illesszen be egy támogatott Cloud-hivatkozást, kulcsot vagy kódot</string>
+    <string name="cloud_global_action">Importálás a Cloudból</string>
+    <string name="cloud_global_detail">Illesszen be egy Cloud-hivatkozást, kulcsot vagy kódot, és az SP-DECODE automatikusan észleli a szolgáltatót. Csak jóváhagyott szolgáltatások támogatottak.</string>
+    <string name="cloud_global_invalid">Ez a hivatkozás nem felel meg egyetlen elérhető Cloud-szolgáltatónak sem.</string>
+</resources>

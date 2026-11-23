@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="harness_preparing">Припремање апликације…</string>
+    <string name="harness_review">На прегледу</string>
+    <string name="harness_metadata">Провера метаподатака апликације…</string>
+    <string name="harness_code">Провера кода апликације…</string>
+    <string name="harness_details">Детаљи анализе</string>
+    <string name="harness_filename">Датотека</string>
+    <string name="harness_size">Величина</string>
+    <string name="harness_unknown_size">Величина на чекању</string>
+    <string name="harness_updated">Ажурирано: %1$s</string>
+    <string name="harness_local_copy">Резултати сачувани на овом уређају</string>
+    <string name="harness_normal">Нормални пренос</string>
+    <string name="harness_chunks">Пренос у деловима</string>
+    <string name="harness_support_ai">AI подршка</string>
+    <string name="harness_history_hint">Отворите апликацију да видите њену анализу и сачуване резултате.</string>
+    <string name="harness_queued_hint">Отпремање завршено. Чека се слободно место за анализу.</string>
+    <string name="harness_review_hint">Анализа чека преглед.</string>
+    <string name="harness_transfer_title">Режим преноса</string>
+    <string name="harness_transfer_scope">Односи се на следеће преузимање каталога или отпремање APK-а.</string>
+    <string name="harness_stable">Стабилна веза · непрекидни пренос</string>
+    <string name="harness_unstable">Спора или нестабилна веза · пренос у деловима</string>
+</resources>

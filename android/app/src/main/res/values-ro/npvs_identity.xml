@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="npv_title">Chei de destinatar NPV</string>
+    <string name="npv_detail">Folosește-ți identitatea pentru fișierele create pentru tine. Cheile sunt criptate pe acest dispozitiv. Activează această opțiune pentru a le folosi cu SP Cloud.</string>
+    <string name="npv_enabled">Folosește identitățile mele NPV</string>
+    <string name="npv_generate">Generează cu SP Cloud</string>
+    <string name="npv_import">Importă JSON capturat</string>
+    <string name="npv_generated">Generat de SP Cloud</string>
+    <string name="npv_captured">Capturat din aplicația oficială</string>
+    <string name="npv_file_only">Doar acest fișier</string>
+    <string name="npv_view">Vezi și copiază</string>
+    <string name="npv_delete">Șterge</string>
+    <string name="npv_invalid">Cheile NPV nu pot fi citite. Verifică JSON-ul și cheile corespunzătoare.</string>
+    <string name="npv_saved">Identitate salvată. Activează opțiunea pentru a o folosi.</string>
+    <string name="npv_generation_notice">Partajează doar cheia publică cu persoana care îți creează serverul VPN sau configurația. Nu partaja niciodată cheia privată.</string>
+    <string name="npv_choose_title">Alege identitatea NPV</string>
+    <string name="npv_send_notice">Selectează identitatea cu care să deschizi acest fișier cu SP Cloud.</string>
+    <string name="npv_use">Folosește identitatea selectată</string>
+    <string name="npv_copy_public">Copiază cheia publică</string>
+    <string name="npv_copy_private">Copiază cheia privată</string>
+    <string name="npv_reveal">Afișează sau ascunde cheia privată</string>
+    <string name="npv_hardware_notice">Cheia privată hardware nu poate fi exportată. Această captură funcționează doar pentru fișierul corespunzător.</string>
+    <string name="npv_delete_title">Ștergi această identitate?</string>
+    <string name="npv_delete_warning">Această cheie este stocată doar pe acest dispozitiv. Odată ștearsă, SP Cloud nu o poate recupera. Este posibil să pierzi accesul la fișierele criptate pentru această identitate.</string>
+    <string name="npv_public_label">Cheie publică · P-256</string>
+    <string name="npv_private_label">Cheie privată · PKCS#8</string>
+    <string name="npv_cancel">Anulează</string>
+    <string name="npv_already_generated">Există deja o identitate SP Cloud. Șterge-o înainte de a genera alta.</string>
+</resources>

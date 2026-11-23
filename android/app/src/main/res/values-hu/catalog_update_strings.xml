@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="catalog_auto_title">Automatikus Szerver VPN katalógusfrissítések</string>
+    <string name="catalog_auto_detail">Az alkalmazás nyitva tartása közben HTTPS-kapcsolaton keresztül ellenőrzi a katalógusverziókat a saját SP-DECODE szerverével, és szükség esetén ritkán háttérellenőrzéseket végez a helyreállításhoz. Az új katalógusadatokat és ikonokat csak verzióváltozás után tölti le. Nincs szükség Firebase-re, fiókra vagy push-tokenre. Bármikor kikapcsolhatja.</string>
+    <string name="catalog_auto_switch">Háttérbeli katalógus-szinkronizálás engedélyezése</string>
+</resources>

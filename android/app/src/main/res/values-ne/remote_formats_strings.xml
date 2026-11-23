@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="file_extension_unsupported_contact">यो फाइल एक्सटेन्सन समर्थित छैन। सहयोग अनुरोध गर्न विकासकर्तासँग सम्पर्क गर्नुहोस्।</string>
+    <string name="text_format_unsupported_contact">यो पाठ ढाँचा वा प्रोटोकल समर्थित छैन। सहयोग अनुरोध गर्न विकासकर्तासँग सम्पर्क गर्नुहोस्।</string>
+    <string name="formats_remote_catalog_note">समर्थित एक्सटेन्सनहरू SP-DECODE Cloud बाट सुरक्षित रूपमा सिङ्क गरिन्छन्। नयाँ Cloud ढाँचाहरू एप अपडेट नगरी देखा पर्न सक्छन्।</string>
+    <string name="formats_cloud_ready_short">Cloud</string>
+</resources>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_report_action">Raportează eroarea</string>
+    <string name="cloud_report_sent">Raport primit: %1$s</string>
+    <string name="cloud_report_failed">Raportul nu a putut fi trimis. Încearcă din nou mai târziu.</string>
+    <string name="cloud_usage_title">Statistici anonime de instalare</string>
+    <string name="cloud_usage_detail">SP-DECODE numără o dată pe zi numărul aproximativ de instalări active pentru a planifica capacitatea serverului. Se folosește un cod aleatoriu de instalare, nu ID-ul tău Android, HWID sau ID-ul de publicitate.</string>
+    <string name="cloud_usage_footnote">Inclus în utilizarea Cloud după ce accepți termenii de confidențialitate. Nu sunt incluse conținutul fișierelor, parolele sau configurațiile decodate.</string>
+</resources>

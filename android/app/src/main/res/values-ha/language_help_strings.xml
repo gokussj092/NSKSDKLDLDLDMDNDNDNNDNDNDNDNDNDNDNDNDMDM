@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="language_help_title">Taimaka wajen inganta fassara</string>
+    <string name="language_help_detail">Sanar da mu kurakuran fassara domin mu gyara su.</string>
+    <string name="language_help_signin_title">Shiga don kai rahoto</string>
+    <string name="language_help_signin_detail">Shiga asusunka don aika rahoton kuskuren fassara.</string>
+    <string name="language_help_signin_button">Shiga</string>
+    <string name="language_help_form_title">Kai rahoton kuskuren fassara</string>
+    <string name="language_help_language_label">Harshe</string>
+    <string name="language_help_where_label">A ina ka ga kuskuren?</string>
+    <string name="language_help_wrong_label">Rubutun da ba daidai ba (yadda yake a allo)</string>
+    <string name="language_help_correct_label">Yaya ya kamata a rubuta shi?</string>
+    <string name="language_help_comment_label">Sharhi (na zaɓi)</string>
+    <string name="language_help_send">Aika rahoto</string>
+    <string name="language_help_sent">An aika rahoton. Mun gode da taimaka wa wajen inganta fassara.</string>
+    <string name="language_help_error">Ba a iya aika rahoton ba. Sake gwadawa daga baya.</string>
+    <string name="language_help_required">Ana buƙatar harshe, rubutu mai kuskure da gyaran da aka ba da shawara.</string>
+    <string name="language_help_invalid_input">Taƙaita rahoton ko cire haruffan da ba a tallafa musu ba.</string>
+</resources>

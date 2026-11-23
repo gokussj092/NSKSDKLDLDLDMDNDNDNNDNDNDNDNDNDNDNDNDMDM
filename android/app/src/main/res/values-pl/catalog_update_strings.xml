@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="catalog_auto_title">Automatyczne aktualizacje katalogu Server VPN</string>
+    <string name="catalog_auto_detail">Sprawdza wersje katalogu na Twoim własnym serwerze SP-DECODE przez HTTPS, gdy aplikacja jest otwarta, oraz opcjonalnie wykonuje rzadkie kontrole odzyskiwania w tle. Nowe dane katalogu i ikony są pobierane tylko po zmianie wersji. Nie są wymagane Firebase, konto ani token push. Możesz to wyłączyć w dowolnym momencie.</string>
+    <string name="catalog_auto_switch">Włącz synchronizację katalogu w tle</string>
+</resources>

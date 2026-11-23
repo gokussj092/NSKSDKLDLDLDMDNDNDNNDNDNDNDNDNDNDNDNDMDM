@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="compatible_export_for">Export pentru %1$s</string>
+    <string name="compatible_export_redecode">Importă din nou acest fișier pentru a activa exportul către %1$s.</string>
+    <string name="compatible_export_failed">Fișierul compatibil nu a putut fi salvat.</string>
+</resources>

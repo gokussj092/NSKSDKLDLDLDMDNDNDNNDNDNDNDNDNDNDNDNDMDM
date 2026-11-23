@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="account_sign_in">Přihlásit se</string>
+    <string name="account_web_description">Spravujte svůj účet a nákupy na oficiálních webových stránkách. Bezplatné funkce zůstávají k dispozici i bez účtu.</string>
+    <string name="account_continue_web">Pokračovat na webu</string>
+    <string name="account_my_account">Můj účet</string>
+    <string name="account_store">Obchod</string>
+    <string name="account_open_menu">Otevřít nabídku</string>
+    <string name="ads_privacy_options">Možnosti ochrany osobních údajů u reklam</string>
+</resources>

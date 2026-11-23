@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="catalog_auto_title">ራስ-ሰር የServer VPN ካታሎግ ዝመናዎች</string>
+    <string name="catalog_auto_detail">መተግበሪያው ክፍት ሆኖ እያለ ከራስዎ SP-DECODE ሰርቨር ጋር በHTTPS የካታሎግ ስሪቶችን ይመረምራል፣ እና ሲያስፈልግ ከበስተጀርባ አልፎ አልፎ የመልሶ ማግኛ ምርመራዎችን ያደርጋል። አዲስ የካታሎግ መረጃ እና አዶዎች የሚወርዱት ስሪት ከተቀየረ በኋላ ብቻ ነው። ምንም Firebase፣ መለያ ወይም የፑሽ ቶከን አያስፈልግም። በማንኛውም ጊዜ ማሰናከል ይችላሉ።</string>
+    <string name="catalog_auto_switch">የበስተጀርባ ካታሎግ ማመሳሰል አንቃ</string>
+</resources>

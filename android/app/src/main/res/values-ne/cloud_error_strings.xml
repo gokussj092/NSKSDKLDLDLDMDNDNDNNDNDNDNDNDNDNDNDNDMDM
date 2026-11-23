@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_failure_offline">इन्टरनेट जडान छैन। नेटवर्कमा जडान गर्नुहोस् र पुनः प्रयास गर्नुहोस्।</string>
+    <string name="cloud_failure_network">सेवामा पुग्न सकिएन। तपाईंको जडान जाँच गर्नुहोस् र पुनः प्रयास गर्नुहोस्।</string>
+    <string name="cloud_failure_tls">सुरक्षित जडान स्थापना गर्न सकिएन। तपाईंको नेटवर्क र यन्त्रको घडी जाँच गर्नुहोस्।</string>
+    <string name="cloud_failure_timeout">अनुरोधमा धेरै समय लाग्यो। जडान स्थिर हुँदा पुनः प्रयास गर्नुहोस्।</string>
+    <string name="cloud_failure_integrity">एप प्रमाणीकरण पूरा गर्न सकिएन। एप अपडेट गर्नुहोस् वा अधिकृत QA पहुँच प्रयोग गर्नुहोस्।</string>
+    <string name="cloud_failure_qa_code">QA पहुँच हराएको छ। SP-DECODE QA खोल्नुहोस् र नयाँ अस्थायी कोड प्रविष्ट गर्नुहोस्।</string>
+    <string name="cloud_failure_session">तपाईंको सत्र समाप्त भयो वा प्रमाणित गर्न सकिएन। कृपया पुनः प्रयास गर्नुहोस्।</string>
+    <string name="cloud_failure_forbidden">पहुँच अस्वीकृत भयो। तपाईंको अधिकार जाँच गर्नुहोस् र पुनः प्रयास गर्नुहोस्।</string>
+    <string name="cloud_failure_qa">QA पहुँच अमान्य, असक्षम वा समाप्त भएको छ। नयाँ निजी कोड अनुरोध गर्नुहोस्।</string>
+    <string name="cloud_failure_consent">Cloud डिकोडिङ प्रयोग गर्न हालका सर्तहरू र गोपनीयता सूचना स्वीकार गर्नुहोस्।</string>
+    <string name="cloud_failure_rate">धेरै अनुरोधहरू। पुनः प्रयास गर्नु अघि कृपया पर्खनुहोस्।</string>
+    <string name="cloud_failure_large">फाइल वा नतिजा अनुमत आकारभन्दा ठूलो छ।</string>
+    <string name="cloud_failure_invalid">यो फाइल वा अनुरोध स्वीकार गर्न सकिएन। ढाँचा जाँच गर्नुहोस्।</string>
+    <string name="cloud_failure_unsupported">यो फाइल ढाँचा सर्भरमा उपलब्ध छैन।</string>
+    <string name="cloud_failure_decode">डिकोडरले यो फाइल संस्करण प्रशोधन गर्न सकेन। फाइल बिग्रिएको नै हुनुपर्छ भन्ने छैन।</string>
+    <string name="cloud_failure_maintenance">यो सेवा अस्थायी रूपमा मर्मतसम्भारमा छ। कृपया पछि पुनः प्रयास गर्नुहोस्।</string>
+    <string name="cloud_failure_unavailable">सेवा अस्थायी रूपमा अनुपलब्ध छ। पछि पुनः प्रयास गर्नुहोस्।</string>
+    <string name="cloud_failure_config_unavailable">यो Cloud कन्फिगरेसन अब उपलब्ध छैन। यो समाप्त भएको, मेटिएको वा एक पटक मात्र प्रयोगका लागि मान्य भएको हुन सक्छ। यो डिकोडरको विफलता होइन।</string>
+    <string name="cloud_failure_remote">टाढाको प्रदायकले अमान्य वा प्रमाणित गर्न नसकिने प्रतिक्रिया फर्कायो।</string>
+    <string name="cloud_failure_credentials">गलत पासवर्ड वा HWID। जानकारी जाँच गर्नुहोस् र पुनः प्रयास गर्नुहोस्।</string>
+    <string name="cloud_failure_password">यो सुरक्षित फाइललाई पासवर्ड चाहिन्छ।</string>
+    <string name="cloud_failure_hwid">यो सुरक्षित फाइललाई HWID चाहिन्छ।</string>
+    <string name="cloud_failure_both">यो सुरक्षित फाइललाई पासवर्ड र HWID दुवै चाहिन्छ।</string>
+    <string name="cloud_failure_not_found">अनुरोध गरिएको स्रोत अनुपलब्ध छ वा फेला परेन।</string>
+    <string name="cloud_failure_conflict">अनुरोध हालको अवस्थासँग बाझिन्छ। कृपया पुनः प्रयास गर्नुहोस्।</string>
+    <string name="cloud_failure_partial">नतिजा अपूर्ण वा अमान्य थियो, र देखाइने छैन।</string>
+    <string name="cloud_failure_general">सञ्चालन पूरा गर्न सकिएन। पुनः प्रयास गर्नुहोस् वा सहयोगसँग सम्पर्क गर्नुहोस्।</string>
+    <string name="cloud_failure_notice_title">सूचना</string>
+    <string name="cloud_password_title">कन्फिगरेसन पासवर्ड आवश्यक छ</string>
+    <string name="cloud_password_description">%1$s पासवर्डद्वारा सुरक्षित छ। जारी राख्न निर्यात पासवर्ड प्रविष्ट गर्नुहोस्। यो सुरक्षित गरिने छैन।</string>
+    <string name="cloud_failure_password_incorrect">गलत पासवर्ड।</string>
+    <string name="cloud_failure_private_key">यो NPVS फाइलले प्राप्तकर्ता सार्वजनिक/निजी कुञ्जी सुरक्षा प्रयोग गर्दछ। यो विधि अहिलेसम्म समर्थित छैन; सहयोग चाँडै आउँदैछ।</string>
+    <string name="cloud_failure_recipient">यो NPVS फाइलले अहिलेसम्म समर्थित नभएको प्राप्तकर्ता कुञ्जी विधि प्रयोग गर्दछ। सहयोग चाँडै आउँदैछ।</string>
+    <string name="cloud_failure_npvs_unsupported">यो NPVS संस्करण वा सुरक्षा विधि अहिलेसम्म समर्थित छैन। सहयोग चाँडै आउँदैछ।</string>
+</resources>

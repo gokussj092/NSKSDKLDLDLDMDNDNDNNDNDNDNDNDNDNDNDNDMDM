@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="server_vpn_filter_ssh_accounts">SSH 계정</string>
+    <string name="server_vpn_ssh_notice_text">이 SSH 계정은 다음 앱에서만 사용할 수 있습니다:</string>
+    <string name="server_vpn_ssh_no_matches">검색과 일치하는 SSH 계정이 없습니다.</string>
+</resources>

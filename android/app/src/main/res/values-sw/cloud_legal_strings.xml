@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_legal_title">Masharti na faragha</string>
+    <string name="cloud_legal_explanation">SP-DECODE Cloud hutuma faili au maandishi unayochagua kusimbua kwenye seva yake. Pia huhesabu usakinishaji hai wa kukadiria mara moja kwa siku ili kupanga uwezo wa seva, kwa kutumia msimbo wa usakinishaji wa nasibu. Hakuna yaliyomo kwenye usanidi yanayojumuishwa katika hesabu hizo.</string>
+    <string name="cloud_legal_terms">Soma masharti na vigezo</string>
+    <string name="cloud_legal_privacy">Soma sera ya faragha</string>
+    <string name="cloud_legal_accept_check">Nimesoma na ninakubali masharti na sera ya faragha.</string>
+    <string name="cloud_legal_accept">Kubali</string>
+    <string name="cloud_legal_decline">Kataa</string>
+    <string name="server_vpn_loading">Inapakia katalogi ya server VPN…</string>
+    <string name="server_vpn_unavailable">Katalogi ya seva ya VPN haipatikani. Angalia muunganisho wako na ujaribu tena.</string>
+    <string name="server_vpn_retry">Jaribu tena katalogi</string>
+    <string name="cloud_legal_withdraw">Ondoa idhini ya Cloud</string>
+    <string name="cloud_legal_withdraw_detail">Kuondoa idhini huzuia maombi mapya ya seva. Historia yako iliyosimbwa kwa njia fiche itabaki kwenye kifaa hiki. Unaweza kukubali tena baadaye.</string>
+</resources>

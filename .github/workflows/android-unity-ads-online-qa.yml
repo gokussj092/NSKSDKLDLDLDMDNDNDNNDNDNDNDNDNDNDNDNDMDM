@@ -1,7 +1,7 @@
 name: SP-DECODE Online release candidate APK (signed)
 on:
   push:
-    branches: [ci/unity-ads-online-qa]
+    branches: [ci/unity-ads-online-qa, feat/settings-language-help]
     paths:
       - .github/workflows/android-unity-ads-online-qa.yml
       - android/app/src/main/java/com/ghostdeveloper/spdecode/SpDecodeApp.kt
@@ -189,7 +189,10 @@ concurrency:
   cancel-in-progress: false
 jobs:
   release:
-    if: github.repository_owner == 'gokussj092' && github.ref == 'refs/heads/ci/unity-ads-online-qa'
+    if: >-
+      github.repository_owner == 'gokussj092' &&
+      (github.ref == 'refs/heads/ci/unity-ads-online-qa' ||
+       github.ref == 'refs/heads/feat/settings-language-help')
     runs-on: ubuntu-latest
     timeout-minutes: 75
     env:
@@ -250,6 +253,7 @@ jobs:
         run: |
           set -euo pipefail
           python3 scripts/ci/current_android_contracts.py --github-env "$GITHUB_ENV"
+          python3 scripts/ci/verify_aab_locales.py --source-only
           python3 scripts/android_s3_security_audit.py
           python3 scripts/android_s4_provisioning_audit.py
           # Normal production pacing; dashboard must remain in test mode for QA.

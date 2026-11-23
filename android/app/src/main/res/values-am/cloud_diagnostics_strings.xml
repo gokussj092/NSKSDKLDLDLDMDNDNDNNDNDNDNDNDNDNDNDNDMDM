@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_report_action">ስህተት ሪፖርት አድርግ</string>
+    <string name="cloud_report_sent">ሪፖርት ደርሷል፡ %1$s</string>
+    <string name="cloud_report_failed">ሪፖርቱ ሊላክ አልቻለም። ቆይተው እንደገና ይሞክሩ።</string>
+    <string name="cloud_usage_title">ስም-አልባ የመጫኛ ስታቲስቲክስ</string>
+    <string name="cloud_usage_detail">SP-DECODE የሰርቨር አቅምን ለማቀድ በቀን አንድ ጊዜ ግምታዊ ንቁ ጭነቶችን ይቆጥራል። የእርስዎን Android ID፣ HWID ወይም የማስታወቂያ ID ሳይሆን የዘፈቀደ የመጫኛ ኮድ ይጠቀማል።</string>
+    <string name="cloud_usage_footnote">የCloud የግላዊነት ውሎችን ከተቀበሉ በኋላ ከCloud አጠቃቀም ጋር ተካቷል። ምንም የፋይል ይዘት፣ የይለፍ ቃላት ወይም ዲኮድ የተደረጉ ውቅሮች አልተካተቱም።</string>
+</resources>

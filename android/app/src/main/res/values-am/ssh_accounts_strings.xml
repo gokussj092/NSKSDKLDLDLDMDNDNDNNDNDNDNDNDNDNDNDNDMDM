@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="server_vpn_filter_ssh_accounts">የSSH መለያዎች</string>
+    <string name="server_vpn_ssh_notice_text">እነዚህ የSSH መለያዎች በሚከተለው መተግበሪያ ውስጥ ብቻ ጥቅም ላይ ሊውሉ ይችላሉ፡</string>
+    <string name="server_vpn_ssh_no_matches">ከፍለጋዎ ጋር የሚዛመድ የSSH መለያ የለም።</string>
+</resources>

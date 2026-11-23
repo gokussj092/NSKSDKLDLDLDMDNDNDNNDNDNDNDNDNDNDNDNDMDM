@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="npv_title">NPV وصول کنندہ کیز</string>
+    <string name="npv_detail">اپنی شناخت ان فائلز کے لیے استعمال کریں جو آپ کے لیے بنائی گئی ہیں۔ کیز اس ڈیوائس پر انکرپٹڈ ہیں۔ انہیں SP Cloud کے ساتھ استعمال کرنے کے لیے یہ اختیار فعال کریں۔</string>
+    <string name="npv_enabled">میری NPV شناختیں استعمال کریں</string>
+    <string name="npv_generate">SP Cloud سے بنائیں</string>
+    <string name="npv_import">کیپچر شدہ JSON امپورٹ کریں</string>
+    <string name="npv_generated">SP Cloud سے بنائی گئی</string>
+    <string name="npv_captured">سرکاری ایپ سے کیپچر شدہ</string>
+    <string name="npv_file_only">صرف یہ فائل</string>
+    <string name="npv_view">دیکھیں اور کاپی کریں</string>
+    <string name="npv_delete">حذف کریں</string>
+    <string name="npv_invalid">NPV کیز پڑھی نہیں جا سکتیں۔ JSON اور مطابق کیز چیک کریں۔</string>
+    <string name="npv_saved">شناخت محفوظ ہو گئی۔ اسے استعمال کرنے کے لیے اختیار فعال کریں۔</string>
+    <string name="npv_generation_notice">اپنی پبلک کی صرف اس شخص کے ساتھ شیئر کریں جو آپ کا VPN سرور یا کنفیگریشن بنا رہا ہے۔ اپنی پرائیویٹ کی کبھی شیئر نہ کریں۔</string>
+    <string name="npv_choose_title">NPV شناخت منتخب کریں</string>
+    <string name="npv_send_notice">اس فائل کو SP Cloud سے کھولنے کے لیے شناخت منتخب کریں۔</string>
+    <string name="npv_use">منتخب شناخت استعمال کریں</string>
+    <string name="npv_copy_public">پبلک کی کاپی کریں</string>
+    <string name="npv_copy_private">پرائیویٹ کی کاپی کریں</string>
+    <string name="npv_reveal">پرائیویٹ کی دکھائیں یا چھپائیں</string>
+    <string name="npv_hardware_notice">ہارڈ ویئر پرائیویٹ کی ایکسپورٹ نہیں ہو سکتی۔ یہ کیپچر صرف مطابق فائل کے لیے کام کرتا ہے۔</string>
+    <string name="npv_delete_title">یہ شناخت حذف کریں؟</string>
+    <string name="npv_delete_warning">یہ کی صرف اس ڈیوائس پر محفوظ ہے۔ حذف کرنے کے بعد SP Cloud اسے بازیافت نہیں کر سکتا۔ آپ اس شناخت کے لیے انکرپٹڈ فائلز تک رسائی کھو سکتے ہیں۔</string>
+    <string name="npv_public_label">پبلک کی · P-256</string>
+    <string name="npv_private_label">پرائیویٹ کی · PKCS#8</string>
+    <string name="npv_cancel">منسوخ کریں</string>
+    <string name="npv_already_generated">SP Cloud کی شناخت پہلے سے موجود ہے۔ دوسری بنانے سے پہلے اسے حذف کریں۔</string>
+</resources>

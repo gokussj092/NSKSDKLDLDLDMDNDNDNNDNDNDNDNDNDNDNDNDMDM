@@ -99,12 +99,12 @@ internal fun LanguageSelectionScreen(
                             shape=RoundedCornerShape(11.dp),
                         ) {
                             Box(contentAlignment=Alignment.Center) {
-                                if(option.tag=="system") {
+                                val flag=languageFlags[option.tag]
+                                if(flag==null) {
                                     Icon(Icons.Outlined.Language,null,
                                         tint=LanguageText,modifier=Modifier.size(24.dp))
                                 }else{
-                                    Text(languageFlags[option.tag].orEmpty(),
-                                        fontSize=26.sp)
+                                    Text(flag,fontSize=26.sp)
                                 }
                             }
                         }

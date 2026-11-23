@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="server_vpn_filter_ssh_accounts">SSH-облікові записи</string>
+    <string name="server_vpn_ssh_notice_text">Ці SSH-облікові записи можна використовувати лише в такому застосунку:</string>
+    <string name="server_vpn_ssh_no_matches">Жоден SSH-обліковий запис не відповідає вашому пошуку.</string>
+</resources>

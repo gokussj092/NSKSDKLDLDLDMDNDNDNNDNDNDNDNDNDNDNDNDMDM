@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_report_action">报告错误</string>
+    <string name="cloud_report_sent">已收到报告：%1$s</string>
+    <string name="cloud_report_failed">无法提交报告。请稍后再试。</string>
+    <string name="cloud_usage_title">匿名安装统计</string>
+    <string name="cloud_usage_detail">SP-DECODE 每天统计一次大致的活跃安装数，以规划服务器容量。使用的是随机安装代码，而非您的 Android ID、HWID 或广告 ID。</string>
+    <string name="cloud_usage_footnote">在您接受云端隐私条款后随云端使用一并包含。不包括文件内容、密码或已解码的配置。</string>
+</resources>

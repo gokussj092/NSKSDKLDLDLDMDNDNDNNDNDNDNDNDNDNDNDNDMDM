@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="harness_preparing">Inaandaa programu…</string>
+    <string name="harness_review">Inakaguliwa</string>
+    <string name="harness_metadata">Inakagua metadata ya programu…</string>
+    <string name="harness_code">Inakagua msimbo wa programu…</string>
+    <string name="harness_details">Maelezo ya uchambuzi</string>
+    <string name="harness_filename">Faili</string>
+    <string name="harness_size">Ukubwa</string>
+    <string name="harness_unknown_size">Ukubwa unangojea</string>
+    <string name="harness_updated">Imesasishwa: %1$s</string>
+    <string name="harness_local_copy">Matokeo yamehifadhiwa kwenye kifaa hiki</string>
+    <string name="harness_normal">Uhamishaji wa kawaida</string>
+    <string name="harness_chunks">Uhamishaji kwa sehemu</string>
+    <string name="harness_support_ai">AI ya Usaidizi</string>
+    <string name="harness_history_hint">Fungua programu ili kuona uchambuzi wake na matokeo yaliyohifadhiwa.</string>
+    <string name="harness_queued_hint">Upakiaji umekamilika. Inasubiri nafasi ya uchambuzi.</string>
+    <string name="harness_review_hint">Uchambuzi unasubiri ukaguzi.</string>
+    <string name="harness_transfer_title">Hali ya uhamishaji</string>
+    <string name="harness_transfer_scope">Inatumika kwa upakuaji unaofuata wa katalogi au upakiaji wa APK.</string>
+    <string name="harness_stable">Muunganisho thabiti · uhamishaji endelevu</string>
+    <string name="harness_unstable">Muunganisho wa polepole au usio thabiti · uhamishaji kwa sehemu</string>
+</resources>

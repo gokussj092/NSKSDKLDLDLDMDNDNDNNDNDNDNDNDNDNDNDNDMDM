@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_http_injector_not_configured">HTTP Injector Cloud belum dikonfigurasi di server. Cuba lagi setelah perkhidmatan diaktifkan.</string>
+</resources>

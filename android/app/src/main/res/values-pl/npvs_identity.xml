@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="npv_title">Klucze odbiorcy NPV</string>
+    <string name="npv_detail">Użyj swojej tożsamości do plików utworzonych dla Ciebie. Klucze są zaszyfrowane na tym urządzeniu. Włącz tę opcję, aby używać ich z SP Cloud.</string>
+    <string name="npv_enabled">Używaj moich tożsamości NPV</string>
+    <string name="npv_generate">Wygeneruj za pomocą SP Cloud</string>
+    <string name="npv_import">Importuj przechwycony JSON</string>
+    <string name="npv_generated">Wygenerowane przez SP Cloud</string>
+    <string name="npv_captured">Przechwycone z oficjalnej aplikacji</string>
+    <string name="npv_file_only">Tylko ten plik</string>
+    <string name="npv_view">Wyświetl i kopiuj</string>
+    <string name="npv_delete">Usuń</string>
+    <string name="npv_invalid">Nie można odczytać kluczy NPV. Sprawdź JSON i pasujące klucze.</string>
+    <string name="npv_saved">Tożsamość zapisana. Włącz opcję, aby jej używać.</string>
+    <string name="npv_generation_notice">Udostępniaj tylko klucz publiczny osobie tworzącej Twój serwer VPN lub konfigurację. Nigdy nie udostępniaj klucza prywatnego.</string>
+    <string name="npv_choose_title">Wybierz tożsamość NPV</string>
+    <string name="npv_send_notice">Wybierz tożsamość, za pomocą której otworzysz ten plik w SP Cloud.</string>
+    <string name="npv_use">Użyj wybranej tożsamości</string>
+    <string name="npv_copy_public">Kopiuj klucz publiczny</string>
+    <string name="npv_copy_private">Kopiuj klucz prywatny</string>
+    <string name="npv_reveal">Pokaż lub ukryj klucz prywatny</string>
+    <string name="npv_hardware_notice">Sprzętowy klucz prywatny nie podlega eksportowi. To przechwycenie działa tylko dla pasującego pliku.</string>
+    <string name="npv_delete_title">Usunąć tę tożsamość?</string>
+    <string name="npv_delete_warning">Ten klucz jest przechowywany tylko na tym urządzeniu. Po usunięciu SP Cloud nie będzie mógł go odzyskać. Możesz utracić dostęp do plików zaszyfrowanych dla tej tożsamości.</string>
+    <string name="npv_public_label">Klucz publiczny · P-256</string>
+    <string name="npv_private_label">Klucz prywatny · PKCS#8</string>
+    <string name="npv_cancel">Anuluj</string>
+    <string name="npv_already_generated">Tożsamość SP Cloud już istnieje. Usuń ją przed wygenerowaniem kolejnej.</string>
+</resources>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="streak_verified_date">Server tomonidan tasdiqlangan sana</string>
+    <string name="streak_date_pending">Tasdiqlangan sana kutilmoqda</string>
+    <string name="streak_today_done">Bugun bajarildi</string>
+    <string name="streak_today_pending">Seriyangizni saqlab qolish uchun bugun fayl yoki matn dekodlang</string>
+    <string name="streak_weekly_reward">Har 7 ketma-ket kunda</string>
+    <string name="streak_reward">+1 APK tahlil krediti</string>
+    <string name="streak_reward_delivered">Mukofot berildi</string>
+    <string name="streak_verified_note">Kunlar va mukofotlar server tomonidan tasdiqlanadi.</string>
+    <plurals name="streak_days_left">
+        <item quantity="one">%1$d kun qoldi</item>
+        <item quantity="other">Yana %1$d kun qoldi</item>
+    </plurals>
+    <string name="streak_reminder_channel">Seriya eslatmalari</string>
+    <string name="streak_reminder_title">Seriyangiz kutmoqda</string>
+    <string name="streak_reminder_body">Seriyangizni davom ettirish uchun bugun fayl yoki matn dekodlang.</string>
+</resources>

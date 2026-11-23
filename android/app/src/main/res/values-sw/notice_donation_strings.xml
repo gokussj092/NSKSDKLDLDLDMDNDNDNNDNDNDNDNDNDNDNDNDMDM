@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="donations_title">Michango</string>
+    <string name="donation_copy_id">Nakili Kitambulisho</string>
+    <string name="donation_id_copied">Kitambulisho cha Binance kimenakiliwa</string>
+    <string name="donation_coming_soon">Inakuja hivi karibuni</string>
+    <string name="catalog_loading_short">Inapakia katalogi</string>
+    <string name="notifications_title">Arifa</string>
+    <string name="notifications_description">Pokea taarifa za huduma kutoka SP-DECODE. Unaweza kuzizima wakati wowote.</string>
+    <string name="notifications_system_settings">Mipangilio ya mfumo</string>
+    <string name="notifications_enable">Washa</string>
+    <string name="notifications_later">Baadaye</string>
+</resources>

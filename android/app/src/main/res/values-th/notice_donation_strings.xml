@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="donations_title">การบริจาค</string>
+    <string name="donation_copy_id">คัดลอก ID</string>
+    <string name="donation_id_copied">คัดลอก Binance ID แล้ว</string>
+    <string name="donation_coming_soon">เร็วๆ นี้</string>
+    <string name="catalog_loading_short">กำลังโหลดแค็ตตาล็อก</string>
+    <string name="notifications_title">การแจ้งเตือน</string>
+    <string name="notifications_description">รับประกาศบริการจาก SP-DECODE คุณสามารถปิดได้ทุกเมื่อ</string>
+    <string name="notifications_system_settings">การตั้งค่าระบบ</string>
+    <string name="notifications_enable">เปิดใช้</string>
+    <string name="notifications_later">ภายหลัง</string>
+</resources>

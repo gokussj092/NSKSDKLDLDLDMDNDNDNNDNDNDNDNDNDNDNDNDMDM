@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="unsupported_file_title">ফাইলের ধরন সমর্থিত নয়</string>
+    <string name="unsupported_file_detail">এই ফাইল এক্সটেনশনটি SP-DECODE-এ এখনও উপলব্ধ নয়। সহায়তার পরামর্শ দিতে ডেভেলপারের সঙ্গে যোগাযোগ করুন।</string>
+    <string name="unsupported_version_title">ফাইলের সংস্করণ এখনও সমর্থিত নয়</string>
+    <string name="unsupported_version_detail">এই ফাইলটি এমন একটি সংস্করণ বা এনক্রিপশন পদ্ধতি ব্যবহার করে যা এখনও সামঞ্জস্যপূর্ণ নয়। ডেভেলপারের কাছে সহায়তার অনুরোধ করতে পারেন।</string>
+    <string name="unsupported_text_title">টেক্সট ফরম্যাট সমর্থিত নয়</string>
+    <string name="unsupported_text_detail">এই টেক্সট বা প্রোটোকল এখনও সমর্থিত নয়। ইন্টিগ্রেশনের পরামর্শ দিতে ডেভেলপারের সঙ্গে যোগাযোগ করুন।</string>
+    <string name="catalog_check_action">আপডেট করুন</string>
+    <string name="catalog_checking">আপডেট হচ্ছে</string>
+    <string name="catalog_downloading">ক্যাটালগ আপডেট হচ্ছে…</string>
+    <string name="catalog_progress">%1$d%%</string>
+    <string name="app_update_title">অ্যাপের নতুন সংস্করণ উপলব্ধ</string>
+    <string name="app_update_body">SP-DECODE %1$s উপলব্ধ। আপডেট পেতে অফিসিয়াল Telegram চ্যানেলে যান।</string>
+    <string name="app_update_open">Telegram খুলুন</string>
+    <string name="app_update_close">বন্ধ করুন</string>
+    <string name="catalog_available_title">নতুন ক্যাটালগ উপলব্ধ</string>
+    <string name="catalog_available_body">ক্যাটালগের নতুন সংস্করণ %1$d ডাউনলোডের জন্য উপলব্ধ।</string>
+    <string name="catalog_check_short">ক্যাটালগ পরীক্ষা করুন</string>
+</resources>

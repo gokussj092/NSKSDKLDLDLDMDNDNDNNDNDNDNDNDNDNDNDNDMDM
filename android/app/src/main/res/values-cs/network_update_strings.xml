@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="catalog_download_confirm_body">Stáhnout kompletní katalog, formáty a ikony v jednom požadavku?</string>
+</resources>

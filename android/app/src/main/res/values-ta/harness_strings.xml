@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="harness_preparing">செயலி தயாராகிறது…</string>
+    <string name="harness_review">மதிப்பாய்வில் உள்ளது</string>
+    <string name="harness_metadata">செயலி மெட்டாடேட்டா ஆய்வு செய்யப்படுகிறது…</string>
+    <string name="harness_code">செயலி குறியீடு ஆய்வு செய்யப்படுகிறது…</string>
+    <string name="harness_details">பகுப்பாய்வு விவரங்கள்</string>
+    <string name="harness_filename">கோப்பு</string>
+    <string name="harness_size">அளவு</string>
+    <string name="harness_unknown_size">அளவு நிலுவையில் உள்ளது</string>
+    <string name="harness_updated">புதுப்பிக்கப்பட்டது: %1$s</string>
+    <string name="harness_local_copy">முடிவுகள் இந்தச் சாதனத்தில் சேமிக்கப்பட்டன</string>
+    <string name="harness_normal">சாதாரண பரிமாற்றம்</string>
+    <string name="harness_chunks">துண்டுகளாகப் பரிமாற்றம்</string>
+    <string name="harness_support_ai">ஆதரவு AI</string>
+    <string name="harness_history_hint">பகுப்பாய்வு மற்றும் சேமிக்கப்பட்ட முடிவுகளைப் பார்க்க ஒரு செயலியைத் திறக்கவும்.</string>
+    <string name="harness_queued_hint">பதிவேற்றம் முடிந்தது. பகுப்பாய்வு இடத்திற்காகக் காத்திருக்கிறது.</string>
+    <string name="harness_review_hint">பகுப்பாய்வு மதிப்பாய்வுக்காகக் காத்திருக்கிறது.</string>
+    <string name="harness_transfer_title">பரிமாற்ற முறை</string>
+    <string name="harness_transfer_scope">அடுத்த பட்டியல் பதிவிறக்கம் அல்லது APK பதிவேற்றத்திற்குப் பொருந்தும்.</string>
+    <string name="harness_stable">நிலையான இணைப்பு · தொடர்ச்சியான பரிமாற்றம்</string>
+    <string name="harness_unstable">மெதுவான அல்லது நிலையற்ற இணைப்பு · பகுதிகளாகப் பரிமாற்றம்</string>
+</resources>

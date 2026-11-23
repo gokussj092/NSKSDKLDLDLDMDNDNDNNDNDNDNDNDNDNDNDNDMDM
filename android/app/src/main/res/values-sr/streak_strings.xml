@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="streak_verified_date">Датум верификован од стране сервера</string>
+    <string name="streak_date_pending">Чека се верификовани датум</string>
+    <string name="streak_today_done">Завршено данас</string>
+    <string name="streak_today_pending">Декодирајте датотеку или текст данас да задржите свој низ</string>
+    <string name="streak_weekly_reward">Сваких 7 узастопних дана</string>
+    <string name="streak_reward">+1 кредит за анализу APK-а</string>
+    <string name="streak_reward_delivered">Награда испоручена</string>
+    <string name="streak_verified_note">Дане и награде верификује сервер.</string>
+    <plurals name="streak_days_left">
+        <item quantity="one">Преостао је %1$d дан</item>
+        <item quantity="other">Преостало је %1$d дана</item>
+    </plurals>
+    <string name="streak_reminder_channel">Подсетници за низ</string>
+    <string name="streak_reminder_title">Ваш низ чека</string>
+    <string name="streak_reminder_body">Декодирајте датотеку или текст данас да наставите свој низ.</string>
+</resources>

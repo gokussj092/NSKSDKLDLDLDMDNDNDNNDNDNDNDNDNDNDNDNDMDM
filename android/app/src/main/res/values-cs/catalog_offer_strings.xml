@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="catalog_offer_title">K dispozici je nový katalog</string>
+    <string name="catalog_offer_body">Verze katalogu %1$d je připravena. Aktualizujte, abyste získali přístup k nově podporovaným aplikacím, metodám a vylepšením.</string>
+    <string name="catalog_offer_update">Aktualizovat nyní</string>
+    <string name="catalog_offer_later">Zrušit</string>
+    <string name="catalog_postpone_title">Pokračovat bez aktualizace?</string>
+    <string name="catalog_postpone_body">Pokud zrušíte, nejnovější aplikace, metody a vylepšení katalogu nebudou k dispozici, dokud neaktualizujete. Aktualizovat můžete později v části Server VPN.</string>
+    <string name="catalog_postpone_confirm">Pokračovat bez aktualizace</string>
+    <string name="catalog_postpone_back">Zpět</string>
+</resources>

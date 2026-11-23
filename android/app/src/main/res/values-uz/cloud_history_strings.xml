@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_decode_progress_title">Konfiguratsiya dekodlanmoqda</string>
+    <string name="cloud_decode_progress_message">Bu bir necha daqiqa olishi mumkin. Iltimos, kuting.</string>
+    <string name="cloud_large_result_title">Katta konfiguratsiya dekodlandi</string>
+    <string name="cloud_large_result_body">Konfiguratsiya shifrlangan tarixga saqlandi. Juda katta natijalarni oldindan koʻrish ilovani sekinlashtirishi yoki yopishi mumkin. Tarix boʻlimidagi uch nuqtali menyudan, soʻngra Eksport orqali toʻliq JSON ni eksport qilishni tavsiya qilamiz. Android papka va fayl nomini tanlash imkonini beradi.</string>
+    <string name="cloud_large_result_acknowledge">Tushunarli</string>
+    <string name="cloud_history_actions">Qoʻshimcha amallar</string>
+</resources>

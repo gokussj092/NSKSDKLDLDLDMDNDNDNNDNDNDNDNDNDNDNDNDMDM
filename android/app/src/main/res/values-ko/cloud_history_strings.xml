@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_decode_progress_title">구성 디코딩 중</string>
+    <string name="cloud_decode_progress_message">몇 분 정도 걸릴 수 있습니다. 잠시 기다려 주세요.</string>
+    <string name="cloud_large_result_title">큰 구성이 디코딩되었습니다</string>
+    <string name="cloud_large_result_body">구성이 암호화된 기록에 저장되었습니다. 매우 큰 결과를 미리 보면 앱이 느려지거나 종료될 수 있습니다. 기록에서 점 세 개 메뉴를 사용한 뒤 내보내기를 통해 전체 JSON을 내보내는 것이 좋습니다. Android에서 폴더와 파일 이름을 선택할 수 있습니다.</string>
+    <string name="cloud_large_result_acknowledge">알겠습니다</string>
+    <string name="cloud_history_actions">추가 작업</string>
+</resources>

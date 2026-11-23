@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="donations_title">کمک‌های مالی</string>
+    <string name="donation_copy_id">کپی شناسه</string>
+    <string name="donation_id_copied">شناسه Binance کپی شد</string>
+    <string name="donation_coming_soon">به‌زودی</string>
+    <string name="catalog_loading_short">در حال بارگذاری فهرست</string>
+    <string name="notifications_title">اعلان‌ها</string>
+    <string name="notifications_description">اعلان‌های سرویس را از SP-DECODE دریافت کنید. می‌توانید هر زمان آن‌ها را خاموش کنید.</string>
+    <string name="notifications_system_settings">تنظیمات سیستم</string>
+    <string name="notifications_enable">فعال کردن</string>
+    <string name="notifications_later">بعداً</string>
+</resources>

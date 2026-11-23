@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_failure_offline">ไม่มีการเชื่อมต่ออินเทอร์เน็ต เชื่อมต่อเครือข่ายแล้วลองอีกครั้ง</string>
+    <string name="cloud_failure_network">ไม่สามารถเข้าถึงบริการได้ ตรวจสอบการเชื่อมต่อแล้วลองอีกครั้ง</string>
+    <string name="cloud_failure_tls">ไม่สามารถสร้างการเชื่อมต่อที่ปลอดภัยได้ ตรวจสอบเครือข่ายและนาฬิกาของอุปกรณ์</string>
+    <string name="cloud_failure_timeout">คำขอนี้ใช้เวลานานเกินไป โปรดลองอีกครั้งเมื่อการเชื่อมต่อเสถียร</string>
+    <string name="cloud_failure_integrity">ไม่สามารถยืนยันตัวตนของแอปได้ อัปเดตแอปหรือใช้สิทธิ์เข้าถึง QA ที่ได้รับอนุญาต</string>
+    <string name="cloud_failure_qa_code">ไม่มีสิทธิ์เข้าถึง QA เปิด SP-DECODE QA แล้วป้อนรหัสชั่วคราวใหม่</string>
+    <string name="cloud_failure_session">เซสชันของคุณหมดอายุหรือไม่สามารถยืนยันได้ โปรดลองอีกครั้ง</string>
+    <string name="cloud_failure_forbidden">การเข้าถึงถูกปฏิเสธ ตรวจสอบสิทธิ์ของคุณแล้วลองอีกครั้ง</string>
+    <string name="cloud_failure_qa">สิทธิ์เข้าถึง QA ไม่ถูกต้อง ถูกปิดใช้งาน หรือหมดอายุ ขอรหัสส่วนตัวใหม่</string>
+    <string name="cloud_failure_consent">ยอมรับข้อกำหนดและประกาศความเป็นส่วนตัวปัจจุบันเพื่อใช้การถอดรหัส Cloud</string>
+    <string name="cloud_failure_rate">คำขอมากเกินไป โปรดรอสักครู่ก่อนลองอีกครั้ง</string>
+    <string name="cloud_failure_large">ไฟล์หรือผลลัพธ์มีขนาดเกินที่อนุญาต</string>
+    <string name="cloud_failure_invalid">ไม่สามารถรับไฟล์หรือคำขอนี้ได้ ตรวจสอบรูปแบบ</string>
+    <string name="cloud_failure_unsupported">รูปแบบไฟล์นี้ไม่มีให้บริการบนเซิร์ฟเวอร์</string>
+    <string name="cloud_failure_decode">ตัวถอดรหัสไม่สามารถประมวลผลไฟล์เวอร์ชันนี้ได้ ไฟล์อาจไม่ได้เสียหาย</string>
+    <string name="cloud_failure_maintenance">บริการนี้อยู่ระหว่างการบำรุงรักษาชั่วคราว โปรดลองอีกครั้งภายหลัง</string>
+    <string name="cloud_failure_unavailable">บริการไม่พร้อมใช้งานชั่วคราว โปรดลองอีกครั้งภายหลัง</string>
+    <string name="cloud_failure_config_unavailable">การตั้งค่า Cloud นี้ไม่พร้อมใช้งานอีกต่อไป อาจหมดอายุ ถูกลบ หรือใช้ได้เพียงครั้งเดียว นี่ไม่ใช่ความล้มเหลวของตัวถอดรหัส</string>
+    <string name="cloud_failure_remote">ผู้ให้บริการระยะไกลส่งคำตอบที่ไม่ถูกต้องหรือไม่สามารถยืนยันได้</string>
+    <string name="cloud_failure_credentials">รหัสผ่านหรือ HWID ไม่ถูกต้อง ตรวจสอบข้อมูลแล้วลองอีกครั้ง</string>
+    <string name="cloud_failure_password">ไฟล์ที่ได้รับการป้องกันนี้ต้องใช้รหัสผ่าน</string>
+    <string name="cloud_failure_hwid">ไฟล์ที่ได้รับการป้องกันนี้ต้องใช้ HWID</string>
+    <string name="cloud_failure_both">ไฟล์ที่ได้รับการป้องกันนี้ต้องใช้ทั้งรหัสผ่านและ HWID</string>
+    <string name="cloud_failure_not_found">ทรัพยากรที่ร้องขอไม่พร้อมใช้งานหรือไม่พบ</string>
+    <string name="cloud_failure_conflict">คำขอขัดแย้งกับสถานะปัจจุบัน โปรดลองอีกครั้ง</string>
+    <string name="cloud_failure_partial">ผลลัพธ์ไม่สมบูรณ์หรือไม่ถูกต้อง และจะไม่แสดง</string>
+    <string name="cloud_failure_general">ไม่สามารถดำเนินการให้เสร็จสมบูรณ์ได้ โปรดลองอีกครั้งหรือติดต่อฝ่ายสนับสนุน</string>
+    <string name="cloud_failure_notice_title">แจ้งให้ทราบ</string>
+    <string name="cloud_password_title">ต้องใช้รหัสผ่านของการตั้งค่า</string>
+    <string name="cloud_password_description">%1$s ได้รับการป้องกันด้วยรหัสผ่าน ป้อนรหัสผ่านสำหรับส่งออกเพื่อดำเนินการต่อ รหัสผ่านจะไม่ถูกบันทึก</string>
+    <string name="cloud_failure_password_incorrect">รหัสผ่านไม่ถูกต้อง</string>
+    <string name="cloud_failure_private_key">ไฟล์ NPVS นี้ใช้การป้องกันด้วยคีย์สาธารณะ/คีย์ส่วนตัวของผู้รับ วิธีการนี้ยังไม่รองรับ การรองรับจะมาในเร็วๆ นี้</string>
+    <string name="cloud_failure_recipient">ไฟล์ NPVS นี้ใช้วิธีการคีย์ผู้รับที่ยังไม่รองรับ การรองรับจะมาในเร็วๆ นี้</string>
+    <string name="cloud_failure_npvs_unsupported">เวอร์ชัน NPVS หรือวิธีการป้องกันนี้ยังไม่รองรับ การรองรับจะมาในเร็วๆ นี้</string>
+</resources>

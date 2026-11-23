@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="file_extension_unsupported_contact">ไม่รองรับนามสกุลไฟล์นี้ ติดต่อผู้พัฒนาเพื่อขอการรองรับ</string>
+    <string name="text_format_unsupported_contact">ไม่รองรับรูปแบบข้อความหรือโปรโตคอลนี้ ติดต่อผู้พัฒนาเพื่อขอการรองรับ</string>
+    <string name="formats_remote_catalog_note">นามสกุลที่รองรับจะซิงก์อย่างปลอดภัยจาก SP-DECODE Cloud รูปแบบ Cloud ใหม่อาจปรากฏขึ้นโดยไม่ต้องอัปเดตแอป</string>
+    <string name="formats_cloud_ready_short">Cloud</string>
+</resources>

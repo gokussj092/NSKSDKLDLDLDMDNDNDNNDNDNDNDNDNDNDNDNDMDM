@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="language_help_title">অনুবাদ উন্নত করতে সাহায্য করুন</string>
+    <string name="language_help_detail">অনুবাদের ভুল জানান, যাতে আমরা তা সংশোধন করতে পারি।</string>
+    <string name="language_help_signin_title">রিপোর্ট করতে সাইন ইন করুন</string>
+    <string name="language_help_signin_detail">অনুবাদের ভুল জানাতে আপনার অ্যাকাউন্টে সাইন ইন করুন।</string>
+    <string name="language_help_signin_button">সাইন ইন করুন</string>
+    <string name="language_help_form_title">অনুবাদের ভুল জানান</string>
+    <string name="language_help_language_label">ভাষা</string>
+    <string name="language_help_where_label">ভুলটি কোথায় দেখেছেন?</string>
+    <string name="language_help_wrong_label">ভুল লেখা (যেভাবে দেখাচ্ছে)</string>
+    <string name="language_help_correct_label">সঠিক লেখাটি কী হওয়া উচিত?</string>
+    <string name="language_help_comment_label">মন্তব্য (ঐচ্ছিক)</string>
+    <string name="language_help_send">রিপোর্ট পাঠান</string>
+    <string name="language_help_sent">রিপোর্ট পাঠানো হয়েছে। অনুবাদ উন্নত করতে সাহায্য করার জন্য ধন্যবাদ।</string>
+    <string name="language_help_error">রিপোর্ট পাঠানো যায়নি। পরে আবার চেষ্টা করুন।</string>
+    <string name="language_help_required">ভাষা, ভুল লেখা ও প্রস্তাবিত সংশোধন আবশ্যক।</string>
+    <string name="language_help_invalid_input">রিপোর্ট ছোট করুন বা অসমর্থিত অক্ষর সরিয়ে দিন।</string>
+</resources>

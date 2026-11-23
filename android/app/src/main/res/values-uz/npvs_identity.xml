@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="npv_title">NPV qabul qiluvchi kalitlari</string>
+    <string name="npv_detail">Oʻzingiz uchun yaratilgan fayllar uchun identifikatsiyangizdan foydalaning. Kalitlar ushbu qurilmada shifrlangan. Ularni SP Cloud bilan ishlatish uchun ushbu parametrni yoqing.</string>
+    <string name="npv_enabled">NPV identifikatsiyalarimdan foydalanish</string>
+    <string name="npv_generate">SP Cloud bilan yaratish</string>
+    <string name="npv_import">Yozib olingan JSON ni import qilish</string>
+    <string name="npv_generated">SP Cloud tomonidan yaratilgan</string>
+    <string name="npv_captured">Rasmiy ilovadan yozib olingan</string>
+    <string name="npv_file_only">Faqat ushbu fayl</string>
+    <string name="npv_view">Koʻrish va nusxalash</string>
+    <string name="npv_delete">Oʻchirish</string>
+    <string name="npv_invalid">NPV kalitlarini oʻqib boʻlmadi. JSON va mos kalitlarni tekshiring.</string>
+    <string name="npv_saved">Identifikatsiya saqlandi. Ishlatish uchun parametrni yoqing.</string>
+    <string name="npv_generation_notice">VPN server yoki konfiguratsiyangizni yaratayotgan shaxs bilan faqat ochiq kalitni ulashing. Yopiq kalitingizni hech qachon ulashmang.</string>
+    <string name="npv_choose_title">NPV identifikatsiyasini tanlang</string>
+    <string name="npv_send_notice">Ushbu faylni SP Cloud bilan ochish uchun identifikatsiyani tanlang.</string>
+    <string name="npv_use">Tanlangan identifikatsiyadan foydalanish</string>
+    <string name="npv_copy_public">Ochiq kalitni nusxalash</string>
+    <string name="npv_copy_private">Yopiq kalitni nusxalash</string>
+    <string name="npv_reveal">Yopiq kalitni koʻrsatish yoki yashirish</string>
+    <string name="npv_hardware_notice">Uskuna yopiq kalitini eksport qilib boʻlmadi. Ushbu yozuv faqat mos fayl uchun ishlaydi.</string>
+    <string name="npv_delete_title">Ushbu identifikatsiya oʻchirilsinmi?</string>
+    <string name="npv_delete_warning">Bu kalit faqat ushbu qurilmada saqlangan. Oʻchirilgach, SP Cloud uni tiklay olmaydi. Ushbu identifikatsiya uchun shifrlangan fayllarga kirishni yoʻqotishingiz mumkin.</string>
+    <string name="npv_public_label">Ochiq kalit · P-256</string>
+    <string name="npv_private_label">Yopiq kalit · PKCS#8</string>
+    <string name="npv_cancel">Bekor qilish</string>
+    <string name="npv_already_generated">SP Cloud identifikatsiyasi allaqachon mavjud. Yana birini yaratishdan oldin uni oʻchiring.</string>
+</resources>

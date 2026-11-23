@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_failure_npvs_appkey_auth">无法验证此 NPVS 应用密钥文件。它可能使用了不同的变体或已被修改。此方法既不需要密码，也不需要接收方私钥。</string>
+</resources>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="file_extension_unsupported_contact">இந்தக் கோப்பு நீட்டிப்பு ஆதரிக்கப்படவில்லை. ஆதரவைக் கோர டெவலப்பரைத் தொடர்புகொள்ளவும்.</string>
+    <string name="text_format_unsupported_contact">இந்த உரை வடிவம் அல்லது நெறிமுறை ஆதரிக்கப்படவில்லை. ஆதரவைக் கோர டெவலப்பரைத் தொடர்புகொள்ளவும்.</string>
+    <string name="formats_remote_catalog_note">ஆதரிக்கப்படும் நீட்டிப்புகள் SP-DECODE கிளவுட்டிலிருந்து பாதுகாப்பாக ஒத்திசைக்கப்படுகின்றன. புதிய கிளவுட் வடிவங்கள் செயலியைப் புதுப்பிக்காமலே தோன்றலாம்.</string>
+    <string name="formats_cloud_ready_short">கிளவுட்</string>
+</resources>

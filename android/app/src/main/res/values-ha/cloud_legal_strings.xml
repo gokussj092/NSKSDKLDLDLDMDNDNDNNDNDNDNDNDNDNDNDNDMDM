@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_legal_title">Sharuɗɗa da sirri</string>
+    <string name="cloud_legal_explanation">SP-DECODE Cloud tana aika fayiloli ko rubutun da ka zaɓa don warwarewa zuwa sabarta. Haka kuma tana ƙidaya kimanin shigarwa masu aiki sau ɗaya a rana don tsara ƙarfin sabar, ta amfani da lambar shigarwa ta bazata. Ba a haɗa abubuwan tsare-tsare a cikin waɗannan ƙididdigar ba.</string>
+    <string name="cloud_legal_terms">Karanta sharuɗɗa</string>
+    <string name="cloud_legal_privacy">Karanta manufar sirri</string>
+    <string name="cloud_legal_accept_check">Na karanta kuma na karɓi sharuɗɗa da manufar sirri.</string>
+    <string name="cloud_legal_accept">Karɓa</string>
+    <string name="cloud_legal_decline">Ƙi</string>
+    <string name="server_vpn_loading">Ana loda kundin Sabar VPN…</string>
+    <string name="server_vpn_unavailable">Kundin sabar VPN ba ya samuwa. Ka duba haɗinka ka sake gwadawa.</string>
+    <string name="server_vpn_retry">Sake gwada kundin</string>
+    <string name="cloud_legal_withdraw">Janye izinin Cloud</string>
+    <string name="cloud_legal_withdraw_detail">Janye izini yana toshe sabbin buƙatun sabar. Tarihin ka da aka ɓoye a cikin gida zai kasance a wannan na\'ura. Za ka iya karɓa kuma daga baya.</string>
+</resources>

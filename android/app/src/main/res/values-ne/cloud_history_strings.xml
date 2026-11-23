@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_decode_progress_title">कन्फिगरेसन डिकोड गर्दै</string>
+    <string name="cloud_decode_progress_message">यसमा केही मिनेट लाग्न सक्छ। कृपया पर्खनुहोस्।</string>
+    <string name="cloud_large_result_title">ठूलो कन्फिगरेसन डिकोड भयो</string>
+    <string name="cloud_large_result_body">कन्फिगरेसन इन्क्रिप्ट गरिएको इतिहासमा सुरक्षित गरियो। धेरै ठूला नतिजाहरूको पूर्वावलोकनले एप ढिलो गर्न वा बन्द गर्न सक्छ। हामी तीन-थोप्ले मेनु प्रयोग गरेर इतिहासबाट पूरा JSON निर्यात गर्न सिफारिस गर्छौं, त्यसपछि निर्यात गर्नुहोस्। Android ले तपाईंलाई फोल्डर र फाइल नाम छान्न दिनेछ।</string>
+    <string name="cloud_large_result_acknowledge">बुझें</string>
+    <string name="cloud_history_actions">थप कार्यहरू</string>
+</resources>

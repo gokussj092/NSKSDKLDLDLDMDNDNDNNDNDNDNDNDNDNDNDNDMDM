@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="streak_verified_date">تاریخ سرور سے تصدیق شدہ ہے</string>
+    <string name="streak_date_pending">تصدیق شدہ تاریخ کا انتظار ہے</string>
+    <string name="streak_today_done">آج مکمل ہو گیا</string>
+    <string name="streak_today_pending">اپنا سلسلہ برقرار رکھنے کے لیے آج کوئی فائل یا متن ڈی کوڈ کریں</string>
+    <string name="streak_weekly_reward">ہر 7 مسلسل دنوں پر</string>
+    <string name="streak_reward">+1 APK تجزیہ کریڈٹ</string>
+    <string name="streak_reward_delivered">انعام دے دیا گیا</string>
+    <string name="streak_verified_note">دن اور انعامات سرور سے تصدیق شدہ ہیں۔</string>
+    <plurals name="streak_days_left">
+        <item quantity="one">%1$d دن باقی ہے</item>
+        <item quantity="other">%1$d دن باقی ہیں</item>
+    </plurals>
+    <string name="streak_reminder_channel">سلسلے کی یاد دہانیاں</string>
+    <string name="streak_reminder_title">آپ کا سلسلہ منتظر ہے</string>
+    <string name="streak_reminder_body">اپنا سلسلہ جاری رکھنے کے لیے آج کوئی فائل یا متن ڈی کوڈ کریں۔</string>
+</resources>

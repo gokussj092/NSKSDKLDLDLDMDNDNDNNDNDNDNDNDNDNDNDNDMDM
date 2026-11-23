@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="donations_title">Quyên góp</string>
+    <string name="donation_copy_id">Sao chép ID</string>
+    <string name="donation_id_copied">Đã sao chép ID Binance</string>
+    <string name="donation_coming_soon">Sắp ra mắt</string>
+    <string name="catalog_loading_short">Đang tải danh mục</string>
+    <string name="notifications_title">Thông báo</string>
+    <string name="notifications_description">Nhận thông báo dịch vụ từ SP-DECODE. Bạn có thể tắt chúng bất cứ lúc nào.</string>
+    <string name="notifications_system_settings">Cài đặt hệ thống</string>
+    <string name="notifications_enable">Bật</string>
+    <string name="notifications_later">Để sau</string>
+</resources>

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="server_vpn_filter_ssh_accounts">SSH অ্যাকাউন্ট</string>
+    <string name="server_vpn_ssh_notice_text">এই SSH অ্যাকাউন্টগুলো কেবল নিচের অ্যাপে ব্যবহার করা যাবে:</string>
+    <string name="server_vpn_ssh_no_matches">আপনার খোঁজের সঙ্গে কোনো SSH অ্যাকাউন্ট মেলেনি।</string>
+</resources>

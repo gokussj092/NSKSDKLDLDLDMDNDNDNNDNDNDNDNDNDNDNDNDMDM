@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_report_action">Hiba jelentése</string>
+    <string name="cloud_report_sent">Jelentés fogadva: %1$s</string>
+    <string name="cloud_report_failed">A jelentést nem sikerült elküldeni. Próbálja újra később.</string>
+    <string name="cloud_usage_title">Névtelen telepítési statisztikák</string>
+    <string name="cloud_usage_detail">Az SP-DECODE naponta egyszer megszámolja a hozzávetőleges aktív telepítéseket a szerverkapacitás tervezéséhez. Véletlenszerű telepítési kódot használ, nem az Android-azonosítót, a HWID-t vagy a hirdetési azonosítót.</string>
+    <string name="cloud_usage_footnote">A Cloud használatával jár, miután elfogadta az adatvédelmi feltételeket. Nem tartalmaz fájltartalmakat, jelszavakat vagy dekódolt konfigurációkat.</string>
+</resources>

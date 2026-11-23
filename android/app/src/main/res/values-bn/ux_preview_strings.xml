@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="apk_import_button">APK ইমপোর্ট করুন</string>
+    <string name="apk_future_message">APK বিশ্লেষণ ভবিষ্যতের আপডেটে উপলব্ধ হবে।</string>
+    <string name="apk_credits_title">ক্রেডিট কেন্দ্র</string>
+    <string name="apk_credits_intro">ভবিষ্যতের ক্রেডিট ও APK বিশ্লেষণ কেনাকাটা পরিচালনা করুন।</string>
+    <string name="apk_credits_notice">পরিষেবা চালু হলে ব্যালেন্স ও কেনাকাটা উপলব্ধ হবে।</string>
+    <string name="apk_credits_buy_title">ক্রেডিট কিনুন</string>
+    <string name="apk_credits_one">1টি ক্রেডিট</string>
+    <string name="apk_credits_buy_one">1টি ক্রেডিট কিনুন · শীঘ্রই আসছে</string>
+    <string name="apk_credits_packages">ক্রেডিট বান্ডিল</string>
+    <string name="apk_credits_buy_package">বান্ডিল কিনুন · শীঘ্রই আসছে</string>
+    <string name="apk_credits_prices_title">মূল্য</string>
+    <string name="apk_credits_subscriptions">সাবস্ক্রিপশন</string>
+    <string name="apk_credits_button">ক্রেডিট: 1+</string>
+    <string name="apk_credits_back">ফিরে যান</string>
+</resources>

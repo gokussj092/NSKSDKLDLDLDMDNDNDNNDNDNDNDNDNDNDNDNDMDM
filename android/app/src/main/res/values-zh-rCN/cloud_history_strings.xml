@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_decode_progress_title">正在解码配置</string>
+    <string name="cloud_decode_progress_message">可能需要几分钟。请稍候。</string>
+    <string name="cloud_large_result_title">已解码大型配置</string>
+    <string name="cloud_large_result_body">该配置已保存到加密历史记录中。预览非常大的结果可能会使应用变慢或关闭。建议从“历史记录”中使用三点菜单，然后选择“导出”，导出完整的 JSON。Android 会让您选择文件夹和文件名。</string>
+    <string name="cloud_large_result_acknowledge">知道了</string>
+    <string name="cloud_history_actions">更多操作</string>
+</resources>

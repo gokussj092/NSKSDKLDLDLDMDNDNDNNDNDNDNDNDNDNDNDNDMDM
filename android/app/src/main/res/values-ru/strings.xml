@@ -363,6 +363,12 @@
     <string name="app_analysis_error_busy">Слишком много анализов выполняется. Попробуйте позже.</string>
     <string name="app_analysis_error_generic">Не удалось выполнить операцию. Попробуйте снова.</string>
     <string name="app_analysis_title">Анализ APK</string>
+    <string name="apk_qa_sub_metadata">Чтение метаданных пакета</string>
+    <string name="apk_qa_sub_dex">Анализ байт-кода DEX и методов</string>
+    <string name="apk_qa_sub_native">Проверка нативных библиотек (.so)</string>
+    <string name="apk_qa_sub_jadx">Декомпиляция кода с помощью JADX Lite</string>
+    <string name="apk_qa_sub_recovery">Восстановление частичного вывода DEX</string>
+    <string name="apk_qa_sub_evidence">Сопоставление криптографических ссылок</string>
     <string name="release_integrity_error_title">Не удалось проверить приложение</string>
     <string name="release_integrity_error_message">Не удалось проверить подпись установленного приложения. Обновите SP-DECODE из официального источника. Если проблема сохранится, обратитесь в поддержку и укажите код RELEASE_SIGNER_REJECTED.</string>
 </resources>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="streak_verified_date">日期已由服务器验证</string>
+    <string name="streak_date_pending">正在等待验证日期</string>
+    <string name="streak_today_done">今日已完成</string>
+    <string name="streak_today_pending">今天解码一个文件或文本以保持连续记录</string>
+    <string name="streak_weekly_reward">每连续 7 天</string>
+    <string name="streak_reward">+1 APK 分析积分</string>
+    <string name="streak_reward_delivered">奖励已发放</string>
+    <string name="streak_verified_note">天数和奖励由服务器验证。</string>
+    <plurals name="streak_days_left">
+        <item quantity="one">还剩 %1$d 天</item>
+        <item quantity="other">还剩 %1$d 天</item>
+    </plurals>
+    <string name="streak_reminder_channel">连续记录提醒</string>
+    <string name="streak_reminder_title">您的连续记录正在等待</string>
+    <string name="streak_reminder_body">今天解码一个文件或文本以保持连续记录。</string>
+</resources>

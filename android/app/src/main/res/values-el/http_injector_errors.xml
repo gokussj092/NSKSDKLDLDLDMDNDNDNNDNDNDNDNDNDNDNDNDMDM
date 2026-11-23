@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_http_injector_not_configured">Το HTTP Injector Cloud δεν έχει διαμορφωθεί ακόμη στον διακομιστή. Δοκιμάστε ξανά όταν ενεργοποιηθεί η υπηρεσία.</string>
+</resources>

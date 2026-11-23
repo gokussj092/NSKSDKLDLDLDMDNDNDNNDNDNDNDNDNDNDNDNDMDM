@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="file_extension_unsupported_contact">Ushbu fayl kengaytmasi qoʻllab-quvvatlanmaydi. Qoʻllab-quvvatlashni soʻrash uchun ishlab chiquvchiga murojaat qiling.</string>
+    <string name="text_format_unsupported_contact">Ushbu matn formati yoki protokol qoʻllab-quvvatlanmaydi. Qoʻllab-quvvatlashni soʻrash uchun ishlab chiquvchiga murojaat qiling.</string>
+    <string name="formats_remote_catalog_note">Qoʻllab-quvvatlanadigan kengaytmalar SP-DECODE Cloud dan xavfsiz sinxronlanadi. Yangi Cloud formatlari ilovani yangilamasdan paydo boʻlishi mumkin.</string>
+    <string name="formats_cloud_ready_short">Cloud</string>
+</resources>

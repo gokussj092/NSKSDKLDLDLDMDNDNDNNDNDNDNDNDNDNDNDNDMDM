@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_global_title">Cloud (অনলাইন)</string>
+    <string name="cloud_global_auto">স্বয়ংক্রিয়ভাবে শনাক্ত করুন</string>
+    <string name="cloud_global_hint">সমর্থিত Cloud লিঙ্ক, কি বা কোড পেস্ট করুন</string>
+    <string name="cloud_global_action">Cloud থেকে ইমপোর্ট করুন</string>
+    <string name="cloud_global_detail">Cloud লিঙ্ক, কি বা কোড পেস্ট করুন, SP-DECODE প্রদানকারীকে স্বয়ংক্রিয়ভাবে শনাক্ত করবে। কেবল অনুমোদিত পরিষেবাগুলো সমর্থিত।</string>
+    <string name="cloud_global_invalid">এই রেফারেন্সটি কোনো উপলব্ধ Cloud প্রদানকারীর সঙ্গে মেলে না।</string>
+</resources>

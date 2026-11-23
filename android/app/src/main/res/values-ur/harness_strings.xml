@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="harness_preparing">ایپلیکیشن تیار ہو رہی ہے…</string>
+    <string name="harness_review">جائزے میں</string>
+    <string name="harness_metadata">ایپلیکیشن کا میٹا ڈیٹا جانچا جا رہا ہے…</string>
+    <string name="harness_code">ایپلیکیشن کا کوڈ جانچا جا رہا ہے…</string>
+    <string name="harness_details">تجزیے کی تفصیلات</string>
+    <string name="harness_filename">فائل</string>
+    <string name="harness_size">سائز</string>
+    <string name="harness_unknown_size">سائز زیر التوا ہے</string>
+    <string name="harness_updated">اپ ڈیٹ شدہ: %1$s</string>
+    <string name="harness_local_copy">نتائج اس ڈیوائس پر محفوظ ہیں</string>
+    <string name="harness_normal">عام منتقلی</string>
+    <string name="harness_chunks">حصوں میں منتقلی</string>
+    <string name="harness_support_ai">سپورٹ AI</string>
+    <string name="harness_history_hint">اپنا تجزیہ اور محفوظ نتائج دیکھنے کے لیے ایک ایپلیکیشن کھولیں۔</string>
+    <string name="harness_queued_hint">اپ لوڈ مکمل۔ تجزیے کی جگہ کا انتظار ہے۔</string>
+    <string name="harness_review_hint">تجزیہ جائزے کا منتظر ہے۔</string>
+    <string name="harness_transfer_title">منتقلی کا طریقہ</string>
+    <string name="harness_transfer_scope">اگلے کیٹلاگ ڈاؤن لوڈ یا APK اپ لوڈ پر لاگو ہوتا ہے۔</string>
+    <string name="harness_stable">مستحکم کنکشن · مسلسل منتقلی</string>
+    <string name="harness_unstable">سست یا غیر مستحکم کنکشن · حصوں میں منتقلی</string>
+</resources>

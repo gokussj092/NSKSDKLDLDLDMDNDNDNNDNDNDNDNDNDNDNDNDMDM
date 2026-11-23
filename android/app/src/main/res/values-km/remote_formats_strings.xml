@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="file_extension_unsupported_contact">ផ្នែកបន្ថែមឯកសារនេះមិនត្រូវបានគាំទ្រទេ។ ទាក់ទងអ្នកអភិវឌ្ឍន៍ដើម្បីស្នើសុំការគាំទ្រ។</string>
+    <string name="text_format_unsupported_contact">ទម្រង់អត្ថបទ ឬពិធីការនេះមិនត្រូវបានគាំទ្រទេ។ ទាក់ទងអ្នកអភិវឌ្ឍន៍ដើម្បីស្នើសុំការគាំទ្រ។</string>
+    <string name="formats_remote_catalog_note">ផ្នែកបន្ថែមដែលគាំទ្រត្រូវបានធ្វើសមកាលកម្មដោយសុវត្ថិភាពពី SP-DECODE Cloud។ ទម្រង់ Cloud ថ្មីអាចបង្ហាញដោយមិនចាំបាច់ធ្វើបច្ចុប្បន្នភាពកម្មវិធី។</string>
+    <string name="formats_cloud_ready_short">Cloud</string>
+</resources>

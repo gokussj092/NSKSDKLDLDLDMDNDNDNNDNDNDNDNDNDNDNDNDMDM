@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="unsupported_file_title">Jenis fail tidak disokong</string>
+    <string name="unsupported_file_detail">Sambungan fail ini belum disokong dalam SP-DECODE. Hubungi pembangun untuk mencadangkan sokongan.</string>
+    <string name="unsupported_version_title">Versi fail belum disokong</string>
+    <string name="unsupported_version_detail">Fail ini menggunakan versi atau kaedah penyulitan yang belum serasi.</string>
+    <string name="unsupported_text_title">Format teks tidak disokong</string>
+    <string name="unsupported_text_detail">Teks atau protokol ini belum disokong. Hubungi pembangun untuk mencadangkan integrasi.</string>
+    <string name="catalog_check_action">Kemas kini</string>
+    <string name="catalog_checking">Mengemas kini</string>
+    <string name="catalog_downloading">Mengemas kini katalog…</string>
+    <string name="catalog_progress">%1$d%%</string>
+    <string name="app_update_title">Versi baru tersedia</string>
+    <string name="app_update_body">SP-DECODE %1$s tersedia. Buka saluran Telegram rasmi untuk mengemas kini.</string>
+    <string name="app_update_open">Buka Telegram</string>
+    <string name="app_update_close">Tutup</string>
+    <string name="catalog_available_title">Katalog baru tersedia</string>
+    <string name="catalog_available_body">Katalog versi %1$d siap dimuat turun.</string>
+    <string name="catalog_check_short">Semak katalog</string>
+</resources>

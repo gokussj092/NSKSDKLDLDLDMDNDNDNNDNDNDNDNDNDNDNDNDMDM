@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="language_help_title">अनुवाद सुधार्न मद्दत गर्नुहोस्</string>
+    <string name="language_help_detail">अनुवादका त्रुटि बताउनुहोस् ताकि हामी तिनलाई सच्याउन सकौँ।</string>
+    <string name="language_help_signin_title">रिपोर्ट गर्न साइन इन गर्नुहोस्</string>
+    <string name="language_help_signin_detail">अनुवादको त्रुटि रिपोर्ट गर्न आफ्नो खातामा साइन इन गर्नुहोस्।</string>
+    <string name="language_help_signin_button">साइन इन गर्नुहोस्</string>
+    <string name="language_help_form_title">अनुवादको त्रुटि रिपोर्ट गर्नुहोस्</string>
+    <string name="language_help_language_label">भाषा</string>
+    <string name="language_help_where_label">तपाईंले त्रुटि कहाँ देख्नुभयो?</string>
+    <string name="language_help_wrong_label">गलत पाठ (देखिएजस्तै)</string>
+    <string name="language_help_correct_label">यो कसरी लेखिनुपर्छ?</string>
+    <string name="language_help_comment_label">टिप्पणी (वैकल्पिक)</string>
+    <string name="language_help_send">रिपोर्ट पठाउनुहोस्</string>
+    <string name="language_help_sent">रिपोर्ट पठाइयो। अनुवाद सुधार्न मद्दत गर्नुभएकोमा धन्यवाद।</string>
+    <string name="language_help_error">रिपोर्ट पठाउन सकिएन। पछि फेरि प्रयास गर्नुहोस्।</string>
+    <string name="language_help_required">भाषा, गलत पाठ र सुझाइएको सुधार आवश्यक छन्।</string>
+    <string name="language_help_invalid_input">रिपोर्ट छोटो बनाउनुहोस् वा समर्थन नगरिएका वर्ण हटाउनुहोस्।</string>
+</resources>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_legal_title">ውሎች እና ግላዊነት</string>
+    <string name="cloud_legal_explanation">SP-DECODE Cloud እርስዎ ለመዲኮድ የመረጧቸውን ፋይሎች ወይም ጽሑፎች ወደ ሰርቨሩ ይልካል። እንዲሁም የሰርቨር አቅምን ለማቀድ በቀን አንድ ጊዜ ግምታዊ ንቁ ጭነቶችን ይቆጥራል፣ የዘፈቀደ የመጫኛ ኮድ በመጠቀም። በነዚያ ቆጠራዎች ውስጥ ምንም የውቅር ይዘት አልተካተተም።</string>
+    <string name="cloud_legal_terms">ውሎች እና ሁኔታዎች አንብብ</string>
+    <string name="cloud_legal_privacy">የግላዊነት መመሪያ አንብብ</string>
+    <string name="cloud_legal_accept_check">ውሎቹን እና የግላዊነት መመሪያውን አንብቤ ተቀብያለሁ።</string>
+    <string name="cloud_legal_accept">ተቀበል</string>
+    <string name="cloud_legal_decline">አልተቀበልም</string>
+    <string name="server_vpn_loading">የሰርቨር VPN ካታሎግ በመጫን ላይ…</string>
+    <string name="server_vpn_unavailable">የVPN ሰርቨር ካታሎግ አይገኝም። ግንኙነትዎን ይፈትሹ እና እንደገና ይሞክሩ።</string>
+    <string name="server_vpn_retry">ካታሎግ እንደገና ሞክር</string>
+    <string name="cloud_legal_withdraw">የCloud ፈቃድ ሰርዝ</string>
+    <string name="cloud_legal_withdraw_detail">ፈቃድን መሰረዝ አዲስ የሰርቨር ጥያቄዎችን ያግዳል። በአካባቢ የተመሰጠረ ታሪክዎ በዚህ መሣሪያ ላይ ይቆያል። በኋላ እንደገና መቀበል ይችላሉ።</string>
+</resources>

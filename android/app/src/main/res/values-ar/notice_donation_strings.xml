@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="donations_title">التبرعات</string>
+    <string name="donation_copy_id">نسخ المعرّف</string>
+    <string name="donation_id_copied">تم نسخ معرّف Binance</string>
+    <string name="donation_coming_soon">قريبًا</string>
+    <string name="catalog_loading_short">جارٍ تحميل الكتالوج</string>
+    <string name="notifications_title">الإشعارات</string>
+    <string name="notifications_description">تلقَّ إشعارات الخدمة من SP-DECODE. يمكنك إيقافها في أي وقت.</string>
+    <string name="notifications_system_settings">إعدادات النظام</string>
+    <string name="notifications_enable">تفعيل</string>
+    <string name="notifications_later">لاحقًا</string>
+</resources>

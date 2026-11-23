@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="account_sign_in">سائن ان کریں</string>
+    <string name="account_web_description">اپنا اکاؤنٹ اور خریداریاں سرکاری ویب سائٹ پر منظم کریں۔ مفت خصوصیات اکاؤنٹ کے بغیر بھی دستیاب رہتی ہیں۔</string>
+    <string name="account_continue_web">ویب پر جاری رکھیں</string>
+    <string name="account_my_account">میرا اکاؤنٹ</string>
+    <string name="account_store">اسٹور</string>
+    <string name="account_open_menu">مینیو کھولیں</string>
+    <string name="ads_privacy_options">اشتہارات کی پرائیویسی کے اختیارات</string>
+</resources>

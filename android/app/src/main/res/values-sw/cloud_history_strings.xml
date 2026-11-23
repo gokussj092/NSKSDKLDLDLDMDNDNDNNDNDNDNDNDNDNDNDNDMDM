@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_decode_progress_title">Inasimbua usanidi</string>
+    <string name="cloud_decode_progress_message">Hii inaweza kuchukua dakika chache. Tafadhali subiri.</string>
+    <string name="cloud_large_result_title">Usanidi mkubwa umesimbuwa</string>
+    <string name="cloud_large_result_body">Usanidi ulihifadhiwa kwenye historia iliyosimbwa kwa njia fiche. Kuhakiki matokeo makubwa sana kunaweza kupunguza kasi ya programu au kuifunga. Tunapendekeza kuhamisha JSON kamili kutoka Historia kwa kutumia menyu ya nukta tatu, kisha Uhamishaji. Android itakuwezesha kuchagua folda na jina la faili.</string>
+    <string name="cloud_large_result_acknowledge">Nimeelewa</string>
+    <string name="cloud_history_actions">Vitendo zaidi</string>
+</resources>

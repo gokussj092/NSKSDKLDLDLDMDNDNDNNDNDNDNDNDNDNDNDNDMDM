@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="unsupported_file_title">Hindi suportado ang uri ng file</string>
+    <string name="unsupported_file_detail">Hindi pa available sa SP-DECODE ang extension ng file na ito. Makipag-ugnayan sa developer para magmungkahi ng suporta.</string>
+    <string name="unsupported_version_title">Hindi pa suportado ang bersyon ng file</string>
+    <string name="unsupported_version_detail">Gumagamit ang file na ito ng bersyon o paraan ng encryption na hindi pa compatible. Maaari kang humingi ng suporta sa developer.</string>
+    <string name="unsupported_text_title">Hindi suportado ang format ng text</string>
+    <string name="unsupported_text_detail">Hindi pa suportado ang text o protocol na ito. Makipag-ugnayan sa developer para magmungkahi ng integration.</string>
+    <string name="catalog_check_action">I-update</string>
+    <string name="catalog_checking">Ina-update</string>
+    <string name="catalog_downloading">Ina-update ang catalog…</string>
+    <string name="catalog_progress">%1$d%%</string>
+    <string name="app_update_title">May bagong bersyon ng app</string>
+    <string name="app_update_body">Available na ang SP-DECODE %1$s. Bisitahin ang opisyal na Telegram channel para makuha ang update.</string>
+    <string name="app_update_open">Buksan ang Telegram</string>
+    <string name="app_update_close">Isara</string>
+    <string name="catalog_available_title">May bagong catalog</string>
+    <string name="catalog_available_body">May bagong bersyon %1$d ng catalog na available para i-download.</string>
+    <string name="catalog_check_short">Suriin ang catalog</string>
+</resources>

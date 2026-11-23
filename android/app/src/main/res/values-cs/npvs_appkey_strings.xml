@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_failure_npvs_appkey_auth">Tento soubor s klíčem aplikace NPVS se nepodařilo ověřit. Může používat jinou variantu nebo byl upraven. Tato metoda nevyžaduje ani heslo, ani soukromý klíč příjemce.</string>
+</resources>

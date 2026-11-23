@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="server_vpn_filter_ssh_accounts">Λογαριασμοί SSH</string>
+    <string name="server_vpn_ssh_notice_text">Αυτοί οι λογαριασμοί SSH μπορούν να χρησιμοποιηθούν μόνο στην ακόλουθη εφαρμογή:</string>
+    <string name="server_vpn_ssh_no_matches">Κανένας λογαριασμός SSH δεν αντιστοιχεί στην αναζήτησή σας.</string>
+</resources>

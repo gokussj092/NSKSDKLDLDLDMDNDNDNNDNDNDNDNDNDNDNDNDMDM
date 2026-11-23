@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_report_action">Iulat ang error</string>
+    <string name="cloud_report_sent">Natanggap ang ulat: %1$s</string>
+    <string name="cloud_report_failed">Hindi maipadala ang ulat. Subukan ulit mamaya.</string>
+    <string name="cloud_usage_title">Mga anonymous na istatistika ng pag-install</string>
+    <string name="cloud_usage_detail">Binibilang ng SP-DECODE ang tinatayang aktibong pag-install isang beses sa isang araw para planuhin ang kapasidad ng server. Isang random na installation code ang ginagamit, hindi ang iyong Android ID, HWID o advertising ID.</string>
+    <string name="cloud_usage_footnote">Kasama ito sa paggamit ng Cloud pagkatapos mong tanggapin ang mga tuntunin sa privacy nito. Walang nilalaman ng file, password o naka-decode na configuration na kasama.</string>
+</resources>

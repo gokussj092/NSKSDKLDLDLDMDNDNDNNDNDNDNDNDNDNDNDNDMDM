@@ -46,6 +46,7 @@ fun FunctionalSettingsPanel(
     onLegalLink:(String)->Unit={},
     onWithdrawConsent:()->Unit={},
     onAdsPrivacyOptions:()->Unit={},
+    onSignIn:()->Unit={},
     catalogDownloadChunks:Boolean=false,
     onCatalogDownloadChunks:(Boolean)->Unit={},
     catalogUpdatesEnabled:Boolean=false,
@@ -66,13 +67,15 @@ fun FunctionalSettingsPanel(
     val hasSavedCredit=telegramCreditUsername.isNotBlank()
     val normalizedCredit=TelegramResultCopy.normalizeUsername(creditDraft)
     var languagePage by rememberSaveable { mutableStateOf(false) }
+    var languageHelpPage by rememberSaveable { mutableStateOf(false) }
     var formatsPage by rememberSaveable { mutableStateOf(false) }
     var aboutPage by rememberSaveable { mutableStateOf(false) }
     var retentionDialog by remember { mutableStateOf(false) }
     var withdrawDialog by remember { mutableStateOf(false) }
-    BackHandler(enabled=languagePage || formatsPage || aboutPage) {
+    BackHandler(enabled=languagePage || languageHelpPage || formatsPage || aboutPage) {
         when { aboutPage -> aboutPage=false
             formatsPage -> formatsPage=false
+            languageHelpPage -> languageHelpPage=false
             else -> languagePage=false }
     }
     if(languagePage) {
@@ -80,6 +83,14 @@ fun FunctionalSettingsPanel(
             selectedLanguage=language,
             onBack={languagePage=false},
             onSelect={tag->if(language!=tag)onLanguage(tag)},
+        )
+        return
+    }
+    if(languageHelpPage) {
+        LanguageHelpScreen(
+            language=language,
+            onBack={languageHelpPage=false},
+            onSignIn=onSignIn,
         )
         return
     }
@@ -123,6 +134,26 @@ fun FunctionalSettingsPanel(
                 }
                 Icon(Icons.Outlined.ChevronRight,
                     stringResource(R.string.language_title),tint=MutedText)
+            }
+        }
+        SettingsCard {
+            Row(
+                modifier=Modifier.fillMaxWidth().testTag("settings_language_help_entry")
+                    .clickable{languageHelpPage=true}.padding(vertical=5.dp),
+                verticalAlignment=Alignment.CenterVertically,
+            ) {
+                Icon(Icons.Outlined.Translate,null,tint=TitleText,
+                    modifier=Modifier.size(25.dp))
+                Spacer(Modifier.width(13.dp))
+                Column(modifier=Modifier.weight(1f),
+                    verticalArrangement=Arrangement.spacedBy(4.dp)) {
+                    Text(stringResource(R.string.language_help_title),color=TitleText,
+                        fontWeight=FontWeight.SemiBold,fontSize=16.sp)
+                    Text(stringResource(R.string.language_help_detail),
+                        color=MutedText,fontSize=13.sp)
+                }
+                Icon(Icons.Outlined.ChevronRight,
+                    stringResource(R.string.language_help_title),tint=MutedText)
             }
         }
         SettingsCard {

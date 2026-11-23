@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_legal_title">শর্তাবলি ও গোপনীয়তা</string>
+    <string name="cloud_legal_explanation">SP-DECODE Cloud আপনি বেছে নেওয়া ডিকোড করার ফাইল বা টেক্সট তার সার্ভারে পাঠায়। সার্ভারের ধারণক্ষমতা পরিকল্পনার জন্য এটি দিনে একবার এলোমেলো ইনস্টলেশন কোড ব্যবহার করে আনুমানিক সক্রিয় ইনস্টলেশন গণনা করে। সেই গণনায় কনফিগারেশনের কোনো বিষয়বস্তু অন্তর্ভুক্ত থাকে না।</string>
+    <string name="cloud_legal_terms">শর্তাবলি পড়ুন</string>
+    <string name="cloud_legal_privacy">গোপনীয়তা নীতি পড়ুন</string>
+    <string name="cloud_legal_accept_check">আমি শর্তাবলি ও গোপনীয়তা নীতি পড়েছি ও মেনে নিয়েছি।</string>
+    <string name="cloud_legal_accept">মেনে নিন</string>
+    <string name="cloud_legal_decline">প্রত্যাখ্যান করুন</string>
+    <string name="server_vpn_loading">সার্ভার VPN ক্যাটালগ লোড হচ্ছে…</string>
+    <string name="server_vpn_unavailable">VPN সার্ভার ক্যাটালগ অনুপলব্ধ। সংযোগ পরীক্ষা করে আবার চেষ্টা করুন।</string>
+    <string name="server_vpn_retry">ক্যাটালগ আবার চেষ্টা করুন</string>
+    <string name="cloud_legal_withdraw">Cloud সম্মতি প্রত্যাহার করুন</string>
+    <string name="cloud_legal_withdraw_detail">সম্মতি প্রত্যাহার করলে নতুন সার্ভার অনুরোধ বন্ধ হয়ে যাবে। আপনার স্থানীয়ভাবে এনক্রিপ্ট করা ইতিহাস এই ডিভাইসে থাকবে। পরে আবার মেনে নিতে পারেন।</string>
+</resources>

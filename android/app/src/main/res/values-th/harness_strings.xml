@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="harness_preparing">กำลังเตรียมแอปพลิเคชัน…</string>
+    <string name="harness_review">อยู่ระหว่างการตรวจสอบ</string>
+    <string name="harness_metadata">กำลังตรวจสอบข้อมูลเมตาของแอปพลิเคชัน…</string>
+    <string name="harness_code">กำลังตรวจสอบโค้ดของแอปพลิเคชัน…</string>
+    <string name="harness_details">รายละเอียดการวิเคราะห์</string>
+    <string name="harness_filename">ไฟล์</string>
+    <string name="harness_size">ขนาด</string>
+    <string name="harness_unknown_size">ขนาดรอดำเนินการ</string>
+    <string name="harness_updated">อัปเดตเมื่อ: %1$s</string>
+    <string name="harness_local_copy">ผลลัพธ์ถูกบันทึกไว้บนอุปกรณ์นี้</string>
+    <string name="harness_normal">การโอนแบบปกติ</string>
+    <string name="harness_chunks">การโอนแบบแบ่งส่วน</string>
+    <string name="harness_support_ai">AI ฝ่ายสนับสนุน</string>
+    <string name="harness_history_hint">เปิดแอปพลิเคชันเพื่อดูการวิเคราะห์และผลลัพธ์ที่บันทึกไว้</string>
+    <string name="harness_queued_hint">อัปโหลดเสร็จสมบูรณ์ กำลังรอคิววิเคราะห์</string>
+    <string name="harness_review_hint">การวิเคราะห์กำลังรอการตรวจสอบ</string>
+    <string name="harness_transfer_title">โหมดการโอน</string>
+    <string name="harness_transfer_scope">ใช้กับการดาวน์โหลดแค็ตตาล็อกหรือการอัปโหลด APK ครั้งถัดไป</string>
+    <string name="harness_stable">การเชื่อมต่อเสถียร · โอนต่อเนื่อง</string>
+    <string name="harness_unstable">การเชื่อมต่อช้าหรือไม่เสถียร · โอนเป็นส่วนๆ</string>
+</resources>

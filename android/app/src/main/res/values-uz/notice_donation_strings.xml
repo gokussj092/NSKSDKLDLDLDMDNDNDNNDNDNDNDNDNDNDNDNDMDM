@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="donations_title">Xayriyalar</string>
+    <string name="donation_copy_id">ID ni nusxalash</string>
+    <string name="donation_id_copied">Binance ID nusxalandi</string>
+    <string name="donation_coming_soon">Tez orada</string>
+    <string name="catalog_loading_short">Katalog yuklanmoqda</string>
+    <string name="notifications_title">Bildirishnomalar</string>
+    <string name="notifications_description">SP-DECODE dan xizmat bildirishnomalarini oling. Istalgan vaqtda oʻchirib qoʻyishingiz mumkin.</string>
+    <string name="notifications_system_settings">Tizim sozlamalari</string>
+    <string name="notifications_enable">Yoqish</string>
+    <string name="notifications_later">Keyinroq</string>
+</resources>

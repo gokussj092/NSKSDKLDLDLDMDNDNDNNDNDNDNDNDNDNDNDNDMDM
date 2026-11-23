@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="compatible_export_for">ወደ %1$s ላክ</string>
+    <string name="compatible_export_redecode">ወደ %1$s ኤክስፖርት ለማንቃት ይህን ፋይል እንደገና አስመጣ።</string>
+    <string name="compatible_export_failed">የሚጣጣመው ፋይል ሊቀመጥ አልቻለም።</string>
+</resources>

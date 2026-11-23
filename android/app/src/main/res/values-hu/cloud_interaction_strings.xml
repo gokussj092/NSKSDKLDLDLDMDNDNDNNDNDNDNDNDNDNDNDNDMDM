@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="unsupported_file_title">A fájltípus nem támogatott</string>
+    <string name="unsupported_file_detail">Ez a fájlkiterjesztés még nem érhető el az SP-DECODE alkalmazásban. Lépjen kapcsolatba a fejlesztővel a támogatás javaslatához.</string>
+    <string name="unsupported_version_title">A fájlverzió még nem támogatott</string>
+    <string name="unsupported_version_detail">Ez a fájl olyan verziót vagy titkosítási módszert használ, amely még nem kompatibilis. Támogatást kérhet a fejlesztőtől.</string>
+    <string name="unsupported_text_title">A szövegformátum nem támogatott</string>
+    <string name="unsupported_text_detail">Ez a szöveg vagy protokoll még nem támogatott. Lépjen kapcsolatba a fejlesztővel az integráció javaslatához.</string>
+    <string name="catalog_check_action">Frissítés</string>
+    <string name="catalog_checking">Frissítés</string>
+    <string name="catalog_downloading">Katalógus frissítése…</string>
+    <string name="catalog_progress">%1$d%%</string>
+    <string name="app_update_title">Új alkalmazásverzió érhető el</string>
+    <string name="app_update_body">Elérhető az SP-DECODE %1$s. A frissítés letöltéséhez keresse fel a hivatalos Telegram-csatornát.</string>
+    <string name="app_update_open">Telegram megnyitása</string>
+    <string name="app_update_close">Bezárás</string>
+    <string name="catalog_available_title">Új katalógus érhető el</string>
+    <string name="catalog_available_body">Elérhető a katalógus %1$d új verziója letöltésre.</string>
+    <string name="catalog_check_short">Katalógus ellenőrzése</string>
+</resources>

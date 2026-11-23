@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_http_injector_not_configured">A HTTP Injector Cloud még nincs beállítva a szerveren. Próbálja újra, ha a szolgáltatás engedélyezve lesz.</string>
+</resources>

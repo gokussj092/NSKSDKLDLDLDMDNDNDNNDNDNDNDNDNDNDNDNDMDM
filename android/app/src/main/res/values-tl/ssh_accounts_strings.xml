@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="server_vpn_filter_ssh_accounts">Mga SSH account</string>
+    <string name="server_vpn_ssh_notice_text">Ang mga SSH account na ito ay magagamit lang sa sumusunod na app:</string>
+    <string name="server_vpn_ssh_no_matches">Walang SSH account na tumutugma sa iyong paghahanap.</string>
+</resources>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="file_extension_unsupported_contact">ይህ የፋይል ቅጥያ አይደገፍም። ድጋፍን ለመጠየቅ ገንቢውን ያነጋግሩ።</string>
+    <string name="text_format_unsupported_contact">ይህ የጽሑፍ ቅርጸት ወይም ፕሮቶኮል አይደገፍም። ድጋፍን ለመጠየቅ ገንቢውን ያነጋግሩ።</string>
+    <string name="formats_remote_catalog_note">የሚደገፉ ቅጥያዎች ከSP-DECODE Cloud በደህንነት ይመሳሰላሉ። አዲስ የCloud ቅርጸቶች መተግበሪያውን ሳያዘምኑ ሊታዩ ይችላሉ።</string>
+    <string name="formats_cloud_ready_short">Cloud</string>
+</resources>

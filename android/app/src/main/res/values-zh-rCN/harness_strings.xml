@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="harness_preparing">正在准备应用…</string>
+    <string name="harness_review">审核中</string>
+    <string name="harness_metadata">正在检查应用元数据…</string>
+    <string name="harness_code">正在检查应用代码…</string>
+    <string name="harness_details">分析详情</string>
+    <string name="harness_filename">文件</string>
+    <string name="harness_size">大小</string>
+    <string name="harness_unknown_size">大小待定</string>
+    <string name="harness_updated">更新于：%1$s</string>
+    <string name="harness_local_copy">结果已保存在本设备上</string>
+    <string name="harness_normal">正常传输</string>
+    <string name="harness_chunks">分块传输</string>
+    <string name="harness_support_ai">支持 AI</string>
+    <string name="harness_history_hint">打开一个应用以查看其分析与已保存的结果。</string>
+    <string name="harness_queued_hint">上传完成。正在等待分析名额。</string>
+    <string name="harness_review_hint">分析正在等待审核。</string>
+    <string name="harness_transfer_title">传输模式</string>
+    <string name="harness_transfer_scope">适用于下一次目录下载或 APK 上传。</string>
+    <string name="harness_stable">连接稳定 · 连续传输</string>
+    <string name="harness_unstable">连接缓慢或不稳定 · 分段传输</string>
+</resources>

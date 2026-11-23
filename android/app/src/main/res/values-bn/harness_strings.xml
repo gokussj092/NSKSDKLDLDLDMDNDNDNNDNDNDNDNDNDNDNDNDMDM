@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="harness_preparing">অ্যাপ্লিকেশন প্রস্তুত করা হচ্ছে…</string>
+    <string name="harness_review">পর্যালোচনাধীন</string>
+    <string name="harness_metadata">অ্যাপ্লিকেশনের মেটাডেটা পরীক্ষা করা হচ্ছে…</string>
+    <string name="harness_code">অ্যাপ্লিকেশনের কোড পরীক্ষা করা হচ্ছে…</string>
+    <string name="harness_details">বিশ্লেষণের বিবরণ</string>
+    <string name="harness_filename">ফাইল</string>
+    <string name="harness_size">আকার</string>
+    <string name="harness_unknown_size">আকার অপেক্ষমাণ</string>
+    <string name="harness_updated">আপডেট হয়েছে: %1$s</string>
+    <string name="harness_local_copy">ফলাফল এই ডিভাইসে সংরক্ষিত হয়েছে</string>
+    <string name="harness_normal">সাধারণ স্থানান্তর</string>
+    <string name="harness_chunks">খণ্ডে স্থানান্তর</string>
+    <string name="harness_support_ai">সাপোর্ট AI</string>
+    <string name="harness_history_hint">বিশ্লেষণ ও সংরক্ষিত ফলাফল দেখতে একটি অ্যাপ্লিকেশন খুলুন।</string>
+    <string name="harness_queued_hint">আপলোড সম্পূর্ণ। বিশ্লেষণের স্লটের জন্য অপেক্ষা করা হচ্ছে।</string>
+    <string name="harness_review_hint">বিশ্লেষণ পর্যালোচনার জন্য অপেক্ষা করছে।</string>
+    <string name="harness_transfer_title">স্থানান্তর মোড</string>
+    <string name="harness_transfer_scope">পরবর্তী ক্যাটালগ ডাউনলোড বা APK আপলোডের ক্ষেত্রে প্রযোজ্য।</string>
+    <string name="harness_stable">স্থিতিশীল সংযোগ · নিরবচ্ছিন্ন স্থানান্তর</string>
+    <string name="harness_unstable">ধীর বা অস্থিতিশীল সংযোগ · অংশে স্থানান্তর</string>
+</resources>

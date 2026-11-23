@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="server_vpn_search_hint">Caută aplicații VPN</string>
+    <string name="server_vpn_filter_all">Toate</string>
+    <string name="server_vpn_filter_enabled">Activate</string>
+    <string name="server_vpn_filter_favorites">Favorite</string>
+    <string name="server_vpn_favorite_add">Adaugă la favorite</string>
+    <string name="server_vpn_favorite_remove">Elimină din favorite</string>
+    <string name="server_vpn_manual_refresh">Verifică catalogul acum</string>
+    <string name="server_vpn_catalog_refreshing">Se verifică catalogul serverelor…</string>
+    <string name="server_vpn_no_matches">Nicio aplicație VPN nu corespunde căutării sau filtrelor tale.</string>
+    <string name="server_vpn_catalog_enabled">Activat în catalog</string>
+    <string name="server_vpn_catalog_disabled">Neactivat în catalog</string>
+    <string name="server_vpn_new_badge">Nou</string>
+    <string name="server_vpn_catalog_update_title">Actualizare de catalog disponibilă</string>
+    <string name="server_vpn_catalog_update_question">Versiunea %1$d a catalogului Server VPN este disponibilă. O descarci acum?</string>
+    <string name="server_vpn_catalog_download">Descarcă</string>
+    <string name="server_vpn_catalog_current">Catalogul tău Server VPN este actualizat.</string>
+    <string name="server_vpn_catalog_updated">Catalogul Server VPN a fost actualizat.</string>
+    <string name="server_vpn_catalog_update_error">Catalogul nu a putut fi verificat sau descărcat. Te rugăm să încerci din nou.</string>
+    <string name="server_vpn_updated_badge">Actualizat</string>
+    <string name="server_vpn_maintenance_badge">În mentenanță</string>
+    <string name="server_vpn_maintenance_detail">Metodă temporar în mentenanță</string>
+    <plurals name="server_vpn_app_count">
+        <item quantity="one">%1$d aplicație disponibilă</item>
+        <item quantity="other">%1$d aplicații disponibile</item>
+    </plurals>
+</resources>

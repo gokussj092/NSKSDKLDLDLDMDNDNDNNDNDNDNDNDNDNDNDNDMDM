@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="about_screen_entry_detail">Verzió, biztonság és hivatalos hivatkozások</string>
+    <string name="about_screen_description">VPN-konfigurációk elemzésére és dekódolására szolgáló eszköz</string>
+    <string name="about_screen_version_badge">Verzió %1$s · Build %2$d</string>
+    <string name="about_screen_info">Alkalmazásinformációk</string>
+    <string name="about_screen_languages">Elérhető nyelvek</string>
+    <string name="about_screen_installed">Telepített verzió</string>
+    <string name="about_screen_features">Főbb funkciók</string>
+    <string name="about_screen_feature_decode">VPN-fájlok dekódolása</string>
+    <string name="about_screen_feature_catalog">Szerver-VPN-katalógus</string>
+    <string name="about_screen_feature_export">JSON- és feloldott exportálás</string>
+    <string name="about_screen_feature_history">Eredményelőzmények</string>
+    <string name="about_screen_security">Biztonság és adatvédelem</string>
+    <string name="about_screen_cloud_security">A Cloud V2 kommunikáció HPKE titkosítást és integritás-ellenőrzést használ a szolgáltatás beállításainak megfelelően.</string>
+    <string name="about_screen_local_security">A helyi előzmények titkosítva vannak ezen az eszközön.</string>
+    <string name="about_screen_privacy">Adatvédelmi szabályzat</string>
+    <string name="about_screen_terms">Használati feltételek</string>
+    <string name="about_screen_links">Közösségi és hivatalos hivatkozások</string>
+    <string name="about_screen_website">Hivatalos webhely</string>
+    <string name="about_screen_community_detail">Hivatalos Telegram-közösség</string>
+    <string name="about_screen_credit">Fejlesztő: Ghost Developer</string>
+    <string name="about_screen_copyright">SP-DECODE · Minden jog fenntartva</string>
+</resources>

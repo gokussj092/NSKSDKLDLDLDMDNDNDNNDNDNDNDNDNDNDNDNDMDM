@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="about_screen_entry_detail">កំណែ សុវត្ថិភាព និងតំណផ្លូវការ</string>
+    <string name="about_screen_description">ឧបករណ៍វិភាគ និងឌិកូដការកំណត់រចនាសម្ព័ន្ធ VPN</string>
+    <string name="about_screen_version_badge">កំណែ %1$s · Build %2$d</string>
+    <string name="about_screen_info">ព័ត៌មានកម្មវិធី</string>
+    <string name="about_screen_languages">ភាសាដែលអាចប្រើបាន</string>
+    <string name="about_screen_installed">កំណែដែលបានដំឡើង</string>
+    <string name="about_screen_features">លក្ខណៈសំខាន់ៗ</string>
+    <string name="about_screen_feature_decode">ការឌិកូដឯកសារ VPN</string>
+    <string name="about_screen_feature_catalog">កាតាឡុកម៉ាស៊ីនមេ VPN</string>
+    <string name="about_screen_feature_export">ការនាំចេញ JSON និងឯកសារដែលបានដោះសោ</string>
+    <string name="about_screen_feature_history">ប្រវត្តិលទ្ធផល</string>
+    <string name="about_screen_security">សុវត្ថិភាព និងឯកជនភាព</string>
+    <string name="about_screen_cloud_security">ការទំនាក់ទំនង Cloud V2 ប្រើប្រាស់ការអ៊ិនគ្រីប HPKE និងការត្រួតពិនិត្យភាពត្រឹមត្រូវដោយយោងទៅតាមការកំណត់រចនាសម្ព័ន្ធសេវាកម្ម។</string>
+    <string name="about_screen_local_security">ប្រវត្តិមូលដ្ឋានត្រូវបានអ៊ិនគ្រីបនៅលើឧបករណ៍នេះ។</string>
+    <string name="about_screen_privacy">គោលការណ៍ឯកជនភាព</string>
+    <string name="about_screen_terms">ល័ក្ខខ័ណ្ឌនៃការប្រើប្រាស់</string>
+    <string name="about_screen_links">សហគមន៍ និងតំណផ្លូវការ</string>
+    <string name="about_screen_website">គេហទំព័រផ្លូវការ</string>
+    <string name="about_screen_community_detail">សហគមន៍ Telegram ផ្លូវការ</string>
+    <string name="about_screen_credit">បង្កើតឡើងដោយ Ghost Developer</string>
+    <string name="about_screen_copyright">SP-DECODE · រក្សាសិទ្ធិគ្រប់យ៉ាង</string>
+</resources>

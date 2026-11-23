@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="about_screen_entry_detail">版本、安全与官方链接</string>
+    <string name="about_screen_description">VPN 配置分析与解码工具</string>
+    <string name="about_screen_version_badge">版本 %1$s · 构建 %2$d</string>
+    <string name="about_screen_info">应用信息</string>
+    <string name="about_screen_languages">可用语言</string>
+    <string name="about_screen_installed">已安装版本</string>
+    <string name="about_screen_features">主要功能</string>
+    <string name="about_screen_feature_decode">VPN 文件解码</string>
+    <string name="about_screen_feature_catalog">Server VPN 目录</string>
+    <string name="about_screen_feature_export">JSON 与无限制导出</string>
+    <string name="about_screen_feature_history">结果历史记录</string>
+    <string name="about_screen_security">安全与隐私</string>
+    <string name="about_screen_cloud_security">Cloud V2 通信根据服务配置使用 HPKE 加密与完整性校验。</string>
+    <string name="about_screen_local_security">本地历史记录已在本设备上加密。</string>
+    <string name="about_screen_privacy">隐私政策</string>
+    <string name="about_screen_terms">使用条款</string>
+    <string name="about_screen_links">社区与官方链接</string>
+    <string name="about_screen_website">官方网站</string>
+    <string name="about_screen_community_detail">官方 Telegram 社区</string>
+    <string name="about_screen_credit">由 Ghost Developer 开发</string>
+    <string name="about_screen_copyright">SP-DECODE · 版权所有</string>
+</resources>

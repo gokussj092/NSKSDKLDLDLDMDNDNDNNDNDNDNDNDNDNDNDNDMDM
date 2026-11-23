@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="harness_preparing">애플리케이션 준비 중…</string>
+    <string name="harness_review">검토 중</string>
+    <string name="harness_metadata">애플리케이션 메타데이터 검사 중…</string>
+    <string name="harness_code">애플리케이션 코드 검사 중…</string>
+    <string name="harness_details">분석 세부 정보</string>
+    <string name="harness_filename">파일</string>
+    <string name="harness_size">크기</string>
+    <string name="harness_unknown_size">크기 대기 중</string>
+    <string name="harness_updated">업데이트됨: %1$s</string>
+    <string name="harness_local_copy">결과가 이 기기에 저장됨</string>
+    <string name="harness_normal">일반 전송</string>
+    <string name="harness_chunks">분할 전송</string>
+    <string name="harness_support_ai">지원 AI</string>
+    <string name="harness_history_hint">애플리케이션을 열어 분석 및 저장된 결과를 확인하세요.</string>
+    <string name="harness_queued_hint">업로드 완료. 분석 슬롯 대기 중.</string>
+    <string name="harness_review_hint">분석이 검토 대기 중입니다.</string>
+    <string name="harness_transfer_title">전송 모드</string>
+    <string name="harness_transfer_scope">다음 카탈로그 다운로드 또는 APK 업로드에 적용됩니다.</string>
+    <string name="harness_stable">안정적인 연결 · 연속 전송</string>
+    <string name="harness_unstable">느리거나 불안정한 연결 · 분할 전송</string>
+</resources>

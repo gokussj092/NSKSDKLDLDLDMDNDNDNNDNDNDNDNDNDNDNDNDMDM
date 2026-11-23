@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="server_vpn_search_hint">Bincika apps na VPN</string>
+    <string name="server_vpn_filter_all">Duka</string>
+    <string name="server_vpn_filter_enabled">An kunna</string>
+    <string name="server_vpn_filter_favorites">Abubuwan da aka fi so</string>
+    <string name="server_vpn_favorite_add">Ƙara zuwa abubuwan da aka fi so</string>
+    <string name="server_vpn_favorite_remove">Cire daga abubuwan da aka fi so</string>
+    <string name="server_vpn_manual_refresh">Duba kundin bayanai yanzu</string>
+    <string name="server_vpn_catalog_refreshing">Ana duba kundin sabar…</string>
+    <string name="server_vpn_no_matches">Babu app na VPN da ya dace da bincikenka ko matatunka.</string>
+    <string name="server_vpn_catalog_enabled">An kunna a cikin kundin bayanai</string>
+    <string name="server_vpn_catalog_disabled">Ba a kunna ba a cikin kundin bayanai</string>
+    <string name="server_vpn_new_badge">Sabon</string>
+    <string name="server_vpn_catalog_update_title">Sabunta kundin bayanai ta zo</string>
+    <string name="server_vpn_catalog_update_question">Siga %1$d na kundin Sabar VPN tana samuwa. A sauke ta yanzu?</string>
+    <string name="server_vpn_catalog_download">Sauke</string>
+    <string name="server_vpn_catalog_current">Kundin Sabar VPN ɗinka yana da sabuntawa.</string>
+    <string name="server_vpn_catalog_updated">An sabunta kundin Sabar VPN.</string>
+    <string name="server_vpn_catalog_update_error">Ba a iya duba ko sauke kundin bayanai ba. Don Allah ka sake gwadawa.</string>
+    <string name="server_vpn_updated_badge">An sabunta</string>
+    <string name="server_vpn_maintenance_badge">Ana gyarawa</string>
+    <string name="server_vpn_maintenance_detail">Hanya tana cikin gyara na ɗan lokaci</string>
+    <plurals name="server_vpn_app_count">
+        <item quantity="one">%1$d app tana samuwa</item>
+        <item quantity="other">%1$d apps suna samuwa</item>
+    </plurals>
+</resources>

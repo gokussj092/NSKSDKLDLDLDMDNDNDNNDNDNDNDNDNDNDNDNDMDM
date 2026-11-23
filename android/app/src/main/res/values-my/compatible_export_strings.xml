@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="compatible_export_for">%1$s အတွက် ထုတ်ယူရန်</string>
+    <string name="compatible_export_redecode">%1$s သို့ ထုတ်ယူနိုင်ရန် ဤဖိုင်ကို ထပ်မံ တင်သွင်းပါ။</string>
+    <string name="compatible_export_failed">သဟဇာတဖြစ်သော ဖိုင်ကို သိမ်းဆည်း၍ မရပါ။</string>
+</resources>

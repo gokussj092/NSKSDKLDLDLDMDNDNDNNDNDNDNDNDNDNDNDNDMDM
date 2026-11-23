@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_global_title">Cloud (အွန်လိုင်း)</string>
+    <string name="cloud_global_auto">အလိုအလျောက် သိရှိရန်</string>
+    <string name="cloud_global_hint">ထောက်ပံ့ထားသော Cloud လင့်ခ်၊ သော့ သို့မဟုတ် ကုဒ်ကို ကပ်ပါ</string>
+    <string name="cloud_global_action">Cloud မှ တင်သွင်းရန်</string>
+    <string name="cloud_global_detail">Cloud လင့်ခ်၊ သော့ သို့မဟုတ် ကုဒ်ကို ကပ်ပါက SP-DECODE က ဝန်ဆောင်ပေးသူကို အလိုအလျောက် သိရှိပါသည်။ ခွင့်ပြုထားသော ဝန်ဆောင်မှုများကိုသာ ထောက်ပံ့ပါသည်။</string>
+    <string name="cloud_global_invalid">ဤအကိုးအကားသည် ရရှိနိုင်သော Cloud ဝန်ဆောင်ပေးသူနှင့် ကိုက်ညီခြင်း မရှိပါ။</string>
+</resources>

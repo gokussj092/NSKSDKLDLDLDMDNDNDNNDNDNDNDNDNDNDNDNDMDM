@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="about_screen_entry_detail">เวอร์ชัน ความปลอดภัย และลิงก์ทางการ</string>
+    <string name="about_screen_description">เครื่องมือวิเคราะห์และถอดรหัสการตั้งค่า VPN</string>
+    <string name="about_screen_version_badge">เวอร์ชัน %1$s · บิลด์ %2$d</string>
+    <string name="about_screen_info">ข้อมูลแอป</string>
+    <string name="about_screen_languages">ภาษาที่มีให้เลือก</string>
+    <string name="about_screen_installed">เวอร์ชันที่ติดตั้ง</string>
+    <string name="about_screen_features">ฟีเจอร์หลัก</string>
+    <string name="about_screen_feature_decode">การถอดรหัสไฟล์ VPN</string>
+    <string name="about_screen_feature_catalog">แค็ตตาล็อกเซิร์ฟเวอร์ VPN</string>
+    <string name="about_screen_feature_export">การส่งออก JSON และแบบปลดล็อก</string>
+    <string name="about_screen_feature_history">ประวัติผลลัพธ์</string>
+    <string name="about_screen_security">ความปลอดภัยและความเป็นส่วนตัว</string>
+    <string name="about_screen_cloud_security">การสื่อสาร Cloud V2 ใช้การเข้ารหัส HPKE และการตรวจสอบความสมบูรณ์ตามการตั้งค่าของบริการ</string>
+    <string name="about_screen_local_security">ประวัติในเครื่องถูกเข้ารหัสไว้บนอุปกรณ์นี้</string>
+    <string name="about_screen_privacy">นโยบายความเป็นส่วนตัว</string>
+    <string name="about_screen_terms">ข้อกำหนดการใช้งาน</string>
+    <string name="about_screen_links">ชุมชนและลิงก์ทางการ</string>
+    <string name="about_screen_website">เว็บไซต์ทางการ</string>
+    <string name="about_screen_community_detail">ชุมชน Telegram ทางการ</string>
+    <string name="about_screen_credit">พัฒนาโดย Ghost Developer</string>
+    <string name="about_screen_copyright">SP-DECODE · สงวนลิขสิทธิ์ทั้งหมด</string>
+</resources>

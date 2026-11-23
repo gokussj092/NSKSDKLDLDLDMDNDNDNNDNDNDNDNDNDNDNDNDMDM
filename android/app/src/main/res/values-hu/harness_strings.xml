@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="harness_preparing">Alkalmazás előkészítése…</string>
+    <string name="harness_review">Felülvizsgálat alatt</string>
+    <string name="harness_metadata">Alkalmazás metaadatainak vizsgálata…</string>
+    <string name="harness_code">Alkalmazás kódjának vizsgálata…</string>
+    <string name="harness_details">Elemzés részletei</string>
+    <string name="harness_filename">Fájl</string>
+    <string name="harness_size">Méret</string>
+    <string name="harness_unknown_size">Méret függőben</string>
+    <string name="harness_updated">Frissítve: %1$s</string>
+    <string name="harness_local_copy">Az eredmények ezen az eszközön lettek mentve</string>
+    <string name="harness_normal">Normál átvitel</string>
+    <string name="harness_chunks">Átvitel részekben</string>
+    <string name="harness_support_ai">Támogatási AI</string>
+    <string name="harness_history_hint">Nyisson meg egy alkalmazást az elemzés és a mentett eredmények megtekintéséhez.</string>
+    <string name="harness_queued_hint">A feltöltés kész. Várakozás egy elemzési helyre.</string>
+    <string name="harness_review_hint">Az elemzés felülvizsgálatra vár.</string>
+    <string name="harness_transfer_title">Átviteli mód</string>
+    <string name="harness_transfer_scope">A következő katalógusletöltésre vagy APK-feltöltésre vonatkozik.</string>
+    <string name="harness_stable">Stabil kapcsolat · folyamatos átvitel</string>
+    <string name="harness_unstable">Lassú vagy instabil kapcsolat · átvitel részekben</string>
+</resources>

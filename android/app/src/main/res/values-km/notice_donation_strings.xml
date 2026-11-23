@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="donations_title">ការបរិច្ចាគ</string>
+    <string name="donation_copy_id">ចម្លងលេខសម្គាល់</string>
+    <string name="donation_id_copied">Binance ID ត្រូវបានចម្លង</string>
+    <string name="donation_coming_soon">មកដល់ឆាប់ៗនេះ</string>
+    <string name="catalog_loading_short">កំពុងផ្ទុកកាតាឡុក</string>
+    <string name="notifications_title">ការជូនដំណឹង</string>
+    <string name="notifications_description">ទទួលបានការជូនដំណឹងអំពីសេវាកម្មពី SP-DECODE។ អ្នកអាចបិទពួកវាបានគ្រប់ពេល។</string>
+    <string name="notifications_system_settings">ការកំណត់ប្រព័ន្ធ</string>
+    <string name="notifications_enable">បើក</string>
+    <string name="notifications_later">ពេលក្រោយ</string>
+</resources>

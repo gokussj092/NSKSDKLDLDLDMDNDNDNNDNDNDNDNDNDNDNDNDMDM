@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="streak_verified_date">ቀኑ በሰርቨሩ ተረጋግጧል</string>
+    <string name="streak_date_pending">የተረጋገጠ ቀን በመጠባበቅ ላይ</string>
+    <string name="streak_today_done">ዛሬ ተጠናቋል</string>
+    <string name="streak_today_pending">ተከታታይነትዎን ለመጠበቅ ዛሬ ፋይል ወይም ጽሑፍ ዲኮድ ያድርጉ</string>
+    <string name="streak_weekly_reward">በየ 7 ተከታታይ ቀናት</string>
+    <string name="streak_reward">+1 የAPK ትንተና ክሬዲት</string>
+    <string name="streak_reward_delivered">ሽልማት ተልኳል</string>
+    <string name="streak_verified_note">ቀናት እና ሽልማቶች በሰርቨሩ ይረጋገጣሉ።</string>
+    <plurals name="streak_days_left">
+        <item quantity="one">%1$d ቀን ቀርቷል</item>
+        <item quantity="other">%1$d ቀናት ቀርተዋል</item>
+    </plurals>
+    <string name="streak_reminder_channel">የተከታታይነት ማስታወሻዎች</string>
+    <string name="streak_reminder_title">ተከታታይነትዎ በመጠባበቅ ላይ ነው</string>
+    <string name="streak_reminder_body">ተከታታይነትዎን ለመቀጠል ዛሬ ፋይል ወይም ጽሑፍ ዲኮድ ያድርጉ።</string>
+</resources>

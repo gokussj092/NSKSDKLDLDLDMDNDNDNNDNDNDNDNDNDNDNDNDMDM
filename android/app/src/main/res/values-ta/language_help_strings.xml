@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="language_help_title">மொழிபெயர்ப்புகளை மேம்படுத்த உதவுங்கள்</string>
+    <string name="language_help_detail">மொழிபெயர்ப்புப் பிழைகளைத் தெரிவித்தால் அவற்றைச் சரிசெய்ய முடியும்.</string>
+    <string name="language_help_signin_title">புகாரளிக்க உள்நுழையுங்கள்</string>
+    <string name="language_help_signin_detail">மொழிபெயர்ப்புப் பிழையைப் புகாரளிக்க உங்கள் கணக்கில் உள்நுழையுங்கள்.</string>
+    <string name="language_help_signin_button">உள்நுழை</string>
+    <string name="language_help_form_title">மொழிபெயர்ப்புப் பிழையைப் புகாரளி</string>
+    <string name="language_help_language_label">மொழி</string>
+    <string name="language_help_where_label">பிழையை எங்கே பார்த்தீர்கள்?</string>
+    <string name="language_help_wrong_label">தவறான உரை (தோன்றுவது போலவே)</string>
+    <string name="language_help_correct_label">எப்படி எழுதப்பட்டிருக்க வேண்டும்?</string>
+    <string name="language_help_comment_label">கருத்துகள் (விருப்பம்)</string>
+    <string name="language_help_send">புகாரை அனுப்பு</string>
+    <string name="language_help_sent">புகார் அனுப்பப்பட்டது. மொழிபெயர்ப்புகளை மேம்படுத்த உதவியதற்கு நன்றி.</string>
+    <string name="language_help_error">புகாரை அனுப்ப முடியவில்லை. பின்னர் மீண்டும் முயலுங்கள்.</string>
+    <string name="language_help_required">மொழி, தவறான உரை, பரிந்துரைக்கும் திருத்தம் ஆகியவை தேவை.</string>
+    <string name="language_help_invalid_input">புகாரைச் சுருக்குங்கள் அல்லது ஆதரிக்கப்படாத எழுத்துகளை நீக்குங்கள்.</string>
+</resources>

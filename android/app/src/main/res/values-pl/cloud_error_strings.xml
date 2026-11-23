@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_failure_offline">Brak połączenia z internetem. Połącz się z siecią i spróbuj ponownie.</string>
+    <string name="cloud_failure_network">Nie można połączyć się z usługą. Sprawdź połączenie i spróbuj ponownie.</string>
+    <string name="cloud_failure_tls">Nie można nawiązać bezpiecznego połączenia. Sprawdź sieć i zegar urządzenia.</string>
+    <string name="cloud_failure_timeout">Żądanie trwało zbyt długo. Spróbuj ponownie, gdy połączenie będzie stabilne.</string>
+    <string name="cloud_failure_integrity">Nie można ukończyć weryfikacji aplikacji. Zaktualizuj aplikację lub użyj autoryzowanego dostępu QA.</string>
+    <string name="cloud_failure_qa_code">Brak dostępu QA. Otwórz SP-DECODE QA i wprowadź nowy kod tymczasowy.</string>
+    <string name="cloud_failure_session">Twoja sesja wygasła lub nie można jej zweryfikować. Spróbuj ponownie.</string>
+    <string name="cloud_failure_forbidden">Odmowa dostępu. Sprawdź swoje uprawnienia i spróbuj ponownie.</string>
+    <string name="cloud_failure_qa">Dostęp QA jest nieprawidłowy, wyłączony lub wygasł. Poproś o nowy prywatny kod.</string>
+    <string name="cloud_failure_consent">Zaakceptuj aktualne warunki i informację o prywatności, aby korzystać z dekodowania Cloud.</string>
+    <string name="cloud_failure_rate">Za dużo żądań. Odczekaj chwilę przed ponowną próbą.</string>
+    <string name="cloud_failure_large">Plik lub wynik przekracza dozwolony rozmiar.</string>
+    <string name="cloud_failure_invalid">Nie można zaakceptować tego pliku ani żądania. Sprawdź format.</string>
+    <string name="cloud_failure_unsupported">Ten format pliku nie jest dostępny na serwerze.</string>
+    <string name="cloud_failure_decode">Dekoder nie mógł przetworzyć tej wersji pliku. Plik niekoniecznie jest uszkodzony.</string>
+    <string name="cloud_failure_maintenance">Ta usługa jest tymczasowo niedostępna z powodu konserwacji. Spróbuj ponownie później.</string>
+    <string name="cloud_failure_unavailable">Usługa jest tymczasowo niedostępna. Spróbuj ponownie później.</string>
+    <string name="cloud_failure_config_unavailable">Ta konfiguracja Cloud nie jest już dostępna. Mogła wygasnąć, zostać usunięta lub być ważna tylko do jednorazowego użytku. Nie jest to błąd dekodera.</string>
+    <string name="cloud_failure_remote">Zdalny dostawca zwrócił nieprawidłową lub niemożliwą do zweryfikowania odpowiedź.</string>
+    <string name="cloud_failure_credentials">Nieprawidłowe hasło lub HWID. Sprawdź informacje i spróbuj ponownie.</string>
+    <string name="cloud_failure_password">Ten chroniony plik wymaga hasła.</string>
+    <string name="cloud_failure_hwid">Ten chroniony plik wymaga HWID.</string>
+    <string name="cloud_failure_both">Ten chroniony plik wymaga zarówno hasła, jak i HWID.</string>
+    <string name="cloud_failure_not_found">Żądany zasób jest niedostępny lub nie został znaleziony.</string>
+    <string name="cloud_failure_conflict">Żądanie jest sprzeczne z bieżącym stanem. Spróbuj ponownie.</string>
+    <string name="cloud_failure_partial">Wynik był niepełny lub nieprawidłowy i nie zostanie wyświetlony.</string>
+    <string name="cloud_failure_general">Nie można ukończyć operacji. Spróbuj ponownie lub skontaktuj się z pomocą techniczną.</string>
+    <string name="cloud_failure_notice_title">Uwaga</string>
+    <string name="cloud_password_title">Wymagane hasło konfiguracji</string>
+    <string name="cloud_password_description">%1$s jest chroniony hasłem. Wprowadź hasło eksportu, aby kontynuować. Nie zostanie zapisane.</string>
+    <string name="cloud_failure_password_incorrect">Nieprawidłowe hasło.</string>
+    <string name="cloud_failure_private_key">Ten plik NPVS korzysta z ochrony kluczem publicznym/prywatnym odbiorcy. Ta metoda nie jest jeszcze obsługiwana; obsługa pojawi się wkrótce.</string>
+    <string name="cloud_failure_recipient">Ten plik NPVS korzysta z metody klucza odbiorcy, która nie jest jeszcze obsługiwana. Obsługa pojawi się wkrótce.</string>
+    <string name="cloud_failure_npvs_unsupported">Ta wersja NPVS lub metoda ochrony nie jest jeszcze obsługiwana. Obsługa pojawi się wkrótce.</string>
+</resources>

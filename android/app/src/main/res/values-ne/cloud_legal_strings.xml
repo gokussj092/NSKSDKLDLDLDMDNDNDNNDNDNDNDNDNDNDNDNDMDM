@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_legal_title">सर्तहरू र गोपनीयता</string>
+    <string name="cloud_legal_explanation">SP-DECODE Cloud ले तपाईंले डिकोड गर्न छान्नुभएका फाइलहरू वा पाठहरू आफ्नो सर्भरमा पठाउँछ। यसले सर्भर क्षमता योजना गर्न यादृच्छिक स्थापना कोड प्रयोग गरेर दिनमा एक पटक अनुमानित सक्रिय स्थापनाहरू पनि गन्छ। ती गणनाहरूमा कुनै कन्फिगरेसन सामग्री समावेश हुँदैन।</string>
+    <string name="cloud_legal_terms">सर्तहरू र नियमहरू पढ्नुहोस्</string>
+    <string name="cloud_legal_privacy">गोपनीयता नीति पढ्नुहोस्</string>
+    <string name="cloud_legal_accept_check">मैले सर्तहरू र गोपनीयता नीति पढेको छु र स्वीकार गर्छु।</string>
+    <string name="cloud_legal_accept">स्वीकार गर्नुहोस्</string>
+    <string name="cloud_legal_decline">अस्वीकार गर्नुहोस्</string>
+    <string name="server_vpn_loading">सर्भर VPN क्याटलग लोड गर्दै…</string>
+    <string name="server_vpn_unavailable">VPN सर्भर क्याटलग अनुपलब्ध छ। तपाईंको जडान जाँच गर्नुहोस् र पुनः प्रयास गर्नुहोस्।</string>
+    <string name="server_vpn_retry">क्याटलग पुनः प्रयास गर्नुहोस्</string>
+    <string name="cloud_legal_withdraw">Cloud सहमति फिर्ता लिनुहोस्</string>
+    <string name="cloud_legal_withdraw_detail">सहमति फिर्ता लिँदा नयाँ सर्भर अनुरोधहरू रोकिन्छन्। तपाईंको स्थानीय रूपमा इन्क्रिप्ट गरिएको इतिहास यस यन्त्रमा रहनेछ। तपाईंले पछि पुनः स्वीकार गर्न सक्नुहुन्छ।</string>
+</resources>

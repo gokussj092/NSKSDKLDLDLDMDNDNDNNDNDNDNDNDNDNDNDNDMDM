@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="donations_title">Bağışlar</string>
+    <string name="donation_copy_id">Kimliği kopyala</string>
+    <string name="donation_id_copied">Binance kimliği kopyalandı</string>
+    <string name="donation_coming_soon">Yakında</string>
+    <string name="catalog_loading_short">Katalog yükleniyor</string>
+    <string name="notifications_title">Bildirimler</string>
+    <string name="notifications_description">SP-DECODE\'den hizmet bildirimleri alın. Bunları istediğiniz zaman kapatabilirsiniz.</string>
+    <string name="notifications_system_settings">Sistem ayarları</string>
+    <string name="notifications_enable">Etkinleştir</string>
+    <string name="notifications_later">Sonra</string>
+</resources>

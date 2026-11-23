@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="streak_verified_date">서버에서 확인된 날짜</string>
+    <string name="streak_date_pending">확인된 날짜 대기 중</string>
+    <string name="streak_today_done">오늘 완료됨</string>
+    <string name="streak_today_pending">연속 기록을 유지하려면 오늘 파일이나 텍스트를 디코딩하세요</string>
+    <string name="streak_weekly_reward">7일 연속마다</string>
+    <string name="streak_reward">+1 APK 분석 크레딧</string>
+    <string name="streak_reward_delivered">보상이 지급되었습니다</string>
+    <string name="streak_verified_note">일수와 보상은 서버에서 확인됩니다.</string>
+    <plurals name="streak_days_left">
+        <item quantity="one">%1$d일 남음</item>
+        <item quantity="other">%1$d일 남음</item>
+    </plurals>
+    <string name="streak_reminder_channel">연속 기록 알림</string>
+    <string name="streak_reminder_title">연속 기록이 기다리고 있습니다</string>
+    <string name="streak_reminder_body">연속 기록을 이어가려면 오늘 파일이나 텍스트를 디코딩하세요.</string>
+</resources>

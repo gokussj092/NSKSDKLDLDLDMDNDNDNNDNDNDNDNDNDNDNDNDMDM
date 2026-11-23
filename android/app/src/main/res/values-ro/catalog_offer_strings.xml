@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="catalog_offer_title">Catalog nou disponibil</string>
+    <string name="catalog_offer_body">Versiunea %1$d a catalogului este gata. Actualizează pentru a accesa aplicații, metode și îmbunătățiri noi.</string>
+    <string name="catalog_offer_update">Actualizează acum</string>
+    <string name="catalog_offer_later">Anulează</string>
+    <string name="catalog_postpone_title">Continui fără actualizare?</string>
+    <string name="catalog_postpone_body">Dacă anulezi, cele mai recente aplicații, metode și îmbunătățiri ale catalogului nu vor fi disponibile până la actualizare. Poți actualiza mai târziu în Server VPN.</string>
+    <string name="catalog_postpone_confirm">Continuă fără actualizare</string>
+    <string name="catalog_postpone_back">Înapoi</string>
+</resources>

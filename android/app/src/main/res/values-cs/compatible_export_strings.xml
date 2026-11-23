@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="compatible_export_for">Export pro %1$s</string>
+    <string name="compatible_export_redecode">Importujte tento soubor znovu, abyste povolili export do %1$s.</string>
+    <string name="compatible_export_failed">Kompatibilní soubor se nepodařilo uložit.</string>
+</resources>

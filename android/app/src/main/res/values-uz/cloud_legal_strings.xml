@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_legal_title">Shartlar va maxfiylik</string>
+    <string name="cloud_legal_explanation">SP-DECODE Cloud dekodlash uchun tanlagan fayl yoki matnlaringizni oʻz serveriga yuboradi. Shuningdek, server quvvatini rejalashtirish uchun kuniga bir marta tasodifiy oʻrnatish kodidan foydalanib taxminiy faol oʻrnatishlar sonini hisoblaydi. Bu hisob-kitoblarga konfiguratsiya mazmuni kiritilmaydi.</string>
+    <string name="cloud_legal_terms">Shartlar va qoidalarni oʻqish</string>
+    <string name="cloud_legal_privacy">Maxfiylik siyosatini oʻqish</string>
+    <string name="cloud_legal_accept_check">Shartlar va maxfiylik siyosatini oʻqidim va qabul qilaman.</string>
+    <string name="cloud_legal_accept">Qabul qilish</string>
+    <string name="cloud_legal_decline">Rad etish</string>
+    <string name="server_vpn_loading">Server VPN katalogi yuklanmoqda…</string>
+    <string name="server_vpn_unavailable">VPN server katalogi mavjud emas. Ulanishingizni tekshiring va qayta urining.</string>
+    <string name="server_vpn_retry">Katalogni qayta urinish</string>
+    <string name="cloud_legal_withdraw">Cloud roziligini bekor qilish</string>
+    <string name="cloud_legal_withdraw_detail">Rozilikni bekor qilish yangi server soʻrovlarini bloklaydi. Mahalliy shifrlangan tarixingiz ushbu qurilmada qoladi. Keyinroq yana qabul qilishingiz mumkin.</string>
+</resources>

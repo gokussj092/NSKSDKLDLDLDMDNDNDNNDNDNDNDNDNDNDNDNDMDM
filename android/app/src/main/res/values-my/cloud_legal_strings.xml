@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_legal_title">စည်းမျဉ်းများနှင့် ကိုယ်ရေးကိုယ်တာ</string>
+    <string name="cloud_legal_explanation">SP-DECODE Cloud သည် သင် ကုဒ်ဖြည်ရန် ရွေးချယ်သော ဖိုင်များ သို့မဟုတ် စာသားများကို ၎င်း၏ ဆာဗာသို့ ပေးပို့သည်။ ဆာဗာ စွမ်းရည်ကို စီစဉ်ရန် ကျပန်း တပ်ဆင်မှုကုဒ်ကို အသုံးပြု၍ တစ်နေ့တစ်ကြိမ် အသုံးပြုနေသော တပ်ဆင်မှု အရေအတွက်ကိုလည်း ခန့်မှန်းခြေအားဖြင့် ရေတွက်သည်။ ထိုရေတွက်မှုများတွင် ဖွဲ့စည်းမှု အကြောင်းအရာများ မပါဝင်ပါ။</string>
+    <string name="cloud_legal_terms">စည်းမျဉ်းများနှင့် အခြေအနေများကို ဖတ်ရန်</string>
+    <string name="cloud_legal_privacy">ကိုယ်ရေးကိုယ်တာ မူဝါဒကို ဖတ်ရန်</string>
+    <string name="cloud_legal_accept_check">စည်းမျဉ်းများနှင့် ကိုယ်ရေးကိုယ်တာ မူဝါဒကို ဖတ်ပြီး လက်ခံပါသည်။</string>
+    <string name="cloud_legal_accept">လက်ခံရန်</string>
+    <string name="cloud_legal_decline">ငြင်းပယ်ရန်</string>
+    <string name="server_vpn_loading">ဆာဗာ VPN ကတ်တလောက်ကို ဖွင့်နေသည်…</string>
+    <string name="server_vpn_unavailable">VPN ဆာဗာ ကတ်တလောက်ကို ရရှိနိုင်ခြင်း မရှိပါ။ ချိတ်ဆက်မှုကို စစ်ဆေး၍ ထပ်ကြိုးစားပါ။</string>
+    <string name="server_vpn_retry">ကတ်တလောက် ထပ်ကြိုးစားရန်</string>
+    <string name="cloud_legal_withdraw">Cloud သဘောတူညီချက်ကို ရုပ်သိမ်းရန်</string>
+    <string name="cloud_legal_withdraw_detail">သဘောတူညီချက်ကို ရုပ်သိမ်းခြင်းက ဆာဗာ တောင်းဆိုမှုအသစ်များကို ပိတ်ပင်သည်။ ဒေသတွင်း ကုဒ်ဝှက်ထားသော သင့်မှတ်တမ်းသည် ဤစက်တွင် ဆက်ရှိနေပါမည်။ နောက်မှ ထပ်လက်ခံနိုင်ပါသည်။</string>
+</resources>

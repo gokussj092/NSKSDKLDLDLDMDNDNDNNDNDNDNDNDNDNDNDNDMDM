@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="server_vpn_search_hint">VPN အက်ပ်များကို ရှာပါ</string>
+    <string name="server_vpn_filter_all">အားလုံး</string>
+    <string name="server_vpn_filter_enabled">ဖွင့်ထားသည်</string>
+    <string name="server_vpn_filter_favorites">အကြိုက်ဆုံးများ</string>
+    <string name="server_vpn_favorite_add">အကြိုက်ဆုံးထဲသို့ ထည့်ရန်</string>
+    <string name="server_vpn_favorite_remove">အကြိုက်ဆုံးထဲမှ ဖယ်ရန်</string>
+    <string name="server_vpn_manual_refresh">ကတ်တလောက်ကို ယခု စစ်ဆေးရန်</string>
+    <string name="server_vpn_catalog_refreshing">ဆာဗာ ကတ်တလောက်ကို စစ်ဆေးနေသည်…</string>
+    <string name="server_vpn_no_matches">သင့်ရှာဖွေမှု သို့မဟုတ် စစ်ထုတ်မှုများနှင့် ကိုက်ညီသော VPN အက်ပ် မရှိပါ။</string>
+    <string name="server_vpn_catalog_enabled">ကတ်တလောက်တွင် ဖွင့်ထားသည်</string>
+    <string name="server_vpn_catalog_disabled">ကတ်တလောက်တွင် မဖွင့်ထားပါ</string>
+    <string name="server_vpn_new_badge">အသစ်</string>
+    <string name="server_vpn_catalog_update_title">ကတ်တလောက် အပ်ဒိတ် ရရှိနိုင်ပါပြီ</string>
+    <string name="server_vpn_catalog_update_question">Server VPN ကတ်တလောက် ဗားရှင်း %1$d ရရှိနိုင်ပါပြီ။ ယခု ဒေါင်းလုဒ်လုပ်မလား။</string>
+    <string name="server_vpn_catalog_download">ဒေါင်းလုဒ်လုပ်ရန်</string>
+    <string name="server_vpn_catalog_current">သင့် Server VPN ကတ်တလောက်မှာ နောက်ဆုံးပေါ် ဖြစ်ပါသည်။</string>
+    <string name="server_vpn_catalog_updated">Server VPN ကတ်တလောက် အပ်ဒိတ်လုပ်ပြီးပါပြီ။</string>
+    <string name="server_vpn_catalog_update_error">ကတ်တလောက်ကို စစ်ဆေး သို့မဟုတ် ဒေါင်းလုဒ်လုပ်၍ မရပါ။ ထပ်ကြိုးစားပါ။</string>
+    <string name="server_vpn_updated_badge">အပ်ဒိတ်လုပ်ပြီး</string>
+    <string name="server_vpn_maintenance_badge">ပြုပြင်နေဆဲ</string>
+    <string name="server_vpn_maintenance_detail">နည်းလမ်းကို ယာယီ ပြုပြင်နေပါသည်</string>
+    <plurals name="server_vpn_app_count">
+        <item quantity="one">%1$d အက်ပ် ရရှိနိုင်ပါသည်</item>
+        <item quantity="other">%1$d အက်ပ် ရရှိနိုင်ပါသည်</item>
+    </plurals>
+</resources>

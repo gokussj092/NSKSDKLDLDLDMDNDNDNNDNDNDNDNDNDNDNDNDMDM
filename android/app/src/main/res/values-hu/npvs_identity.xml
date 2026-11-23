@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="npv_title">NPV címzettkulcsok</string>
+    <string name="npv_detail">Használja a saját identitását a Önnek készült fájlokhoz. A kulcsok titkosítva vannak ezen az eszközön. Engedélyezze ezt a beállítást, hogy az SP Cloud szolgáltatással használhassa őket.</string>
+    <string name="npv_enabled">NPV-identitásaim használata</string>
+    <string name="npv_generate">Létrehozás az SP Cloud segítségével</string>
+    <string name="npv_import">Rögzített JSON importálása</string>
+    <string name="npv_generated">Létrehozta: SP Cloud</string>
+    <string name="npv_captured">Rögzítve a hivatalos alkalmazásból</string>
+    <string name="npv_file_only">Csak ehhez a fájlhoz</string>
+    <string name="npv_view">Megtekintés és másolás</string>
+    <string name="npv_delete">Törlés</string>
+    <string name="npv_invalid">Nem olvashatók az NPV-kulcsok. Ellenőrizze a JSON-t és a megfelelő kulcsokat.</string>
+    <string name="npv_saved">Az identitás mentve. Engedélyezze a beállítást a használatához.</string>
+    <string name="npv_generation_notice">Csak a nyilvános kulcsot ossza meg azzal, aki a VPN-szervert vagy a konfigurációt készíti Önnek. A privát kulcsot soha ne ossza meg.</string>
+    <string name="npv_choose_title">NPV-identitás kiválasztása</string>
+    <string name="npv_send_notice">Válassza ki az identitást, amellyel ezt a fájlt az SP Cloud segítségével megnyitja.</string>
+    <string name="npv_use">A kiválasztott identitás használata</string>
+    <string name="npv_copy_public">Nyilvános kulcs másolása</string>
+    <string name="npv_copy_private">Privát kulcs másolása</string>
+    <string name="npv_reveal">Privát kulcs megjelenítése vagy elrejtése</string>
+    <string name="npv_hardware_notice">A hardveres privát kulcs nem exportálható. Ez a rögzítés csak a megfelelő fájlhoz működik.</string>
+    <string name="npv_delete_title">Törli ezt az identitást?</string>
+    <string name="npv_delete_warning">Ez a kulcs csak ezen az eszközön van tárolva. Törlés után az SP Cloud nem tudja visszaállítani. Elveszítheti a hozzáférést az ehhez az identitáshoz titkosított fájlokhoz.</string>
+    <string name="npv_public_label">Nyilvános kulcs · P-256</string>
+    <string name="npv_private_label">Privát kulcs · PKCS#8</string>
+    <string name="npv_cancel">Mégse</string>
+    <string name="npv_already_generated">Már létezik egy SP Cloud-identitás. Új létrehozása előtt törölje azt.</string>
+</resources>

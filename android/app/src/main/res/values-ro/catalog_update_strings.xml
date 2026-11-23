@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="catalog_auto_title">Actualizări automate ale catalogului Server VPN</string>
+    <string name="catalog_auto_detail">Verifică versiunile catalogului cu propriul tău server SP-DECODE prin HTTPS cât timp aplicația este deschisă și, opțional, efectuează verificări rare de recuperare în fundal. Datele noi ale catalogului și pictogramele se descarcă doar după o schimbare de versiune. Nu sunt necesare Firebase, cont sau token push. Poți dezactiva oricând.</string>
+    <string name="catalog_auto_switch">Activează sincronizarea catalogului în fundal</string>
+</resources>

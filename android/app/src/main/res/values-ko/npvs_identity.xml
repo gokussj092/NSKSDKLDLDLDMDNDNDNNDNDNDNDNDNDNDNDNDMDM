@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="npv_title">NPV 수신자 키</string>
+    <string name="npv_detail">나를 위해 만들어진 파일에 내 신원을 사용합니다. 키는 이 기기에 암호화됩니다. SP Cloud와 함께 사용하려면 이 옵션을 사용하세요.</string>
+    <string name="npv_enabled">내 NPV 신원 사용</string>
+    <string name="npv_generate">SP Cloud로 생성</string>
+    <string name="npv_import">캡처한 JSON 가져오기</string>
+    <string name="npv_generated">SP Cloud에서 생성됨</string>
+    <string name="npv_captured">공식 앱에서 캡처됨</string>
+    <string name="npv_file_only">이 파일만</string>
+    <string name="npv_view">보기 및 복사</string>
+    <string name="npv_delete">삭제</string>
+    <string name="npv_invalid">NPV 키를 읽을 수 없습니다. JSON과 일치하는 키를 확인하세요.</string>
+    <string name="npv_saved">신원이 저장되었습니다. 사용하려면 옵션을 사용하세요.</string>
+    <string name="npv_generation_notice">VPN 서버나 구성을 만드는 사람과 공개 키만 공유하세요. 개인 키는 절대 공유하지 마세요.</string>
+    <string name="npv_choose_title">NPV 신원 선택</string>
+    <string name="npv_send_notice">SP Cloud로 이 파일을 열 신원을 선택하세요.</string>
+    <string name="npv_use">선택한 신원 사용</string>
+    <string name="npv_copy_public">공개 키 복사</string>
+    <string name="npv_copy_private">개인 키 복사</string>
+    <string name="npv_reveal">개인 키 표시 또는 숨기기</string>
+    <string name="npv_hardware_notice">하드웨어 개인 키는 내보낼 수 없습니다. 이 캡처는 일치하는 파일에만 적용됩니다.</string>
+    <string name="npv_delete_title">이 신원을 삭제하시겠습니까?</string>
+    <string name="npv_delete_warning">이 키는 이 기기에만 저장됩니다. 삭제하면 SP Cloud에서 복구할 수 없습니다. 이 신원으로 암호화된 파일에 접근하지 못할 수 있습니다.</string>
+    <string name="npv_public_label">공개 키 · P-256</string>
+    <string name="npv_private_label">개인 키 · PKCS#8</string>
+    <string name="npv_cancel">취소</string>
+    <string name="npv_already_generated">SP Cloud 신원이 이미 있습니다. 다른 신원을 생성하기 전에 삭제하세요.</string>
+</resources>

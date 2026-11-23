@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_failure_offline">Hakuna muunganisho wa intaneti. Unganisha kwenye mtandao na ujaribu tena.</string>
+    <string name="cloud_failure_network">Haiwezi kufikia huduma. Angalia muunganisho wako na ujaribu tena.</string>
+    <string name="cloud_failure_tls">Haikuweza kuanzisha muunganisho salama. Angalia mtandao wako na saa ya kifaa.</string>
+    <string name="cloud_failure_timeout">Ombi lilichukua muda mrefu sana. Jaribu tena muunganisho ukiwa thabiti.</string>
+    <string name="cloud_failure_integrity">Uthibitishaji wa programu haukuweza kukamilika. Sasisha programu au tumia ufikiaji wa QA ulioidhinishwa.</string>
+    <string name="cloud_failure_qa_code">Ufikiaji wa QA haupo. Fungua SP-DECODE QA na uweke msimbo mpya wa muda.</string>
+    <string name="cloud_failure_session">Kipindi chako kimeisha au hakikuweza kuthibitishwa. Tafadhali jaribu tena.</string>
+    <string name="cloud_failure_forbidden">Ufikiaji umekataliwa. Angalia idhini yako na ujaribu tena.</string>
+    <string name="cloud_failure_qa">Ufikiaji wa QA si sahihi, umezimwa au umeisha. Omba msimbo mpya wa kibinafsi.</string>
+    <string name="cloud_failure_consent">Kubali masharti ya sasa na taarifa ya faragha ili kutumia usimbuaji wa Cloud.</string>
+    <string name="cloud_failure_rate">Maombi mengi sana. Tafadhali subiri kabla ya kujaribu tena.</string>
+    <string name="cloud_failure_large">Faili au matokeo yanazidi ukubwa unaoruhusiwa.</string>
+    <string name="cloud_failure_invalid">Faili au ombi hili halikuweza kukubaliwa. Angalia muundo.</string>
+    <string name="cloud_failure_unsupported">Muundo huu wa faili haupatikani kwenye seva.</string>
+    <string name="cloud_failure_decode">Kisimbuaji hakingeweza kuchakata toleo hili la faili. Faili si lazima iwe imeharibika.</string>
+    <string name="cloud_failure_maintenance">Huduma hii iko katika matengenezo kwa muda. Tafadhali jaribu tena baadaye.</string>
+    <string name="cloud_failure_unavailable">Huduma haipatikani kwa muda. Jaribu tena baadaye.</string>
+    <string name="cloud_failure_config_unavailable">Usanidi huu wa Cloud haupatikani tena. Huenda umeisha, umefutwa, au ulikuwa halali kwa matumizi moja tu. Hii si hitilafu ya kisimbuaji.</string>
+    <string name="cloud_failure_remote">Mtoa huduma wa mbali alirudisha jibu batili au lisiloweza kuthibitishwa.</string>
+    <string name="cloud_failure_credentials">Nywila au HWID si sahihi. Angalia taarifa na ujaribu tena.</string>
+    <string name="cloud_failure_password">Faili hii iliyolindwa inahitaji nywila.</string>
+    <string name="cloud_failure_hwid">Faili hii iliyolindwa inahitaji HWID.</string>
+    <string name="cloud_failure_both">Faili hii iliyolindwa inahitaji nywila na HWID.</string>
+    <string name="cloud_failure_not_found">Rasilimali iliyoombwa haipatikani au haikupatikana.</string>
+    <string name="cloud_failure_conflict">Ombi linakinzana na hali ya sasa. Tafadhali jaribu tena.</string>
+    <string name="cloud_failure_partial">Matokeo hayakukamilika au yalikuwa batili, na hayataonyeshwa.</string>
+    <string name="cloud_failure_general">Haiwezi kukamilisha operesheni. Jaribu tena au wasiliana na usaidizi.</string>
+    <string name="cloud_failure_notice_title">Taarifa</string>
+    <string name="cloud_password_title">Nywila ya usanidi inahitajika</string>
+    <string name="cloud_password_description">%1$s imelindwa kwa nywila. Weka nywila ya uhamishaji ili kuendelea. Haitahifadhiwa.</string>
+    <string name="cloud_failure_password_incorrect">Nywila si sahihi.</string>
+    <string name="cloud_failure_private_key">Faili hii ya NPVS hutumia ulinzi wa ufunguo wa umma/binafsi wa mpokeaji. Mbinu hii haijaungwa mkono bado; usaidizi unakuja hivi karibuni.</string>
+    <string name="cloud_failure_recipient">Faili hii ya NPVS hutumia mbinu ya ufunguo wa mpokeaji ambayo haijaungwa mkono bado. Usaidizi unakuja hivi karibuni.</string>
+    <string name="cloud_failure_npvs_unsupported">Toleo hili la NPVS au mbinu ya ulinzi haijaungwa mkono bado. Usaidizi unakuja hivi karibuni.</string>
+</resources>

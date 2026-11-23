@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="file_extension_unsupported_contact">Ba a tallafa wa wannan tsawo na fayil ba. Ka tuntuɓi mai ƙirƙira don neman tallafi.</string>
+    <string name="text_format_unsupported_contact">Ba a tallafa wa wannan tsarin rubutu ko ƙa\'ida ba. Ka tuntuɓi mai ƙirƙira don neman tallafi.</string>
+    <string name="formats_remote_catalog_note">Ana daidaita tsawo masu tallafi cikin aminci daga SP-DECODE Cloud. Sabbin tsare-tsaren Cloud na iya bayyana ba tare da sabunta app ɗin ba.</string>
+    <string name="formats_cloud_ready_short">Cloud</string>
+</resources>

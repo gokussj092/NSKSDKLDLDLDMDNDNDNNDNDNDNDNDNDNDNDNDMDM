@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="harness_preparing">အက်ပ်ကို ပြင်ဆင်နေသည်…</string>
+    <string name="harness_review">သုံးသပ်နေဆဲ</string>
+    <string name="harness_metadata">အက်ပ် မက်တာဒေတာကို စစ်ဆေးနေသည်…</string>
+    <string name="harness_code">အက်ပ် ကုဒ်ကို စစ်ဆေးနေသည်…</string>
+    <string name="harness_details">လေ့လာမှု အသေးစိတ်</string>
+    <string name="harness_filename">ဖိုင်</string>
+    <string name="harness_size">အရွယ်အစား</string>
+    <string name="harness_unknown_size">အရွယ်အစား စောင့်နေဆဲ</string>
+    <string name="harness_updated">အပ်ဒိတ်လုပ်ပြီး- %1$s</string>
+    <string name="harness_local_copy">ရလဒ်များကို ဤစက်တွင် သိမ်းဆည်းထားသည်</string>
+    <string name="harness_normal">ပုံမှန် လွှဲပြောင်းမှု</string>
+    <string name="harness_chunks">အပိုင်းလိုက် လွှဲပြောင်းမှု</string>
+    <string name="harness_support_ai">အထောက်အပံ့ AI</string>
+    <string name="harness_history_hint">အက်ပ်တစ်ခုကို ဖွင့်၍ ၎င်း၏ လေ့လာမှုနှင့် သိမ်းဆည်းထားသော ရလဒ်များကို ကြည့်ပါ။</string>
+    <string name="harness_queued_hint">အပ်လုဒ်တင်ခြင်း ပြီးပါပြီ။ လေ့လာမှု အလှည့်ကို စောင့်နေပါသည်။</string>
+    <string name="harness_review_hint">လေ့လာမှုမှာ သုံးသပ်ရန် စောင့်နေပါသည်။</string>
+    <string name="harness_transfer_title">လွှဲပြောင်းမှု မုဒ်</string>
+    <string name="harness_transfer_scope">နောက်လာမည့် ကတ်တလောက် ဒေါင်းလုဒ် သို့မဟုတ် APK အပ်လုဒ်တွင် သက်ရောက်သည်။</string>
+    <string name="harness_stable">တည်ငြိမ်သော ချိတ်ဆက်မှု · ဆက်တိုက် လွှဲပြောင်းမှု</string>
+    <string name="harness_unstable">နှေးကွေးသော သို့မဟုတ် မတည်ငြိမ်သော ချိတ်ဆက်မှု · အပိုင်းလိုက် လွှဲပြောင်းမှု</string>
+</resources>

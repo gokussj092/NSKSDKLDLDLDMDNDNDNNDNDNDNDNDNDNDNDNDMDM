@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="server_vpn_filter_ssh_accounts">Asusun SSH</string>
+    <string name="server_vpn_ssh_notice_text">Waɗannan asusun SSH za a iya amfani da su ne kawai a cikin app mai zuwa:</string>
+    <string name="server_vpn_ssh_no_matches">Babu asusun SSH da ya dace da bincikenka.</string>
+</resources>

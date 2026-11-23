@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="server_vpn_search_hint">Пошук VPN-застосунків</string>
+    <string name="server_vpn_filter_all">Усі</string>
+    <string name="server_vpn_filter_enabled">Увімкнені</string>
+    <string name="server_vpn_filter_favorites">Обрані</string>
+    <string name="server_vpn_favorite_add">Додати до обраного</string>
+    <string name="server_vpn_favorite_remove">Прибрати з обраного</string>
+    <string name="server_vpn_manual_refresh">Перевірити каталог зараз</string>
+    <string name="server_vpn_catalog_refreshing">Перевірка каталогу серверів…</string>
+    <string name="server_vpn_no_matches">Жоден VPN-застосунок не відповідає вашому пошуку чи фільтрам.</string>
+    <string name="server_vpn_catalog_enabled">Увімкнено в каталозі</string>
+    <string name="server_vpn_catalog_disabled">Не ввімкнено в каталозі</string>
+    <string name="server_vpn_new_badge">Нове</string>
+    <string name="server_vpn_catalog_update_title">Доступне оновлення каталогу</string>
+    <string name="server_vpn_catalog_update_question">Доступна версія %1$d каталогу Server VPN. Завантажити зараз?</string>
+    <string name="server_vpn_catalog_download">Завантажити</string>
+    <string name="server_vpn_catalog_current">Ваш каталог Server VPN актуальний.</string>
+    <string name="server_vpn_catalog_updated">Каталог Server VPN оновлено.</string>
+    <string name="server_vpn_catalog_update_error">Не вдалося перевірити або завантажити каталог. Спробуйте ще раз.</string>
+    <string name="server_vpn_updated_badge">Оновлено</string>
+    <string name="server_vpn_maintenance_badge">На обслуговуванні</string>
+    <string name="server_vpn_maintenance_detail">Метод тимчасово на обслуговуванні</string>
+    <plurals name="server_vpn_app_count">
+        <item quantity="one">Доступний %1$d застосунок</item>
+        <item quantity="other">Доступно застосунків: %1$d</item>
+    </plurals>
+</resources>

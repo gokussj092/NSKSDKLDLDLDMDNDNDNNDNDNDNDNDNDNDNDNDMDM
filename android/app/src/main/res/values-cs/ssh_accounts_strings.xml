@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="server_vpn_filter_ssh_accounts">Účty SSH</string>
+    <string name="server_vpn_ssh_notice_text">Tyto účty SSH lze použít pouze v následující aplikaci:</string>
+    <string name="server_vpn_ssh_no_matches">Žádné účty SSH neodpovídají vašemu hledání.</string>
+</resources>

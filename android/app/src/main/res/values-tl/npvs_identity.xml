@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="npv_title">Mga recipient key ng NPV</string>
+    <string name="npv_detail">Gamitin ang iyong identity para sa mga file na ginawa para sa iyo. Naka-encrypt ang mga key sa device na ito. Paganahin ang opsyong ito para gamitin ang mga ito sa SP Cloud.</string>
+    <string name="npv_enabled">Gamitin ang aking mga NPV identity</string>
+    <string name="npv_generate">Bumuo gamit ang SP Cloud</string>
+    <string name="npv_import">Mag-import ng nakuhang JSON</string>
+    <string name="npv_generated">Binuo ng SP Cloud</string>
+    <string name="npv_captured">Nakuha mula sa opisyal na app</string>
+    <string name="npv_file_only">Ang file na ito lang</string>
+    <string name="npv_view">Tingnan at kopyahin</string>
+    <string name="npv_delete">Burahin</string>
+    <string name="npv_invalid">Hindi mabasa ang mga NPV key. Suriin ang JSON at ang mga katugmang key.</string>
+    <string name="npv_saved">Na-save ang identity. Paganahin ang opsyon para magamit ito.</string>
+    <string name="npv_generation_notice">Ang public key lang ang ibahagi sa taong gumagawa ng iyong VPN server o configuration. Huwag kailanman ibahagi ang iyong private key.</string>
+    <string name="npv_choose_title">Pumili ng NPV identity</string>
+    <string name="npv_send_notice">Piliin ang identity na gagamitin para buksan ang file na ito sa SP Cloud.</string>
+    <string name="npv_use">Gamitin ang napiling identity</string>
+    <string name="npv_copy_public">Kopyahin ang public key</string>
+    <string name="npv_copy_private">Kopyahin ang private key</string>
+    <string name="npv_reveal">Ipakita o itago ang private key</string>
+    <string name="npv_hardware_notice">Hindi ma-export ang hardware private key. Gumagana lang ang capture na ito para sa katugmang file.</string>
+    <string name="npv_delete_title">Burahin ang identity na ito?</string>
+    <string name="npv_delete_warning">Naka-store lang ang key na ito sa device na ito. Kapag nabura na ito, hindi ito maibabalik ng SP Cloud. Maaaring mawalan ka ng access sa mga file na naka-encrypt para sa identity na ito.</string>
+    <string name="npv_public_label">Public key · P-256</string>
+    <string name="npv_private_label">Private key · PKCS#8</string>
+    <string name="npv_cancel">Kanselahin</string>
+    <string name="npv_already_generated">Mayroon nang SP Cloud identity. Burahin muna ito bago bumuo ng isa pa.</string>
+</resources>

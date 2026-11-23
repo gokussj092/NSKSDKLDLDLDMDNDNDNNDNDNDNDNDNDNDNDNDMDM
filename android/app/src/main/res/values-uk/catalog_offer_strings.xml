@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="catalog_offer_title">Доступний новий каталог</string>
+    <string name="catalog_offer_body">Версія каталогу %1$d готова. Оновіть, щоб отримати доступ до нових підтримуваних застосунків, методів і покращень.</string>
+    <string name="catalog_offer_update">Оновити зараз</string>
+    <string name="catalog_offer_later">Скасувати</string>
+    <string name="catalog_postpone_title">Продовжити без оновлення?</string>
+    <string name="catalog_postpone_body">Якщо ви скасуєте, нові застосунки, методи та покращення каталогу будуть недоступні, доки ви не оновитеся. Ви зможете оновити пізніше в розділі «Server VPN».</string>
+    <string name="catalog_postpone_confirm">Продовжити без оновлення</string>
+    <string name="catalog_postpone_back">Назад</string>
+</resources>

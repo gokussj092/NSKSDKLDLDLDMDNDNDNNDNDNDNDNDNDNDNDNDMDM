@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="catalog_offer_title">有新目录可用</string>
+    <string name="catalog_offer_body">目录版本 %1$d 已就绪。更新后可使用新支持的应用、方法和改进。</string>
+    <string name="catalog_offer_update">立即更新</string>
+    <string name="catalog_offer_later">取消</string>
+    <string name="catalog_postpone_title">不更新继续吗？</string>
+    <string name="catalog_postpone_body">如果取消，在更新之前将无法使用最新目录中的应用、方法和改进。稍后可在 Server VPN 中更新。</string>
+    <string name="catalog_postpone_confirm">不更新继续</string>
+    <string name="catalog_postpone_back">返回</string>
+</resources>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="about_screen_entry_detail">ስሪት፣ ደህንነት እና ኦፊሴላዊ አገናኞች</string>
+    <string name="about_screen_description">የVPN ውቅር ትንተና እና ዲኮዲንግ መሣሪያ</string>
+    <string name="about_screen_version_badge">ስሪት %1$s · ግንባታ %2$d</string>
+    <string name="about_screen_info">የመተግበሪያ መረጃ</string>
+    <string name="about_screen_languages">የሚገኙ ቋንቋዎች</string>
+    <string name="about_screen_installed">የተጫነው ስሪት</string>
+    <string name="about_screen_features">ዋና ዋና ባህሪያት</string>
+    <string name="about_screen_feature_decode">የVPN ፋይል ዲኮዲንግ</string>
+    <string name="about_screen_feature_catalog">የሰርቨር VPN ካታሎግ</string>
+    <string name="about_screen_feature_export">JSON እና ያልተቆለፈ ኤክስፖርት</string>
+    <string name="about_screen_feature_history">የውጤቶች ታሪክ</string>
+    <string name="about_screen_security">ደህንነት እና ግላዊነት</string>
+    <string name="about_screen_cloud_security">የCloud V2 ግንኙነቶች እንደ አገልግሎት ውቅር HPKE ምስጠራ እና የትክክለኛነት ምርመራዎችን ይጠቀማሉ።</string>
+    <string name="about_screen_local_security">የአካባቢ ታሪክ በዚህ መሣሪያ ላይ ተመስጥሯል።</string>
+    <string name="about_screen_privacy">የግላዊነት መመሪያ</string>
+    <string name="about_screen_terms">የአጠቃቀም ውሎች</string>
+    <string name="about_screen_links">የማህበረሰብ እና ኦፊሴላዊ አገናኞች</string>
+    <string name="about_screen_website">ኦፊሴላዊ ድረ-ገጽ</string>
+    <string name="about_screen_community_detail">ኦፊሴላዊ የTelegram ማህበረሰብ</string>
+    <string name="about_screen_credit">በGhost Developer የተሰራ</string>
+    <string name="about_screen_copyright">SP-DECODE · ሁሉም መብቶች የተጠበቁ ናቸው</string>
+</resources>

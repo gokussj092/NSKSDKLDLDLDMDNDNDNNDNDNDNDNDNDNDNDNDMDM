@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_global_title">Cloud (អនឡាញ)</string>
+    <string name="cloud_global_auto">រកឃើញដោយស្វ័យប្រវត្តិ</string>
+    <string name="cloud_global_hint">បិទភ្ជាប់តំណ សោ ឬកូដ Cloud ដែលគាំទ្រ</string>
+    <string name="cloud_global_action">នាំចូលពី Cloud</string>
+    <string name="cloud_global_detail">បិទភ្ជាប់តំណ សោ ឬកូដ Cloud ហើយ SP-DECODE នឹងរកឃើញអ្នកផ្តល់សេវាដោយស្វ័យប្រវត្តិ។ មានតែសេវាកម្មដែលបានអនុម័តប៉ុណ្ណោះដែលត្រូវបានគាំទ្រ។</string>
+    <string name="cloud_global_invalid">ឯកសារយោងនេះមិនត្រូវគ្នានឹងអ្នកផ្តល់សេវា Cloud ដែលមានទេ។</string>
+</resources>

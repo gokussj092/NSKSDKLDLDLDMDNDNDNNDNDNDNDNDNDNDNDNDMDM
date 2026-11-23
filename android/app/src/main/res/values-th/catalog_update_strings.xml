@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="catalog_auto_title">การอัปเดตแค็ตตาล็อก Server VPN อัตโนมัติ</string>
+    <string name="catalog_auto_detail">ตรวจสอบเวอร์ชันแค็ตตาล็อกกับเซิร์ฟเวอร์ SP-DECODE ของคุณผ่าน HTTPS ขณะเปิดแอป และอาจตรวจสอบเพื่อกู้คืนเป็นครั้งคราวในเบื้องหลัง ข้อมูลแค็ตตาล็อกและไอคอนใหม่จะดาวน์โหลดเฉพาะเมื่อมีการเปลี่ยนเวอร์ชันเท่านั้น ไม่ต้องใช้ Firebase บัญชี หรือโทเค็นพุช คุณสามารถปิดได้ทุกเมื่อ</string>
+    <string name="catalog_auto_switch">เปิดการซิงก์แค็ตตาล็อกในเบื้องหลัง</string>
+</resources>

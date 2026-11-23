@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="server_vpn_filter_ssh_accounts">SSH கணக்குகள்</string>
+    <string name="server_vpn_ssh_notice_text">இந்த SSH கணக்குகளைப் பின்வரும் செயலியில் மட்டுமே பயன்படுத்த முடியும்:</string>
+    <string name="server_vpn_ssh_no_matches">உங்கள் தேடலுடன் எந்த SSH கணக்கும் பொருந்தவில்லை.</string>
+</resources>

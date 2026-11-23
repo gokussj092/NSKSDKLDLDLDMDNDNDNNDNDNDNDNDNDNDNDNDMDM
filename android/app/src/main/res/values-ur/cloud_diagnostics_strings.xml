@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_report_action">خرابی رپورٹ کریں</string>
+    <string name="cloud_report_sent">رپورٹ موصول ہوئی: %1$s</string>
+    <string name="cloud_report_failed">رپورٹ جمع نہیں ہو سکی۔ بعد میں دوبارہ کوشش کریں۔</string>
+    <string name="cloud_usage_title">گمنام انسٹالیشن کے اعداد و شمار</string>
+    <string name="cloud_usage_detail">SP-DECODE سرور کی گنجائش کی منصوبہ بندی کے لیے دن میں ایک بار فعال انسٹالیشنز کی تقریباً تعداد گنتا ہے۔ ایک بے ترتیب انسٹالیشن کوڈ استعمال ہوتا ہے، آپ کا Android ID، HWID یا اشتہاری ID نہیں۔</string>
+    <string name="cloud_usage_footnote">اس کی پرائیویسی شرائط قبول کرنے کے بعد کلاؤڈ کے استعمال کے ساتھ شامل ہے۔ فائل کے مواد، پاس ورڈز یا ڈی کوڈ شدہ کنفیگریشنز شامل نہیں ہیں۔</string>
+</resources>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="npv_title">NPV प्राप्तकर्ता कुञ्जीहरू</string>
+    <string name="npv_detail">तपाईंका लागि बनाइएका फाइलहरूका लागि तपाईंको पहिचान प्रयोग गर्नुहोस्। कुञ्जीहरू यस यन्त्रमा इन्क्रिप्ट गरिएका छन्। SP Cloud सँग प्रयोग गर्न यो विकल्प सक्षम गर्नुहोस्।</string>
+    <string name="npv_enabled">मेरा NPV पहिचानहरू प्रयोग गर्नुहोस्</string>
+    <string name="npv_generate">SP Cloud बाट उत्पन्न गर्नुहोस्</string>
+    <string name="npv_import">क्याप्चर गरिएको JSON आयात गर्नुहोस्</string>
+    <string name="npv_generated">SP Cloud द्वारा उत्पन्न</string>
+    <string name="npv_captured">आधिकारिक एपबाट क्याप्चर गरिएको</string>
+    <string name="npv_file_only">यो फाइल मात्र</string>
+    <string name="npv_view">हेर्नुहोस् र प्रतिलिपि गर्नुहोस्</string>
+    <string name="npv_delete">मेटाउनुहोस्</string>
+    <string name="npv_invalid">NPV कुञ्जीहरू पढ्न सकिएन। JSON र मिल्दा कुञ्जीहरू जाँच गर्नुहोस्।</string>
+    <string name="npv_saved">पहिचान सुरक्षित गरियो। प्रयोग गर्न विकल्प सक्षम गर्नुहोस्।</string>
+    <string name="npv_generation_notice">तपाईंको VPN सर्भर वा कन्फिगरेसन बनाउने व्यक्तिसँग सार्वजनिक कुञ्जी मात्र साझा गर्नुहोस्। तपाईंको निजी कुञ्जी कहिल्यै साझा नगर्नुहोस्।</string>
+    <string name="npv_choose_title">NPV पहिचान छान्नुहोस्</string>
+    <string name="npv_send_notice">यो फाइल SP Cloud बाट खोल्न पहिचान छान्नुहोस्।</string>
+    <string name="npv_use">छानिएको पहिचान प्रयोग गर्नुहोस्</string>
+    <string name="npv_copy_public">सार्वजनिक कुञ्जी प्रतिलिपि गर्नुहोस्</string>
+    <string name="npv_copy_private">निजी कुञ्जी प्रतिलिपि गर्नुहोस्</string>
+    <string name="npv_reveal">निजी कुञ्जी देखाउनुहोस् वा लुकाउनुहोस्</string>
+    <string name="npv_hardware_notice">हार्डवेयर निजी कुञ्जी निर्यात गर्न सकिँदैन। यो क्याप्चर मिल्ने फाइलका लागि मात्र काम गर्दछ।</string>
+    <string name="npv_delete_title">यो पहिचान मेटाउने?</string>
+    <string name="npv_delete_warning">यो कुञ्जी यस यन्त्रमा मात्र भण्डारण गरिएको छ। एक पटक मेटिएपछि, SP Cloud ले यसलाई पुनःप्राप्त गर्न सक्दैन। तपाईंले यस पहिचानका लागि इन्क्रिप्ट गरिएका फाइलहरूमा पहुँच गुमाउन सक्नुहुन्छ।</string>
+    <string name="npv_public_label">सार्वजनिक कुञ्जी · P-256</string>
+    <string name="npv_private_label">निजी कुञ्जी · PKCS#8</string>
+    <string name="npv_cancel">रद्द गर्नुहोस्</string>
+    <string name="npv_already_generated">SP Cloud पहिचान पहिले नै अवस्थित छ। अर्को उत्पन्न गर्नु अघि यसलाई मेटाउनुहोस्।</string>
+</resources>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="language_help_title">Ajută la îmbunătățirea traducerilor</string>
+    <string name="language_help_detail">Raportează greșelile de traducere pentru a le putea corecta.</string>
+    <string name="language_help_signin_title">Conectează-te pentru a raporta</string>
+    <string name="language_help_signin_detail">Conectează-te la cont pentru a trimite un raport despre traducere.</string>
+    <string name="language_help_signin_button">Conectează-te</string>
+    <string name="language_help_form_title">Raportează o greșeală de traducere</string>
+    <string name="language_help_language_label">Limbă</string>
+    <string name="language_help_where_label">Unde ai văzut greșeala?</string>
+    <string name="language_help_wrong_label">Textul greșit (așa cum apare)</string>
+    <string name="language_help_correct_label">Cum ar trebui să fie scris?</string>
+    <string name="language_help_comment_label">Comentarii (opțional)</string>
+    <string name="language_help_send">Trimite raportul</string>
+    <string name="language_help_sent">Raportul a fost trimis. Îți mulțumim că ne ajuți să îmbunătățim traducerile.</string>
+    <string name="language_help_error">Raportul nu a putut fi trimis. Încearcă din nou mai târziu.</string>
+    <string name="language_help_required">Limba, textul greșit și corectura propusă sunt obligatorii.</string>
+    <string name="language_help_invalid_input">Scurtează raportul sau elimină caracterele neacceptate.</string>
+</resources>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="npv_title">የNPV ተቀባይ ቁልፎች</string>
+    <string name="npv_detail">ለእርስዎ የተሰሩ ፋይሎችን ለማግኘት ማንነትዎን ይጠቀሙ። ቁልፎች በዚህ መሣሪያ ላይ ተመስጥረዋል። ከSP Cloud ጋር ለመጠቀም ይህን አማራጭ ያንቁ።</string>
+    <string name="npv_enabled">የእኔን NPV ማንነቶች ተጠቀም</string>
+    <string name="npv_generate">በSP Cloud አመንጭ</string>
+    <string name="npv_import">የተቀረጸ JSON አስመጣ</string>
+    <string name="npv_generated">በSP Cloud የተፈጠረ</string>
+    <string name="npv_captured">ከኦፊሴላዊ መተግበሪያ የተቀረጸ</string>
+    <string name="npv_file_only">ይህ ፋይል ብቻ</string>
+    <string name="npv_view">አሳይ እና ቅዳ</string>
+    <string name="npv_delete">ሰርዝ</string>
+    <string name="npv_invalid">የNPV ቁልፎችን ማንበብ አልተቻለም። JSON እና የሚዛመዱ ቁልፎችን ይፈትሹ።</string>
+    <string name="npv_saved">ማንነት ተቀምጧል። ለመጠቀም አማራጩን ያንቁ።</string>
+    <string name="npv_generation_notice">የህዝብ ቁልፉን ብቻ ከVPN ሰርቨርዎን ወይም ውቅርዎን ከሚፈጥር ሰው ጋር ያካፍሉ። የግል ቁልፍዎን በፍጹም አያካፍሉ።</string>
+    <string name="npv_choose_title">የNPV ማንነት ምረጥ</string>
+    <string name="npv_send_notice">ይህን ፋይል በSP Cloud ለመክፈት የሚጠቀሙበትን ማንነት ይምረጡ።</string>
+    <string name="npv_use">የተመረጠውን ማንነት ተጠቀም</string>
+    <string name="npv_copy_public">የህዝብ ቁልፍ ቅዳ</string>
+    <string name="npv_copy_private">የግል ቁልፍ ቅዳ</string>
+    <string name="npv_reveal">የግል ቁልፍ አሳይ ወይም ደብቅ</string>
+    <string name="npv_hardware_notice">የሃርድዌር የግል ቁልፍ ሊወጣ አይችልም። ይህ ቀረጻ የሚሰራው ለሚዛመደው ፋይል ብቻ ነው።</string>
+    <string name="npv_delete_title">ይህን ማንነት መሰረዝ ይፈልጋሉ?</string>
+    <string name="npv_delete_warning">ይህ ቁልፍ የሚቀመጠው በዚህ መሣሪያ ላይ ብቻ ነው። ከተሰረዘ በኋላ SP Cloud መልሶ ማግኘት አይችልም። ለዚህ ማንነት የተመሰጠሩ ፋይሎችን መዳረሻ ሊያጡ ይችላሉ።</string>
+    <string name="npv_public_label">የህዝብ ቁልፍ · P-256</string>
+    <string name="npv_private_label">የግል ቁልፍ · PKCS#8</string>
+    <string name="npv_cancel">ይቅር</string>
+    <string name="npv_already_generated">የSP Cloud ማንነት አስቀድሞ አለ። ሌላ ከማመንጨትዎ በፊት ይሰርዙት።</string>
+</resources>

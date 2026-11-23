@@ -16,14 +16,15 @@ import argparse
 import re
 import sys
 from pathlib import Path
+from xml.etree import ElementTree
 from zipfile import ZipFile
 
 ROOT = Path(__file__).resolve().parents[2]
 GRADLE = ROOT / "android/app/build.gradle.kts"
 REGISTRY = ROOT / "android/app/src/main/java/com/ghostdeveloper/spdecode/SupportedLanguages.kt"
 RES = ROOT / "android/app/src/main/res"
-# Android resource qualifier uses 'in' for the registered 'id' locale.
-QUALIFIERS = {"pt-BR": "pt-rBR", "id": "in"}
+# Android resource qualifiers differ from the app’s BCP 47 tags.
+QUALIFIERS = {"pt-BR": "pt-rBR", "id": "in", "zh-CN": "zh-rCN"}
 
 
 def _varint(data: bytes, index: int) -> tuple[int, int]:
@@ -116,11 +117,26 @@ def check_sources(root: Path = ROOT) -> list[str]:
     required = [QUALIFIERS.get(tag, tag) for tag in supported]
     if set(included) != set(required) or len(included) != len(required):
         raise ValueError(f"Bundled resource locales disagree with picker: {included!r} != {required!r}")
+    def help_strings(path: Path) -> set[str]:
+        if not path.is_file():
+            return set()
+        return {
+            item.attrib["name"] for item in ElementTree.parse(path).getroot().findall("string")
+            if item.get("name", "").startswith("language_help_") and (item.text or "").strip()
+        }
+
+    res = root / "android/app/src/main/res"
+    help_keys = help_strings(res / "values" / "strings.xml")
+    if not help_keys:
+        raise ValueError("Missing default language help strings")
     for tag, qualifier in zip(supported, required):
         folder = "values" if tag == "en" else "values-" + qualifier
-        path = root / "android/app/src/main/res" / folder / "strings.xml"
+        path = res / folder / "strings.xml"
         if not path.is_file() or "<string " not in path.read_text(encoding="utf-8"):
             raise ValueError(f"Missing strings.xml for {tag}: {path}")
+        translated = help_strings(path) | help_strings(res / folder / "language_help_strings.xml")
+        if missing := help_keys - translated:
+            raise ValueError(f"Missing language help strings for {tag}: {sorted(missing)}")
     return supported
 
 
@@ -146,7 +162,7 @@ def main() -> int:
         print("PASS: all %d locales configured; Play LANGUAGE splits disabled%s" %
               (len(locales), " in built AAB" if args.aab is not None else " in Gradle"))
         return 0
-    except (OSError, ValueError, KeyError) as exc:
+    except (OSError, ValueError, KeyError, ElementTree.ParseError) as exc:
         print(f"FAIL: {exc}", file=sys.stderr)
         return 1
 

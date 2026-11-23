@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="server_vpn_search_hint">VPN-alkalmazások keresése</string>
+    <string name="server_vpn_filter_all">Összes</string>
+    <string name="server_vpn_filter_enabled">Engedélyezett</string>
+    <string name="server_vpn_filter_favorites">Kedvencek</string>
+    <string name="server_vpn_favorite_add">Hozzáadás a kedvencekhez</string>
+    <string name="server_vpn_favorite_remove">Eltávolítás a kedvencekből</string>
+    <string name="server_vpn_manual_refresh">Katalógus ellenőrzése most</string>
+    <string name="server_vpn_catalog_refreshing">Szerverkatalógus ellenőrzése…</string>
+    <string name="server_vpn_no_matches">Egyetlen VPN-alkalmazás sem felel meg a keresésnek vagy a szűrőknek.</string>
+    <string name="server_vpn_catalog_enabled">Engedélyezve a katalógusban</string>
+    <string name="server_vpn_catalog_disabled">Nincs engedélyezve a katalógusban</string>
+    <string name="server_vpn_new_badge">Új</string>
+    <string name="server_vpn_catalog_update_title">Katalógusfrissítés érhető el</string>
+    <string name="server_vpn_catalog_update_question">Elérhető a Szerver VPN katalógus %1$d verziója. Letölti most?</string>
+    <string name="server_vpn_catalog_download">Letöltés</string>
+    <string name="server_vpn_catalog_current">A Szerver VPN katalógus naprakész.</string>
+    <string name="server_vpn_catalog_updated">A Szerver VPN katalógus frissítve.</string>
+    <string name="server_vpn_catalog_update_error">Nem sikerült ellenőrizni vagy letölteni a katalógust. Próbálja újra.</string>
+    <string name="server_vpn_updated_badge">Frissítve</string>
+    <string name="server_vpn_maintenance_badge">Karbantartás alatt</string>
+    <string name="server_vpn_maintenance_detail">A módszer átmenetileg karbantartás alatt áll</string>
+    <plurals name="server_vpn_app_count">
+        <item quantity="one">%1$d alkalmazás érhető el</item>
+        <item quantity="other">%1$d alkalmazás található a katalógusban</item>
+    </plurals>
+</resources>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="file_extension_unsupported_contact">Tato přípona souboru není podporována. Kontaktujte vývojáře a požádejte o podporu.</string>
+    <string name="text_format_unsupported_contact">Tento textový formát nebo protokol není podporován. Kontaktujte vývojáře a požádejte o podporu.</string>
+    <string name="formats_remote_catalog_note">Podporované přípony se bezpečně synchronizují z SP-DECODE Cloud. Nové formáty Cloud se mohou objevit bez aktualizace aplikace.</string>
+    <string name="formats_cloud_ready_short">Cloud</string>
+</resources>

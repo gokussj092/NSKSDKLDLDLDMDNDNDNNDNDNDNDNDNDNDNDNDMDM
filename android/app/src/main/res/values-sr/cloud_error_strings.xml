@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_failure_offline">Нема интернет везе. Повежите се на мрежу и покушајте поново.</string>
+    <string name="cloud_failure_network">Услуга није доступна. Проверите везу и покушајте поново.</string>
+    <string name="cloud_failure_tls">Безбедна веза није могла да се успостави. Проверите мрежу и сат уређаја.</string>
+    <string name="cloud_failure_timeout">Захтев је трајао предуго. Покушајте поново када веза буде стабилна.</string>
+    <string name="cloud_failure_integrity">Провера апликације није могла да се заврши. Ажурирајте апликацију или користите овлашћени QA приступ.</string>
+    <string name="cloud_failure_qa_code">QA приступ недостаје. Отворите SP-DECODE QA и унесите нови привремени код.</string>
+    <string name="cloud_failure_session">Ваша сесија је истекла или није могла да се провери. Покушајте поново.</string>
+    <string name="cloud_failure_forbidden">Приступ одбијен. Проверите овлашћење и покушајте поново.</string>
+    <string name="cloud_failure_qa">QA приступ је неважећи, онемогућен или истекао. Затражите нови приватни код.</string>
+    <string name="cloud_failure_consent">Прихватите важеће услове и обавештење о приватности да бисте користили Cloud декодирање.</string>
+    <string name="cloud_failure_rate">Превише захтева. Сачекајте пре поновног покушаја.</string>
+    <string name="cloud_failure_large">Датотека или резултат премашују дозвољену величину.</string>
+    <string name="cloud_failure_invalid">Ова датотека или захтев нису могли да се прихвате. Проверите формат.</string>
+    <string name="cloud_failure_unsupported">Овај формат датотеке није доступан на серверу.</string>
+    <string name="cloud_failure_decode">Декодер није могао да обради ову верзију датотеке. Датотека није нужно оштећена.</string>
+    <string name="cloud_failure_maintenance">Ова услуга је привремено на одржавању. Покушајте поново касније.</string>
+    <string name="cloud_failure_unavailable">Услуга је привремено недоступна. Покушајте поново касније.</string>
+    <string name="cloud_failure_config_unavailable">Ова Cloud конфигурација више није доступна. Можда је истекла, избрисана или је важила само за једнократну употребу. Ово није грешка декодера.</string>
+    <string name="cloud_failure_remote">Удаљени провајдер је вратио неважећи или непроверљив одговор.</string>
+    <string name="cloud_failure_credentials">Нетачна лозинка или HWID. Проверите податке и покушајте поново.</string>
+    <string name="cloud_failure_password">За ову заштићену датотеку потребна је лозинка.</string>
+    <string name="cloud_failure_hwid">За ову заштићену датотеку потребан је HWID.</string>
+    <string name="cloud_failure_both">За ову заштићену датотеку потребни су и лозинка и HWID.</string>
+    <string name="cloud_failure_not_found">Тражени ресурс је недоступан или није пронађен.</string>
+    <string name="cloud_failure_conflict">Захтев је у сукобу са тренутним стањем. Покушајте поново.</string>
+    <string name="cloud_failure_partial">Резултат је био непотпун или неважећи и неће бити приказан.</string>
+    <string name="cloud_failure_general">Операција није могла да се заврши. Покушајте поново или контактирајте подршку.</string>
+    <string name="cloud_failure_notice_title">Обавештење</string>
+    <string name="cloud_password_title">Потребна је лозинка конфигурације</string>
+    <string name="cloud_password_description">%1$s је заштићена лозинком. Унесите лозинку за извоз да бисте наставили. Неће бити сачувана.</string>
+    <string name="cloud_failure_password_incorrect">Нетачна лозинка.</string>
+    <string name="cloud_failure_private_key">Ова NPVS датотека користи заштиту јавним/приватним кључем примаоца. Ова метода још није подржана; подршка стиже ускоро.</string>
+    <string name="cloud_failure_recipient">Ова NPVS датотека користи методу кључа примаоца која још није подржана. Подршка стиже ускоро.</string>
+    <string name="cloud_failure_npvs_unsupported">Ова NPVS верзија или метода заштите још није подржана. Подршка стиже ускоро.</string>
+</resources>

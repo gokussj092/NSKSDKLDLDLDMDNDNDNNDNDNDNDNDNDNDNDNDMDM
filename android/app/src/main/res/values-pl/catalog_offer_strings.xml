@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="catalog_offer_title">Dostępny nowy katalog</string>
+    <string name="catalog_offer_body">Wersja katalogu %1$d jest gotowa. Zaktualizuj, aby uzyskać dostęp do nowo obsługiwanych aplikacji, metod i ulepszeń.</string>
+    <string name="catalog_offer_update">Aktualizuj teraz</string>
+    <string name="catalog_offer_later">Anuluj</string>
+    <string name="catalog_postpone_title">Kontynuować bez aktualizacji?</string>
+    <string name="catalog_postpone_body">Jeśli anulujesz, najnowsze aplikacje, metody i ulepszenia katalogu nie będą dostępne do czasu aktualizacji. Możesz zaktualizować później w sekcji Server VPN.</string>
+    <string name="catalog_postpone_confirm">Kontynuuj bez aktualizacji</string>
+    <string name="catalog_postpone_back">Wróć</string>
+</resources>

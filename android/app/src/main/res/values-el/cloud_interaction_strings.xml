@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="unsupported_file_title">Μη υποστηριζόμενος τύπος αρχείου</string>
+    <string name="unsupported_file_detail">Αυτή η επέκταση αρχείου δεν είναι ακόμη διαθέσιμη στο SP-DECODE. Επικοινωνήστε με τον προγραμματιστή για να προτείνετε υποστήριξη.</string>
+    <string name="unsupported_version_title">Η έκδοση αρχείου δεν υποστηρίζεται ακόμη</string>
+    <string name="unsupported_version_detail">Αυτό το αρχείο χρησιμοποιεί έκδοση ή μέθοδο κρυπτογράφησης που δεν είναι ακόμη συμβατή. Μπορείτε να ζητήσετε υποστήριξη από τον προγραμματιστή.</string>
+    <string name="unsupported_text_title">Μη υποστηριζόμενη μορφή κειμένου</string>
+    <string name="unsupported_text_detail">Αυτό το κείμενο ή πρωτόκολλο δεν υποστηρίζεται ακόμη. Επικοινωνήστε με τον προγραμματιστή για να προτείνετε ενσωμάτωση.</string>
+    <string name="catalog_check_action">Ενημέρωση</string>
+    <string name="catalog_checking">Ενημέρωση</string>
+    <string name="catalog_downloading">Ενημέρωση καταλόγου…</string>
+    <string name="catalog_progress">%1$d%%</string>
+    <string name="app_update_title">Διαθέσιμη νέα έκδοση εφαρμογής</string>
+    <string name="app_update_body">Το SP-DECODE %1$s είναι διαθέσιμο. Επισκεφθείτε το επίσημο κανάλι Telegram για να λάβετε την ενημέρωση.</string>
+    <string name="app_update_open">Άνοιγμα Telegram</string>
+    <string name="app_update_close">Κλείσιμο</string>
+    <string name="catalog_available_title">Διαθέσιμος νέος κατάλογος</string>
+    <string name="catalog_available_body">Μια νέα έκδοση %1$d του καταλόγου είναι διαθέσιμη για λήψη.</string>
+    <string name="catalog_check_short">Έλεγχος καταλόγου</string>
+</resources>

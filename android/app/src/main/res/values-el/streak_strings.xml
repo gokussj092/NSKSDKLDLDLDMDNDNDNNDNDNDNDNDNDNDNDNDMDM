@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="streak_verified_date">Ημερομηνία επαληθευμένη από τον διακομιστή</string>
+    <string name="streak_date_pending">Αναμονή για επαληθευμένη ημερομηνία</string>
+    <string name="streak_today_done">Ολοκληρώθηκε σήμερα</string>
+    <string name="streak_today_pending">Αποκωδικοποιήστε ένα αρχείο ή κείμενο σήμερα για να διατηρήσετε το σερί σας</string>
+    <string name="streak_weekly_reward">Κάθε 7 συνεχόμενες ημέρες</string>
+    <string name="streak_reward">+1 πίστωση ανάλυσης APK</string>
+    <string name="streak_reward_delivered">Η ανταμοιβή παραδόθηκε</string>
+    <string name="streak_verified_note">Οι ημέρες και οι ανταμοιβές επαληθεύονται από τον διακομιστή.</string>
+    <plurals name="streak_days_left">
+        <item quantity="one">%1$d ημέρα απομένει</item>
+        <item quantity="other">%1$d ημέρες απομένουν</item>
+    </plurals>
+    <string name="streak_reminder_channel">Υπενθυμίσεις σερί</string>
+    <string name="streak_reminder_title">Το σερί σας περιμένει</string>
+    <string name="streak_reminder_body">Αποκωδικοποιήστε ένα αρχείο ή κείμενο σήμερα για να διατηρήσετε το σερί σας.</string>
+</resources>

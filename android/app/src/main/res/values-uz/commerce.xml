@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="account_sign_in">Kirish</string>
+    <string name="account_web_description">Hisobingiz va xaridlaringizni rasmiy veb-saytda boshqaring. Bepul funksiyalar hisobisiz ham mavjud.</string>
+    <string name="account_continue_web">Vebda davom etish</string>
+    <string name="account_my_account">Mening hisobim</string>
+    <string name="account_store">Doʻkon</string>
+    <string name="account_open_menu">Menyuni ochish</string>
+    <string name="ads_privacy_options">Reklama maxfiylik parametrlari</string>
+</resources>

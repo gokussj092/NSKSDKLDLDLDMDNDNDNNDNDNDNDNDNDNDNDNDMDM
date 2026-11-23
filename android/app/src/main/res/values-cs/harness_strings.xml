@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="harness_preparing">Příprava aplikace…</string>
+    <string name="harness_review">V revizi</string>
+    <string name="harness_metadata">Kontrola metadat aplikace…</string>
+    <string name="harness_code">Kontrola kódu aplikace…</string>
+    <string name="harness_details">Podrobnosti analýzy</string>
+    <string name="harness_filename">Soubor</string>
+    <string name="harness_size">Velikost</string>
+    <string name="harness_unknown_size">Velikost čeká na zjištění</string>
+    <string name="harness_updated">Aktualizováno: %1$s</string>
+    <string name="harness_local_copy">Výsledky uloženy na tomto zařízení</string>
+    <string name="harness_normal">Normální přenos</string>
+    <string name="harness_chunks">Přenos po částech</string>
+    <string name="harness_support_ai">Podpora AI</string>
+    <string name="harness_history_hint">Otevřete aplikaci a zobrazte její analýzu a uložené výsledky.</string>
+    <string name="harness_queued_hint">Nahrávání dokončeno. Čeká se na volný slot analýzy.</string>
+    <string name="harness_review_hint">Analýza čeká na revizi.</string>
+    <string name="harness_transfer_title">Režim přenosu</string>
+    <string name="harness_transfer_scope">Platí pro další stahování katalogu nebo nahrávání APK.</string>
+    <string name="harness_stable">Stabilní připojení · nepřetržitý přenos</string>
+    <string name="harness_unstable">Pomalé nebo nestabilní připojení · přenos po částech</string>
+</resources>

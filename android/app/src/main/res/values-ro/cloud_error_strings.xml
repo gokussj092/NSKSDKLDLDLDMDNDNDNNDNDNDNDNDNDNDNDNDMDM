@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_failure_offline">Nu există conexiune la internet. Conectează-te la o rețea și încearcă din nou.</string>
+    <string name="cloud_failure_network">Serviciul nu poate fi accesat. Verifică conexiunea și încearcă din nou.</string>
+    <string name="cloud_failure_tls">Nu s-a putut stabili o conexiune securizată. Verifică rețeaua și ceasul dispozitivului.</string>
+    <string name="cloud_failure_timeout">Solicitarea a durat prea mult. Încearcă din nou când conexiunea este stabilă.</string>
+    <string name="cloud_failure_integrity">Verificarea aplicației nu a putut fi finalizată. Actualizează aplicația sau folosește accesul QA autorizat.</string>
+    <string name="cloud_failure_qa_code">Accesul QA lipsește. Deschide SP-DECODE QA și introdu un nou cod temporar.</string>
+    <string name="cloud_failure_session">Sesiunea ta a expirat sau nu a putut fi verificată. Te rugăm să reîncerci.</string>
+    <string name="cloud_failure_forbidden">Acces refuzat. Verifică autorizarea și încearcă din nou.</string>
+    <string name="cloud_failure_qa">Accesul QA este invalid, dezactivat sau expirat. Solicită un nou cod privat.</string>
+    <string name="cloud_failure_consent">Acceptă termenii actuali și nota de confidențialitate pentru a folosi decodarea Cloud.</string>
+    <string name="cloud_failure_rate">Prea multe solicitări. Așteaptă înainte de a reîncerca.</string>
+    <string name="cloud_failure_large">Fișierul sau rezultatul depășește dimensiunea permisă.</string>
+    <string name="cloud_failure_invalid">Acest fișier sau această solicitare nu a putut fi acceptată. Verifică formatul.</string>
+    <string name="cloud_failure_unsupported">Acest format de fișier nu este disponibil pe server.</string>
+    <string name="cloud_failure_decode">Decodorul nu a putut procesa această versiune de fișier. Fișierul nu este neapărat deteriorat.</string>
+    <string name="cloud_failure_maintenance">Acest serviciu este temporar în mentenanță. Te rugăm să încerci din nou mai târziu.</string>
+    <string name="cloud_failure_unavailable">Serviciul este temporar indisponibil. Încearcă din nou mai târziu.</string>
+    <string name="cloud_failure_config_unavailable">Această configurație Cloud nu mai este disponibilă. Este posibil să fi expirat, să fi fost ștearsă sau să fi fost valabilă pentru o singură utilizare. Aceasta nu este o eroare a decodorului.</string>
+    <string name="cloud_failure_remote">Furnizorul extern a returnat un răspuns invalid sau neverificabil.</string>
+    <string name="cloud_failure_credentials">Parolă sau HWID incorecte. Verifică informațiile și încearcă din nou.</string>
+    <string name="cloud_failure_password">Acest fișier protejat necesită o parolă.</string>
+    <string name="cloud_failure_hwid">Acest fișier protejat necesită un HWID.</string>
+    <string name="cloud_failure_both">Acest fișier protejat necesită atât parolă, cât și HWID.</string>
+    <string name="cloud_failure_not_found">Resursa solicitată este indisponibilă sau nu a fost găsită.</string>
+    <string name="cloud_failure_conflict">Solicitarea intră în conflict cu starea actuală. Te rugăm să reîncerci.</string>
+    <string name="cloud_failure_partial">Rezultatul a fost incomplet sau invalid și nu va fi afișat.</string>
+    <string name="cloud_failure_general">Operațiunea nu a putut fi finalizată. Încearcă din nou sau contactează asistența.</string>
+    <string name="cloud_failure_notice_title">Notificare</string>
+    <string name="cloud_password_title">Este necesară parola configurației</string>
+    <string name="cloud_password_description">%1$s este protejat prin parolă. Introdu parola de export pentru a continua. Aceasta nu va fi salvată.</string>
+    <string name="cloud_failure_password_incorrect">Parolă incorectă.</string>
+    <string name="cloud_failure_private_key">Acest fișier NPVS folosește protecție cu cheie publică/privată a destinatarului. Această metodă nu este încă acceptată; asistența va veni în curând.</string>
+    <string name="cloud_failure_recipient">Acest fișier NPVS folosește o metodă cu cheie de destinatar care nu este încă acceptată. Asistența va veni în curând.</string>
+    <string name="cloud_failure_npvs_unsupported">Această versiune sau metodă de protecție NPVS nu este încă acceptată. Asistența va veni în curând.</string>
+</resources>

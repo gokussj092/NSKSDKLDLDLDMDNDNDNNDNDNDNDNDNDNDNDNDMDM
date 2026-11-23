@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="server_vpn_search_hint">VPN ایپس تلاش کریں</string>
+    <string name="server_vpn_filter_all">تمام</string>
+    <string name="server_vpn_filter_enabled">فعال</string>
+    <string name="server_vpn_filter_favorites">پسندیدہ</string>
+    <string name="server_vpn_favorite_add">پسندیدہ میں شامل کریں</string>
+    <string name="server_vpn_favorite_remove">پسندیدہ سے ہٹائیں</string>
+    <string name="server_vpn_manual_refresh">ابھی کیٹلاگ چیک کریں</string>
+    <string name="server_vpn_catalog_refreshing">سرور کیٹلاگ چیک ہو رہا ہے…</string>
+    <string name="server_vpn_no_matches">آپ کی تلاش یا فلٹرز سے کوئی VPN ایپ مطابق نہیں ہے۔</string>
+    <string name="server_vpn_catalog_enabled">کیٹلاگ میں فعال ہے</string>
+    <string name="server_vpn_catalog_disabled">کیٹلاگ میں فعال نہیں ہے</string>
+    <string name="server_vpn_new_badge">نیا</string>
+    <string name="server_vpn_catalog_update_title">کیٹلاگ اپ ڈیٹ دستیاب ہے</string>
+    <string name="server_vpn_catalog_update_question">سرور VPN کیٹلاگ کا ورژن %1$d دستیاب ہے۔ ابھی ڈاؤن لوڈ کریں؟</string>
+    <string name="server_vpn_catalog_download">ڈاؤن لوڈ کریں</string>
+    <string name="server_vpn_catalog_current">آپ کا سرور VPN کیٹلاگ تازہ ترین ہے۔</string>
+    <string name="server_vpn_catalog_updated">سرور VPN کیٹلاگ اپ ڈیٹ ہو گیا۔</string>
+    <string name="server_vpn_catalog_update_error">کیٹلاگ چیک یا ڈاؤن لوڈ نہیں ہو سکا۔ براہ کرم دوبارہ کوشش کریں۔</string>
+    <string name="server_vpn_updated_badge">اپ ڈیٹ شدہ</string>
+    <string name="server_vpn_maintenance_badge">دیکھ بھال کے تحت</string>
+    <string name="server_vpn_maintenance_detail">طریقہ عارضی طور پر دیکھ بھال کے تحت ہے</string>
+    <plurals name="server_vpn_app_count">
+        <item quantity="one">%1$d ایپ دستیاب ہے</item>
+        <item quantity="other">%1$d ایپس دستیاب ہیں</item>
+    </plurals>
+</resources>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="streak_verified_date">កាលបរិច្ឆេទផ្ទៀងផ្ទាត់ដោយម៉ាស៊ីនមេ</string>
+    <string name="streak_date_pending">កំពុងរង់ចាំកាលបរិច្ឆេទដែលបានផ្ទៀងផ្ទាត់</string>
+    <string name="streak_today_done">បានបញ្ចប់ថ្ងៃនេះ</string>
+    <string name="streak_today_pending">ឌិកូដឯកសារ ឬអត្ថបទថ្ងៃនេះ ដើម្បីរក្សាវគ្គរបស់អ្នក</string>
+    <string name="streak_weekly_reward">រៀងរាល់ 7 ថ្ងៃជាប់ៗគ្នា</string>
+    <string name="streak_reward">+1 ឥណទានវិភាគ APK</string>
+    <string name="streak_reward_delivered">រង្វាន់ត្រូវបានផ្តល់ជូន</string>
+    <string name="streak_verified_note">ថ្ងៃ និងរង្វាន់ត្រូវបានផ្ទៀងផ្ទាត់ដោយម៉ាស៊ីនមេ។</string>
+    <plurals name="streak_days_left">
+        <item quantity="one">នៅសល់ %1$d ថ្ងៃ</item>
+        <item quantity="other">នៅសល់ %1$d ថ្ងៃ</item>
+    </plurals>
+    <string name="streak_reminder_channel">ការរំលឹកវគ្គ</string>
+    <string name="streak_reminder_title">វគ្គរបស់អ្នកកំពុងរង់ចាំ</string>
+    <string name="streak_reminder_body">ឌិកូដឯកសារ ឬអត្ថបទថ្ងៃនេះ ដើម្បីបន្តវគ្គរបស់អ្នក។</string>
+</resources>

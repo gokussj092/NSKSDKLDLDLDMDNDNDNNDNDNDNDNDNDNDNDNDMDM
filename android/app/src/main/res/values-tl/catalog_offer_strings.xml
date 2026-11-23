@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="catalog_offer_title">May bagong catalog</string>
+    <string name="catalog_offer_body">Handa na ang bersyon %1$d ng catalog. Mag-update para ma-access ang mga bagong suportadong app, method at pagpapabuti.</string>
+    <string name="catalog_offer_update">Mag-update ngayon</string>
+    <string name="catalog_offer_later">Kanselahin</string>
+    <string name="catalog_postpone_title">Magpatuloy nang hindi nag-a-update?</string>
+    <string name="catalog_postpone_body">Kung kakanselahin mo, hindi magiging available ang mga pinakabagong app, method at pagpapabuti ng catalog hangga’t hindi ka nag-a-update. Maaari kang mag-update mamaya sa Server VPN.</string>
+    <string name="catalog_postpone_confirm">Magpatuloy nang hindi nag-a-update</string>
+    <string name="catalog_postpone_back">Bumalik</string>
+</resources>

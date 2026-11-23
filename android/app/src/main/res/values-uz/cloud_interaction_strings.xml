@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="unsupported_file_title">Fayl turi qoʻllab-quvvatlanmaydi</string>
+    <string name="unsupported_file_detail">Ushbu fayl kengaytmasi SP-DECODE da hali mavjud emas. Qoʻllab-quvvatlashni taklif qilish uchun ishlab chiquvchiga murojaat qiling.</string>
+    <string name="unsupported_version_title">Fayl versiyasi hali qoʻllab-quvvatlanmaydi</string>
+    <string name="unsupported_version_detail">Ushbu fayl hali mos kelmaydigan versiya yoki shifrlash usulidan foydalanadi. Ishlab chiquvchidan qoʻllab-quvvatlashni soʻrashingiz mumkin.</string>
+    <string name="unsupported_text_title">Matn formati qoʻllab-quvvatlanmaydi</string>
+    <string name="unsupported_text_detail">Ushbu matn yoki protokol hali qoʻllab-quvvatlanmaydi. Integratsiyani taklif qilish uchun ishlab chiquvchiga murojaat qiling.</string>
+    <string name="catalog_check_action">Yangilash</string>
+    <string name="catalog_checking">Yangilanmoqda</string>
+    <string name="catalog_downloading">Katalog yangilanmoqda…</string>
+    <string name="catalog_progress">%1$d%%</string>
+    <string name="app_update_title">Ilovaning yangi versiyasi mavjud</string>
+    <string name="app_update_body">SP-DECODE %1$s mavjud. Yangilanishni olish uchun rasmiy Telegram kanaliga tashrif buyuring.</string>
+    <string name="app_update_open">Telegramni ochish</string>
+    <string name="app_update_close">Yopish</string>
+    <string name="catalog_available_title">Yangi katalog mavjud</string>
+    <string name="catalog_available_body">%1$d-versiyadagi yangi katalog yuklab olish uchun mavjud.</string>
+    <string name="catalog_check_short">Katalogni tekshirish</string>
+</resources>

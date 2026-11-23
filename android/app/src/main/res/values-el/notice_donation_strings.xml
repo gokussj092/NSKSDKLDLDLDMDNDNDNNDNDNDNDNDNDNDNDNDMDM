@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="donations_title">Δωρεές</string>
+    <string name="donation_copy_id">Αντιγραφή ID</string>
+    <string name="donation_id_copied">Το Binance ID αντιγράφηκε</string>
+    <string name="donation_coming_soon">Σύντομα</string>
+    <string name="catalog_loading_short">Φόρτωση καταλόγου</string>
+    <string name="notifications_title">Ειδοποιήσεις</string>
+    <string name="notifications_description">Λάβετε ειδοποιήσεις υπηρεσίας από το SP-DECODE. Μπορείτε να τις απενεργοποιήσετε ανά πάσα στιγμή.</string>
+    <string name="notifications_system_settings">Ρυθμίσεις συστήματος</string>
+    <string name="notifications_enable">Ενεργοποίηση</string>
+    <string name="notifications_later">Αργότερα</string>
+</resources>

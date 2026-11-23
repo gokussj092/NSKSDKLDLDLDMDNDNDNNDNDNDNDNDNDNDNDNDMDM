@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_report_action">រាយការណ៍កំហុស</string>
+    <string name="cloud_report_sent">ទទួលបានរបាយការណ៍៖ %1$s</string>
+    <string name="cloud_report_failed">របាយការណ៍នេះមិនអាចដាក់ជូនបានទេ។ ព្យាយាមម្តងទៀតនៅពេលក្រោយ។</string>
+    <string name="cloud_usage_title">ស្ថិតិការដំឡើងអនាមិក</string>
+    <string name="cloud_usage_detail">SP-DECODE រាប់ការដំឡើងសកម្មប្រហាក់ប្រហែលម្តងក្នុងមួយថ្ងៃ ដើម្បីរៀបចំផែនការសមត្ថភាពម៉ាស៊ីនមេ។ លេខកូដដំឡើងចៃដន្យត្រូវបានប្រើ មិនមែន Android ID, HWID ឬលេខសម្គាល់ការផ្សាយពាណិជ្ជកម្មរបស់អ្នកទេ។</string>
+    <string name="cloud_usage_footnote">រួមបញ្ចូលជាមួយការប្រើប្រាស់ Cloud បន្ទាប់ពីអ្នកទទួលយកលក្ខខណ្ឌឯកជនភាពរបស់វា។ គ្មានខ្លឹមសារឯកសារ ពាក្យសម្ងាត់ ឬការកំណត់រចនាសម្ព័ន្ធដែលបានឌិកូដត្រូវបានរួមបញ្ចូលទេ។</string>
+</resources>

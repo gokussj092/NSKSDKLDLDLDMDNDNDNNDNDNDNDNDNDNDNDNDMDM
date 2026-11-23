@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="streak_verified_date">A szerver által ellenőrzött dátum</string>
+    <string name="streak_date_pending">Ellenőrzött dátumra várakozás</string>
+    <string name="streak_today_done">Ma teljesítve</string>
+    <string name="streak_today_pending">Dekódoljon ma egy fájlt vagy szöveget a sorozat megőrzéséhez</string>
+    <string name="streak_weekly_reward">7 egymást követő naponként</string>
+    <string name="streak_reward">+1 APK-elemzési kredit</string>
+    <string name="streak_reward_delivered">Jutalom kézbesítve</string>
+    <string name="streak_verified_note">A napokat és a jutalmakat a szerver ellenőrzi.</string>
+    <plurals name="streak_days_left">
+        <item quantity="one">%1$d nap van hátra</item>
+        <item quantity="other">%1$d nap maradt hátra</item>
+    </plurals>
+    <string name="streak_reminder_channel">Sorozat-emlékeztetők</string>
+    <string name="streak_reminder_title">A sorozata várakozik</string>
+    <string name="streak_reminder_body">Dekódoljon ma egy fájlt vagy szöveget a sorozat folytatásához.</string>
+</resources>

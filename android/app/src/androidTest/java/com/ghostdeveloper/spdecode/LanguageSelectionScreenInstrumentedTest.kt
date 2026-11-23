@@ -32,7 +32,7 @@ class LanguageSelectionScreenInstrumentedTest {
 
     @Test fun selectedLanguageIsPartOfSupportedRegistry() {
         val tags=SupportedLanguages.options.map { it.tag }
-        assertEquals(15,tags.size)
+        assertEquals(37,tags.size)
         assertEquals(tags.size,tags.toSet().size)
         assertTrue(tags.containsAll(listOf("system","es","en","tr","vi","hi","ja","it")))
     }

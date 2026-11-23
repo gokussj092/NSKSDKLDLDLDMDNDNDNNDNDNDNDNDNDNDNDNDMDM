@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_http_injector_not_configured">HTTP Injector Cloud ကို ဆာဗာတွင် မပြင်ဆင်ရသေးပါ။ ဝန်ဆောင်မှု ဖွင့်ပြီးနောက် ထပ်ကြိုးစားပါ။</string>
+</resources>

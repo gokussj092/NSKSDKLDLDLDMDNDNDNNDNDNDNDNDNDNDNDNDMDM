@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="account_sign_in">Autentificare</string>
+    <string name="account_web_description">Gestionează-ți contul și achizițiile pe site-ul oficial. Funcțiile gratuite rămân disponibile fără cont.</string>
+    <string name="account_continue_web">Continuă pe web</string>
+    <string name="account_my_account">Contul meu</string>
+    <string name="account_store">Magazin</string>
+    <string name="account_open_menu">Deschide meniul</string>
+    <string name="ads_privacy_options">Opțiuni de confidențialitate pentru publicitate</string>
+</resources>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="donations_title">기부</string>
+    <string name="donation_copy_id">ID 복사</string>
+    <string name="donation_id_copied">Binance ID가 복사되었습니다</string>
+    <string name="donation_coming_soon">곧 제공됩니다</string>
+    <string name="catalog_loading_short">카탈로그 로드 중</string>
+    <string name="notifications_title">알림</string>
+    <string name="notifications_description">SP-DECODE의 서비스 알림을 받습니다. 언제든지 끌 수 있습니다.</string>
+    <string name="notifications_system_settings">시스템 설정</string>
+    <string name="notifications_enable">사용</string>
+    <string name="notifications_later">나중에</string>
+</resources>

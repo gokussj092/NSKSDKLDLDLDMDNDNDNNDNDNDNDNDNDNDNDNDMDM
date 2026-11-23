@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="language_help_title">Saidia kuboresha tafsiri</string>
+    <string name="language_help_detail">Ripoti makosa ya tafsiri ili tuyarekebishe.</string>
+    <string name="language_help_signin_title">Ingia ili kuripoti</string>
+    <string name="language_help_signin_detail">Ingia katika akaunti yako ili kutuma ripoti ya tafsiri.</string>
+    <string name="language_help_signin_button">Ingia</string>
+    <string name="language_help_form_title">Ripoti kosa la tafsiri</string>
+    <string name="language_help_language_label">Lugha</string>
+    <string name="language_help_where_label">Uliona kosa wapi?</string>
+    <string name="language_help_wrong_label">Maandishi yenye kosa (kama yanavyoonekana)</string>
+    <string name="language_help_correct_label">Maandishi sahihi yanapaswa kuwa yapi?</string>
+    <string name="language_help_comment_label">Maoni (si lazima)</string>
+    <string name="language_help_send">Tuma ripoti</string>
+    <string name="language_help_sent">Ripoti imetumwa. Asante kwa kusaidia kuboresha tafsiri.</string>
+    <string name="language_help_error">Ripoti haikutumwa. Jaribu tena baadaye.</string>
+    <string name="language_help_required">Lugha, maandishi yenye kosa na pendekezo la marekebisho vinahitajika.</string>
+    <string name="language_help_invalid_input">Fupisha ripoti au ondoa herufi zisizotumika.</string>
+</resources>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="npv_title">Funguo za mpokeaji za NPV</string>
+    <string name="npv_detail">Tumia kitambulisho chako kwa faili zilizotengenezwa kwa ajili yako. Funguo zimesimbwa kwa njia fiche kwenye kifaa hiki. Washa chaguo hili ili kuzitumia na SP Cloud.</string>
+    <string name="npv_enabled">Tumia vitambulisho vyangu vya NPV</string>
+    <string name="npv_generate">Tengeneza na SP Cloud</string>
+    <string name="npv_import">Ingiza JSON iliyonaswa</string>
+    <string name="npv_generated">Imetengenezwa na SP Cloud</string>
+    <string name="npv_captured">Imenaswa kutoka programu rasmi</string>
+    <string name="npv_file_only">Faili hii tu</string>
+    <string name="npv_view">Tazama na unakili</string>
+    <string name="npv_delete">Futa</string>
+    <string name="npv_invalid">Haiwezi kusoma funguo za NPV. Angalia JSON na funguo zinazolingana.</string>
+    <string name="npv_saved">Kitambulisho kimehifadhiwa. Washa chaguo ili kukitumia.</string>
+    <string name="npv_generation_notice">Shiriki ufunguo wa umma tu na mtu anayeunda seva yako ya VPN au usanidi. Kamwe usishiriki ufunguo wako wa binafsi.</string>
+    <string name="npv_choose_title">Chagua kitambulisho cha NPV</string>
+    <string name="npv_send_notice">Chagua kitambulisho cha kufungua faili hii na SP Cloud.</string>
+    <string name="npv_use">Tumia kitambulisho kilichochaguliwa</string>
+    <string name="npv_copy_public">Nakili ufunguo wa umma</string>
+    <string name="npv_copy_private">Nakili ufunguo wa binafsi</string>
+    <string name="npv_reveal">Onyesha au ficha ufunguo wa binafsi</string>
+    <string name="npv_hardware_notice">Ufunguo wa binafsi wa maunzi hauwezi kuhamishwa. Unasaji huu hufanya kazi tu kwa faili inayolingana.</string>
+    <string name="npv_delete_title">Futa kitambulisho hiki?</string>
+    <string name="npv_delete_warning">Ufunguo huu umehifadhiwa kwenye kifaa hiki tu. Ukishafutwa, SP Cloud haiwezi kuurejesha. Unaweza kupoteza ufikiaji wa faili zilizosimbwa kwa njia fiche kwa kitambulisho hiki.</string>
+    <string name="npv_public_label">Ufunguo wa umma · P-256</string>
+    <string name="npv_private_label">Ufunguo wa binafsi · PKCS#8</string>
+    <string name="npv_cancel">Ghairi</string>
+    <string name="npv_already_generated">Kitambulisho cha SP Cloud tayari kipo. Kifute kabla ya kutengeneza kingine.</string>
+</resources>

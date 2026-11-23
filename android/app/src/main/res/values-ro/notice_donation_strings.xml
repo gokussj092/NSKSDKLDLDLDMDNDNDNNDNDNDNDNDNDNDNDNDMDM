@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="donations_title">Donații</string>
+    <string name="donation_copy_id">Copiază ID-ul</string>
+    <string name="donation_id_copied">ID-ul Binance a fost copiat</string>
+    <string name="donation_coming_soon">În curând</string>
+    <string name="catalog_loading_short">Se încarcă catalogul</string>
+    <string name="notifications_title">Notificări</string>
+    <string name="notifications_description">Primește notificări de serviciu de la SP-DECODE. Le poți dezactiva oricând.</string>
+    <string name="notifications_system_settings">Setări de sistem</string>
+    <string name="notifications_enable">Activează</string>
+    <string name="notifications_later">Mai târziu</string>
+</resources>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="language_help_title">ترجمے بہتر بنانے میں مدد کریں</string>
+    <string name="language_help_detail">ترجمے کی غلطیاں بتائیں تاکہ ہم انہیں درست کر سکیں۔</string>
+    <string name="language_help_signin_title">رپورٹ کرنے کے لیے سائن اِن کریں</string>
+    <string name="language_help_signin_detail">ترجمے کی رپورٹ بھیجنے کے لیے اپنے اکاؤنٹ میں سائن اِن کریں۔</string>
+    <string name="language_help_signin_button">سائن اِن کریں</string>
+    <string name="language_help_form_title">ترجمے کی غلطی رپورٹ کریں</string>
+    <string name="language_help_language_label">زبان</string>
+    <string name="language_help_where_label">غلطی آپ نے کہاں دیکھی؟</string>
+    <string name="language_help_wrong_label">غلط متن (جیسے دکھائی دیتا ہے)</string>
+    <string name="language_help_correct_label">درست متن کیا ہونا چاہیے؟</string>
+    <string name="language_help_comment_label">تبصرہ (اختیاری)</string>
+    <string name="language_help_send">رپورٹ بھیجیں</string>
+    <string name="language_help_sent">رپورٹ بھیج دی گئی۔ ترجمے بہتر بنانے میں مدد کا شکریہ۔</string>
+    <string name="language_help_error">رپورٹ نہیں بھیجی جا سکی۔ بعد میں دوبارہ کوشش کریں۔</string>
+    <string name="language_help_required">زبان، غلط متن اور تجویز کردہ تصحیح درکار ہے۔</string>
+    <string name="language_help_invalid_input">رپورٹ مختصر کریں یا غیر معاون حروف حذف کریں۔</string>
+</resources>

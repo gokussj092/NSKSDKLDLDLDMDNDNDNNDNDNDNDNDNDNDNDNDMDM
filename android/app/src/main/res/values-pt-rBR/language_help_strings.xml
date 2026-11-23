@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="language_help_title">Ajude a melhorar as traduções</string>
+    <string name="language_help_detail">Avise se encontrar algum erro de tradução.</string>
+    <string name="language_help_signin_title">Entre para enviar um relato</string>
+    <string name="language_help_signin_detail">Entre na sua conta para enviar um relato de tradução.</string>
+    <string name="language_help_signin_button">Entrar</string>
+    <string name="language_help_form_title">Relatar um erro de tradução</string>
+    <string name="language_help_language_label">Idioma</string>
+    <string name="language_help_where_label">Onde você viu o erro?</string>
+    <string name="language_help_wrong_label">Texto incorreto (como aparece)</string>
+    <string name="language_help_correct_label">Como deveria estar escrito?</string>
+    <string name="language_help_comment_label">Comentários (opcional)</string>
+    <string name="language_help_send">Enviar relato</string>
+    <string name="language_help_sent">Relato enviado. Obrigado por ajudar a melhorar as traduções.</string>
+    <string name="language_help_error">Não foi possível enviar o relato. Tente novamente mais tarde.</string>
+    <string name="language_help_required">Informe o idioma, o texto incorreto e a correção sugerida.</string>
+    <string name="language_help_invalid_input">Encurte o relato ou remova os caracteres incompatíveis.</string>
+</resources>

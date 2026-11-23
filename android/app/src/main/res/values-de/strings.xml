@@ -363,6 +363,12 @@
     <string name="app_analysis_error_busy">Es laufen zu viele Analysen. Versuche es später erneut.</string>
     <string name="app_analysis_error_generic">Der Vorgang konnte nicht abgeschlossen werden. Versuche es erneut.</string>
     <string name="app_analysis_title">APK-Analyse</string>
+    <string name="apk_qa_sub_metadata">Paketmetadaten werden gelesen</string>
+    <string name="apk_qa_sub_dex">DEX-Bytecode und Methoden werden analysiert</string>
+    <string name="apk_qa_sub_native">Native Bibliotheken (.so) werden geprüft</string>
+    <string name="apk_qa_sub_jadx">Code wird mit JADX Lite dekompiliert</string>
+    <string name="apk_qa_sub_recovery">Teilweise DEX-Ausgabe wird wiederhergestellt</string>
+    <string name="apk_qa_sub_evidence">Kryptografische Referenzen werden abgeglichen</string>
     <string name="release_integrity_error_title">App konnte nicht überprüft werden</string>
     <string name="release_integrity_error_message">Die Signatur der installierten App konnte nicht überprüft werden. Aktualisiere SP-DECODE über die offizielle Quelle. Wenn das Problem weiterhin besteht, kontaktiere den Support mit dem Code RELEASE_SIGNER_REJECTED.</string>
 </resources>

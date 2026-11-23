@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="npv_title">សោអ្នកទទួល NPV</string>
+    <string name="npv_detail">ប្រើអត្តសញ្ញាណរបស់អ្នកសម្រាប់ឯកសារដែលបង្កើតឡើងសម្រាប់អ្នក។ សោត្រូវបានអ៊ិនគ្រីបនៅលើឧបករណ៍នេះ។ បើកជម្រើសនេះដើម្បីប្រើពួកវាជាមួយ SP Cloud។</string>
+    <string name="npv_enabled">ប្រើអត្តសញ្ញាណ NPV របស់ខ្ញុំ</string>
+    <string name="npv_generate">បង្កើតជាមួយ SP Cloud</string>
+    <string name="npv_import">នាំចូល JSON ដែលបានចាប់យក</string>
+    <string name="npv_generated">បង្កើតឡើងដោយ SP Cloud</string>
+    <string name="npv_captured">ចាប់យកពីកម្មវិធីផ្លូវការ</string>
+    <string name="npv_file_only">ឯកសារនេះតែប៉ុណ្ណោះ</string>
+    <string name="npv_view">មើល និងចម្លង</string>
+    <string name="npv_delete">លុប</string>
+    <string name="npv_invalid">មិនអាចអានសោ NPV បានទេ។ ពិនិត្យ JSON និងសោដែលត្រូវគ្នា។</string>
+    <string name="npv_saved">អត្តសញ្ញាណត្រូវបានរក្សាទុក។ បើកជម្រើសដើម្បីប្រើវា។</string>
+    <string name="npv_generation_notice">ចែករំលែកតែសោសាធារណៈជាមួយបុគ្គលដែលបង្កើតម៉ាស៊ីនមេ VPN ឬការកំណត់រចនាសម្ព័ន្ធរបស់អ្នក។ កុំចែករំលែកសោឯកជនរបស់អ្នក។</string>
+    <string name="npv_choose_title">ជ្រើសរើសអត្តសញ្ញាណ NPV</string>
+    <string name="npv_send_notice">ជ្រើសរើសអត្តសញ្ញាណដើម្បីបើកឯកសារនេះជាមួយ SP Cloud។</string>
+    <string name="npv_use">ប្រើអត្តសញ្ញាណដែលបានជ្រើសរើស</string>
+    <string name="npv_copy_public">ចម្លងសោសាធារណៈ</string>
+    <string name="npv_copy_private">ចម្លងសោឯកជន</string>
+    <string name="npv_reveal">បង្ហាញ ឬលាក់សោឯកជន</string>
+    <string name="npv_hardware_notice">សោឯកជនផ្នែករឹងមិនអាចនាំចេញបានទេ។ ការចាប់យកនេះដំណើរការសម្រាប់តែឯកសារដែលត្រូវគ្នាប៉ុណ្ណោះ។</string>
+    <string name="npv_delete_title">លុបអត្តសញ្ញាណនេះ?</string>
+    <string name="npv_delete_warning">សោនេះត្រូវបានរក្សាទុកតែនៅលើឧបករណ៍នេះប៉ុណ្ណោះ។ នៅពេលលុប SP Cloud មិនអាចយកវាមកវិញបានទេ។ អ្នកអាចបាត់បង់សិទ្ធិចូលប្រើឯកសារដែលបានអ៊ិនគ្រីបសម្រាប់អត្តសញ្ញាណនេះ។</string>
+    <string name="npv_public_label">សោសាធារណៈ · P-256</string>
+    <string name="npv_private_label">សោឯកជន · PKCS#8</string>
+    <string name="npv_cancel">បោះបង់</string>
+    <string name="npv_already_generated">អត្តសញ្ញាណ SP Cloud មានរួចហើយ។ លុបវាមុនពេលបង្កើតមួយផ្សេងទៀត។</string>
+</resources>

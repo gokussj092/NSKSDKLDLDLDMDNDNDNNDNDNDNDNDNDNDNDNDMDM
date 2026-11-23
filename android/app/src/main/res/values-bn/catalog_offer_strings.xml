@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="catalog_offer_title">নতুন ক্যাটালগ উপলব্ধ</string>
+    <string name="catalog_offer_body">ক্যাটালগ সংস্করণ %1$d প্রস্তুত। নতুন সমর্থিত অ্যাপ, পদ্ধতি ও উন্নতি পেতে আপডেট করুন।</string>
+    <string name="catalog_offer_update">এখনই আপডেট করুন</string>
+    <string name="catalog_offer_later">বাতিল করুন</string>
+    <string name="catalog_postpone_title">আপডেট না করে এগিয়ে যাবেন?</string>
+    <string name="catalog_postpone_body">বাতিল করলে, আপডেট না করা পর্যন্ত সর্বশেষ ক্যাটালগের অ্যাপ, পদ্ধতি ও উন্নতি পাওয়া যাবে না। পরে Server VPN থেকে আপডেট করতে পারবেন।</string>
+    <string name="catalog_postpone_confirm">আপডেট না করেই এগিয়ে যান</string>
+    <string name="catalog_postpone_back">ফিরে যান</string>
+</resources>

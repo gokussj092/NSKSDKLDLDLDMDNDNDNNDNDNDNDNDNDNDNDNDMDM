@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="unsupported_file_title">ဖိုင်အမျိုးအစားကို မထောက်ပံ့ပါ</string>
+    <string name="unsupported_file_detail">ဤဖိုင် extension ကို SP-DECODE တွင် မရရှိနိုင်သေးပါ။ ထောက်ပံ့ရန် အကြံပြုလိုပါက ဖန်တီးသူထံ ဆက်သွယ်ပါ။</string>
+    <string name="unsupported_version_title">ဖိုင်ဗားရှင်းကို မထောက်ပံ့သေးပါ</string>
+    <string name="unsupported_version_detail">ဤဖိုင်သည် မကိုက်ညီသေးသော ဗားရှင်း သို့မဟုတ် ကုဒ်ဝှက်မှု နည်းလမ်းကို အသုံးပြုသည်။ ဖန်တီးသူထံ ထောက်ပံ့ရန် တောင်းဆိုနိုင်ပါသည်။</string>
+    <string name="unsupported_text_title">စာသား ဖော်မတ်ကို မထောက်ပံ့ပါ</string>
+    <string name="unsupported_text_detail">ဤစာသား သို့မဟုတ် ပရိုတိုကောကို မထောက်ပံ့သေးပါ။ ပေါင်းစပ်ရန် အကြံပြုလိုပါက ဖန်တီးသူထံ ဆက်သွယ်ပါ။</string>
+    <string name="catalog_check_action">အပ်ဒိတ်</string>
+    <string name="catalog_checking">အပ်ဒိတ်လုပ်နေသည်</string>
+    <string name="catalog_downloading">ကတ်တလောက် အပ်ဒိတ်လုပ်နေသည်…</string>
+    <string name="catalog_progress">%1$d%%</string>
+    <string name="app_update_title">အက်ပ် ဗားရှင်း အသစ် ရရှိနိုင်ပါပြီ</string>
+    <string name="app_update_body">SP-DECODE %1$s ရရှိနိုင်ပါပြီ။ အပ်ဒိတ်ရယူရန် တရားဝင် Telegram ချန်နယ်သို့ သွားပါ။</string>
+    <string name="app_update_open">Telegram ဖွင့်ရန်</string>
+    <string name="app_update_close">ပိတ်ရန်</string>
+    <string name="catalog_available_title">ကတ်တလောက် အသစ် ရရှိနိုင်ပါပြီ</string>
+    <string name="catalog_available_body">ကတ်တလောက် ဗားရှင်း အသစ် %1$d ကို ဒေါင်းလုဒ်လုပ်ရန် ရရှိနိုင်ပါပြီ။</string>
+    <string name="catalog_check_short">ကတ်တလောက် စစ်ဆေးရန်</string>
+</resources>

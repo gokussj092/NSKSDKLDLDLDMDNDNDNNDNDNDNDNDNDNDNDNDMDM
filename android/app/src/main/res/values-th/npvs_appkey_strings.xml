@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_failure_npvs_appkey_auth">ไม่สามารถยืนยันตัวตนไฟล์ NPVS app-key นี้ได้ อาจใช้ตัวแปรอื่นหรือถูกแก้ไข วิธีการนี้ไม่ต้องใช้รหัสผ่านหรือคีย์ส่วนตัวของผู้รับ</string>
+</resources>

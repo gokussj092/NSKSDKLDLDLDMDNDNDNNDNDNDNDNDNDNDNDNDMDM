@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_legal_title">شرائط اور پرائیویسی</string>
+    <string name="cloud_legal_explanation">SP-DECODE Cloud وہ فائلز یا متن جو آپ ڈی کوڈ کرنے کے لیے منتخب کرتے ہیں، اپنے سرور کو بھیجتا ہے۔ یہ سرور کی گنجائش کی منصوبہ بندی کے لیے دن میں ایک بار فعال انسٹالیشنز کی تقریباً تعداد بھی گنتا ہے، جس میں بے ترتیب انسٹالیشن کوڈ استعمال ہوتا ہے۔ ان گنتیوں میں کنفیگریشن کا کوئی مواد شامل نہیں ہوتا۔</string>
+    <string name="cloud_legal_terms">شرائط و ضوابط پڑھیں</string>
+    <string name="cloud_legal_privacy">پرائیویسی پالیسی پڑھیں</string>
+    <string name="cloud_legal_accept_check">میں نے شرائط اور پرائیویسی پالیسی پڑھ لی ہیں اور قبول کرتا ہوں۔</string>
+    <string name="cloud_legal_accept">قبول کریں</string>
+    <string name="cloud_legal_decline">مسترد کریں</string>
+    <string name="server_vpn_loading">سرور VPN کیٹلاگ لوڈ ہو رہا ہے…</string>
+    <string name="server_vpn_unavailable">VPN سرور کیٹلاگ دستیاب نہیں ہے۔ اپنا کنکشن چیک کریں اور دوبارہ کوشش کریں۔</string>
+    <string name="server_vpn_retry">کیٹلاگ دوبارہ کوشش کریں</string>
+    <string name="cloud_legal_withdraw">کلاؤڈ کی رضامندی واپس لیں</string>
+    <string name="cloud_legal_withdraw_detail">رضامندی واپس لینے سے نئی سرور درخواستیں بلاک ہو جاتی ہیں۔ آپ کی مقامی انکرپٹڈ ہسٹری اس ڈیوائس پر رہے گی۔ آپ بعد میں دوبارہ قبول کر سکتے ہیں۔</string>
+</resources>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="server_vpn_search_hint">搜索 VPN 应用</string>
+    <string name="server_vpn_filter_all">全部</string>
+    <string name="server_vpn_filter_enabled">已启用</string>
+    <string name="server_vpn_filter_favorites">收藏</string>
+    <string name="server_vpn_favorite_add">加入收藏</string>
+    <string name="server_vpn_favorite_remove">取消收藏</string>
+    <string name="server_vpn_manual_refresh">立即检查目录</string>
+    <string name="server_vpn_catalog_refreshing">正在检查服务器目录…</string>
+    <string name="server_vpn_no_matches">没有符合您的搜索或筛选条件的 VPN 应用。</string>
+    <string name="server_vpn_catalog_enabled">目录中已启用</string>
+    <string name="server_vpn_catalog_disabled">目录中未启用</string>
+    <string name="server_vpn_new_badge">新</string>
+    <string name="server_vpn_catalog_update_title">有目录更新可用</string>
+    <string name="server_vpn_catalog_update_question">Server VPN 目录版本 %1$d 已发布。是否立即下载？</string>
+    <string name="server_vpn_catalog_download">下载</string>
+    <string name="server_vpn_catalog_current">您的 Server VPN 目录已是最新版本。</string>
+    <string name="server_vpn_catalog_updated">Server VPN 目录已更新。</string>
+    <string name="server_vpn_catalog_update_error">无法检查或下载目录。请重试。</string>
+    <string name="server_vpn_updated_badge">已更新</string>
+    <string name="server_vpn_maintenance_badge">维护中</string>
+    <string name="server_vpn_maintenance_detail">该方法正在临时维护中</string>
+    <plurals name="server_vpn_app_count">
+        <item quantity="one">有 %1$d 个应用可用</item>
+        <item quantity="other">有 %1$d 个应用可用</item>
+    </plurals>
+</resources>

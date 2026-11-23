@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_global_title">Cloud (Online)</string>
+    <string name="cloud_global_auto">Αυτόματη ανίχνευση</string>
+    <string name="cloud_global_hint">Επικολλήστε έναν υποστηριζόμενο σύνδεσμο Cloud, κλειδί ή κωδικό</string>
+    <string name="cloud_global_action">Εισαγωγή από το Cloud</string>
+    <string name="cloud_global_detail">Επικολλήστε έναν σύνδεσμο Cloud, κλειδί ή κωδικό και το SP-DECODE εντοπίζει αυτόματα τον πάροχο. Υποστηρίζονται μόνο εγκεκριμένες υπηρεσίες.</string>
+    <string name="cloud_global_invalid">Αυτή η αναφορά δεν αντιστοιχεί σε διαθέσιμο πάροχο Cloud.</string>
+</resources>

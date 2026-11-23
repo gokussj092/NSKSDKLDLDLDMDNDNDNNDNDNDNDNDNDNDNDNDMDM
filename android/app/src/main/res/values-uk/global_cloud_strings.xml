@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_global_title">Cloud (Онлайн)</string>
+    <string name="cloud_global_auto">Автовизначення</string>
+    <string name="cloud_global_hint">Вставте підтримуване хмарне посилання, ключ або код</string>
+    <string name="cloud_global_action">Імпортувати з Cloud</string>
+    <string name="cloud_global_detail">Вставте хмарне посилання, ключ або код — і SP-DECODE автоматично визначить постачальника. Підтримуються лише схвалені служби.</string>
+    <string name="cloud_global_invalid">Це посилання не відповідає жодному доступному хмарному постачальнику.</string>
+</resources>

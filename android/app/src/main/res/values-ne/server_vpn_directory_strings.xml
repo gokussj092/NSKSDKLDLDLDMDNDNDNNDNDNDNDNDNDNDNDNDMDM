@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="server_vpn_search_hint">VPN एपहरू खोज्नुहोस्</string>
+    <string name="server_vpn_filter_all">सबै</string>
+    <string name="server_vpn_filter_enabled">सक्षम गरिएका</string>
+    <string name="server_vpn_filter_favorites">मनपर्नेहरू</string>
+    <string name="server_vpn_favorite_add">मनपर्नेहरूमा थप्नुहोस्</string>
+    <string name="server_vpn_favorite_remove">मनपर्नेहरूबाट हटाउनुहोस्</string>
+    <string name="server_vpn_manual_refresh">क्याटलग अहिले जाँच गर्नुहोस्</string>
+    <string name="server_vpn_catalog_refreshing">सर्भर क्याटलग जाँच गर्दै…</string>
+    <string name="server_vpn_no_matches">कुनै VPN एप तपाईंको खोज वा फिल्टरसँग मेल खाँदैन।</string>
+    <string name="server_vpn_catalog_enabled">क्याटलगमा सक्षम छ</string>
+    <string name="server_vpn_catalog_disabled">क्याटलगमा सक्षम छैन</string>
+    <string name="server_vpn_new_badge">नयाँ</string>
+    <string name="server_vpn_catalog_update_title">क्याटलग अपडेट उपलब्ध छ</string>
+    <string name="server_vpn_catalog_update_question">सर्भर VPN क्याटलगको संस्करण %1$d उपलब्ध छ। अहिले डाउनलोड गर्ने?</string>
+    <string name="server_vpn_catalog_download">डाउनलोड गर्नुहोस्</string>
+    <string name="server_vpn_catalog_current">तपाईंको सर्भर VPN क्याटलग अद्यावधिक छ।</string>
+    <string name="server_vpn_catalog_updated">सर्भर VPN क्याटलग अपडेट भयो।</string>
+    <string name="server_vpn_catalog_update_error">क्याटलग जाँच वा डाउनलोड गर्न सकिएन। कृपया पुनः प्रयास गर्नुहोस्।</string>
+    <string name="server_vpn_updated_badge">अपडेट गरिएको</string>
+    <string name="server_vpn_maintenance_badge">मर्मतसम्भारमा</string>
+    <string name="server_vpn_maintenance_detail">विधि अस्थायी रूपमा मर्मतसम्भारमा छ</string>
+    <plurals name="server_vpn_app_count">
+        <item quantity="one">%1$d एप उपलब्ध छ</item>
+        <item quantity="other">%1$d एपहरू उपलब्ध छन्</item>
+    </plurals>
+</resources>

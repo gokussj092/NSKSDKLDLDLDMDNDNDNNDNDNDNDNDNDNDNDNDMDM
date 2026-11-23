@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="catalog_download_confirm_body">전체 카탈로그, 형식 및 아이콘을 한 번의 요청으로 다운로드하시겠습니까?</string>
+</resources>

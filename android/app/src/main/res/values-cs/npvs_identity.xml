@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="npv_title">Klíče příjemce NPV</string>
+    <string name="npv_detail">Použijte svou identitu pro soubory vytvořené pro vás. Klíče jsou na tomto zařízení šifrované. Povolte tuto možnost, abyste je mohli používat s SP Cloud.</string>
+    <string name="npv_enabled">Používat mé identity NPV</string>
+    <string name="npv_generate">Vygenerovat pomocí SP Cloud</string>
+    <string name="npv_import">Importovat zachycený JSON</string>
+    <string name="npv_generated">Vygenerováno pomocí SP Cloud</string>
+    <string name="npv_captured">Zachyceno z oficiální aplikace</string>
+    <string name="npv_file_only">Pouze tento soubor</string>
+    <string name="npv_view">Zobrazit a kopírovat</string>
+    <string name="npv_delete">Smazat</string>
+    <string name="npv_invalid">Klíče NPV nelze přečíst. Zkontrolujte JSON a odpovídající klíče.</string>
+    <string name="npv_saved">Identita uložena. Povolte možnost, abyste ji mohli používat.</string>
+    <string name="npv_generation_notice">Sdílejte pouze veřejný klíč s osobou, která vytváří váš server VPN nebo konfiguraci. Nikdy nesdílejte svůj soukromý klíč.</string>
+    <string name="npv_choose_title">Vybrat identitu NPV</string>
+    <string name="npv_send_notice">Vyberte identitu, pomocí které tento soubor otevřete v SP Cloud.</string>
+    <string name="npv_use">Použít vybranou identitu</string>
+    <string name="npv_copy_public">Kopírovat veřejný klíč</string>
+    <string name="npv_copy_private">Kopírovat soukromý klíč</string>
+    <string name="npv_reveal">Zobrazit nebo skrýt soukromý klíč</string>
+    <string name="npv_hardware_notice">Hardwarový soukromý klíč nelze exportovat. Tento záznam funguje pouze pro odpovídající soubor.</string>
+    <string name="npv_delete_title">Smazat tuto identitu?</string>
+    <string name="npv_delete_warning">Tento klíč je uložen pouze na tomto zařízení. Po smazání jej SP Cloud nemůže obnovit. Můžete ztratit přístup k souborům zašifrovaným pro tuto identitu.</string>
+    <string name="npv_public_label">Veřejný klíč · P-256</string>
+    <string name="npv_private_label">Soukromý klíč · PKCS#8</string>
+    <string name="npv_cancel">Zrušit</string>
+    <string name="npv_already_generated">Identita SP Cloud již existuje. Než vygenerujete další, smažte ji.</string>
+</resources>

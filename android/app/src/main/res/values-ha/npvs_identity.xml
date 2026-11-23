@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="npv_title">Maɓallan mai karɓa na NPV</string>
+    <string name="npv_detail">Ka yi amfani da asalin ka don fayilolin da aka yi maka. An ɓoye maɓallan a wannan na\'ura. Ka kunna wannan zaɓi don amfani da su tare da SP Cloud.</string>
+    <string name="npv_enabled">Yi amfani da asalina na NPV</string>
+    <string name="npv_generate">Ƙirƙira da SP Cloud</string>
+    <string name="npv_import">Shigar da JSON da aka kama</string>
+    <string name="npv_generated">SP Cloud ce ta ƙirƙira</string>
+    <string name="npv_captured">An kama daga app na hukuma</string>
+    <string name="npv_file_only">Wannan fayil kaɗai</string>
+    <string name="npv_view">Duba ka kwafi</string>
+    <string name="npv_delete">Goge</string>
+    <string name="npv_invalid">Ba a iya karanta maɓallan NPV ba. Ka duba JSON da maɓallan da suka dace.</string>
+    <string name="npv_saved">An ajiye asali. Ka kunna zaɓin don amfani da shi.</string>
+    <string name="npv_generation_notice">Ka raba maɓallin jama\'a kaɗai da mutumin da ke ƙirƙirar sabar VPN ɗinka ko tsarinka. Kada ka taɓa raba maɓallin sirrinka.</string>
+    <string name="npv_choose_title">Zaɓi asalin NPV</string>
+    <string name="npv_send_notice">Ka zaɓi asalin da za a buɗe wannan fayil da shi tare da SP Cloud.</string>
+    <string name="npv_use">Yi amfani da asalin da aka zaɓa</string>
+    <string name="npv_copy_public">Kwafi maɓallin jama\'a</string>
+    <string name="npv_copy_private">Kwafi maɓallin sirri</string>
+    <string name="npv_reveal">Nuna ko ɓoye maɓallin sirri</string>
+    <string name="npv_hardware_notice">Maɓallin sirri na kayan aiki ba a iya fitar da shi. Wannan kamawa yana aiki ne kawai don fayil mai dacewa.</string>
+    <string name="npv_delete_title">A goge wannan asali?</string>
+    <string name="npv_delete_warning">Ana adana wannan maɓalli a wannan na\'ura kaɗai. Da zarar an goge shi, SP Cloud ba za ta iya dawo da shi ba. Za ka iya rasa damar shiga fayilolin da aka ɓoye don wannan asali.</string>
+    <string name="npv_public_label">Maɓallin jama\'a · P-256</string>
+    <string name="npv_private_label">Maɓallin sirri · PKCS#8</string>
+    <string name="npv_cancel">Soke</string>
+    <string name="npv_already_generated">Asalin SP Cloud ya riga ya wanzu. Ka goge shi kafin ka ƙirƙiri wani.</string>
+</resources>

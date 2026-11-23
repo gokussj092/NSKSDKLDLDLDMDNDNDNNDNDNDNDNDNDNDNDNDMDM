@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="compatible_export_for">%1$s का लागि निर्यात गर्नुहोस्</string>
+    <string name="compatible_export_redecode">%1$s मा निर्यात सक्षम गर्न यो फाइल पुनः आयात गर्नुहोस्।</string>
+    <string name="compatible_export_failed">उपयुक्त फाइल सुरक्षित गर्न सकिएन।</string>
+</resources>

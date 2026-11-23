@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="unsupported_file_title">Aina ya faili haiungwi mkono</string>
+    <string name="unsupported_file_detail">Kiambishi hiki cha faili hakipatikani bado katika SP-DECODE. Wasiliana na msanidi ili kupendekeza usaidizi.</string>
+    <string name="unsupported_version_title">Toleo la faili halijaungwa mkono bado</string>
+    <string name="unsupported_version_detail">Faili hii hutumia toleo au mbinu ya usimbaji fiche ambayo haiendani bado. Unaweza kuomba usaidizi kutoka kwa msanidi.</string>
+    <string name="unsupported_text_title">Muundo wa maandishi hauungwi mkono</string>
+    <string name="unsupported_text_detail">Maandishi au itifaki hii haijaungwa mkono bado. Wasiliana na msanidi ili kupendekeza ujumuishaji.</string>
+    <string name="catalog_check_action">Sasisha</string>
+    <string name="catalog_checking">Inasasisha</string>
+    <string name="catalog_downloading">Inasasisha katalogi…</string>
+    <string name="catalog_progress">%1$d%%</string>
+    <string name="app_update_title">Toleo jipya la programu linapatikana</string>
+    <string name="app_update_body">SP-DECODE %1$s inapatikana. Tembelea chaneli rasmi ya Telegram ili kupata sasisho.</string>
+    <string name="app_update_open">Fungua Telegram</string>
+    <string name="app_update_close">Funga</string>
+    <string name="catalog_available_title">Katalogi mpya inapatikana</string>
+    <string name="catalog_available_body">Toleo jipya la katalogi %1$d linapatikana kwa kupakua.</string>
+    <string name="catalog_check_short">Angalia katalogi</string>
+</resources>

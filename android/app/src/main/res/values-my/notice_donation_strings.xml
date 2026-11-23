@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="donations_title">အလှူများ</string>
+    <string name="donation_copy_id">ID ကူးယူရန်</string>
+    <string name="donation_id_copied">Binance ID ကို ကူးယူပြီးပါပြီ</string>
+    <string name="donation_coming_soon">မကြာမီ လာပါမည်</string>
+    <string name="catalog_loading_short">ကတ်တလောက် ဖွင့်နေသည်</string>
+    <string name="notifications_title">အသိပေးချက်များ</string>
+    <string name="notifications_description">SP-DECODE မှ ဝန်ဆောင်မှု အသိပေးချက်များကို လက်ခံရယူပါ။ အချိန်မရွေး ပိတ်နိုင်ပါသည်။</string>
+    <string name="notifications_system_settings">စနစ် ဆက်တင်များ</string>
+    <string name="notifications_enable">ဖွင့်ရန်</string>
+    <string name="notifications_later">နောက်မှ</string>
+</resources>

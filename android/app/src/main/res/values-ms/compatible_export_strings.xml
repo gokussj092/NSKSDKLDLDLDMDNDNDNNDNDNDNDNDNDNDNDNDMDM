@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="compatible_export_for">Eksport untuk %1$s</string>
+    <string name="compatible_export_redecode">Import semula fail ini untuk mengaktifkan eksport ke %1$s.</string>
+    <string name="compatible_export_failed">Fail serasi tidak dapat disimpan.</string>
+</resources>

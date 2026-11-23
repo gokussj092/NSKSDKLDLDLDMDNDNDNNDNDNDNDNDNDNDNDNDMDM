@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="compatible_export_for">Извези за %1$s</string>
+    <string name="compatible_export_redecode">Поново увезите ову датотеку да омогућите извоз у %1$s.</string>
+    <string name="compatible_export_failed">Компатибилна датотека није могла да се сачува.</string>
+</resources>

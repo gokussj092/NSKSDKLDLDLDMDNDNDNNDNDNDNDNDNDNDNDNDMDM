@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="about_screen_entry_detail">ဗားရှင်း၊ လုံခြုံရေးနှင့် တရားဝင်လင့်ခ်များ</string>
+    <string name="about_screen_description">VPN ဖွဲ့စည်းမှုများကို လေ့လာပြီး ကုဒ်ဖြည်ပေးသည့် ကိရိယာ</string>
+    <string name="about_screen_version_badge">ဗားရှင်း %1$s · ဘီလ်ဒ် %2$d</string>
+    <string name="about_screen_info">အက်ပ် အချက်အလက်</string>
+    <string name="about_screen_languages">ရရှိနိုင်သော ဘာသာစကားများ</string>
+    <string name="about_screen_installed">ထည့်သွင်းထားသော ဗားရှင်း</string>
+    <string name="about_screen_features">အဓိက လုပ်ဆောင်ချက်များ</string>
+    <string name="about_screen_feature_decode">VPN ဖိုင် ကုဒ်ဖြည်ခြင်း</string>
+    <string name="about_screen_feature_catalog">ဆာဗာ VPN ကတ်တလောက်</string>
+    <string name="about_screen_feature_export">JSON နှင့် လော့ခ်ဖွင့်ပြီး ထုတ်ယူခြင်း</string>
+    <string name="about_screen_feature_history">ရလဒ် မှတ်တမ်း</string>
+    <string name="about_screen_security">လုံခြုံရေးနှင့် ကိုယ်ရေးကိုယ်တာ</string>
+    <string name="about_screen_cloud_security">Cloud V2 ဆက်သွယ်မှုများတွင် ဝန်ဆောင်မှု ဖွဲ့စည်းမှုအတိုင်း HPKE ကုဒ်ဝှက်ခြင်းနှင့် ခိုင်မာမှု စစ်ဆေးခြင်းများကို အသုံးပြုသည်။</string>
+    <string name="about_screen_local_security">ဒေသတွင်း မှတ်တမ်းကို ဤစက်တွင် ကုဒ်ဝှက်ထားသည်။</string>
+    <string name="about_screen_privacy">ကိုယ်ရေးကိုယ်တာ မူဝါဒ</string>
+    <string name="about_screen_terms">အသုံးပြုမှု စည်းမျဉ်းများ</string>
+    <string name="about_screen_links">အသိုင်းအဝိုင်းနှင့် တရားဝင်လင့်ခ်များ</string>
+    <string name="about_screen_website">တရားဝင် ဝက်ဘ်ဆိုက်</string>
+    <string name="about_screen_community_detail">တရားဝင် Telegram အသိုင်းအဝိုင်း</string>
+    <string name="about_screen_credit">Ghost Developer မှ ဖန်တီးသည်</string>
+    <string name="about_screen_copyright">SP-DECODE · မူပိုင်ခွင့် အားလုံး သီးသန့်ဖြစ်သည်</string>
+</resources>

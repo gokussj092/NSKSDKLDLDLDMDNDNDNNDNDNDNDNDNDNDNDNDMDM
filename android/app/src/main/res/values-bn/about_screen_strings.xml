@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="about_screen_entry_detail">সংস্করণ, নিরাপত্তা এবং অফিসিয়াল লিঙ্ক</string>
+    <string name="about_screen_description">VPN কনফিগারেশন বিশ্লেষণ ও ডিকোড করার টুল</string>
+    <string name="about_screen_version_badge">সংস্করণ %1$s · বিল্ড %2$d</string>
+    <string name="about_screen_info">অ্যাপের তথ্য</string>
+    <string name="about_screen_languages">উপলব্ধ ভাষা</string>
+    <string name="about_screen_installed">ইনস্টল করা সংস্করণ</string>
+    <string name="about_screen_features">প্রধান বৈশিষ্ট্য</string>
+    <string name="about_screen_feature_decode">VPN ফাইল ডিকোড</string>
+    <string name="about_screen_feature_catalog">সার্ভার VPN ক্যাটালগ</string>
+    <string name="about_screen_feature_export">JSON এবং আনলক করা এক্সপোর্ট</string>
+    <string name="about_screen_feature_history">ফলাফলের ইতিহাস</string>
+    <string name="about_screen_security">নিরাপত্তা ও গোপনীয়তা</string>
+    <string name="about_screen_cloud_security">Cloud V2 যোগাযোগে পরিষেবার কনফিগারেশন অনুযায়ী HPKE এনক্রিপশন ও অখণ্ডতা যাচাই ব্যবহৃত হয়।</string>
+    <string name="about_screen_local_security">স্থানীয় ইতিহাস এই ডিভাইসে এনক্রিপ্ট করা থাকে।</string>
+    <string name="about_screen_privacy">গোপনীয়তা নীতি</string>
+    <string name="about_screen_terms">ব্যবহারের শর্তাবলি</string>
+    <string name="about_screen_links">কমিউনিটি ও অফিসিয়াল লিঙ্ক</string>
+    <string name="about_screen_website">অফিসিয়াল ওয়েবসাইট</string>
+    <string name="about_screen_community_detail">অফিসিয়াল Telegram কমিউনিটি</string>
+    <string name="about_screen_credit">Ghost Developer দ্বারা তৈরি</string>
+    <string name="about_screen_copyright">SP-DECODE · সর্বস্বত্ব সংরক্ষিত</string>
+</resources>

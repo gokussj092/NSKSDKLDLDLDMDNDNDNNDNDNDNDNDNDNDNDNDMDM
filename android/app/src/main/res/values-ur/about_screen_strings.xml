@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="about_screen_entry_detail">ورژن، سیکیورٹی اور سرکاری لنکس</string>
+    <string name="about_screen_description">VPN کنفیگریشن کے تجزیے اور ڈی کوڈنگ کا ٹول</string>
+    <string name="about_screen_version_badge">ورژن %1$s · بلڈ %2$d</string>
+    <string name="about_screen_info">ایپ کی معلومات</string>
+    <string name="about_screen_languages">دستیاب زبانیں</string>
+    <string name="about_screen_installed">انسٹال شدہ ورژن</string>
+    <string name="about_screen_features">اہم خصوصیات</string>
+    <string name="about_screen_feature_decode">VPN فائل ڈی کوڈنگ</string>
+    <string name="about_screen_feature_catalog">سرور VPN کیٹلاگ</string>
+    <string name="about_screen_feature_export">JSON اور ان لاک ایکسپورٹ</string>
+    <string name="about_screen_feature_history">نتائج کی ہسٹری</string>
+    <string name="about_screen_security">سیکیورٹی اور پرائیویسی</string>
+    <string name="about_screen_cloud_security">کلاؤڈ V2 مواصلات سروس کی ترتیب کے مطابق HPKE انکرپشن اور انٹیگریٹی چیک استعمال کرتی ہیں۔</string>
+    <string name="about_screen_local_security">مقامی ہسٹری اس ڈیوائس پر انکرپٹڈ ہے۔</string>
+    <string name="about_screen_privacy">پرائیویسی پالیسی</string>
+    <string name="about_screen_terms">استعمال کی شرائط</string>
+    <string name="about_screen_links">کمیونٹی اور سرکاری لنکس</string>
+    <string name="about_screen_website">سرکاری ویب سائٹ</string>
+    <string name="about_screen_community_detail">سرکاری Telegram کمیونٹی</string>
+    <string name="about_screen_credit">Ghost Developer کی تیار کردہ</string>
+    <string name="about_screen_copyright">SP-DECODE · جملہ حقوق محفوظ ہیں</string>
+</resources>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="language_help_title">Допоможіть поліпшити переклади</string>
+    <string name="language_help_detail">Повідомляйте про помилки перекладу, щоб ми могли їх виправити.</string>
+    <string name="language_help_signin_title">Увійдіть, щоб повідомити про помилку</string>
+    <string name="language_help_signin_detail">Увійдіть в обліковий запис, щоб надіслати повідомлення про помилку перекладу.</string>
+    <string name="language_help_signin_button">Увійти</string>
+    <string name="language_help_form_title">Повідомити про помилку перекладу</string>
+    <string name="language_help_language_label">Мова</string>
+    <string name="language_help_where_label">Де ви помітили помилку?</string>
+    <string name="language_help_wrong_label">Текст з помилкою (як показано)</string>
+    <string name="language_help_correct_label">Яким має бути правильний текст?</string>
+    <string name="language_help_comment_label">Коментар (необов’язково)</string>
+    <string name="language_help_send">Надіслати повідомлення</string>
+    <string name="language_help_sent">Повідомлення надіслано. Дякуємо за допомогу в поліпшенні перекладів.</string>
+    <string name="language_help_error">Не вдалося надіслати повідомлення. Спробуйте пізніше.</string>
+    <string name="language_help_required">Потрібно вказати мову, текст з помилкою та запропоноване виправлення.</string>
+    <string name="language_help_invalid_input">Скоротіть повідомлення або видаліть непідтримувані символи.</string>
+</resources>

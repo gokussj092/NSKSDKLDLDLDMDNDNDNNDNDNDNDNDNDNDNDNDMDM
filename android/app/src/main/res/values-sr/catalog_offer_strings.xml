@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="catalog_offer_title">Доступан је нови каталог</string>
+    <string name="catalog_offer_body">Верзија каталога %1$d је спремна. Ажурирајте да бисте приступили ново подржаним апликацијама, методама и побољшањима.</string>
+    <string name="catalog_offer_update">Ажурирај сада</string>
+    <string name="catalog_offer_later">Откажи</string>
+    <string name="catalog_postpone_title">Наставити без ажурирања?</string>
+    <string name="catalog_postpone_body">Ако откажете, најновије апликације, методе и побољшања каталога неће бити доступна док не ажурирате. Можете ажурирати касније у Server VPN.</string>
+    <string name="catalog_postpone_confirm">Настави без ажурирања</string>
+    <string name="catalog_postpone_back">Врати се</string>
+</resources>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_report_action">Rahoton kuskure</string>
+    <string name="cloud_report_sent">An karɓi rahoto: %1$s</string>
+    <string name="cloud_report_failed">Ba a iya aika rahoton ba. Ka sake gwadawa daga baya.</string>
+    <string name="cloud_usage_title">Ƙididdigar shigarwa ba tare da suna ba</string>
+    <string name="cloud_usage_detail">SP-DECODE tana ƙidaya kimanin shigarwa masu aiki sau ɗaya a rana don tsara ƙarfin sabar. Ana amfani da lambar shigarwa ta bazata, ba Android ID ɗinka ba, ko HWID ko ID ɗin talla.</string>
+    <string name="cloud_usage_footnote">Ana haɗa wannan da amfani da Cloud bayan ka karɓi sharuɗɗan sirri. Ba a haɗa abubuwan fayiloli, kalmomin sirri ko tsare-tsaren da aka warware ba.</string>
+</resources>

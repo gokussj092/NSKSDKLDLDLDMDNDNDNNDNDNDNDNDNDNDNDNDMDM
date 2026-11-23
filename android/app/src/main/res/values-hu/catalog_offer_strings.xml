@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="catalog_offer_title">Új katalógus érhető el</string>
+    <string name="catalog_offer_body">A katalógus %1$d verziója elkészült. Frissítsen, hogy hozzáférjen az újonnan támogatott alkalmazásokhoz, módszerekhez és fejlesztésekhez.</string>
+    <string name="catalog_offer_update">Frissítés most</string>
+    <string name="catalog_offer_later">Mégse</string>
+    <string name="catalog_postpone_title">Folytatás frissítés nélkül?</string>
+    <string name="catalog_postpone_body">Ha megszakítja, a legújabb katalógus alkalmazásai, módszerei és fejlesztései nem lesznek elérhetők, amíg nem frissít. Később a Szerver VPN menüpontban frissíthet.</string>
+    <string name="catalog_postpone_confirm">Folytatás frissítés nélkül</string>
+    <string name="catalog_postpone_back">Vissza</string>
+</resources>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="language_help_title">Segíts a fordítások javításában</string>
+    <string name="language_help_detail">Jelentsd a fordítási hibákat, hogy javíthassuk őket.</string>
+    <string name="language_help_signin_title">Jelentéshez lépj be</string>
+    <string name="language_help_signin_detail">Fordítási hiba bejelentéséhez lépj be a fiókodba.</string>
+    <string name="language_help_signin_button">Belépés</string>
+    <string name="language_help_form_title">Fordítási hiba bejelentése</string>
+    <string name="language_help_language_label">Nyelv</string>
+    <string name="language_help_where_label">Hol láttad a hibát?</string>
+    <string name="language_help_wrong_label">Hibás szöveg (ahogy megjelenik)</string>
+    <string name="language_help_correct_label">Hogyan kellene szerepelnie?</string>
+    <string name="language_help_comment_label">Megjegyzés (nem kötelező)</string>
+    <string name="language_help_send">Jelentés elküldése</string>
+    <string name="language_help_sent">A jelentést elküldtük. Köszönjük, hogy segítesz a fordítások javításában.</string>
+    <string name="language_help_error">A jelentést nem sikerült elküldeni. Próbáld meg később.</string>
+    <string name="language_help_required">A nyelv, a hibás szöveg és a javasolt javítás megadása kötelező.</string>
+    <string name="language_help_invalid_input">Rövidítsd le a jelentést, vagy távolítsd el a nem támogatott karaktereket.</string>
+</resources>

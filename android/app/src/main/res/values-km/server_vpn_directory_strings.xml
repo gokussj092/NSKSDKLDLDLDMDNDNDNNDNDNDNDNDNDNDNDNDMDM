@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="server_vpn_search_hint">ស្វែងរកកម្មវិធី VPN</string>
+    <string name="server_vpn_filter_all">ទាំងអស់</string>
+    <string name="server_vpn_filter_enabled">បានបើក</string>
+    <string name="server_vpn_filter_favorites">ចំណូលចិត្ត</string>
+    <string name="server_vpn_favorite_add">បន្ថែមទៅចំណូលចិត្ត</string>
+    <string name="server_vpn_favorite_remove">យកចេញពីចំណូលចិត្ត</string>
+    <string name="server_vpn_manual_refresh">ពិនិត្យកាតាឡុកឥឡូវនេះ</string>
+    <string name="server_vpn_catalog_refreshing">កំពុងពិនិត្យកាតាឡុកម៉ាស៊ីនមេ…</string>
+    <string name="server_vpn_no_matches">គ្មានកម្មវិធី VPN ដែលត្រូវគ្នានឹងការស្វែងរក ឬតម្រងរបស់អ្នកទេ។</string>
+    <string name="server_vpn_catalog_enabled">បានបើកនៅក្នុងកាតាឡុក</string>
+    <string name="server_vpn_catalog_disabled">មិនបានបើកនៅក្នុងកាតាឡុកទេ</string>
+    <string name="server_vpn_new_badge">ថ្មី</string>
+    <string name="server_vpn_catalog_update_title">មានបច្ចុប្បន្នភាពកាតាឡុក</string>
+    <string name="server_vpn_catalog_update_question">កំណែ %1$d នៃកាតាឡុកម៉ាស៊ីនមេ VPN អាចប្រើបានហើយ។ ទាញយកវាឥឡូវនេះ?</string>
+    <string name="server_vpn_catalog_download">ទាញយក</string>
+    <string name="server_vpn_catalog_current">កាតាឡុកម៉ាស៊ីនមេ VPN របស់អ្នកទាន់សម័យហើយ។</string>
+    <string name="server_vpn_catalog_updated">បានធ្វើបច្ចុប្បន្នភាពកាតាឡុកម៉ាស៊ីនមេ VPN។</string>
+    <string name="server_vpn_catalog_update_error">មិនអាចពិនិត្យ ឬទាញយកកាតាឡុកបានទេ។ សូមព្យាយាមម្តងទៀត។</string>
+    <string name="server_vpn_updated_badge">បានធ្វើបច្ចុប្បន្នភាព</string>
+    <string name="server_vpn_maintenance_badge">នៅក្រោមការថែទាំ</string>
+    <string name="server_vpn_maintenance_detail">វិធីសាស្រ្តស្ថិតក្រោមការថែទាំជាបណ្តោះអាសន្ន</string>
+    <plurals name="server_vpn_app_count">
+        <item quantity="one">មានកម្មវិធី %1$d</item>
+        <item quantity="other">មានកម្មវិធី %1$d</item>
+    </plurals>
+</resources>

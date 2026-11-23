@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="harness_preparing">Ana shirya app…</string>
+    <string name="harness_review">Ana nazari</string>
+    <string name="harness_metadata">Ana duba bayanan app…</string>
+    <string name="harness_code">Ana duba lambar app…</string>
+    <string name="harness_details">Cikakken bayanin nazari</string>
+    <string name="harness_filename">Fayil</string>
+    <string name="harness_size">Girma</string>
+    <string name="harness_unknown_size">Girma yana jiran</string>
+    <string name="harness_updated">An sabunta: %1$s</string>
+    <string name="harness_local_copy">An ajiye sakamako a wannan na\'ura</string>
+    <string name="harness_normal">Canja wuri na al\'ada</string>
+    <string name="harness_chunks">Canja wuri a gutsutsure</string>
+    <string name="harness_support_ai">Tallafin AI</string>
+    <string name="harness_history_hint">Ka buɗe app don ganin nazarinta da sakamakon da aka ajiye.</string>
+    <string name="harness_queued_hint">An kammala loda. Ana jiran wurin nazari.</string>
+    <string name="harness_review_hint">Nazarin yana jiran bita.</string>
+    <string name="harness_transfer_title">Yanayin canja wuri</string>
+    <string name="harness_transfer_scope">Yana aiki ga saukar kundin bayanai na gaba ko loda APK.</string>
+    <string name="harness_stable">Haɗi mai daidaituwa · canja wuri mai ci gaba</string>
+    <string name="harness_unstable">Haɗi mai jinkiri ko mara daidaituwa · canja wuri a sassa</string>
+</resources>

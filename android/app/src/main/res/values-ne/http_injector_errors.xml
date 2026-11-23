@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_http_injector_not_configured">HTTP Injector Cloud सर्भरमा अहिलेसम्म कन्फिगर गरिएको छैन। सेवा सक्षम भएपछि पुनः प्रयास गर्नुहोस्।</string>
+</resources>

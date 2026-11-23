@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="file_extension_unsupported_contact">Această extensie de fișier nu este acceptată. Contactează dezvoltatorul pentru a solicita asistență.</string>
+    <string name="text_format_unsupported_contact">Acest format de text sau protocol nu este acceptat. Contactează dezvoltatorul pentru a solicita asistență.</string>
+    <string name="formats_remote_catalog_note">Extensiile acceptate sunt sincronizate securizat din SP-DECODE Cloud. Formate Cloud noi pot apărea fără actualizarea aplicației.</string>
+    <string name="formats_cloud_ready_short">Cloud</string>
+</resources>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_legal_title">Услови и приватност</string>
+    <string name="cloud_legal_explanation">SP-DECODE Cloud шаље датотеке или текстове које изаберете за декодирање на свој сервер. Такође једном дневно броји приближан број активних инсталација како би планирао капацитет сервера, користећи насумични код инсталације. Садржаји конфигурација нису укључени у те бројеве.</string>
+    <string name="cloud_legal_terms">Прочитај услове коришћења</string>
+    <string name="cloud_legal_privacy">Прочитај политику приватности</string>
+    <string name="cloud_legal_accept_check">Прочитао сам и прихватам услове и политику приватности.</string>
+    <string name="cloud_legal_accept">Прихвати</string>
+    <string name="cloud_legal_decline">Одбиј</string>
+    <string name="server_vpn_loading">Учитавање каталога Server VPN…</string>
+    <string name="server_vpn_unavailable">Каталог VPN сервера није доступан. Проверите везу и покушајте поново.</string>
+    <string name="server_vpn_retry">Покушај поново каталог</string>
+    <string name="cloud_legal_withdraw">Повуци сагласност за Cloud</string>
+    <string name="cloud_legal_withdraw_detail">Повлачење сагласности блокира нове захтеве серверу. Ваша локално шифрована историја остаће на овом уређају. Можете поново прихватити касније.</string>
+</resources>

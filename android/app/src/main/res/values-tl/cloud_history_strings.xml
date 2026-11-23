@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_decode_progress_title">Dine-decode ang configuration</string>
+    <string name="cloud_decode_progress_message">Maaaring tumagal ito ng ilang minuto. Maghintay lang.</string>
+    <string name="cloud_large_result_title">Naka-decode ang malaking configuration</string>
+    <string name="cloud_large_result_body">Na-save ang configuration sa naka-encrypt na kasaysayan. Maaaring bumagal o magsara ang app kapag pini-preview ang napakalalaking resulta. Inirerekomenda naming i-export ang kumpletong JSON mula sa Kasaysayan gamit ang three-dot menu, pagkatapos ay Export. Hahayaan ka ng Android na pumili ng folder at pangalan ng file.</string>
+    <string name="cloud_large_result_acknowledge">Nakuha ko</string>
+    <string name="cloud_history_actions">Higit pang mga aksyon</string>
+</resources>

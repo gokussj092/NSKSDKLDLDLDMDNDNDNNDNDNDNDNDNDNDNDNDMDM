@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="account_sign_in">ဝင်ရောက်ရန်</string>
+    <string name="account_web_description">တရားဝင် ဝက်ဘ်ဆိုက်တွင် သင့်အကောင့်နှင့် ဝယ်ယူမှုများကို စီမံပါ။ အခမဲ့ လုပ်ဆောင်ချက်များကို အကောင့်မရှိဘဲ ဆက်လက် အသုံးပြုနိုင်ပါသည်။</string>
+    <string name="account_continue_web">ဝက်ဘ်တွင် ဆက်လုပ်ရန်</string>
+    <string name="account_my_account">ကျွန်ုပ်၏ အကောင့်</string>
+    <string name="account_store">ဆိုင်</string>
+    <string name="account_open_menu">မီနူးဖွင့်ရန်</string>
+    <string name="ads_privacy_options">ကြော်ငြာ ကိုယ်ရေးကိုယ်တာ ရွေးချယ်စရာများ</string>
+</resources>

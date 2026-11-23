@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="catalog_auto_title">स्वचालित सर्भर VPN क्याटलग अपडेटहरू</string>
+    <string name="catalog_auto_detail">तपाईंको आफ्नै SP-DECODE सर्भरबाट HTTPS मार्फत एप खुला हुँदा क्याटलग संस्करणहरू जाँच गर्दछ, र पृष्ठभूमिमा कहिलेकाहीँ रिकभरी जाँचहरू गर्दछ। नयाँ क्याटलग डाटा र आइकनहरू संस्करण परिवर्तन भएपछि मात्र डाउनलोड गरिन्छ। Firebase, खाता वा पुस टोकन आवश्यक पर्दैन। तपाईंले यसलाई जुनसुकै बेला बन्द गर्न सक्नुहुन्छ।</string>
+    <string name="catalog_auto_switch">पृष्ठभूमि क्याटलग सिङ्क सक्षम गर्नुहोस्</string>
+</resources>

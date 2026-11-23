@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="compatible_export_for">នាំចេញសម្រាប់ %1$s</string>
+    <string name="compatible_export_redecode">នាំចូលឯកសារនេះម្តងទៀត ដើម្បីបើកការនាំចេញទៅ %1$s។</string>
+    <string name="compatible_export_failed">ឯកសារដែលត្រូវគ្នាមិនអាចរក្សាទុកបានទេ។</string>
+</resources>

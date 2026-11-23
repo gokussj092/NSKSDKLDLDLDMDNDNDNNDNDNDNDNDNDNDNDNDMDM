@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="catalog_offer_title">Yangi katalog mavjud</string>
+    <string name="catalog_offer_body">%1$d-versiyadagi katalog tayyor. Yangi qoʻllab-quvvatlanadigan ilovalar, usullar va yaxshilanishlarga kirish uchun yangilang.</string>
+    <string name="catalog_offer_update">Hozir yangilash</string>
+    <string name="catalog_offer_later">Bekor qilish</string>
+    <string name="catalog_postpone_title">Yangilamasdan davom etilsinmi?</string>
+    <string name="catalog_postpone_body">Agar bekor qilsangiz, yangilamaguningizcha eng soʻnggi katalog ilovalari, usullari va yaxshilanishlari mavjud boʻlmaydi. Keyinroq Server VPN boʻlimida yangilashingiz mumkin.</string>
+    <string name="catalog_postpone_confirm">Yangilamasdan davom etish</string>
+    <string name="catalog_postpone_back">Orqaga</string>
+</resources>

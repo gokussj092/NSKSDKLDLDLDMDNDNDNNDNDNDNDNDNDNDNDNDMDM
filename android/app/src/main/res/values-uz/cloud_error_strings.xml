@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_failure_offline">Internet aloqasi yoʻq. Tarmoqqa ulaning va qayta urining.</string>
+    <string name="cloud_failure_network">Xizmatga ulanib boʻlmadi. Ulanishingizni tekshiring va qayta urining.</string>
+    <string name="cloud_failure_tls">Xavfsiz ulanish oʻrnatib boʻlmadi. Tarmoq va qurilma soatini tekshiring.</string>
+    <string name="cloud_failure_timeout">Soʻrov juda uzoq davom etdi. Ulanish barqaror boʻlganda qayta urining.</string>
+    <string name="cloud_failure_integrity">Ilova tekshiruvini yakunlab boʻlmadi. Ilovani yangilang yoki ruxsat etilgan QA kirishidan foydalaning.</string>
+    <string name="cloud_failure_qa_code">QA kirishi mavjud emas. SP-DECODE QA ni oching va yangi vaqtinchalik kod kiriting.</string>
+    <string name="cloud_failure_session">Seansingiz muddati tugadi yoki tekshirib boʻlmadi. Qayta urining.</string>
+    <string name="cloud_failure_forbidden">Kirish rad etildi. Ruxsatingizni tekshiring va qayta urining.</string>
+    <string name="cloud_failure_qa">QA kirishi notoʻgʻri, oʻchirilgan yoki muddati tugagan. Yangi shaxsiy kod soʻrang.</string>
+    <string name="cloud_failure_consent">Cloud dekodlashdan foydalanish uchun joriy shartlar va maxfiylik bildirishnomasini qabul qiling.</string>
+    <string name="cloud_failure_rate">Soʻrovlar juda koʻp. Qayta urinishdan oldin kuting.</string>
+    <string name="cloud_failure_large">Fayl yoki natija ruxsat etilgan hajmdan oshib ketdi.</string>
+    <string name="cloud_failure_invalid">Ushbu fayl yoki soʻrov qabul qilinmadi. Formatni tekshiring.</string>
+    <string name="cloud_failure_unsupported">Ushbu fayl formati serverda mavjud emas.</string>
+    <string name="cloud_failure_decode">Dekoder ushbu fayl versiyasini qayta ishlay olmadi. Fayl albatta shikastlangan degani emas.</string>
+    <string name="cloud_failure_maintenance">Ushbu xizmat vaqtincha texnik xizmat koʻrsatilmoqda. Keyinroq qayta urining.</string>
+    <string name="cloud_failure_unavailable">Xizmat vaqtincha mavjud emas. Keyinroq qayta urining.</string>
+    <string name="cloud_failure_config_unavailable">Ushbu Cloud konfiguratsiyasi endi mavjud emas. Muddati tugagan, oʻchirilgan yoki faqat bir marta foydalanish uchun boʻlgan boʻlishi mumkin. Bu dekoder xatosi emas.</string>
+    <string name="cloud_failure_remote">Masofaviy provayder notoʻgʻri yoki tekshirib boʻlmaydigan javob qaytardi.</string>
+    <string name="cloud_failure_credentials">Parol yoki HWID notoʻgʻri. Maʻlumotlarni tekshiring va qayta urining.</string>
+    <string name="cloud_failure_password">Ushbu himoyalangan fayl parol talab qiladi.</string>
+    <string name="cloud_failure_hwid">Ushbu himoyalangan fayl HWID talab qiladi.</string>
+    <string name="cloud_failure_both">Ushbu himoyalangan fayl ham parol, ham HWID talab qiladi.</string>
+    <string name="cloud_failure_not_found">Soʻralgan resurs mavjud emas yoki topilmadi.</string>
+    <string name="cloud_failure_conflict">Soʻrov joriy holatga zid. Qayta urining.</string>
+    <string name="cloud_failure_partial">Natija toʻliq emas yoki notoʻgʻri, shuning uchun koʻrsatilmaydi.</string>
+    <string name="cloud_failure_general">Amalni yakunlab boʻlmadi. Qayta urining yoki qoʻllab-quvvatlash xizmatiga murojaat qiling.</string>
+    <string name="cloud_failure_notice_title">Bildirishnoma</string>
+    <string name="cloud_password_title">Konfiguratsiya paroli talab qilinadi</string>
+    <string name="cloud_password_description">%1$s parol bilan himoyalangan. Davom etish uchun eksport parolini kiriting. U saqlanmaydi.</string>
+    <string name="cloud_failure_password_incorrect">Parol notoʻgʻri.</string>
+    <string name="cloud_failure_private_key">Ushbu NPVS faylida qabul qiluvchining ochiq/yopiq kalit himoyasi ishlatilgan. Bu usul hali qoʻllab-quvvatlanmaydi; qoʻllab-quvvatlash tez orada qoʻshiladi.</string>
+    <string name="cloud_failure_recipient">Ushbu NPVS faylida hali qoʻllab-quvvatlanmaydigan qabul qiluvchi kalit usuli ishlatilgan. Qoʻllab-quvvatlash tez orada qoʻshiladi.</string>
+    <string name="cloud_failure_npvs_unsupported">Ushbu NPVS versiyasi yoki himoya usuli hali qoʻllab-quvvatlanmaydi. Qoʻllab-quvvatlash tez orada qoʻshiladi.</string>
+</resources>

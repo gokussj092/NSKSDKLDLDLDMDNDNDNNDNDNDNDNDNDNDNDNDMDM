@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_decode_progress_title">Menyahkod konfigurasi</string>
+    <string name="cloud_decode_progress_message">Proses ini mungkin memerlukan beberapa minit. Harap tunggu.</string>
+    <string name="cloud_large_result_title">Konfigurasi besar berjaya dinyahkod</string>
+    <string name="cloud_large_result_body">Konfigurasi telah disimpan dalam sejarah tersulit. Pratonton hasil yang sangat besar dapat memperlahankan atau menutup aplikasi. Sebaiknya eksport JSON lengkap melalui Sejarah: ketik tiga titik, lalu Eksport. anda dapat memilih folder dan nama fail.</string>
+    <string name="cloud_large_result_acknowledge">Faham</string>
+    <string name="cloud_history_actions">Tindakan lain</string>
+</resources>

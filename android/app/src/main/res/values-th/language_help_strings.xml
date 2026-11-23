@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="language_help_title">ช่วยปรับปรุงคำแปล</string>
+    <string name="language_help_detail">แจ้งข้อผิดพลาดในการแปลเพื่อให้เราแก้ไขได้</string>
+    <string name="language_help_signin_title">ลงชื่อเข้าใช้เพื่อรายงาน</string>
+    <string name="language_help_signin_detail">ลงชื่อเข้าใช้บัญชีเพื่อส่งรายงานข้อผิดพลาดในการแปล</string>
+    <string name="language_help_signin_button">ลงชื่อเข้าใช้</string>
+    <string name="language_help_form_title">รายงานข้อผิดพลาดในการแปล</string>
+    <string name="language_help_language_label">ภาษา</string>
+    <string name="language_help_where_label">คุณพบข้อผิดพลาดที่ไหน</string>
+    <string name="language_help_wrong_label">ข้อความที่ผิด (ตามที่แสดง)</string>
+    <string name="language_help_correct_label">ข้อความที่ถูกต้องควรเป็นอย่างไร</string>
+    <string name="language_help_comment_label">ความคิดเห็น (ไม่บังคับ)</string>
+    <string name="language_help_send">ส่งรายงาน</string>
+    <string name="language_help_sent">ส่งรายงานแล้ว ขอบคุณที่ช่วยปรับปรุงคำแปล</string>
+    <string name="language_help_error">ส่งรายงานไม่ได้ โปรดลองอีกครั้งในภายหลัง</string>
+    <string name="language_help_required">ต้องระบุภาษา ข้อความที่ผิด และข้อความที่เสนอให้แก้ไข</string>
+    <string name="language_help_invalid_input">ย่อรายงานหรือลบอักขระที่ไม่รองรับ</string>
+</resources>
