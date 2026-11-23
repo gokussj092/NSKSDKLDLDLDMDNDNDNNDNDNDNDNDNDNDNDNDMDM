@@ -15,8 +15,8 @@ run_root() {
 }
 
 lock_installation() {
-    if [[ "$EUID" -eq 0 && -n "${SUDO_USER:-}" && "$SUDO_USER" != "root" ]]; then
-        echo "ERROR: run this command as the user who installed the bot, without sudo." >&2
+    if [[ ! -O "$PROJECT_DIR" ]]; then
+        echo "ERROR: run this command as the owner of the bot checkout at $PROJECT_DIR." >&2
         exit 2
     fi
     local git_dir

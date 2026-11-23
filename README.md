@@ -274,8 +274,11 @@ bash installers/install-termux.sh
 bash installers/install-vps.sh
 ```
 
-On the VPS, the installer prompts for the BotFather token on the terminal
-with echo disabled. It reuses an existing bot configuration. The default
+On the VPS, run the installer and bot updates from the account that owns the
+bot checkout. A root login shell, including one opened with `sudo -i`, can
+install and manage its own checkout in `/root/spdecode-telegram`.
+The installer prompts for the BotFather token on the terminal with echo
+disabled and reuses an existing bot configuration. The default
 administrator ID is `5325631223` when administrator configuration is omitted.
 Manage or update the installed VPS bot with:
 

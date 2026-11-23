@@ -10,13 +10,6 @@ CALLER_HOME="${CALLER_HOME:-$HOME}"
 TARGET_DIR="${SPDECODE_HOME:-$CALLER_HOME/spdecode-telegram}"
 MANAGER_PATH="/usr/local/bin/spdecode-telegram"
 
-if [[ "${EUID:-$(id -u)}" -eq 0 && -n "${SUDO_USER:-}" && "${SUDO_USER}" != "root" ]]; then
-    echo "ERROR: do not run the whole installer with sudo."
-    echo "Run: bash installers/install-vps.sh"
-    echo "The installer requests sudo only for system package/service operations."
-    exit 2
-fi
-
 run_root() {
     if [[ "${EUID:-$(id -u)}" -eq 0 ]]; then
         "$@"
@@ -90,6 +83,10 @@ fi
 
 cd "$PROJECT_DIR"
 PROJECT_DIR="$(pwd -P)"
+if [[ ! -O "$PROJECT_DIR" ]]; then
+    echo "ERROR: run the installer as the owner of the bot checkout at $PROJECT_DIR." >&2
+    exit 2
+fi
 if [[ -e "$MANAGER_PATH" || -L "$MANAGER_PATH" ]]; then
     if [[ "$(readlink -f "$MANAGER_PATH")" != "$PROJECT_DIR/scripts/spdecode-vps.sh" ]]; then
         echo "ERROR: $MANAGER_PATH already points to a different installation." >&2
