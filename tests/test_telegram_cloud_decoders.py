@@ -1,6 +1,8 @@
 """Offline regressions through the dispatcher and Telegram message handlers."""
 from __future__ import annotations
 
+import base64
+import hashlib
 import importlib
 import json
 import sys
@@ -9,7 +11,11 @@ import unittest
 from pathlib import Path
 from unittest.mock import Mock, patch
 
+from Crypto.Cipher import AES
+from Crypto.Util.Padding import pad
+
 from cloud.workers.python.engine import DecodeFailure
+from decoders.Python import text_legacy_protocols
 from decoders.Python.apps.XVEON_Tunnel_Pro.xveon import encrypt_envelope
 from spdecode.decoder_runtime import FILE_FORMATS, TEXT_FORMATS, DecodeResult, decode, file_suffix, text_prefix
 from spdecode.handlers.results import send_markdown_result
@@ -70,6 +76,19 @@ class TelegramHandlersTests(unittest.TestCase):
     def setUpClass(cls):
         cls.tls_fixture = tls_bytes()
         cls.dark_fixture = dark_bytes()
+        cls.ziv_fixture = SYNTHETIC_GENERATORS["batch6-ziv"]()
+        zivpn_xml = (
+            '<?xml version="1.0" encoding="UTF-8"?>'
+            '<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">'
+            '<properties><comment>Configuration File</comment>'
+            '<entry key="Host">example.org</entry><entry key="Port">00443</entry>'
+            '<entry key="Payload">GET / HTTP/1.1&#13;&#10;X-Note: A &amp; B</entry>'
+            '<entry key="Profile">{"routing":["[1,false]"]}</entry><entry key="Empty"/>'
+            '</properties>'
+        )
+        key = hashlib.sha256(text_legacy_protocols._ZIV_PASSWORD.encode()).digest()
+        cipher = AES.new(key, AES.MODE_CBC, bytes(16))
+        cls.zivpn_link = "zivpn://" + base64.b64encode(cipher.encrypt(pad(zivpn_xml.encode(), 16))).decode()
         cls.legacy_fixtures = {
             "mij": SYNTHETIC_GENERATORS["batch4-mij"](),
             "mrc": SYNTHETIC_GENERATORS["batch5-mrc"](),
@@ -233,6 +252,52 @@ class TelegramHandlersTests(unittest.TestCase):
             configs.append(json.loads(payload.removesuffix("```\n")))
         self.assertEqual(configs[0]["port"], 443)
         self.assertEqual(configs[0], configs[1])
+
+    def test_dark_open_and_protected_file_and_link_match_cloud_json_types(self):
+        text_protocols = importlib.import_module("spdecode.handlers.text_protocols")
+        routing = '[{"enabled":false,"outbounds":"[1,2]"}]'
+        locked = json.loads(base64.b64decode(self.dark_fixture))
+        locked.update(enabled=False, expires=None, routing=routing)
+        opened = {"type": "SSH", "name": "Open test", "encryptedLockedConfig": "", "routing": routing}
+        parsed_routing = [{"enabled": False, "outbounds": [1, 2]}]
+        for wire, expected in (
+            (locked, {**locked, "routing": parsed_routing,
+                      "encryptedLockedConfig": {"Server": FIXTURE_DOMAIN, "Port": 443}}),
+            (opened, {**opened, "routing": parsed_routing}),
+        ):
+            with self.subTest(profile=wire["name"]):
+                payload = base64.urlsafe_b64encode(json.dumps(wire).encode())
+                self.bot.download_file.return_value = payload
+                message = self._message(message_id=len(self.sent) + 1)
+                message.document.file_name = "profile.dark"
+                before = len(self.sent)
+                self.documents.process_received_file(message)
+                for prefix in ("darktunnel://", "dtunnel://", "dark://", "dt://"):
+                    text_protocols.decode_dark_text(self._message(password=prefix + payload.decode()))
+                self.assertEqual(len(self.sent), before + 5)
+                for _, report in self.sent[before:]:
+                    _, _, output = report.partition("\n```json\n")
+                    self.assertEqual(json.loads(output.removesuffix("```\n")), expected)
+        self.bot.reply_to.assert_not_called()
+
+    def test_zivpn_link_recovers_xml_properties_and_file_uses_cloud_types(self):
+        self.texts.decode_cloud_text(self._message(password=self.zivpn_link))
+        self.assertEqual(len(self.sent), 1)
+        _, _, payload = self.sent[0][1].partition("\n```json\n")
+        self.assertEqual(json.loads(payload.removesuffix("```\n")), {
+            "Host": "example.org", "Port": "00443", "Payload": "GET / HTTP/1.1\r\nX-Note: A & B",
+            "Profile": {"routing": [[1, False]]}, "Empty": "",
+        })
+        message = self._message(message_id=2)
+        message.document.file_name = "profile.ziv"
+        self.bot.download_file.return_value = self.ziv_fixture
+        self.documents.process_received_file(message)
+        self.assertEqual(len(self.sent), 2)
+        _, _, payload = self.sent[1][1].partition("\n```json\n")
+        self.assertEqual(json.loads(payload.removesuffix("```\n")), {
+            "SSH Server": FIXTURE_DOMAIN, "SSH Port": 443,
+        })
+        self.bot.reply_to.assert_not_called()
 
     def test_additional_legacy_files_deliver_decoded_fields(self):
         for index, (suffix, sample) in enumerate(self.legacy_fixtures.items(), 1):

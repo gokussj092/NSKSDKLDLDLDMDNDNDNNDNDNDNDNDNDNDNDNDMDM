@@ -5,6 +5,7 @@ import json
 import re
 from datetime import datetime, timezone
 from io import BytesIO
+from xml.etree import ElementTree
 
 from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
 
@@ -35,6 +36,11 @@ _GOLD_FRAME = re.compile(
     r"╔[^\n]*\n╠▸ App Name : `Gold Tunnel`\n╚[^\n]*\n\n"
 )
 _TLS_FRAME = re.compile(r"\ATLS Tunnel\n={30}\n\n(.*)\n\n={30}\n?\Z", re.DOTALL)
+_CLOUD_JSON_APPS = {"Dark Tunnel", "ZiVPN Tunnel"}
+_JSON_NUMBER = re.compile(r"-?(0|[1-9][0-9]*)(?:\.[0-9]+)?(?:[eE][+-]?[0-9]+)?")
+_ZIVPN_PROPERTIES_DTD = re.compile(
+    r"""<!DOCTYPE\s+properties\s+SYSTEM\s+(['"])http://java\.sun\.com/dtd/properties\.dtd\1\s*>"""
+)
 
 
 def _markdown_label(value: str) -> str:
@@ -54,7 +60,59 @@ def _request_author(message: Message) -> tuple[str, str]:
     return name, _markdown_label(name)
 
 
-def _result_data(output: str) -> object:
+def _inline_json(value: str, *, primitives: bool = False) -> object:
+    trimmed = value.strip()
+    if trimmed.startswith(("{", "[")) or (
+        primitives and (trimmed in {"true", "false", "null"} or _JSON_NUMBER.fullmatch(trimmed))
+    ):
+        try:
+            return json.loads(trimmed)
+        except (ValueError, RecursionError):
+            pass
+    return value
+
+
+def _expand_json_containers(value: object, depth: int = 0) -> object:
+    # SP-DECODE Cloud's JSON viewer expands serialized objects and arrays.
+    if depth >= 200:
+        return value
+    if isinstance(value, str):
+        value = _inline_json(value)
+    if isinstance(value, dict):
+        return {key: _expand_json_containers(item, depth + 1) for key, item in value.items()}
+    if isinstance(value, list):
+        return [_expand_json_containers(item, depth + 1) for item in value]
+    return value
+
+
+def _zivpn_properties(output: str) -> dict[str, str] | None:
+    xml = output.strip().removeprefix("\ufeff").lstrip()
+    if not xml.startswith("<"):
+        return None
+    # Accept the standard Java Properties declaration without processing DTDs.
+    xml = _ZIVPN_PROPERTIES_DTD.sub("", xml, count=1)
+    if "<!DOCTYPE" in xml or "<!ENTITY" in xml:
+        return None
+    if re.match(r"<entry\b", xml):
+        xml = f"<properties>{xml}</properties>"
+    try:
+        root = ElementTree.fromstring(xml)
+    except (ElementTree.ParseError, LookupError, ValueError):
+        return None
+    if root.tag not in {"map", "properties"}:
+        return None
+    fields = {}
+    for entry in root:
+        if entry.tag == "comment":
+            continue
+        key = entry.get("key")
+        if entry.tag != "entry" or key is None or len(entry):
+            return None
+        fields[key] = entry.text or ""
+    return fields or None
+
+
+def _result_data(output: str, application: str) -> object:
     body, boxed = _LEGACY_HEADER.subn("", output, count=1)
     if boxed:
         body = _LEGACY_FOOTER.sub("", body, count=1)
@@ -72,6 +130,11 @@ def _result_data(output: str) -> object:
     else:
         return {"config": data, "encodedConfiguration": link} if separator else data
 
+    if application == "ZiVPN Tunnel":
+        properties = _zivpn_properties(body)
+        if properties is not None:
+            return properties
+
     # Gold Tunnel's legacy CLI prints a Python dictionary beneath its frame.
     gold = _GOLD_FRAME.match(body)
     if gold and len(body) - gold.end() <= 128 * 1024:
@@ -84,27 +147,25 @@ def _result_data(output: str) -> object:
                 return data
 
     # Legacy decoders label each field and emit nested objects/arrays as JSON.
-    # Bare values have ambiguous types, so keep their text verbatim.
+    # Restore bare primitive types only for formats following the Cloud viewer.
     labels = list(_LEGACY_FIELD.finditer(body))
     if not labels or labels[0].start() != 0:
         return {"text": body}
+    primitives = application in _CLOUD_JSON_APPS
     fields = {}
     for index, label in enumerate(labels):
         key = label[1].rstrip()
         end = labels[index + 1].start() if index + 1 < len(labels) else len(body)
         value = body[label.end():end].removesuffix("\n")
-        if value.lstrip().startswith(("{", "[")):
-            try:
-                value = json.loads(value)
-            except (ValueError, RecursionError):
-                pass
-        fields.setdefault(key, []).append(value)
+        fields.setdefault(key, []).append(_inline_json(value, primitives=primitives))
     return {key: values[0] if len(values) == 1 else values for key, values in fields.items()}
 
 
 def _json_block(output: str, application: str) -> str:
-    result = public_result_data(_result_data(output), application)
+    result = public_result_data(_result_data(output, application), application)
     try:
+        if application in _CLOUD_JSON_APPS:
+            result = _expand_json_containers(result)
         text = json.dumps(result, ensure_ascii=False, indent=2, allow_nan=False)
     except (ValueError, RecursionError):
         text = json.dumps({"text": output}, ensure_ascii=False, indent=2)

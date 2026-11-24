@@ -12,10 +12,11 @@ from urllib.parse import parse_qs, urlparse
 from Crypto.Cipher import AES
 from Crypto.Util.Padding import unpad
 
-from decoders.Python.DARKTUNNEL import run as decode_dark_payload
+from cloud.workers.python.engine import DecodeFailure
 from decoders.Python.SSCCUSTOM import run as decode_ssc_payload
 from decoders.Python.TLS import run as decode_tls_payload
 from spdecode.access import require_authorized
+from spdecode.decoder_runtime import decode
 from spdecode.format_names import family_text_application
 from spdecode.handlers.results import send_markdown_result
 from spdecode.runtime import bot, settings
@@ -272,14 +273,17 @@ def decode_dark_text(message):
         return
 
     try:
-        result = decode_dark_payload(session.payload.encode("utf-8"))
+        # Cloud's Dark file reader handles both protected and open profiles.
+        token = session.payload.partition("://")[2]
+        result = decode(token.encode("utf-8"), suffix="dark", timeout_seconds=settings.decoder_timeout_seconds)
+    except DecodeFailure:
+        return
     except Exception:
         logger.exception("Internal error decoding Dark Tunnel text")
         return
 
-    if result:
-        clear_session(message, _DARK_PROTOCOL)
-        send_markdown_result(message, "Dark Tunnel", result)
+    clear_session(message, _DARK_PROTOCOL)
+    send_markdown_result(message, "Dark Tunnel", result.text, partial=result.partial)
 
 
 def cbc_iv(data):
@@ -439,7 +443,7 @@ def handle_decryption(message):
                     GhostDeveloper += f"│[۞] {key}: ***\n"
 
         if GhostDeveloper:
-            send_markdown_result(message, "ZI VPN", GhostDeveloper)
+            send_markdown_result(message, "ZiVPN Tunnel", GhostDeveloper)
     except Exception as error:
         logger.debug("Could not decode the ZI VPN configuration (%s)", type(error).__name__)
     
