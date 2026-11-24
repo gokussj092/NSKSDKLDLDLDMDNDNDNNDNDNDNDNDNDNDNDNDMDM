@@ -15,11 +15,11 @@ run_root() {
 }
 
 start_and_check_bot() {
-    local pid current_pid sample
+    local action="${1:-start}" pid current_pid sample
     if run_root systemctl is-failed --quiet "$SERVICE_NAME"; then
         run_root systemctl reset-failed "$SERVICE_NAME" || return 1
     fi
-    run_root systemctl start "$SERVICE_NAME" || return 1
+    run_root systemctl "$action" "$SERVICE_NAME" || return 1
     pid="$(run_root systemctl show --property=MainPID --value "$SERVICE_NAME")" || return 1
     if [[ ! "$pid" =~ ^[1-9][0-9]*$ ]]; then
         echo "ERROR: the bot did not start. Check spdecode-telegram logs." >&2
@@ -68,12 +68,30 @@ update_bot() (
         exit 1
     fi
 
-    git fetch
+    service_dir="$(run_root systemctl show --property=WorkingDirectory --value "$SERVICE_NAME")"
+    if [[ -z "$service_dir" || "$(readlink -f -- "$service_dir")" != "$PROJECT_DIR" ]]; then
+        echo "ERROR: $SERVICE_NAME is configured to run from a different checkout." >&2
+        printf 'Command checkout: %s\nService directory: %s\n' "$PROJECT_DIR" "$service_dir" >&2
+        exit 1
+    fi
+
+    if ! branch="$(git symbolic-ref --quiet --short HEAD)" ||
+       ! remote="$(git config --get "branch.$branch.remote")" ||
+       ! remote_ref="$(git config --get "branch.$branch.merge")"; then
+        echo "ERROR: the bot checkout must be on a branch with a configured upstream." >&2
+        exit 1
+    fi
+    upstream="$remote/${remote_ref#refs/heads/}"
+    # Use a dedicated ref so unrelated fetches cannot change the update target.
+    update_ref="refs/spdecode-telegram/update"
+    git fetch --no-tags --no-write-fetch-head -- "$remote" "+$remote_ref:$update_ref"
     previous="$(git rev-parse HEAD)"
-    target="$(git rev-parse '@{upstream}')"
+    target="$(git rev-parse --verify "$update_ref^{commit}")"
+    git update-ref -d "$update_ref" "$target"
     if [[ "$previous" == "$target" ]]; then
-        start_and_check_bot
-        echo "SP-DECODE Telegram is already up to date and running."
+        start_and_check_bot restart
+        printf 'SP-DECODE Telegram %s is current on %s and running after restart.\n' \
+            "$(git rev-parse --short HEAD)" "$upstream"
         exit 0
     fi
     if ! git merge-base --is-ancestor "$previous" "$target"; then
@@ -127,7 +145,8 @@ update_bot() (
     fi
     "$PYTHON" -c 'import main; main.validate_startup()'
     start_and_check_bot
-    echo "SP-DECODE Telegram updated to $(git rev-parse --short HEAD) and running."
+    printf 'SP-DECODE Telegram updated to %s from %s and running.\n' \
+        "$(git rev-parse --short HEAD)" "$upstream"
 )
 
 case "${1:-status}" in
