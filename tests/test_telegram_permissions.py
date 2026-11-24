@@ -114,7 +114,7 @@ class TelegramPermissionCommandTests(TestCase):
         about = self.bot.reply_to.call_args
         self.assertIn("Ghost Developer", about.args[1])
         self.assertIn("Developer and owner", about.args[1])
-        self.assertIn("July 23, 2026", about.args[1])
+        self.assertIn("<b>2024</b> · The SP-DECODE project began.", about.args[1])
         self.assertIn("October 4, 2026", about.args[1])
         self.assertIn("October 8, 2026", about.args[1])
         self.assertNotRegex(about.args[1], r"Python|Node\.js|PHP")

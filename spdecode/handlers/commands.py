@@ -91,7 +91,7 @@ def _about_view() -> tuple[str, InlineKeyboardMarkup]:
         "<b>About SP-DECODE</b>\n\n"
         "<b>Developer and owner</b> · Ghost Developer\n\n"
         "<b>Project history</b>\n"
-        "• <b>July 23, 2026</b> · The first recorded version was a Telegram bot.\n"
+        "• <b>2024</b> · The SP-DECODE project began.\n"
         "• <b>October 4, 2026</b> · Development resumed after a pause.\n"
         "• <b>October 8, 2026</b> · The project expanded to Android and reached its first working alpha."
     )
