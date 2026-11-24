@@ -5,6 +5,7 @@ from telebot.handler_backends import ContinueHandling
 
 from spdecode.access import require_authorized
 from spdecode.decoder_runtime import TEXT_FORMATS, text_prefix
+from spdecode.format_names import public_format_name
 from spdecode.handlers.decoder_credentials import decode_and_reply
 from spdecode.handlers.results import send_markdown_result
 from spdecode.runtime import bot
@@ -32,7 +33,7 @@ def decode_cloud_text(message):
     prefix = _match(message)
     if prefix is None:
         return ContinueHandling()
-    label = TEXT_FORMATS[prefix]
+    label = public_format_name(TEXT_FORMATS[prefix]) or prefix
     if not decode_and_reply(
         message,
         message.text.strip().encode("utf-8"),

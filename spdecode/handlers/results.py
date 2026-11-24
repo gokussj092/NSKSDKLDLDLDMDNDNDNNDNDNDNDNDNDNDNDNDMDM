@@ -7,6 +7,7 @@ from io import BytesIO
 
 from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
 
+from spdecode.format_names import public_result_output
 from spdecode.utils import split_copy_suffix, thread_options
 
 _RESULT_LINKS = (
@@ -105,7 +106,7 @@ def send_markdown_result(
         metadata.append(f"**Partial result.** {_PARTIAL_NOTICE}")
 
     links = " · ".join(f"[{label}]({url})" for label, url in _RESULT_LINKS)
-    markdown = "\n\n".join((*metadata, links, _result_blocks(output))) + "\n"
+    markdown = "\n\n".join((*metadata, links, _result_blocks(public_result_output(output, application)))) + "\n"
     keyboard = InlineKeyboardMarkup(row_width=3)
     keyboard.add(*(InlineKeyboardButton(label, url=url) for label, url in _RESULT_LINKS))
     caption = f"SP-DECODE\nApplication: {application}\nSent by: {author}\nSent at: {sent_at}"

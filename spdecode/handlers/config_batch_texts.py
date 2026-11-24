@@ -13,6 +13,7 @@ from decoders.Python import (
 )
 from decoders.Python.HTTPTWEAK import run as decode_http_tweak
 from spdecode.access import require_authorized
+from spdecode.format_names import public_format_name
 from spdecode.handlers.results import send_markdown_result
 from spdecode.runtime import bot
 
@@ -65,7 +66,7 @@ def decode_config_batch_text(message):
             import json
             output=json.dumps(output,ensure_ascii=False,indent=2)
         if output:
-            send_markdown_result(message, name, str(output))
+            send_markdown_result(message, public_format_name(name) or prefix, str(output))
     except Exception:
         logger.exception("Configuration text decoding failed for %s",prefix)
 

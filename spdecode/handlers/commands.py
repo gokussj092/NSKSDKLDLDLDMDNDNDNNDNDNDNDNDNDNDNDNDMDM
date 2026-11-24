@@ -3,15 +3,26 @@ from __future__ import annotations
 import logging
 import re
 
+from telebot.apihelper import ApiTelegramException
 from telebot.types import BotCommand, InlineKeyboardButton, InlineKeyboardMarkup
 
 from spdecode.access import can_use_private_chat, is_admin
-from spdecode.decoder_runtime import FILE_FORMATS, TEXT_FORMATS
+from spdecode.decoder_runtime import FILE_FORMATS
+from spdecode.handlers.format_pages import file_format_rows, text_format_rows
 from spdecode.runtime import bot, settings
 from spdecode.text_sessions import clear_session, get_session
 from spdecode.utils import html_pre, split_message, thread_options
 
 logger = logging.getLogger("sp-decode")
+
+_APP_URL = "https://spdecode.xyz"
+_CHANNEL_URL = "https://t.me/GhostDeve"
+_DECRYPTION_GROUP_URL = "https://t.me/CodeBreakersHub"
+_COMMUNITY_URL = "https://t.me/+N4CnTYwQQ-w0MjNh"
+_DEVELOPER_URL = "https://t.me/Gh0stDeveloper"
+_MENU_CALLBACK = re.compile(r"menu:(home|files|texts|about):([0-9]{1,3})")
+_OLD_MENU_BUTTONS = {"show_files": "files", "show_texts": "texts"}
+_ROWS_PER_PAGE = 9
 
 
 def _message_command(message) -> str:
@@ -29,7 +40,7 @@ BOT_COMMANDS = [
     BotCommand("start", "Open the main menu"),
     BotCommand("help", "Learn how to use the bot"),
     BotCommand("formats", "Show supported file formats"),
-    BotCommand("texts", "Show supported text protocols"),
+    BotCommand("texts", "Show supported text and links"),
     BotCommand("session", "Show the current multipart session"),
     BotCommand("ssc", "Show the active SSC session"),
     BotCommand("dark", "Show the active Dark Tunnel session"),
@@ -45,33 +56,6 @@ BOT_COMMANDS = [
 ]
 
 
-TEXT_PROTOCOLS = (
-    "<b>Supported text protocols</b>\n\n"
-    "<b>SSC Custom</b>\n"
-    "<code>ssc://...</code> — send it in as many messages as needed.\n\n"
-    "<b>TLS Tunnel</b>\n"
-    "<code>tls://...</code> — send the complete configuration in one message.\n\n"
-    "<b>Dark Tunnel</b>\n"
-    "Send a link such as <code>dark://...</code> or <code>darktunnel://...</code>. "
-    "You can split it across multiple messages.\n\n"
-    "<b>NetMod</b>\n"
-    "<code>nm-vmess://</code>, <code>nm-vless://</code>, <code>nm-dns://</code>, "
-    "<code>nm-trojan://</code>, <code>nm-ssh://</code>, <code>nm-ssr://</code>, "
-    "<code>nm-xray-json://</code>\n\n"
-    "<b>ARMOD</b>\n"
-    "<code>ar-dns://</code>, <code>ar-vless://</code>, <code>ar-vmess://</code>, "
-    "<code>ar-trojan://</code>, <code>ar-ssr://</code>, <code>ar-trojan-go://</code>, "
-    "<code>ar-ssh://</code>\n\n"
-    "<b>Howdy</b>\n"
-    "<code>howdy://</code>, <code>N7pr://</code>\n\n"
-    "<b>XrayPB</b>\n"
-    "<code>pb-vmess://</code>, <code>pb-ss://</code>, <code>pb-socks://</code>, "
-    "<code>pb-vless://</code>, <code>pb-trojan://</code>, <code>pb-ssh://</code>\n\n"
-    "<b>Other protocols</b>\n"
-    "<code>vmess://</code>, <code>zivpn://</code>, <code>v2box://locked=...</code>"
-)
-
-
 def configure_bot_commands() -> None:
     """Publish the Telegram command menu without interrupting startup on failure."""
     try:
@@ -80,32 +64,88 @@ def configure_bot_commands() -> None:
         logger.exception("Could not update the Telegram command menu")
 
 
-def _main_keyboard() -> InlineKeyboardMarkup:
-    keyboard = InlineKeyboardMarkup(row_width=2)
-    keyboard.add(
-        InlineKeyboardButton("File formats", callback_data="show_files"),
-        InlineKeyboardButton("Text protocols", callback_data="show_texts"),
-        InlineKeyboardButton("Channel", url="https://t.me/GhostDeve"),
-        InlineKeyboardButton("Group", url="https://t.me/CodeBreakersHub"),
-        InlineKeyboardButton("Developer", url="https://t.me/Gh0stDeveloper"),
+def _menu_button(label: str, section: str, page: int = 0) -> InlineKeyboardButton:
+    return InlineKeyboardButton(label, callback_data=f"menu:{section}:{page}")
+
+
+def _welcome_view(user) -> tuple[str, InlineKeyboardMarkup]:
+    first_name = getattr(user, "first_name", None)
+    greeting = f"Welcome to SP-DECODE, {html_pre(first_name)}!" if first_name else "Welcome to SP-DECODE!"
+    text = (
+        f"<b>{greeting}</b>\n\n"
+        "Send a supported file, text, or link to receive the result as a Markdown file.\n\n"
+        "On Android, we recommend our SP-DECODE app."
     )
-    return keyboard
+    keyboard = InlineKeyboardMarkup()
+    keyboard.row(_menu_button("Files", "files"), _menu_button("Text & Links", "texts"))
+    keyboard.row(InlineKeyboardButton("Get the App", url=_APP_URL), _menu_button("About", "about"))
+    keyboard.row(
+        InlineKeyboardButton("Telegram Channel", url=_CHANNEL_URL),
+        InlineKeyboardButton("Decryption Group", url=_DECRYPTION_GROUP_URL),
+    )
+    return text, keyboard
 
 
-def _format_registry() -> str:
+def _about_view() -> tuple[str, InlineKeyboardMarkup]:
+    text = (
+        "<b>About SP-DECODE</b>\n\n"
+        "<b>Developer and owner</b> · Ghost Developer\n\n"
+        "<b>Project history</b>\n"
+        "• <b>July 23, 2026</b> · The first recorded version was a Telegram bot.\n"
+        "• <b>October 4, 2026</b> · Development resumed after a pause.\n"
+        "• <b>October 8, 2026</b> · The project expanded to Android and reached its first working alpha."
+    )
+    keyboard = InlineKeyboardMarkup()
+    keyboard.row(
+        InlineKeyboardButton("Telegram Channel", url=_CHANNEL_URL),
+        InlineKeyboardButton("Decryption Group", url=_DECRYPTION_GROUP_URL),
+    )
+    keyboard.row(InlineKeyboardButton("SP-DECODE Community", url=_COMMUNITY_URL))
+    keyboard.row(
+        InlineKeyboardButton("Ghost Developer", url=_DEVELOPER_URL),
+        InlineKeyboardButton("Get the App", url=_APP_URL),
+    )
+    keyboard.row(_menu_button("Main Menu", "home"))
+    return text, keyboard
+
+
+def _catalogue_view(section: str, page: int) -> tuple[str, InlineKeyboardMarkup]:
+    if section == "files":
+        title, rows = "Supported files", file_format_rows()
+    else:
+        title, rows = "Supported text and links", text_format_rows()
+    total_pages = max(1, (len(rows) + _ROWS_PER_PAGE - 1) // _ROWS_PER_PAGE)
+    page = max(0, min(page, total_pages - 1))
+    start = page * _ROWS_PER_PAGE
     lines = [
-        "<b>Supported file formats</b>",
-        f"Total: <b>{len(FILE_FORMATS)}</b>",
+        f"<b>{title}</b>",
+        f"Page {page + 1} of {total_pages}",
         "",
+        *rows[start:start + _ROWS_PER_PAGE],
     ]
-    for extension, spec in sorted(
-        FILE_FORMATS.items(),
-        key=lambda item: (item[1]["name"].casefold(), item[0].casefold()),
-    ):
-        lines.append(
-            f"<b>{html_pre(spec['name'])}</b> — <code>.{html_pre(extension)}</code>"
-        )
-    return "\n".join(lines)
+    keyboard = InlineKeyboardMarkup()
+    navigation = []
+    if page > 0:
+        navigation.append(_menu_button("‹ Previous", section, page - 1))
+    if page + 1 < total_pages:
+        navigation.append(_menu_button("Next ›", section, page + 1))
+    if navigation:
+        keyboard.row(*navigation)
+    keyboard.row(_menu_button("Main Menu", "home"))
+    return "\n".join(lines), keyboard
+
+
+def _menu_view(section: str, page: int, user) -> tuple[str, InlineKeyboardMarkup]:
+    if section == "home":
+        return _welcome_view(user)
+    if section == "about":
+        return _about_view()
+    return _catalogue_view(section, page)
+
+
+def _reply_with_menu(message, section: str) -> None:
+    text, keyboard = _menu_view(section, 0, getattr(message, "from_user", None))
+    bot.reply_to(message, text, parse_mode="HTML", reply_markup=keyboard, **thread_options(message))
 
 
 def _send_html_parts(
@@ -123,15 +163,7 @@ def _send_html_parts(
 
 @bot.message_handler(commands=["start"])
 def send_welcome(message):
-    text = (
-        "<b>SP-DECODE</b>\n"
-        "Decode supported configuration files, text and links.\n\n"
-        "For SSC Custom and Dark Tunnel, send the full text in one message or split it "
-        "across multiple messages. The bot assembles the fragments automatically.\n\n"
-        "Use /help for instructions, /formats for file formats and /texts for text protocols."
-    )
-    bot.reply_to(message, text, parse_mode="HTML", reply_markup=_main_keyboard())
-
+    _reply_with_menu(message, "home")
 
 @bot.message_handler(commands=["help", "ayuda"])
 def show_help(message):
@@ -146,7 +178,7 @@ def show_help(message):
         "and closes the session when decoding succeeds. Use /session to check progress or /cancel to discard it.\n\n"
         "<b>Commands</b>\n"
         "/formats — supported file formats\n"
-        "/texts — supported text protocols\n"
+        "/texts — supported text and links\n"
         "/id — user and chat IDs\n"
         "/allowgroup — authorize a group (administrators)\n"
         "/revokegroup — remove a group from the allowlist (administrators)\n"
@@ -160,23 +192,11 @@ def show_help(message):
 
 @bot.message_handler(commands=["formats", "archivos"])
 def show_formats(message):
-    _send_html_parts(
-        message.chat.id,
-        _format_registry(),
-        reply_to_message_id=message.message_id,
-    )
-
-
-def _send_text_formats(chat_id, *, reply_to_message_id=None):
-    lines = [TEXT_PROTOCOLS, "", "<b>Formats shared with Cloud</b>"]
-    for prefix, label in sorted(TEXT_FORMATS.items(), key=lambda item: (item[1].casefold(), item[0])):
-        lines.append(f"<b>{html_pre(label)}</b> — <code>{html_pre(prefix)}</code>")
-    _send_html_parts(chat_id, "\n".join(lines), reply_to_message_id=reply_to_message_id)
-
+    _reply_with_menu(message, "files")
 
 @bot.message_handler(commands=["texts", "textos"])
 def show_texts(message):
-    _send_text_formats(message.chat.id, reply_to_message_id=message.message_id)
+    _reply_with_menu(message, "texts")
 
 
 @bot.message_handler(commands=["session", "sesion", "ssc", "dark"])
@@ -424,31 +444,38 @@ def show_status(message):
 
 @bot.message_handler(commands=["about"])
 def about(message):
-    bot.reply_to(
-        message,
-        "<b>SP-DECODE</b>\n"
-        "Configuration decoder bot powered by Python, Node.js and PHP.\n\n"
-        "Developer: @Gh0stDeveloper\n"
-        "Channel: @GhostDeve\n"
-        "Group: @CodeBreakersHub",
-        parse_mode="HTML",
-        reply_markup=_main_keyboard(),
-    )
+    _reply_with_menu(message, "about")
 
 
-@bot.callback_query_handler(func=lambda call: call.data == "show_files")
-def handle_supported_files(call):
+@bot.callback_query_handler(
+    func=lambda call: call.data in _OLD_MENU_BUTTONS or _MENU_CALLBACK.fullmatch(call.data or "") is not None,
+)
+def handle_menu_callback(call):
     try:
         bot.answer_callback_query(call.id)
-    except Exception:
-        pass
-    _send_html_parts(call.message.chat.id, _format_registry())
+    except ApiTelegramException:
+        logger.debug("Could not acknowledge the menu callback")
 
+    if call.message is None:
+        return
+    section = _OLD_MENU_BUTTONS.get(call.data)
+    page = 0
+    if section is None:
+        match = _MENU_CALLBACK.fullmatch(call.data or "")
+        if match is None:
+            return
+        section, page_number = match.groups()
+        page = int(page_number)
 
-@bot.callback_query_handler(func=lambda call: call.data == "show_texts")
-def handle_supported_texts(call):
+    text, keyboard = _menu_view(section, page, getattr(call, "from_user", None))
     try:
-        bot.answer_callback_query(call.id)
-    except Exception:
-        pass
-    _send_text_formats(call.message.chat.id)
+        bot.edit_message_text(
+            text,
+            chat_id=call.message.chat.id,
+            message_id=call.message.message_id,
+            parse_mode="HTML",
+            reply_markup=keyboard,
+        )
+    except ApiTelegramException as error:
+        if "message is not modified" not in error.description.lower():
+            logger.warning("Could not edit the Telegram menu (%s)", error.error_code)

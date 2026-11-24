@@ -14,6 +14,7 @@ import logging
 
 from decoders.Python import text_legacy_protocols, text_structured_protocols
 from spdecode.access import require_authorized
+from spdecode.format_names import public_format_name
 from spdecode.handlers.results import send_markdown_result
 from spdecode.runtime import bot
 
@@ -95,6 +96,6 @@ def decode_extra_text(message):
             prompt_v2box_password(message, normalized)
             return
         if isinstance(result, str) and result.strip():
-            send_markdown_result(message, label, result)
+            send_markdown_result(message, public_format_name(label) or prefix, result)
     except Exception:
         logger.exception("Internal error decoding text format %s", prefix)

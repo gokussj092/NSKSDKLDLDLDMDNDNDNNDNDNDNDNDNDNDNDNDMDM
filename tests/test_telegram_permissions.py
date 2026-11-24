@@ -64,6 +64,65 @@ class TelegramPermissionCommandTests(TestCase):
         save_chat_permissions(config, self.config_path)
         self.runtime.settings = config
 
+    def test_file_list_starts_with_requested_apps_and_pages_in_place(self):
+        message = self._message(20, -40, "/archivos", group=True)
+        message.message_thread_id = 72
+        self.commands.show_formats(message)
+        sent = self.bot.reply_to.call_args
+        rows = sent.args[1].splitlines()[3:]
+        self.assertEqual(rows[:2], [
+            "• <b>HTTP Custom</b> <code>[.HC]</code>",
+            "• <b>HTTP Injector</b> <code>[.EHI]</code>",
+        ])
+        self.assertEqual(sent.kwargs["message_thread_id"], 72)
+        next_button = sent.kwargs["reply_markup"].keyboard[0][0]
+        self.commands.handle_menu_callback(SimpleNamespace(
+            id="fixture", data=next_button.callback_data, message=message,
+        ))
+        self.bot.answer_callback_query.assert_called_once_with("fixture")
+        edit = self.bot.edit_message_text.call_args
+        self.assertEqual((edit.kwargs["chat_id"], edit.kwargs["message_id"]), (-40, 1))
+        self.assertIn("Page 2 of", edit.args[0])
+        self.assertEqual(edit.kwargs["reply_markup"].keyboard[0][0].text, "‹ Previous")
+        self.bot.send_message.assert_not_called()
+
+    def test_catalogues_group_aliases_and_hide_internal_labels(self):
+        files = self.commands.file_format_rows()
+        texts = self.commands.text_format_rows()
+        joined = "\n".join((*files, *texts))
+        self.assertNotRegex(joined, r"RENZ /|AES-GCM|PBKDF2|DES-ECB|XOR VPN")
+        ace = next(row for row in files if "[.ACE]" in row)
+        self.assertNotIn("<b>", ace)
+        self.assertIn("• <b>VIP Snipher Pro</b> <code>[.VIPSNIPHERPRO]</code>", files)
+        self.assertIn("• <b>XVEON Tunnel Pro</b> <code>[.XVEON]</code> <code>[.XVN]</code>", files)
+        ac = [row for row in texts if "<b>AC Tunnel VPN</b>" in row]
+        self.assertEqual(len(ac), 1)
+        self.assertIn("<code>[actunnelvpn://]</code>", ac[0])
+        self.assertIn("<code>[acvpn://]</code>", ac[0])
+        self.assertIn("accepts fragments", next(row for row in texts if "<b>Dark Tunnel</b>" in row))
+
+    def test_welcome_and_about_show_official_links_and_project_timeline(self):
+        message = self._message(20, 20, "/start")
+        message.from_user.first_name = "Dev <Team>"
+        self.commands.send_welcome(message)
+        welcome = self.bot.reply_to.call_args
+        self.assertIn("Welcome to SP-DECODE, Dev &lt;Team&gt;!", welcome.args[1])
+        self.assertIn("https://spdecode.xyz", [
+            button.url for row in welcome.kwargs["reply_markup"].keyboard for button in row
+        ])
+        self.commands.about(message)
+        about = self.bot.reply_to.call_args
+        self.assertIn("Ghost Developer", about.args[1])
+        self.assertIn("Developer and owner", about.args[1])
+        self.assertIn("July 23, 2026", about.args[1])
+        self.assertIn("October 4, 2026", about.args[1])
+        self.assertIn("October 8, 2026", about.args[1])
+        self.assertNotRegex(about.args[1], r"Python|Node\.js|PHP")
+        links = {button.url for row in about.kwargs["reply_markup"].keyboard for button in row}
+        self.assertTrue({
+            "https://t.me/GhostDeve", "https://t.me/CodeBreakersHub", "https://t.me/+N4CnTYwQQ-w0MjNh",
+        } <= links)
+
     def test_admin_can_authorize_current_group_then_revoke_without_restart(self):
         allow = self._message(20, -50, "/allowgroup@SampleBot", group=True)
         member = self._message(22, -50, "", group=True)

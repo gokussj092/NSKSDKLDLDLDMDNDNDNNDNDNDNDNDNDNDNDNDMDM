@@ -214,7 +214,7 @@ class TelegramHandlersTests(unittest.TestCase):
         self.assertFalse(self.credentials._pending)
 
     def test_ssc_and_dark_fragments_stay_silent_until_complete(self):
-        from spdecode.handlers import text_protocols
+        text_protocols = importlib.import_module("spdecode.handlers.text_protocols")
         from spdecode.text_sessions import clear_session, get_session
 
         for protocol, prefix, payload, handler in (
@@ -271,10 +271,10 @@ class TelegramHandlersTests(unittest.TestCase):
         original = self._message(user=22, group=True, thread=50)
         original.from_user.username = "test_sender"
         output = "  example.org\n```\nvmess://example\nhttps://example.invalid/?a=*\n"
-        send_markdown_result(original, "RENZ / 7NET", output, partial=True)
+        send_markdown_result(original, "7NET VPN", output, partial=True)
         filename, report = self.sent[0]
-        self.assertEqual(filename, "RENZ-7NET-spdecode-result.md")
-        self.assertIn("**Application:** RENZ / 7NET", report)
+        self.assertEqual(filename, "7NET-VPN-spdecode-result.md")
+        self.assertIn("**Application:** 7NET VPN", report)
         self.assertIn("**Sent by:** [@test_sender](https://t.me/test_sender)", report)
         self.assertIn("**Partial result.**", report)
         self.assertTrue(report.endswith(f"\n````\n{output}````\n"))
@@ -290,6 +290,19 @@ class TelegramHandlersTests(unittest.TestCase):
             ],
         )
         self.bot.reply_to.assert_not_called()
+
+    def test_family_result_uses_app_name_without_changing_decoded_config(self):
+        original = self._message()
+        data = {"application": "RENZ / ACTUNNELVPN", "config": {"note": "fixture content"}}
+        send_markdown_result(original, "AC Tunnel VPN", json.dumps(data))
+        filename, report = self.sent[0]
+        self.assertEqual(filename, "AC-Tunnel-VPN-spdecode-result.md")
+        self.assertIn("**Application:** AC Tunnel VPN", report)
+        self.assertNotIn("RENZ /", report)
+        _, _, payload = report.partition("\n```json\n")
+        self.assertEqual(json.loads(payload.removesuffix("```\n")), {
+            "application": "AC Tunnel VPN", "config": data["config"],
+        })
 
     def test_cancel_drops_pending_and_late_reply_is_consumed(self):
         original = self._message()

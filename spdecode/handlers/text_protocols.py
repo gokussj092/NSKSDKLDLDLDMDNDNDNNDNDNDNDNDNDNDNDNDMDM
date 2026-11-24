@@ -16,6 +16,7 @@ from decoders.Python.DARKTUNNEL import run as decode_dark_payload
 from decoders.Python.SSCCUSTOM import run as decode_ssc_payload
 from decoders.Python.TLS import run as decode_tls_payload
 from spdecode.access import require_authorized
+from spdecode.format_names import family_text_application
 from spdecode.handlers.results import send_markdown_result
 from spdecode.runtime import bot, settings
 from spdecode.text_sessions import (
@@ -368,7 +369,7 @@ def decrypted_config(message):
                 output = f"{json_output}\n\nEncoded configuration:\n{protocol}://{encoded_config}"
             except json.JSONDecodeError:
                 output = obfuscate_text(decrypt_text)
-            send_markdown_result(message, f"NetMod · {protocol}", output)
+            send_markdown_result(message, "NetMod Syna", output)
     except Exception as error:
         logger.debug("Could not decode the NetMod configuration (%s)", type(error).__name__)
 #######################################################
@@ -643,10 +644,15 @@ def _is_renz_text_message(message) -> bool:
 @require_authorized
 def decode_renz_text(message):
     payload = _message_text(message).strip()
+    lower = payload.lower()
+    prefix = next((candidate for candidate in _RENZ_PREFIXES if lower.startswith(candidate)), None)
+    if prefix is None:
+        return
     try:
         result = decode_renz_payload(payload)
     except Exception:
         logger.exception("Internal error decoding RENZ/7NET text")
         return
     if result is not None:
-        send_markdown_result(message, "RENZ / 7NET", result)
+        application = family_text_application(prefix, RENZ_TEXT_PROTOCOLS[prefix])
+        send_markdown_result(message, application, result)
