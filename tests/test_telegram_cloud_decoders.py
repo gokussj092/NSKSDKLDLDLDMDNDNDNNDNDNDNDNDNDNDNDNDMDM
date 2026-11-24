@@ -14,7 +14,9 @@ from decoders.Python.apps.XVEON_Tunnel_Pro.xveon import encrypt_envelope
 from spdecode.decoder_runtime import FILE_FORMATS, TEXT_FORMATS, DecodeResult, decode, file_suffix, text_prefix
 from spdecode.handlers.results import send_markdown_result
 from spdecode.registry import DECODER_REGISTRY
-from tests.golden.a23_generators import FIXTURE_DOMAIN, dark_bytes, httpcustom_bytes, ssc_bytes, tls_bytes
+from tests.golden.a23_generators import (
+    FIXTURE_DOMAIN, SYNTHETIC_GENERATORS, dark_bytes, httpcustom_bytes, ssc_bytes, tls_bytes,
+)
 from tests.golden.hc_sip_new_variants import S4_SYNTHETIC_PASSWORD, SYNTHETIC_HWID, hccfg_hwid_file
 from tests.test_hc_legacy57 import CASES, wire
 
@@ -67,6 +69,14 @@ class TelegramHandlersTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.tls_fixture = tls_bytes()
+        cls.dark_fixture = dark_bytes()
+        cls.legacy_fixtures = {
+            "mij": SYNTHETIC_GENERATORS["batch4-mij"](),
+            "mrc": SYNTHETIC_GENERATORS["batch5-mrc"](),
+            "mtl": SYNTHETIC_GENERATORS["batch5-mtl"](),
+            "gold": SYNTHETIC_GENERATORS["batch7-gold"](),
+            "ssh": SYNTHETIC_GENERATORS["batch8-ssh"](),
+        }
 
     def setUp(self):
         self.bot = Mock()
@@ -224,6 +234,65 @@ class TelegramHandlersTests(unittest.TestCase):
         self.assertEqual(configs[0]["port"], 443)
         self.assertEqual(configs[0], configs[1])
 
+    def test_additional_legacy_files_deliver_decoded_fields(self):
+        for index, (suffix, sample) in enumerate(self.legacy_fixtures.items(), 1):
+            with self.subTest(suffix=suffix):
+                self.bot.download_file.return_value = sample
+                message = self._message(message_id=index)
+                message.document.file_name = f"profile.{suffix}"
+                self.documents.process_received_file(message)
+                self.assertEqual(len(self.sent), index)
+                _, _, payload = self.sent[-1][1].partition("\n```json\n")
+                result = json.loads(payload.removesuffix("```\n"))
+                if suffix == "gold":
+                    self.assertEqual(result["network"], {"Host": FIXTURE_DOMAIN, "Port": 443})
+                else:
+                    self.assertEqual(result["Host"], FIXTURE_DOMAIN)
+                    self.assertEqual(result["Port"], "443")
+                self.assertNotIn("𝗚𝗥𝗢𝗨𝗣", payload)
+                self.assertNotIn("unlockKeys 🔽", payload)
+        self.bot.reply_to.assert_not_called()
+
+    def test_all_frozen_file_outputs_produce_structured_json(self):
+        expected_dir = Path(__file__).with_name("golden") / "expected"
+        for sample in sorted(expected_dir.glob("*.txt")):
+            with self.subTest(sample=sample.name):
+                send_markdown_result(self._message(), "Fixture", sample.read_text(encoding="utf-8"))
+                _, _, payload = self.sent[-1][1].partition("\n```json\n")
+                result = json.loads(payload.removesuffix("```\n"))
+                self.assertIsInstance(result, (dict, list))
+                if isinstance(result, dict):
+                    self.assertNotEqual(set(result), {"text"})
+
+    def test_boxed_properties_keep_json_entries_and_repeated_fields(self):
+        output = (
+            '┌───────────────\n│𝗦𝗣 - 𝗗𝗘𝗖𝗢𝗗𝗘 (.mij)\n├───────────────'
+            '<entry key="route">{"host":"first.example","enabled":true}</entry>\n'
+            '│[۞] route: {"host":"second.example","enabled":false}\n'
+            '└───────────────\n'
+        )
+        send_markdown_result(self._message(), "MIJ Tunnel", output)
+        _, _, payload = self.sent[0][1].partition("\n```json\n")
+        self.assertEqual(json.loads(payload.removesuffix("```\n")), {
+            "route": [
+                {"host": "first.example", "enabled": True},
+                {"host": "second.example", "enabled": False},
+            ],
+        })
+
+    def test_ssh_command_delivers_structured_fields(self):
+        text_protocols = importlib.import_module("spdecode.handlers.text_protocols")
+        text = "/decssh example.org@encoded-user:encoded-password"
+        with patch.object(text_protocols, "dec_ssh", side_effect=("test-user", "fixture-only")):
+            text_protocols.dec_ssh_command(self._message(password=text))
+        _, _, payload = self.sent[0][1].partition("\n```json\n")
+        self.assertEqual(json.loads(payload.removesuffix("```\n")), {
+            "IP address or domain": FIXTURE_DOMAIN,
+            "Username": "test-user",
+            "Password": "fixture-only",
+            "SSH": "example.org@test-user:fixture-only",
+        })
+
     def test_unsupported_file_and_decode_errors_are_silent(self):
         original = self._message()
         original.document.file_name = "file_example.unsupported (1)"
@@ -259,7 +328,7 @@ class TelegramHandlersTests(unittest.TestCase):
 
         for protocol, prefix, payload, handler in (
             ("ssc", "ssc://", ssc_bytes()[::-1], text_protocols.decode_ssc_text),
-            ("dark", "darktunnel://", dark_bytes(), text_protocols.decode_dark_text),
+            ("dark", "darktunnel://", self.dark_fixture, text_protocols.decode_dark_text),
         ):
             with self.subTest(protocol=protocol), patch.object(text_protocols, "settings", sys.modules["spdecode.runtime"].settings):
                 first = self._message(password=prefix + payload[:12].decode(), message_id=1)

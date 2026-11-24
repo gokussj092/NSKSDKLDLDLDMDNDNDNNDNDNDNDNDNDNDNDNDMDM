@@ -10,7 +10,10 @@ V2Box credential requests stay in the chat that received the original.
 """
 from __future__ import annotations
 
+import json
 import logging
+import re
+from urllib.parse import parse_qs
 
 from decoders.Python import text_legacy_protocols, text_structured_protocols
 from spdecode.access import require_authorized
@@ -21,10 +24,32 @@ from spdecode.runtime import bot
 logger = logging.getLogger("sp-decode")
 MAX_TEXT_CHARS = 2 * 1024 * 1024
 
+
+def _ar_text(value: str) -> str | None:
+    result = text_legacy_protocols.decode_ar(value)
+    if not result or not re.match(r"^[A-Za-z_][\w.-]*=", result):
+        return result
+    try:
+        params = parse_qs(result, keep_blank_values=True, strict_parsing=True, errors="strict")
+    except ValueError:
+        return result
+
+    profiles = params.get("profile", [])
+    for index, profile in enumerate(profiles):
+        if profile.lstrip().startswith(("{", "[")):
+            try:
+                profiles[index] = json.loads(profile)
+            except (ValueError, RecursionError):
+                pass
+    return json.dumps({
+        key: values[0] if len(values) == 1 else values for key, values in params.items()
+    }, ensure_ascii=False)
+
+
 PROTOCOL_HANDLERS = {
     **{prefix: ("NetMod", text_legacy_protocols.decode_netmod)
        for prefix in text_legacy_protocols.NM_PREFIXES},
-    **{prefix: ("AR Tunnel", text_legacy_protocols.decode_ar)
+    **{prefix: ("AR Tunnel", _ar_text)
        for prefix in text_legacy_protocols.AR_PREFIXES},
     **{prefix: ("XrayPB", text_legacy_protocols.decode_pb)
        for prefix in text_legacy_protocols.PB_PREFIXES},
@@ -83,8 +108,6 @@ def decode_extra_text(message):
         result = decoder(raw)
         if isinstance(result, dict) and result.get("__need_password__"):
             from spdecode.handlers.config_batch_texts import prompt_v2box_password
-            import json
-
             envelope = text_structured_protocols.normalize_v2box_envelope(raw)
             if envelope is None:
                 return

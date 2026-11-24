@@ -8,6 +8,7 @@ import types
 import unittest
 from pathlib import Path
 from unittest.mock import patch
+from urllib.parse import urlencode
 
 from decoders.Python import text_legacy_protocols as legacy
 from decoders.Python import text_structured_protocols as structured
@@ -114,8 +115,33 @@ class ExtraTextDispatcherTests(unittest.TestCase):
         self.assertEqual(len(bot.documents), 1)
         filename, report, _kwargs = bot.documents[0]
         self.assertTrue(filename.endswith(".md"))
-        self.assertIn("<server>", report)
-        self.assertIn("fixture-only", report)
+        _, _, payload = report.partition("\n```json\n")
+        self.assertEqual(json.loads(payload.removesuffix("```\n")), json.loads(content))
+
+    def test_ar_tunnel_query_results_preserve_parameters_and_profiles(self):
+        profiles = [{"name": "First"}, {"name": "Second", "enabled": False}]
+        decoded = urlencode({
+            "payload": ["GET + /one\r\n", "GET /two"],
+            "profile": json.dumps(profiles),
+            "proxy": "",
+        }, doseq=True)
+        with patch.object(legacy, "decode_ar", return_value=decoded):
+            handler, bot = load_handler_with_fake_bot()
+            settings = types.SimpleNamespace(admins={999})
+            runtime = types.SimpleNamespace(bot=bot, settings=settings)
+            message = types.SimpleNamespace(
+                text=legacy.AR_PREFIXES[0] + "fixture", message_id=1,
+                chat=types.SimpleNamespace(id=999, type="private"),
+                from_user=types.SimpleNamespace(id=999),
+            )
+            with patch.dict(sys.modules, {"spdecode.runtime": runtime}):
+                handler.decode_extra_text(message)
+
+        self.assertEqual(len(bot.documents), 1)
+        _, _, payload = bot.documents[0][1].partition("\n```json\n")
+        self.assertEqual(json.loads(payload.removesuffix("```\n")), {
+            "payload": ["GET + /one\r\n", "GET /two"], "profile": profiles, "proxy": "",
+        })
 
     def test_mnr_cloud_link_uses_markdown_reply_in_its_group_topic(self):
         from decoders.Python.apps.MNR_TUNNEL_PLUS import codec
@@ -138,7 +164,8 @@ class ExtraTextDispatcherTests(unittest.TestCase):
         filename, report, sent = bot.documents[0]
         self.assertEqual(filename, "MNR-TUNNEL-PLUS-spdecode-result.md")
         self.assertIn(r"\[Invitado\] \*prueba\*", report)
-        self.assertIn("vless://fixture", report)
+        _, _, payload = report.partition("\n```json\n")
+        self.assertEqual(json.loads(payload.removesuffix("```\n")), {"Link": "vless://fixture"})
         self.assertEqual((sent["chat_id"], sent["message_thread_id"], sent["reply_to_message_id"]), (-42, 13, 12))
 
     def test_v2box_password_prompt_normalizes_base64url(self):

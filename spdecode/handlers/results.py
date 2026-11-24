@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from ast import literal_eval
 import json
 import re
 from datetime import datetime, timezone
@@ -16,16 +17,23 @@ _RESULT_LINKS = (
     ("Ghost Developer", "https://t.me/Gh0stDeveloper"),
 )
 _PARTIAL_NOTICE = "Some fields could not be resolved."
+_LEGACY_GLYPH = r"[۞💠🔵💀🤖😈🔥🚀🔐]"
 _LEGACY_HEADER = re.compile(
     r"\A(?:[ \t]*\n)*┌─+\n│𝗦𝗣 - 𝗗𝗘𝗖𝗢𝗗𝗘[^\n]*\n"
-    r"(?:│(?:𝗗𝗘𝗩𝗘𝗟𝗢𝗣𝗘𝗥|\[۞\] Aplicación:)[^\n]*\n)?├─+\n"
+    r"(?:│(?:𝗗𝗘𝗩𝗘𝗟𝗢𝗣𝗘𝗥|\[۞\] Aplicación:)[^\n]*\n)?├─+(?:\n|(?=│\[|[ \t]*<entry ))"
 )
 _LEGACY_FOOTER = re.compile(
-    r"(?:(?:\n[ \t]*)?(?:\n├─+)?\n│\[(?:۞|🚀)\] 𝗚𝗥𝗢𝗨𝗣[^\n]*"
-    r"(?:\n├─+)?\n│\[(?:۞|🚀)\] 𝗖𝗛𝗔𝗡𝗡𝗘𝗟[^\n]*)?"
+    rf"(?:(?:\n[ \t]*)?(?:\n├─+)?\n│\[{_LEGACY_GLYPH}\] 𝗚𝗥𝗢𝗨𝗣[^\n]*"
+    rf"(?:\n├─+)?\n│\[{_LEGACY_GLYPH}\] 𝗖𝗛𝗔𝗡𝗡𝗘𝗟[^\n]*)?"
     r"\n└─+\s*\Z"
 )
-_LEGACY_FIELD = re.compile(r"(?m)^│\[[۞🚀]\] ([^:\r\n]+):[ \t]?")
+_LEGACY_FIELD = re.compile(rf"(?m)^│\[{_LEGACY_GLYPH}\] ([^:\r\n]+):[ \t]?")
+_SSH_UNLOCK_HEADING = re.compile(rf"(?m)^│\[{_LEGACY_GLYPH}\] unlockKeys 🔽\n")
+_LEGACY_XML_ENTRY = re.compile(r'(?m)^[ \t]*<entry key="([^:"\r\n]+)">([^\r\n]*)</entry>[ \t]*$')
+_GOLD_FRAME = re.compile(
+    r"\A╔[^\n]*\n[╠╚][^\n]*(?:\n[╠╚][^\n]*)*\n\n"
+    r"╔[^\n]*\n╠▸ App Name : `Gold Tunnel`\n╚[^\n]*\n\n"
+)
 _TLS_FRAME = re.compile(r"\ATLS Tunnel\n={30}\n\n(.*)\n\n={30}\n?\Z", re.DOTALL)
 
 
@@ -50,6 +58,8 @@ def _result_data(output: str) -> object:
     body, boxed = _LEGACY_HEADER.subn("", output, count=1)
     if boxed:
         body = _LEGACY_FOOTER.sub("", body, count=1)
+        body = _SSH_UNLOCK_HEADING.sub("", body, count=1)
+        body = _LEGACY_XML_ENTRY.sub(r"│[۞] \1: \2", body)
     else:
         body = _TLS_FRAME.sub(r"\1", body, count=1)
 
@@ -62,6 +72,17 @@ def _result_data(output: str) -> object:
     else:
         return {"config": data, "encodedConfiguration": link} if separator else data
 
+    # Gold Tunnel's legacy CLI prints a Python dictionary beneath its frame.
+    gold = _GOLD_FRAME.match(body)
+    if gold and len(body) - gold.end() <= 128 * 1024:
+        try:
+            data = literal_eval(body[gold.end():].strip())
+        except (ValueError, SyntaxError, RecursionError):
+            pass
+        else:
+            if isinstance(data, dict):
+                return data
+
     # Legacy decoders label each field and emit nested objects/arrays as JSON.
     # Bare values have ambiguous types, so keep their text verbatim.
     labels = list(_LEGACY_FIELD.finditer(body))
@@ -70,8 +91,6 @@ def _result_data(output: str) -> object:
     fields = {}
     for index, label in enumerate(labels):
         key = label[1].rstrip()
-        if key in fields:
-            return {"text": body}
         end = labels[index + 1].start() if index + 1 < len(labels) else len(body)
         value = body[label.end():end].removesuffix("\n")
         if value.lstrip().startswith(("{", "[")):
@@ -79,8 +98,8 @@ def _result_data(output: str) -> object:
                 value = json.loads(value)
             except (ValueError, RecursionError):
                 pass
-        fields[key] = value
-    return fields
+        fields.setdefault(key, []).append(value)
+    return {key: values[0] if len(values) == 1 else values for key, values in fields.items()}
 
 
 def _json_block(output: str, application: str) -> str:

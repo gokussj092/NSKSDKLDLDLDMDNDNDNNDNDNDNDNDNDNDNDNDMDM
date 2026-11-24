@@ -516,11 +516,13 @@ def dec_ssh_command(message):
             password = dec_ssh(pass_encoded)
 
             if user is not None and password is not None:
-                send_markdown_result(
-                    message, "SSH",
-                    f"IP address or domain: {ip_or_domain}\nUsername: {user}\nPassword: {password}\n"
-                    f"SSH: {ip_or_domain}@{user}:{password}",
-                )
+                result = {
+                    "IP address or domain": ip_or_domain,
+                    "Username": user,
+                    "Password": password,
+                    "SSH": f"{ip_or_domain}@{user}:{password}",
+                }
+                send_markdown_result(message, "SSH", json.dumps(result, ensure_ascii=False))
         except Exception as error:
             logger.debug("Could not decode the SSH credentials (%s)", type(error).__name__)
 #######################################################
