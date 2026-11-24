@@ -14,6 +14,27 @@ run_root() {
     fi
 }
 
+start_and_check_bot() {
+    local pid current_pid sample
+    if run_root systemctl is-failed --quiet "$SERVICE_NAME"; then
+        run_root systemctl reset-failed "$SERVICE_NAME" || return 1
+    fi
+    run_root systemctl start "$SERVICE_NAME" || return 1
+    pid="$(run_root systemctl show --property=MainPID --value "$SERVICE_NAME")" || return 1
+    if [[ ! "$pid" =~ ^[1-9][0-9]*$ ]]; then
+        echo "ERROR: the bot did not start. Check spdecode-telegram logs." >&2
+        return 1
+    fi
+    for (( sample = 0; sample < 5; sample++ )); do
+        sleep 1
+        current_pid="$(run_root systemctl show --property=MainPID --value "$SERVICE_NAME")" || return 1
+        if [[ "$current_pid" != "$pid" ]] || ! run_root systemctl is-active --quiet "$SERVICE_NAME"; then
+            echo "ERROR: the bot stopped or restarted during startup. Check spdecode-telegram logs." >&2
+            return 1
+        fi
+    done
+}
+
 lock_installation() {
     if [[ ! -O "$PROJECT_DIR" ]]; then
         echo "ERROR: run this command as the owner of the bot checkout at $PROJECT_DIR." >&2
@@ -51,7 +72,8 @@ update_bot() (
     previous="$(git rev-parse HEAD)"
     target="$(git rev-parse '@{upstream}')"
     if [[ "$previous" == "$target" ]]; then
-        echo "SP-DECODE Telegram is already up to date."
+        start_and_check_bot
+        echo "SP-DECODE Telegram is already up to date and running."
         exit 0
     fi
     if ! git merge-base --is-ancestor "$previous" "$target"; then
@@ -60,9 +82,9 @@ update_bot() (
     fi
 
     backup_dir="$(mktemp -d "$PROJECT_DIR/.telegram-update.XXXXXX")"
-    was_active=0
-    if run_root systemctl is-active --quiet "$SERVICE_NAME"; then
-        was_active=1
+    if ! run_root systemctl stop "$SERVICE_NAME"; then
+        rmdir -- "$backup_dir"
+        exit 1
     fi
 
     finish_update() {
@@ -70,8 +92,9 @@ update_bot() (
         local path restored=1
         if (( status != 0 )); then
             echo "Update failed. Restoring the previous bot version." >&2
-            if (( was_active )) && ! run_root systemctl stop "$SERVICE_NAME"; then
-                restored=0
+            if ! run_root systemctl stop "$SERVICE_NAME"; then
+                echo "ERROR: could not stop the bot for rollback. Update backups are in $backup_dir." >&2
+                return "$status"
             fi
             git reset --keep "$previous" || restored=0
             for path in .venv node_modules; do
@@ -83,7 +106,7 @@ update_bot() (
                 echo "ERROR: rollback incomplete. Update backups are in $backup_dir." >&2
                 return "$status"
             fi
-            if (( was_active )) && ! run_root systemctl start "$SERVICE_NAME"; then
+            if ! start_and_check_bot; then
                 echo "ERROR: could not restart the previous version. Check spdecode-telegram logs." >&2
             fi
         fi
@@ -92,9 +115,6 @@ update_bot() (
     }
     trap finish_update EXIT
 
-    if (( was_active )); then
-        run_root systemctl stop "$SERVICE_NAME"
-    fi
     git merge --ff-only "$target"
     if ! git diff --quiet "$previous" "$target" -- requirements.txt; then
         mv -- .venv "$backup_dir/.venv"
@@ -106,11 +126,8 @@ update_bot() (
         npm ci --omit=dev
     fi
     "$PYTHON" -c 'import main; main.validate_startup()'
-    if (( was_active )); then
-        run_root systemctl start "$SERVICE_NAME"
-        run_root systemctl is-active --quiet "$SERVICE_NAME"
-    fi
-    echo "SP-DECODE Telegram updated to $(git rev-parse --short HEAD)."
+    start_and_check_bot
+    echo "SP-DECODE Telegram updated to $(git rev-parse --short HEAD) and running."
 )
 
 case "${1:-status}" in

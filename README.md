@@ -293,7 +293,9 @@ spdecode-telegram update
 ```
 
 The updater fast-forwards the bot's checkout, refreshes dependencies when their
-manifests change, validates startup, and restarts the bot if it was running.
+manifests change, validates startup, and starts the bot. It checks that the
+systemd process stays active before reporting success and starts an inactive
+service even when the checkout is already up to date.
 The Termux launcher uses `spdecode` on the device.
 
 In Telegram, reply to the bot's credential prompt in the same chat and
