@@ -17,22 +17,6 @@ def decrypt_aes_ecb_128(ciphertext, key):
     plaintext = cipher.decrypt(ciphertext)
     return plaintext.rstrip()
 
-def format_common_data(common_data):
-    formatted_text = ""
-    for entry in common_data:
-        for key, value in entry.items():
-            formatted_text += f"│[۞] {key}: {value}\n"
-    return formatted_text
-
-def format_result(data):
-    result = ""
-    for key, value in data.items():
-        if key == "Common":
-            result += f"│[۞] {key}:\n{format_common_data(value)}"
-        else:
-            result += f"│[۞] {key}: {value}\n"
-    return result or "{}"
-
 def process_encrypted_content(encrypted_content):
     try:
         ciphertext = base64.b64decode(encrypted_content)
@@ -45,8 +29,8 @@ def process_encrypted_content(encrypted_content):
             return None
 
         json_text = formatted_text[start_index:end_index + 1]
-        data = json.loads(json_text)
-        return format_result(data)
+        json.loads(json_text)
+        return json_text
     except Exception as e:
         return None  
         

@@ -307,8 +307,9 @@ replaces the original extension with `.md`. Text and link results prefix
 `spdecode-result.md` with the app name, as in `V2Box-spdecode-result.md`.
 Copy numbers after the input extension are supported. Both `profile.hc (1)`
 and `profile.hc(1)` use the HTTP Custom decoder and keep the copy number in
-the result filename. JSON results are labeled for syntax highlighting in
-compatible Markdown viewers. Unsupported inputs, failed decodes, and
+the result filename. Each attachment contains one formatted JSON block labeled
+for syntax highlighting in compatible Markdown viewers. Plain-text decoder
+output is stored in the `text` field. Unsupported inputs, failed decodes, and
 incomplete SSC Custom and Dark Tunnel fragments are handled silently.
 Administrators can manage access without a restart.
 

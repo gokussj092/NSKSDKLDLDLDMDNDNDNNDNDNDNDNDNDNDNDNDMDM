@@ -14,7 +14,7 @@ from decoders.Python.apps.XVEON_Tunnel_Pro.xveon import encrypt_envelope
 from spdecode.decoder_runtime import FILE_FORMATS, TEXT_FORMATS, DecodeResult, decode, file_suffix, text_prefix
 from spdecode.handlers.results import send_markdown_result
 from spdecode.registry import DECODER_REGISTRY
-from tests.golden.a23_generators import FIXTURE_DOMAIN, dark_bytes, ssc_bytes
+from tests.golden.a23_generators import FIXTURE_DOMAIN, dark_bytes, httpcustom_bytes, ssc_bytes, tls_bytes
 from tests.golden.hc_sip_new_variants import S4_SYNTHETIC_PASSWORD, SYNTHETIC_HWID, hccfg_hwid_file
 from tests.test_hc_legacy57 import CASES, wire
 
@@ -64,6 +64,10 @@ class TelegramDecoderRuntimeTests(unittest.TestCase):
 
 
 class TelegramHandlersTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.tls_fixture = tls_bytes()
+
     def setUp(self):
         self.bot = Mock()
         self.bot.message_handler.side_effect = lambda **kwargs: lambda fn: fn
@@ -184,6 +188,42 @@ class TelegramHandlersTests(unittest.TestCase):
         self.assertEqual(len(self.sent), 2)
         self.bot.reply_to.assert_not_called()
 
+    def test_legacy_http_custom_document_has_one_formatted_json_object(self):
+        self.bot.download_file.return_value = httpcustom_bytes()
+        self.documents.process_received_file(self._message())
+
+        self.assertEqual(len(self.sent), 1)
+        filename, report = self.sent[0]
+        header, _, payload = report.partition("\n```json\n")
+        self.assertEqual(filename, "synthetic.md")
+        self.assertIn("**Application:** HTTP Custom", header)
+        self.assertNotIn("│[۞]", report)
+        self.assertNotIn("bit.ly", report)
+        self.assertIn('\n  "Config": {\n', payload)
+        self.assertEqual(json.loads(payload.removesuffix("```\n")), {
+            "Protections": {},
+            "Config": {
+                "payload": "GET", "proxy": FIXTURE_DOMAIN,
+                "lockAllConfig": "false", "blockedByRoot": "true", "expiryTime": "0",
+            },
+        })
+
+    def test_tls_tunnel_file_and_link_have_the_same_json(self):
+        text_protocols = importlib.import_module("spdecode.handlers.text_protocols")
+        self.bot.download_file.return_value = self.tls_fixture
+        original = self._message()
+        original.document.file_name = "profile.tls"
+        self.documents.process_received_file(original)
+        text_protocols.decode_tls_text(self._message(password=self.tls_fixture.decode()))
+
+        self.assertEqual(len(self.sent), 2)
+        configs = []
+        for _, report in self.sent:
+            _, _, payload = report.partition("\n```json\n")
+            configs.append(json.loads(payload.removesuffix("```\n")))
+        self.assertEqual(configs[0]["port"], 443)
+        self.assertEqual(configs[0], configs[1])
+
     def test_unsupported_file_and_decode_errors_are_silent(self):
         original = self._message()
         original.document.file_name = "file_example.unsupported (1)"
@@ -233,8 +273,12 @@ class TelegramHandlersTests(unittest.TestCase):
                 self.assertEqual(get_session(first, 600).parts, 2)
                 handler(third)
                 self.assertEqual(len(self.sent), before + 1)
-                self.assertIn(FIXTURE_DOMAIN, self.sent[-1][1])
-                self.assertIn("\n```json\n", self.sent[-1][1])
+                _, _, payload_json = self.sent[-1][1].partition("\n```json\n")
+                result = json.loads(payload_json.removesuffix("```\n"))
+                if protocol == "ssc":
+                    self.assertEqual(result["CONFIGS"][0]["ADDRESS"], FIXTURE_DOMAIN)
+                else:
+                    self.assertEqual(result["encryptedLockedConfig"]["Server"], FIXTURE_DOMAIN)
                 self.assertIsNone(get_session(first, 600))
         self.bot.reply_to.assert_not_called()
 
@@ -277,7 +321,8 @@ class TelegramHandlersTests(unittest.TestCase):
         self.assertIn("**Application:** 7NET VPN", report)
         self.assertIn("**Sent by:** [@test_sender](https://t.me/test_sender)", report)
         self.assertIn("**Partial result.**", report)
-        self.assertTrue(report.endswith(f"\n````\n{output}````\n"))
+        _, _, payload = report.partition("\n````json\n")
+        self.assertEqual(json.loads(payload.removesuffix("````\n")), {"text": output})
         sent = self.bot.send_document.call_args.kwargs
         self.assertEqual((sent["chat_id"], sent["message_thread_id"], sent["reply_to_message_id"]), (-40, 50, 1))
         self.assertIn("Partial result", sent["caption"])
@@ -290,6 +335,25 @@ class TelegramHandlersTests(unittest.TestCase):
             ],
         )
         self.bot.reply_to.assert_not_called()
+
+    def test_markdown_result_keeps_the_import_link_in_json(self):
+        config = {"profiles": [{"port": 443}], "customJson": '{"routing": {"rules": []}}'}
+        output = f"{json.dumps(config)}\n\nEncoded configuration:\nvmess://example"
+        send_markdown_result(self._message(), "NetMod Syna", output)
+        _, _, payload = self.sent[0][1].partition("\n```json\n")
+        self.assertEqual(json.loads(payload.removesuffix("```\n")), {
+            "config": config,
+            "encodedConfiguration": "vmess://example",
+        })
+
+    def test_netmod_fallback_preserves_nested_json(self):
+        fallback = importlib.import_module("spdecode.handlers.fallback")
+        config = {"Common": [{"Server": "first.example"}, {"Server": "second.example"}], "Options": {"enabled": True}}
+        message = self._message(password="dGVzdA==")
+        with patch.object(fallback, "decrypt_aes_ecb_128", return_value=json.dumps(config).encode()):
+            fallback.handle_message(message)
+        _, _, payload = self.sent[0][1].partition("\n```json\n")
+        self.assertEqual(json.loads(payload.removesuffix("```\n")), config)
 
     def test_family_result_uses_app_name_without_changing_decoded_config(self):
         original = self._message()

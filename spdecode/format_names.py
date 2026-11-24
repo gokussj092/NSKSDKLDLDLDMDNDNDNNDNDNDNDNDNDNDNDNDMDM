@@ -1,7 +1,6 @@
 """Public names for the Telegram bot's format lists and results."""
 from __future__ import annotations
 
-import json
 import re
 
 from spdecode.decoder_runtime import FILE_FORMATS
@@ -71,18 +70,10 @@ def family_text_application(prefix: str, variant: str) -> str:
     return _FAMILY_LINK_ALIASES.get(prefix) or _FAMILY_APP_NAMES.get(variant, prefix)
 
 
-def public_result_output(output: str, application: str) -> str:
+def public_result_data(result: object, application: str) -> object:
     """Replace the family decoder's generated label, preserving the config."""
-    if "RENZ / " not in output:
-        return output
-    try:
-        result = json.loads(output)
-    except (ValueError, RecursionError):
-        return output
-    if not isinstance(result, dict) or "config" not in result:
-        return output
-    label = result.get("application")
-    if not isinstance(label, str) or not label.startswith("RENZ / "):
-        return output
-    result["application"] = application
-    return json.dumps(result, ensure_ascii=False, indent=2)
+    if isinstance(result, dict) and "config" in result:
+        label = result.get("application")
+        if isinstance(label, str) and label.startswith("RENZ / "):
+            return {**result, "application": application}
+    return result
