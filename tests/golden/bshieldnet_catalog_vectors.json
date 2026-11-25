@@ -1,0 +1,28 @@
+{
+  "catalog": "Tbaf9mBxJUodu3UdwrdUMZ5/7Mms5cbEVJReHoKkgaMMBBzdrI9gMvqqocpNCWdP39+AviGmq9c1gLKVJZgnmxf5eecx/mM7ZaYJIs+np/z+lIp9RxA/wzEM/NSpQbTEqGl82V0X3p8dgqEEtGVKC9nJBt/d/dMRHGoriPMW1oAh33NNmTx+yL+iMEsb3hr1K+owUI8UyHQX7oe5pX33v2TExdg6Fm7Cw11IvC4zRz2Nmn+ve/sYLONCM9HQWd2bO9g6FLx/iYckfw6NpOdU27L/X2OukvcAidGkeNCWnvOtvV2TMUwCk29oCrAKsX0hBAI9EV5n5G99m3woZNXPtg+47jAnmazDKeXu/8axiiqK1HpT6t8nryZ4VmfVk0jpWnaqRQgQleK1ytpORi+AXE62s2MoIIKF0hLAf3zKIeu8XJcKAxgH4UHHnI2EAUwjuzmYg/2A/Y5K7wofWyVn6SSm0RmF9jX47eQUnOactNCrb0yX1W0aqSeKYTyOLzZhixPYle+Od6iWBcJMWFbodkbBld5grCH0BPMiqQAR1rQ=",
+  "expected": {
+    "Networks": [
+      {
+        "Name": "TEST PAYLOAD",
+        "Payload": "GET / HTTP/1.1[crlf]Host: test.invalid[crlf][crlf]",
+        "SNIHost": "test.invalid",
+        "ServerProtocol": 0,
+        "TunnelType": 7
+      }
+    ],
+    "Servers": [
+      {
+        "Name": "TEST SERVER",
+        "OpenVPNSSLPort": "443",
+        "OpenVPNTCPPort": "1194",
+        "Password": "test-pass",
+        "Protocol": 0,
+        "ServerIPHost": "test.invalid",
+        "Subname": "Test",
+        "Username": "test-user",
+        "flag": "mx"
+      }
+    ],
+    "Version": "7.34"
+  }
+}

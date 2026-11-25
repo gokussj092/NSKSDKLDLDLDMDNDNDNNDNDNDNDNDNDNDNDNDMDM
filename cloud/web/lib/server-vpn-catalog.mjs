@@ -7,7 +7,7 @@ import {providerEnabled} from "./server-vpn-provider.mjs";
 import {SUPPLIED_CATALOG_ITEMS,suppliedProviderConfigured} from "./supplied-integrations.mjs";
 import {catalogDefaultEnabled} from "./catalog-provider-policy.mjs";
 
-export const CATALOG_VERSION = 98; // Removed the legacy am-tunnel-lite-vpn card (remote:null) 2026-11-22 by Pedro's decision; AM Tunnel Lite stays as am-tunnel-lite (Version 4.6 live).
+export const CATALOG_VERSION = 99; // B SHIELD NET + Ways Tunnel live catalogs, TOP-PLUG-SA .tpc files (2026-11-24). Removed the legacy am-tunnel-lite-vpn card (remote:null) 2026-11-22 by Pedro's decision; AM Tunnel Lite stays as am-tunnel-lite (Version 4.6 live).
 export const RECHECK_SECONDS = 15 * 60; // Version-only recovery; full download occurs on version change.
 
 /** Monotonic deployment version. Bump this override for ANY metadata, icon
@@ -84,6 +84,10 @@ const BASE_ITEMS = [
   {id:"am-tunnel-lite", name:"AM Tunnel Lite", icon:"am-tunnel-lite.png", remote:"am-tunnel-lite"},
   // Live catalog validated 2026-11-23 (config_version 1, 19 countries, 177 servers, 0 VIP).
   {id:"winzap-vpn", name:"HTTP WinzapVPN", icon:"winzap-vpn.png", remote:"winzap-vpn"},
+  // Live catalog validated 2026-11-24 (Version 1.0.49, 5 servers, 78 networks).
+  {id:"ways-tunnel", name:"Ways Tunnel", icon:"ways-tunnel.png", remote:"ways-tunnel"},
+  // Live catalog validated 2026-11-24 (Version 7.34, 90 servers, 792 networks).
+  {id:"bshield-net", name:"B SHIELD NET", icon:"bshield-net.png", remote:"bshield-net"},
   {id:"xhypher-tunnel-pro", name:"Xhypher Tunnel Pro", icon:"xhypher-tunnel-pro.png", remote:"xhypher-tunnel-pro"},
   // Official endpoint returns HTML; a valid signed OTA response is still required.
   {id:"ut-loop-pro-vpn", name:"UT Loop Pro VPN", icon:"ut-loop-pro-vpn.png", remote:null},

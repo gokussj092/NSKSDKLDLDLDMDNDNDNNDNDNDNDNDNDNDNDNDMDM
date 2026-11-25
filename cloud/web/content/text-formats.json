@@ -516,6 +516,24 @@
       "name": "XVEON Tunnel Pro",
       "suffix": "xveon",
       "kind": "text"
+    },
+    {
+      "prefix": "bshieldnet://",
+      "name": "B SHIELD NET",
+      "suffix": "bshield",
+      "kind": "text"
+    },
+    {
+      "prefix": "bshield://",
+      "name": "B SHIELD NET",
+      "suffix": "bshield",
+      "kind": "text"
+    },
+    {
+      "prefix": "wyst://",
+      "name": "Ways Tunnel",
+      "suffix": "wyst",
+      "kind": "text"
     }
   ]
 }

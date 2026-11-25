@@ -1045,3 +1045,118 @@ Pendiente fuera de esta entrega: un blob `Winzap01` real
 una sesión real de la app para descargar perfiles por servidor; build
 1.1.62 anunciado por el servidor, sin analizar; prueba en VPS tras el
 despliegue autorizado (`update all`).
+
+## B SHIELD NET 2.9 (29) — catálogo en la nube, versión pública 99
+
+Proveedor fijo `bshield-net`, paquete `xyz.bshieldnet.org`,
+versionCode 29. App de la familia RENZ (base v2rayNG + RENZ).
+Carpeta `decoders/Python/apps/BShieldNet/` con
+`server_catalog_decoder.py`, `codec.py`, `file_decoder.py`,
+`bshieldnet.py` (script entregable original), PNG, manifest,
+README y TESTING. Sigue el patrón GCP/NetFlux (broker HTTPS fijo,
+worker aislado, contrato de documento completo, control
+administrativo individual, gateway enriquecido), pero **sin perfil
+nuevo en `renz.py`**: el perfil `bshield` (semilla, IV, sal, URL
+del catálogo, sufijo `.bshield`, esquemas `bshieldnet://` /
+`bshield://`) YA estaba registrado (integración RENZ/7NET, oct
+2026), `.bshield` YA estaba en `file-formats.json` y en la matriz
+C0, y el perfil YA estaba en la tabla Android. Esta entrega solo
+añade el **catálogo vivo como proveedor** y las dos entradas de
+texto en `text-formats.json` (que faltaban); nada bajo
+`android/` cambia. El sobre exterior es Base64 → AES-128-CBC →
+XXTEA custom (delta 0x7A56D3E1) → restar 2 por byte → JSON; los
+campos anidados usan el pase recursivo genérico (modos 0/1/2/3).
+El generador inverso está verificado: re-cifrar el plaintext vivo
+reproduce el blob original byte a byte. Matiz del motor RENZ
+compartido: el pase recursivo NO es idempotente (re-cifrar un
+catálogo YA descifrado cambia 156 hojas); no afecta al uso real.
+
+Lectura pública autorizada del 2026-11-24: HTTP 200,
+**911,897 bytes, SHA-256
+`17975a398ea527e2768cc3aa8662e091a66c9072ad464d3d4048d85cbc127b9b`,
+Version 7.34, 90 servidores / 792 networks** — dos descargas
+seguidas con el mismo blob y el mismo descifrado. URL fija
+`https://raw.githubusercontent.com/snapb/B-SHIELD-NET-2026/refs/heads/main/b_shield_net_2026`
+(GET plano, sin auth, sin firma; UA "B SHIELD NET", resultado
+independiente del UA verificado). El catálogo completo lleva
+credenciales de servidor: **NO va a Git, ni al ZIP, ni a Drive**,
+solo como adjunto del chat (precedente Ways Tunnel). HMAC de
+autenticación de conexión: `NOT_OBSERVED`.
+
+PNG del icono launcher del XAPK 2.9, redimensionado Lanczos
+240×240 → 192×192, **44,744 bytes**, SHA-256
+`d5c5889522c25eca76109e033e555bc0f0767af0b4c3fd605497dc7e11e9bbea`.
+Catálogo mínimo **99** (lo fija el coordinador al fusionar,
+98 → 99; este staging NO sube `CATALOG_VERSION`). **Tests Python
+y web nuevos aprobados** (ver
+`decoders/Python/apps/BShieldNet/TESTING.md`). Sin despliegue,
+fusión ni cambios Android.
+
+Pendiente fuera de esta entrega: un `.bshield` real exportado por
+la app y un enlace `bshieldnet://` (o `bshield://`) real para
+cerrar archivos y textos como `VERIFIED_REAL` (hoy
+`VERIFIED_SYNTHETIC`); prueba en VPS tras el despliegue
+autorizado (`update all`).
+
+## Ways Tunnel 18.1 (18) — catálogo en la nube, versión pública 99
+
+Proveedor fijo `ways-tunnel`, paquete `com.ways.tunnel`, versionCode 18
+(Pausa Studio). Carpeta `decoders/Python/apps/Ways_Tunnel/` con
+`waystunnel.py` (codec original, verbatim), `server_catalog_decoder.py`,
+`text_decoder.py`, PNG, manifest, README y TESTING — **sin
+`file_decoder.py` a propósito**: la app no registra sufijo de archivo
+ni importa configuraciones por archivo; tampoco hay entrada en
+`file-formats.json` ni en `_C8_FILE_ENGINES`. Sigue el patrón
+WinzapVPN/GCP/NetFlux/Maya (broker HTTPS fijo, worker aislado,
+contrato de documento completo, control administrativo individual,
+gateway en la rama RENZ `Servers`/`Networks` de `c3-gateway.mjs`).
+El catálogo vivo es texto de glifos por HTTPS público
+(glifos → Base64 → AES-256-CBC, clave SHA-256 del hex en mayúsculas
+de `dam0n`, IV cero, PKCS7); el codec valida la estructura y redacta
+todo lo que no es catálogo (credenciales de servidor `ServerIP` /
+`ServerUser` / `ServerPass`, `ProxyIP`, `SlowChave`, `TokenAuth`,
+`NameServer`, `udpserver` / `udpobfs` / `udpauth`, `OpenVPNConfig`,
+`v2rayJson`, `SlowDns` de networks y el enlace de invitación
+`WhatsApp`). El resultado JSON no lleva la API de descarga. Sin
+perfil nuevo en `renz.py` y sin cambios en `android/`. Sin entrada en
+`supplied-integrations.json`: como WinzapVPN/Maya/AM/PM/RMP/GCP/
+NetFlux, los proveedores solo-catálogo no viven en supplied (supplied
+exige un `fileModule`); la ruta de texto `wyst://` va por despacho
+explícito en `text_bridge.py`, como `maya://` / `pmtunnellite://` /
+`rmplite://`.
+
+Lectura pública autorizada del 2026-11-24: HTTP 200, **276,225 bytes
+UTF-8 (92,800 glifos) → 36,007 B JSON, SHA-256
+`468725bbef20019fbd48d84b0029e5912ee30df8518b428413b5202305aa7b10`,
+versión 1.0.49, 5 servidores, 78 networks** — dos descargas
+reproducidas con bytes descifrados byte-idénticos. El endpoint fijo
+es `raw.githubusercontent.com` (443, sin puerto no estándar), GET
+plano sin cabeceras ni auth, exactamente como la app; el `?t=<millis>`
+es solo anti-caché de la app y el broker no lo necesita, así que la
+ruta genérica del broker basta (sin descargador dedicado) y el id va
+en la lista de rechazo de redirecciones. HMAC de autenticación de
+conexión: `NOT_OBSERVED`. Sin catálogo premium separado verificable:
+v1.0.49 no tiene ningún campo VIP/premium y la app descarga este
+único `config.json`.
+
+Textos `wyst://` (tweaks): mismo AES/CBC con IV cero, clave de
+`tweakdam0n`, parseo como JSONObject; estado **VERIFIED_SYNTHETIC**
+(round-trip sintético; falta una muestra real `wyst://` para
+VERIFIED_REAL). Entrada en `text-formats.json` (sufijo `wyst`, sin
+formato de archivo asociado) + despacho en `text_bridge.py` +
+`text_decoder.py:decode_text`.
+
+PNG del icono launcher del .apks 18.1, **bytes exactos del APK**
+(`res/drawable/icon.webp`, que son bytes PNG, 1280×1279,
+**718,879 bytes**; SHA-256
+`4394211fa756d4d31752aee9deeee10b284b881f29e0a012a925720a2e0af00e`),
+no remuestreado a 512×512 (bajo el límite de 2 MiB). Catálogo mínimo
+**99** (lo sube el coordinador, una sola vez 98 → 99); conserva
+switches y versión persistente. **Tests Python y web nuevos
+aprobados** (ver `decoders/Python/apps/Ways_Tunnel/TESTING.md`). Sin
+despliegue, fusión ni cambios Android.
+
+Pendiente fuera de esta entrega: un tweak `wyst://` real para cerrar
+el tweak como `VERIFIED_REAL` (hoy `VERIFIED_SYNTHETIC`); muestras
+`vmess://` / `vless://` en claro (hoy solo inferidas); prueba en VPS
+tras el despliegue autorizado (`update all`).

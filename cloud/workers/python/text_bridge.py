@@ -148,6 +148,15 @@ def dispatch(text: str, *, password: str | None = None) -> str | None:
         # never a fallback to another format.
         module = importlib.import_module("decoders.Python.apps.XVEON_Tunnel_Pro.file_decoder")
         return module.decode_text(value, password=password)
+    if lowered.startswith("wyst://"):
+        # Ways Tunnel 18.1: explicit dispatch to the text decoder
+        # (AES-256-CBC / zero IV, key from tweakdam0n; same pattern as
+        # netflux/maya/pmtunnel/rmplite/xveon). The scheme is
+        # unambiguous: a None result is final, never a fallback to
+        # another format. VERIFIED_SYNTHETIC: no real wyst:// sample
+        # has been supplied yet.
+        module = importlib.import_module("decoders.Python.apps.Ways_Tunnel.text_decoder")
+        return module.decode_text(value, password=password)
     # C8 isolated original application codecs. These prefixes are unambiguous.
     c8_links = (
         ("bdnet://", "decoders.Python.apps.BD_NET_VPN.file_decoder"),

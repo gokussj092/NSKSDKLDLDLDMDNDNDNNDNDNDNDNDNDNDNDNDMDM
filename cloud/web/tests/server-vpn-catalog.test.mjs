@@ -74,7 +74,7 @@ test("only registered icon identifiers are served",async()=>{
 
 import {providerIds,providerEnabled,downloadVpnCatalog} from "../lib/server-vpn-provider.mjs";
 test("only fixed catalog providers are eligible for remote broker",async()=>{
-  assert.deepEqual(providerIds().sort(),[...new Set(["24clan-green","4u-tunnel-lite","7net-vpn","abowaged-vpn","ac-tunnel-vpn","alfaisal-tunnel-plus","alsaher-vip","am-tunnel-lite","any-vpn","apna-vpn","aura-net-vpn","austroplus-vpn","bd-net-vpn","catnet-vpn","enaa-tunnel","fnf-tunnel-bd","focus-vpn-cloud","freedom-vpn","gcp-vpn","genis-vpn","ha-tunnel-plus","halcon-r-net","http-conexion","http-fenixvpn","http-internet-infinito","http-jireh","http-socketclay","http-wakko","hx-tunnel","izph-vpn-pro","jyfast-vpn-ultra","kham-vpn","ksh-vpn","litron-pro-vpn","litron-vpn","maya-tun-pro","md-proxy-vpn","megatunnel","mkk-hyper","mm-tunnel","mnr-tunnel-plus","mtm-tunnel-lite","mx-tunnel-pro","my-tunnel-proxy","namo-vpn","netcol-vpn","netflux-vpn","onspace-vpn","opentunnel-ssh","pm-tunnel-lite","rjc-tunnel-pro","rmp-tunnel-lite","rmp-tunnel-pro","robust-tunnel","royal-tunnel","speicers-pro-vpn","speicers-turbo-vpn","speigo-vpn-configs","speigo-vpn-ssh","superflash-vpn","thailand-vpn","trv-tunnel","tunneldoom-vpn","tunneltweak","turbomx-vpn","tx-tunnel","ultra-tunnel","v2ray-tunnel-plus","vip-snipher-pro","wolf-custom-vpn","winzap-vpn","xhypher-tunnel-pro","xxpicore-tunnel","zig-tunnel",...suppliedProviderIds()])].sort());
+  assert.deepEqual(providerIds().sort(),[...new Set(["24clan-green","4u-tunnel-lite","7net-vpn","abowaged-vpn","ac-tunnel-vpn","alfaisal-tunnel-plus","alsaher-vip","am-tunnel-lite","any-vpn","apna-vpn","aura-net-vpn","austroplus-vpn","bd-net-vpn","bshield-net","catnet-vpn","enaa-tunnel","fnf-tunnel-bd","focus-vpn-cloud","freedom-vpn","gcp-vpn","genis-vpn","ha-tunnel-plus","halcon-r-net","http-conexion","http-fenixvpn","http-internet-infinito","http-jireh","http-socketclay","http-wakko","hx-tunnel","izph-vpn-pro","jyfast-vpn-ultra","kham-vpn","ksh-vpn","litron-pro-vpn","litron-vpn","maya-tun-pro","md-proxy-vpn","megatunnel","mkk-hyper","mm-tunnel","mnr-tunnel-plus","mtm-tunnel-lite","mx-tunnel-pro","my-tunnel-proxy","namo-vpn","netcol-vpn","netflux-vpn","onspace-vpn","opentunnel-ssh","pm-tunnel-lite","rjc-tunnel-pro","rmp-tunnel-lite","rmp-tunnel-pro","robust-tunnel","royal-tunnel","speicers-pro-vpn","speicers-turbo-vpn","speigo-vpn-configs","speigo-vpn-ssh","superflash-vpn","thailand-vpn","trv-tunnel","tunneldoom-vpn","tunneltweak","turbomx-vpn","tx-tunnel","ultra-tunnel","v2ray-tunnel-plus","vip-snipher-pro","ways-tunnel","wolf-custom-vpn","winzap-vpn","xhypher-tunnel-pro","xxpicore-tunnel","zig-tunnel",...suppliedProviderIds()])].sort());
   for(const id of providerIds()) assert.equal(providerEnabled(id,{CLOUD_SERVER_VPN_ENABLED:"false"}),false);
   assert.equal(providerEnabled("https://attacker.invalid/",{CLOUD_SERVER_VPN_ENABLED:"true"}),false);
   await assert.rejects(()=>downloadVpnCatalog("https://attacker.invalid/"),{code:"UNSUPPORTED_FORMAT"});
@@ -143,6 +143,22 @@ test("MAYA TUN PRO live catalog is enabled with its verified icon",async t=>{
  assert.equal(createHash("sha256").update(bytes).digest("hex"),"7749e091a93dba4bb5f64372c8b4d795aabf621e2af8ea2112aca412eeaa2e00");
 });
 
+
+// Live catalog validated 2026-11-24 (v1.0.49, 5 servers, 78 networks): the
+// card is decoding-enabled and serves the exact 1280x1279 launcher PNG
+// from the 18.1 .apks (718,879 bytes).
+test("Ways Tunnel live catalog is enabled with its verified icon",async t=>{
+ const old=process.env.CLOUD_SERVER_VPN_ENABLED;
+ process.env.CLOUD_SERVER_VPN_ENABLED="true";
+ t.after(()=>{if(old===undefined)delete process.env.CLOUD_SERVER_VPN_ENABLED;else process.env.CLOUD_SERVER_VPN_ENABLED=old;});
+ const app=catalog().apps.find(x=>x.id==="ways-tunnel");
+ assert(app);assert.equal(app.name,"Ways Tunnel");assert.equal(app.decodeEnabled,true);
+ assert.equal(app.iconSha256,"4394211fa756d4d31752aee9deeee10b284b881f29e0a012a925720a2e0af00e");
+ const response=await getIcon(body({id:"ways-tunnel"}));assert.equal(response.status,200);
+ const value=await response.json();const bytes=Buffer.from(value.contentBase64,"base64");
+ assert.equal(bytes.length,718879);
+ assert.equal(createHash("sha256").update(bytes).digest("hex"),"4394211fa756d4d31752aee9deeee10b284b881f29e0a012a925720a2e0af00e");
+});
 
 test("SocketClay original icon and verified remote source follow provider availability",t=>{
  const old=process.env.CLOUD_SERVER_VPN_ENABLED;
@@ -364,6 +380,18 @@ test("WinzapVPN original PNG and validated complete catalog follow provider cont
  assert.equal(app.iconSha256,"319b2dbfdf696276d87c6135c104113e750b4dbb663f96b1e9fc6573d4d538ea");
  assert.equal(iconFor("winzap-vpn").bytes.length,21447);
  assert.equal(catalog({availability:{"winzap-vpn":false}}).apps.find(x=>x.id==="winzap-vpn").decodeEnabled,false);
+});
+
+
+// Live catalog validated 2026-11-24 (Version 7.34, 90 servers, 792 networks):
+// the card is decoding-enabled and serves the 192x192 launcher PNG
+// from the XAPK (44,744 bytes; Lanczos-resized 240x240 -> 192x192).
+test("B SHIELD NET original PNG and validated complete catalog follow provider controls",()=>{
+ const app=catalog({availability:{"bshield-net":true}}).apps.find(x=>x.id==="bshield-net");
+ assert.equal(app.name,"B SHIELD NET");assert.equal(app.decodeEnabled,true);
+ assert.equal(app.iconSha256,"d5c5889522c25eca76109e033e555bc0f0767af0b4c3fd605497dc7e11e9bbea");
+ assert.equal(iconFor("bshield-net").bytes.length,44744);
+ assert.equal(catalog({availability:{"bshield-net":false}}).apps.find(x=>x.id==="bshield-net").decodeEnabled,false);
 });
 
 

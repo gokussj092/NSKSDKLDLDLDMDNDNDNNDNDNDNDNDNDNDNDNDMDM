@@ -1,0 +1,29 @@
+{
+  "id": "top-plug-sa",
+  "name": "TOP-PLUG-SA",
+  "package": "mobi.ascensionrpg.khonavpn.activationtest",
+  "versionName": "0.29.26",
+  "versionCode": 89,
+  "kind": "file",
+  "extensions": [
+    "tpc"
+  ],
+  "fileDecoder": "topplugsa.py",
+  "serverCatalogDecoder": null,
+  "runtime": "python",
+  "dependencies": [
+    "pycryptodome==3.23.0"
+  ],
+  "requiresApkAtRuntime": false,
+  "requiresUserCredentials": true,
+  "cloudSupported": true,
+  "androidOfflineSupported": false,
+  "compatibleExportCertified": false,
+  "validation": {
+    "androidImportTested": false,
+    "authorizedRealFiles": 1,
+    "reference": "TOPPLUG4 real sample from the APK (assets/activation-helper.tpc, GCM tag valid); the sample itself is NOT in the repo (it carries credentials). TOPPLUG5 round-trip, TOPPLUG1/TOPPLUG2/MANUAL-V2 synthetic vectors in topplugsa.py self-test.",
+    "syntheticRejectedCases": 8,
+    "syntheticValidCases": 5
+  }
+}

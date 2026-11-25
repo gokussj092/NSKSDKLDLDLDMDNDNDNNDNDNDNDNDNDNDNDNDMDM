@@ -149,6 +149,19 @@ const PROVIDERS = Object.freeze({
   // without it); see §0 of the edit spec for the 4 production places to swap if the owner
   // issues a dedicated SP-DECODE id.
   "winzap-vpn": {url:"https://vpnapi.winzapg.online:2083/api/v1/bootstrap?device_id=WINZAP-TEST0001",agent:"WinZapVPN/1.1.61"},
+  // Live catalog validated 2026-11-24 (Version 1.0.49, 5 servers, 78 networks).
+  // Plain GET, no headers, no auth — exactly like the app (HttpURLConnection,
+  // 15 s timeouts, ?t=<millis> anti-cache only; the broker fetches the fixed
+  // URL without the query, like the other raw.githubusercontent.com
+  // providers). A default-UA control fetch returns byte-identical bodies,
+  // so the result does not depend on the agent. Generic 443 path: no
+  // dedicated downloader needed (unlike Winzap port 2083).
+  "ways-tunnel": {url:"https://raw.githubusercontent.com/waystunnel/politicas/refs/heads/main/config.json",agent:"Ways Tunnel/18"},
+  // Live catalog validated 2026-11-24 (Version 7.34, 90 servers, 792 networks).
+  // Plain GET, no headers, no auth, no signature -- exactly like the app; UA "B SHIELD NET"
+  // follows the RENZ-family pattern. The result does not depend on it: the dossier fetch
+  // (urllib default UA) and a control fetch with a custom UA returned byte-identical blobs.
+  "bshield-net": {url:"https://raw.githubusercontent.com/snapb/B-SHIELD-NET-2026/refs/heads/main/b_shield_net_2026",agent:"B SHIELD NET"},
   "xhypher-tunnel-pro": {url:"https://raw.githubusercontent.com/XyrussProject/infinite88/refs/heads/main/xhyphertunnelpro888.hs",agent:"Xhypher Tunnel Pro/43"},
   "turbomx-vpn": {url:TURBOMX_SOURCES.servers,agent:"TurboMX VPN/143.1.26"},
   "superflash-vpn": {url:SUPERFLASH_SOURCES.servers,agent:"SuperFlash VPN/184.0.1"},
@@ -725,7 +738,7 @@ export async function downloadVpnCatalog(id,source=id==="jyfast-vpn-ultra"?"free
         continue;
       }
       if(answer.redirect!==undefined){
-        if(["kham-vpn","opentunnel-ssh","md-proxy-vpn","xxpicore-tunnel","speigo-vpn-configs","speigo-vpn-ssh","litron-vpn","litron-pro-vpn","genis-vpn","http-conexion","namo-vpn","fnf-tunnel-bd","alsaher-vip","ha-tunnel-plus","ultra-tunnel","mm-tunnel","zig-tunnel","enaa-tunnel","izph-vpn-pro","vip-snipher-pro","netcol-vpn","wolf-custom-vpn","tunneldoom-vpn","mtm-tunnel-lite","mnr-tunnel-plus","bd-net-vpn","aura-net-vpn","apna-vpn","any-vpn","speicers-pro-vpn","7net-vpn","gcp-vpn","netflux-vpn","maya-tun-pro","pm-tunnel-lite","am-tunnel-lite","xhypher-tunnel-pro","focus-vpn-cloud","freedom-vpn","http-internet-infinito","megatunnel","mx-tunnel-pro","rjc-tunnel-pro","rmp-tunnel-pro","rmp-tunnel-lite","http-jireh","winzap-vpn"].includes(id)||Object.hasOwn(PAIRED_SOURCES,id))fail("REMOTE_NETWORK_DENIED");
+        if(["kham-vpn","opentunnel-ssh","md-proxy-vpn","xxpicore-tunnel","speigo-vpn-configs","speigo-vpn-ssh","litron-vpn","litron-pro-vpn","genis-vpn","http-conexion","namo-vpn","fnf-tunnel-bd","alsaher-vip","ha-tunnel-plus","ultra-tunnel","mm-tunnel","zig-tunnel","enaa-tunnel","izph-vpn-pro","vip-snipher-pro","netcol-vpn","wolf-custom-vpn","tunneldoom-vpn","mtm-tunnel-lite","mnr-tunnel-plus","bd-net-vpn","aura-net-vpn","apna-vpn","any-vpn","speicers-pro-vpn","7net-vpn","gcp-vpn","netflux-vpn","maya-tun-pro","pm-tunnel-lite","am-tunnel-lite","xhypher-tunnel-pro","focus-vpn-cloud","freedom-vpn","http-internet-infinito","megatunnel","mx-tunnel-pro","rjc-tunnel-pro","rmp-tunnel-pro","rmp-tunnel-lite","http-jireh","winzap-vpn","bshield-net","ways-tunnel"].includes(id)||Object.hasOwn(PAIRED_SOURCES,id))fail("REMOTE_NETWORK_DENIED");
         const next=answer.redirect;
         if(typeof next!=="string"||next.length>2048)fail("REMOTE_NETWORK_DENIED");
         target=new URL(next,dest).href;

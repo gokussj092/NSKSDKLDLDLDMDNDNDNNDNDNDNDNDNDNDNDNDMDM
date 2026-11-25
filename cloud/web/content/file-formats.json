@@ -1869,6 +1869,16 @@
       "credentialFields": []
     },
     {
+      "suffix": "tpc",
+      "name": "TOP-PLUG-SA VPN 0.29.26",
+      "kind": "file",
+      "offlineSupported": false,
+      "cloudSupported": true,
+      "credentialFields": [
+        "password"
+      ]
+    },
+    {
       "suffix": "tpp",
       "name": "Generic AES-GCM / PBKDF2",
       "kind": "file",

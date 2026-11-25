@@ -91,6 +91,8 @@ PROVIDERS = {
     "pm-tunnel-lite": "decoders.Python.apps.PM_Tunnel_Lite.server_catalog_decoder",
     "am-tunnel-lite": "decoders.Python.apps.AM_Tunnel_Lite.server_catalog_decoder",
     "winzap-vpn": "decoders.Python.apps.WinzapVPN.server_catalog_decoder",
+    "ways-tunnel": "decoders.Python.apps.Ways_Tunnel.server_catalog_decoder",
+    "bshield-net": "decoders.Python.apps.BShieldNet.server_catalog_decoder",
 }
 
 def decode(provider_id: str, payload: bytes) -> str:

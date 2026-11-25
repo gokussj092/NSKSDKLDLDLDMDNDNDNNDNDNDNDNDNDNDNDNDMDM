@@ -2105,6 +2105,23 @@
       "sourceIcon": "xu-tunnel.png",
       "icon": "xu-tunnel.png",
       "catalogState": "FILE_ONLY"
+    },
+    {
+      "id": "top-plug-sa",
+      "appDir": "TopPlugSA",
+      "name": "TOP-PLUG-SA",
+      "package": "mobi.ascensionrpg.khonavpn.activationtest",
+      "versionCode": 89,
+      "versionName": "0.29.26",
+      "extensions": [
+        "tpc"
+      ],
+      "textPrefixes": [],
+      "fileModule": "topplugsa.py",
+      "requests": [],
+      "sourceIcon": "topplugsa.png",
+      "icon": "top-plug-sa.png",
+      "catalogState": "FILE_ONLY"
     }
   ]
 }
