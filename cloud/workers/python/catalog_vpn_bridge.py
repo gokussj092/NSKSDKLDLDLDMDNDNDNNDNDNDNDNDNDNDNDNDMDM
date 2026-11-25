@@ -93,6 +93,12 @@ PROVIDERS = {
     "winzap-vpn": "decoders.Python.apps.WinzapVPN.server_catalog_decoder",
     "ways-tunnel": "decoders.Python.apps.Ways_Tunnel.server_catalog_decoder",
     "bshield-net": "decoders.Python.apps.BShieldNet.server_catalog_decoder",
+    "msy-vpn": "decoders.Python.apps.MSY_VPN.server_catalog_decoder",
+    "alsaherfree": "decoders.Python.apps.AlsaherFree.alsaherfree",
+    "pulse-tunnel": "decoders.Python.apps.PulseTunnel.server_catalog_decoder",
+    "irfan-vpn": "decoders.Python.apps.IrfanVPN.server_catalog_decoder",
+    "katiba-vpn": "decoders.Python.apps.KatibaVPN.server_catalog_decoder",
+    "dtunnel-vpn": "decoders.Python.apps.DTunnel_VPN.server_catalog_decoder",
 }
 
 def decode(provider_id: str, payload: bytes) -> str:

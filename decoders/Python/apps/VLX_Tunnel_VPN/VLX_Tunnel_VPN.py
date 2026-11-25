@@ -29,8 +29,9 @@ No auth, no cookies, no extra headers. The User-Agent is REQUIRED: the
 server answers HTTP 404 to Go-http-client/1.1 and to curl's default UA,
 and HTTP 200 only with "VLX Tunnel VPN" (verified 2026-11-15). The
 server answers HTTP 200, Content-Type text/html; charset=UTF-8. The body
-is a single line of Base64 (1,082,108 bytes on 2026-11-15). It is one
-Argon2id + AES-256-GCM envelope (the same envelope the app's Encrypt()
+is a single line of Base64 (1,082,108 bytes on 2026-11-15; 1,092,124 bytes
+on 2026-11-25, SHA-256 d22ba961b6ada30999597c13a8c4d0b855a9806ead3b4a37b795df4da6507eef).
+It is one Argon2id + AES-256-GCM envelope (the same envelope the app's Encrypt()
 produces), with NO marker letter (body length is 0 mod 4):
 
     Base64( salt[16] || nonce[12] || AES-256-GCM(key, nonce, AAD=salt) )
@@ -53,12 +54,13 @@ schema of the other providers).
 Bundled asset assets/configfile.json opens with FIELD (verified: GCM tag
 authenticates, JSON parses, Version "1.01", 1 Server, 1 Network).
 
-LIVE STATUS (2026-11-15): the endpoint above answers HTTP 200 and the
-live body OPENS with KEY_LIVE -- Version "23.759", 19 Servers, 721 Networks
-(verified with this script, --url). Field envelopes (--fields):
-4,518/4,518 open with FIELD, 0 failures (see TESTING.md). If the server
-rotates the live key, this script reports the live download honestly
-instead of pretending it opened.
+LIVE STATUS (2026-11-25, re-verified with this script, --url): the
+endpoint above answers HTTP 200 and the live body OPENS with KEY_LIVE --
+Version "23.785", 17 Servers, 731 Networks. Field envelopes (--fields):
+4,560/4,560 open with FIELD, 0 failures. Previous live check 2026-11-15:
+Version "23.759", 19 Servers, 721 Networks, 4,518/4,518 fields. If the
+server rotates the live key, this script reports the live download
+honestly instead of pretending it opened.
 
 Network Icon values (icon_wifi.png, ...) are local asset file names,
 not URLs; there is no download API anywhere in the catalog (root keys

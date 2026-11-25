@@ -10,7 +10,7 @@ ROOT = Path(__file__).resolve().parents[2]
 def build() -> str:
     source = (ROOT / "decoders/Python/apps/HX_Tunnel_VPN/HX_Tunnel_VPN.py").read_text("utf-8")
     names = {"DecodeError", "_text", "_base64", "_unique", "_nonfinite", "_validate",
-             "_json", "_mx", "decrypt_catalog_bytes", "_catalog_json"}
+             "_json", "_mx", "decrypt_catalog_bytes", "_catalog_json", "_decrypt_credential_fields"}
     constants = {"MAX_BYTES", "MAX_DEPTH", "MAX_NODES", "MASK", "DELTA", "LIST_FIELDS"}
     definitions, values = [], []
     for node in ast.parse(source).body:

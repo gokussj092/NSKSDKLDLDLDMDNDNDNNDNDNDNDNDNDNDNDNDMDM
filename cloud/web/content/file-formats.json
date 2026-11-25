@@ -191,6 +191,14 @@
       "credentialFields": []
     },
     {
+      "suffix": "txtunnel",
+      "name": "Tx Tunnel v1.10.11.3",
+      "kind": "file",
+      "offlineSupported": false,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
       "suffix": "apnatnl",
       "name": "XOR VPN family",
       "kind": "file",
@@ -359,6 +367,14 @@
       "credentialFields": []
     },
     {
+      "suffix": "katiba",
+      "name": "Katiba VPN v1.11.06.1",
+      "kind": "file",
+      "offlineSupported": false,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
       "suffix": "purple",
       "name": "Generic AES-GCM / PBKDF2",
       "kind": "file",
@@ -491,6 +507,14 @@
       "credentialFields": []
     },
     {
+      "suffix": "irfan",
+      "name": "IRFAN VPN V3",
+      "kind": "file",
+      "offlineSupported": false,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
       "suffix": "lucky",
       "name": "LUCKY PROXY",
       "kind": "file",
@@ -516,7 +540,7 @@
     },
     {
       "suffix": "mehaf",
-      "name": "MEHAF TUNNEL",
+      "name": "Mehaf VPN 1.0.9.20",
       "kind": "file",
       "offlineSupported": true,
       "cloudSupported": true,
@@ -545,6 +569,16 @@
       "offlineSupported": false,
       "cloudSupported": true,
       "credentialFields": []
+    },
+    {
+      "suffix": "pulse",
+      "name": "PULSE TUNNEL VPN 1.7",
+      "kind": "file",
+      "offlineSupported": false,
+      "cloudSupported": true,
+      "credentialFields": [
+        "password"
+      ]
     },
     {
       "suffix": "sksrv",
@@ -2058,7 +2092,7 @@
     },
     {
       "suffix": "ar",
-      "name": "AR PRO VPN 1.0",
+      "name": "AR PRO VPN 2.0",
       "kind": "file",
       "offlineSupported": true,
       "cloudSupported": true,

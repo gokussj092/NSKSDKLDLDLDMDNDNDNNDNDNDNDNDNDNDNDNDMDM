@@ -13,6 +13,7 @@ import {THAILAND_FIREBASE_OPTIONS,thailandResolver} from "./thailand-firebase.mj
 import dns from "node:dns/promises";
 import https from "node:https";
 import http from "node:http";
+import http2 from "node:http2";
 import {ALFAISAL_SOURCE,ALFAISAL_METADATA,alfaisalConfigured,alfaisalRequest} from "./alfaisal-protocol.mjs";
 import {HALCON_SOURCE,halconConfigured,halconRequest} from "./halcon-protocol.mjs";
 import {publicIpv4} from "./c35-provider.mjs";
@@ -162,6 +163,36 @@ const PROVIDERS = Object.freeze({
   // follows the RENZ-family pattern. The result does not depend on it: the dossier fetch
   // (urllib default UA) and a control fetch with a custom UA returned byte-identical blobs.
   "bshield-net": {url:"https://raw.githubusercontent.com/snapb/B-SHIELD-NET-2026/refs/heads/main/b_shield_net_2026",agent:"B SHIELD NET"},
+  // Live catalog validated 2026-11-25 (catalog_version 64, 3 servers, 18 configs).
+  // Plain HTTP GET, no headers, no auth — exactly like the app (raw socket).
+  // The generic path rejects non-HTTPS, so the dedicated downloader below
+  // (downloadMsyVpn) fetches it with pinnedRequest; same fixed URL S Tunnel
+  // already uses via supplied. No redirects, ever.
+  "msy-vpn": {url:"http://servers.jk5.fun/servers.json",agent:"Dalvik/2.1.0"},
+  // Live catalog validated 2026-11-25 (Version 9.9.72, 4 servers).
+  // Plain GET, User-Agent okhttp/4.12.0 (the app's OkHttp default, no other
+  // headers) — exactly like the app. The old URL (Alsaher.json) returns 404
+  // live; the file was renamed to Alsaherjihad.json on 2026-11-22.
+  "alsaherfree": {url:"https://raw.githubusercontent.com/Skytells0/Alsaher/main/Alsaherjihad.json",agent:"okhttp/4.12.0"},
+  // Live catalog validated 2026-11-25 (Version 1.0.102, 9 servers all premium,
+  // 1077 networks, 201 payloads). Plain GET with the analysis UA and
+  // Accept */* — the app itself sends Play Integrity headers, but the
+  // verified fetch needs none of them.
+  "pulse-tunnel": {url:"https://xxxbeeghub.com/api/app?json=a1c4f329af86d98a93ed",agent:"SP-DECODE/1.0 (+https://spdecode.xyz)",headers:{"Accept":"*/*"}},
+  // Live catalog validated 2026-11-25 (Version 2.8, 3 servers, 63 networks).
+  // Plain GET, User-Agent IRFAN VPN — exactly like the app.
+  "irfan-vpn": {url:"https://strongteam.co/api/irfan/irfan1.txt",agent:"IRFAN VPN"},
+  // Live catalog validated 2026-11-25 (Version 1.12, 57 servers, 235 networks;
+  // 21 values in 15 networks stay encrypted — key not in the APK).
+  // POST with body hash=xsandokUpdatex — exactly like the app (mm-tunnel shape).
+  "katiba-vpn": {url:"https://strongteam.co/api/katibanew/",agent:"Go-http-client/1.1",
+    headers:{"Content-Type":"application/x-www-form-urlencoded"},
+    method:"POST",body:Buffer.from("hash=xsandokUpdatex")},
+  // Live catalog validated 2026-11-25 (Version 436, 16 profiles, all DTUNNEL).
+  // gRPC TLS, not a plain GET: the dedicated downloader below
+  // (downloadDtunnelVpn) owns the transport; this entry only registers the
+  // provider and its authority for providerIds()/providerEnabled().
+  "dtunnel-vpn": {url:"https://grpc.dtunnel.com.br",agent:"DTunnel VPN/4.5.8"},
   "xhypher-tunnel-pro": {url:"https://raw.githubusercontent.com/XyrussProject/infinite88/refs/heads/main/xhyphertunnelpro888.hs",agent:"Xhypher Tunnel Pro/43"},
   "turbomx-vpn": {url:TURBOMX_SOURCES.servers,agent:"TurboMX VPN/143.1.26"},
   "superflash-vpn": {url:SUPERFLASH_SOURCES.servers,agent:"SuperFlash VPN/184.0.1"},
@@ -566,6 +597,165 @@ async function downloadWinzapVpn(provider){
   fail("REMOTE_PROVIDER_UNAVAILABLE");
 }
 
+async function downloadMsyVpn(provider){
+  // Live catalog validated 2026-11-25 (catalog_version 64, 3 servers, 18
+  // configs). Single fixed GET over plain HTTP (the app fetches the same
+  // URL with a raw socket; the generic path rejects non-HTTPS, so this
+  // dedicated downloader fetches it with pinnedRequest instead — the
+  // transport already supports http:, same vetted IPv4 pinning, no
+  // redirects). The endpoint is shared with S Tunnel (supplied), which
+  // uses the same fixed URL.
+  const deadline=Date.now()+DEADLINE_MS;
+  const dest=new URL(provider.url);
+  const addresses=await vettedIpv4(dest.hostname);
+  const attempts=addresses.length===1?[addresses[0],addresses[0]]:addresses;
+  for(const ip of attempts){
+    const remaining=deadline-Date.now();
+    if(remaining<=0)fail("REMOTE_PROVIDER_UNAVAILABLE");
+    let answer;
+    try{answer=await pinnedRequest(dest.href,ip,provider.agent,Math.min(CONNECT_MS,remaining),{});}
+    catch(error){
+      if(error instanceof VpnProviderError){if(!error.retryable)throw error;continue;}
+      if(!RETRY_CODES.has(error?.code))fail("REMOTE_PROVIDER_UNAVAILABLE");
+      continue;
+    }
+    if(Object.hasOwn(answer,"redirect"))fail("REMOTE_NETWORK_DENIED");
+    if(!Buffer.isBuffer(answer.data)||!answer.data.length||answer.data.length>MAX_BYTES)
+      fail("REMOTE_RESPONSE_INVALID");
+    return answer.data;
+  }
+  fail("REMOTE_PROVIDER_UNAVAILABLE");
+}
+
+// DTunnel VPN 4.5.8 (2026-11-25): the live catalog is a gRPC call, not a
+// plain HTTP GET, so the generic path (pinnedRequest) cannot fetch it.
+// downloadDtunnelVpn below speaks gRPC over the built-in node:http2
+// transport (TLS, ALPN h2, no external grpc library): one unary call to
+// com.app.config.ConfigService/getConfigsV2 with the request protobuf
+// {user_id} and the response field `data` extracted. The user_id is a
+// SERVER SECRET: it is read ONLY from SPDECODE_DTUNNEL_VPN_REQUEST_ID
+// (added to /etc/spdecode/cloud.env on the VPS) and never logged, never
+// shipped to the worker, never in the repo. Missing or non-UUID value
+// fails REMOTE_NOT_CONFIGURED. NOTE: the variable is intentionally
+// distinct from dtunnel-mod's secretHeader.env
+// (cloud/web/lib/dtunnel-credentials.server.mjs, SPDECODE_DTUNNEL_REQUEST_ID
+// with fallback DEFAULT_DTUNNEL_REQUEST_ID), so the two apps never share
+// a token.
+const DTUNNEL_GRPC_AUTHORITY="grpc.dtunnel.com.br";
+const DTUNNEL_GRPC_PATH="/com.app.config.ConfigService/getConfigsV2";
+const DTUNNEL_GRPC_MAX_BYTES=8*1024*1024;
+const _DTUNNEL_UUID=/^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
+
+function _dtunnelGrpcFrame(userId){
+  // gRPC frame: 0x00 + 4-byte BE length + protobuf {user_id: string = 1}
+  // (tag 0x0A, varint length, UTF-8 bytes).
+  const id=Buffer.from(userId,"utf8");
+  const message=Buffer.concat([Buffer.from([0x0a,id.length]),id]);
+  const header=Buffer.alloc(5);
+  header[0]=0;
+  header.writeUInt32BE(message.length,1);
+  return Buffer.concat([header,message]);
+}
+
+function _dtunnelGrpcData(frames){
+  // Concatenate all DATA frames; parse the 5-byte gRPC headers; the
+  // first message (compressed flag 0) is the response protobuf.
+  let offset=0;
+  let payload=null;
+  while(offset+5<=frames.length){
+    const compressed=frames[offset];
+    const length=frames.readUInt32BE(offset+1);
+    if(offset+5+length>frames.length)fail("REMOTE_RESPONSE_INVALID");
+    if(compressed!==0)fail("REMOTE_RESPONSE_INVALID");
+    if(payload===null)payload=frames.subarray(offset+5,offset+5+length);
+    offset+=5+length;
+  }
+  if(offset!==frames.length||payload===null)fail("REMOTE_RESPONSE_INVALID");
+  // Response protobuf: field 1 (tag 0x0A) is the `data` string.
+  if(payload.length<2||payload[0]!==0x0a)fail("REMOTE_RESPONSE_INVALID");
+  let pos=1,len=0,shift=0;
+  for(;;){
+    if(pos>=payload.length)fail("REMOTE_RESPONSE_INVALID");
+    const byte=payload[pos++];
+    len|=(byte&0x7f)<<shift;
+    if((byte&0x80)===0)break;
+    shift+=7;
+    if(shift>28)fail("REMOTE_RESPONSE_INVALID");
+  }
+  if(pos+len>payload.length)fail("REMOTE_RESPONSE_INVALID");
+  return payload.subarray(pos,pos+len);
+}
+
+async function downloadDtunnelVpn(){
+  const userId=process.env.SPDECODE_DTUNNEL_VPN_REQUEST_ID;
+  if(typeof userId!=="string"||!_DTUNNEL_UUID.test(userId))fail("REMOTE_NOT_CONFIGURED");
+  const deadline=Date.now()+DEADLINE_MS;
+  const addresses=await vettedIpv4(DTUNNEL_GRPC_AUTHORITY);
+  const attempts=addresses.length===1?[addresses[0],addresses[0]]:addresses;
+  for(const ip of attempts){
+    const remaining=deadline-Date.now();
+    if(remaining<=0)fail("REMOTE_PROVIDER_UNAVAILABLE");
+    const client=http2.connect(`https://${DTUNNEL_GRPC_AUTHORITY}`,{
+      lookup:(host,options,callback)=>{
+        if(host!==DTUNNEL_GRPC_AUTHORITY)return callback(Object.assign(new Error("hostname"),{code:"EHOSTUNREACH"}));
+        if(options?.all)return callback(null,[{address:ip,family:4}]);
+        return callback(null,ip,4);
+      },
+    });
+    try{
+      const data=await new Promise((resolve,reject)=>{
+        const timer=setTimeout(()=>{
+          client.destroy();
+          reject(new VpnProviderError("REMOTE_PROVIDER_UNAVAILABLE",{retryable:true}));
+        },remaining);
+        timer.unref?.();
+        let status=0,grpcStatus=null,settled=false;
+        const chunks=[];
+        let bytes=0;
+        const done=(error,value)=>{
+          if(settled)return;settled=true;
+          clearTimeout(timer);
+          if(error)reject(error);else resolve(value);
+        };
+        client.on("error",error=>done(error));
+        const req=client.request({
+          ":method":"POST",
+          ":path":DTUNNEL_GRPC_PATH,
+          "content-type":"application/grpc",
+          "te":"trailers",
+          "client-version":"4.5.8",
+        });
+        req.on("response",headers=>{
+          status=headers[":status"]||0;
+          if(headers["grpc-status"]!==undefined)grpcStatus=headers["grpc-status"];
+        });
+        req.on("trailers",headers=>{grpcStatus=headers["grpc-status"];});
+        req.on("data",part=>{
+          bytes+=part.length;
+          if(bytes>DTUNNEL_GRPC_MAX_BYTES){req.close();done(new VpnProviderError("REMOTE_TOO_LARGE"));return;}
+          chunks.push(part);
+        });
+        req.on("end",()=>{
+          if(status!==200)return done(new VpnProviderError("REMOTE_PROVIDER_UNAVAILABLE",{retryable:[429,500,502,503,504].includes(status)}));
+          if(grpcStatus!==null&&grpcStatus!=="0")return done(new VpnProviderError("REMOTE_PROVIDER_UNAVAILABLE",{retryable:false}));
+          try{done(null,_dtunnelGrpcData(Buffer.concat(chunks)));}
+          catch(error){done(error);}
+        });
+        req.on("error",error=>done(error));
+        req.end(_dtunnelGrpcFrame(userId));
+      });
+      return data;
+    }catch(error){
+      if(error instanceof VpnProviderError){if(!error.retryable)throw error;continue;}
+      if(!RETRY_CODES.has(error?.code))fail("REMOTE_PROVIDER_UNAVAILABLE");
+      continue;
+    }finally{
+      client.destroy();
+    }
+  }
+  fail("REMOTE_PROVIDER_UNAVAILABLE");
+}
+
 // OpenTunnel variant B (Pedro, 2026-11-19): the app sends the user's own
 // device_id in the op 12 request; the broker invents that device's pair
 // (spdecode-... / spdecode-...), registers it with ONE POST generate for
@@ -675,6 +865,14 @@ export async function downloadVpnCatalog(id,source=id==="jyfast-vpn-ultra"?"free
     if(source!=="servers")fail("UNSUPPORTED_FORMAT");
     return downloadWinzapVpn(provider);
   }
+  if(id==="msy-vpn"){
+    if(source!=="servers")fail("UNSUPPORTED_FORMAT");
+    return downloadMsyVpn(provider);
+  }
+  if(id==="dtunnel-vpn"){
+    if(source!=="servers")fail("UNSUPPORTED_FORMAT");
+    return downloadDtunnelVpn();
+  }
   if(id==="catnet-vpn"){
     if(source!=="servers")fail("UNSUPPORTED_FORMAT");
     return downloadCatnet(provider);
@@ -738,7 +936,7 @@ export async function downloadVpnCatalog(id,source=id==="jyfast-vpn-ultra"?"free
         continue;
       }
       if(answer.redirect!==undefined){
-        if(["kham-vpn","opentunnel-ssh","md-proxy-vpn","xxpicore-tunnel","speigo-vpn-configs","speigo-vpn-ssh","litron-vpn","litron-pro-vpn","genis-vpn","http-conexion","namo-vpn","fnf-tunnel-bd","alsaher-vip","ha-tunnel-plus","ultra-tunnel","mm-tunnel","zig-tunnel","enaa-tunnel","izph-vpn-pro","vip-snipher-pro","netcol-vpn","wolf-custom-vpn","tunneldoom-vpn","mtm-tunnel-lite","mnr-tunnel-plus","bd-net-vpn","aura-net-vpn","apna-vpn","any-vpn","speicers-pro-vpn","7net-vpn","gcp-vpn","netflux-vpn","maya-tun-pro","pm-tunnel-lite","am-tunnel-lite","xhypher-tunnel-pro","focus-vpn-cloud","freedom-vpn","http-internet-infinito","megatunnel","mx-tunnel-pro","rjc-tunnel-pro","rmp-tunnel-pro","rmp-tunnel-lite","http-jireh","winzap-vpn","bshield-net","ways-tunnel"].includes(id)||Object.hasOwn(PAIRED_SOURCES,id))fail("REMOTE_NETWORK_DENIED");
+        if(["kham-vpn","opentunnel-ssh","md-proxy-vpn","xxpicore-tunnel","speigo-vpn-configs","speigo-vpn-ssh","litron-vpn","litron-pro-vpn","genis-vpn","http-conexion","namo-vpn","fnf-tunnel-bd","alsaher-vip","ha-tunnel-plus","ultra-tunnel","mm-tunnel","zig-tunnel","enaa-tunnel","izph-vpn-pro","vip-snipher-pro","netcol-vpn","wolf-custom-vpn","tunneldoom-vpn","mtm-tunnel-lite","mnr-tunnel-plus","bd-net-vpn","aura-net-vpn","apna-vpn","any-vpn","speicers-pro-vpn","7net-vpn","gcp-vpn","netflux-vpn","maya-tun-pro","pm-tunnel-lite","am-tunnel-lite","xhypher-tunnel-pro","focus-vpn-cloud","freedom-vpn","http-internet-infinito","megatunnel","mx-tunnel-pro","rjc-tunnel-pro","rmp-tunnel-pro","rmp-tunnel-lite","http-jireh","winzap-vpn","bshield-net","ways-tunnel","alsaherfree","pulse-tunnel","irfan-vpn","katiba-vpn"].includes(id)||Object.hasOwn(PAIRED_SOURCES,id))fail("REMOTE_NETWORK_DENIED");
         const next=answer.redirect;
         if(typeof next!=="string"||next.length>2048)fail("REMOTE_NETWORK_DENIED");
         target=new URL(next,dest).href;

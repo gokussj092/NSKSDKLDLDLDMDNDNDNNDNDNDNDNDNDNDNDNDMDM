@@ -33,6 +33,40 @@ no LSParanoid/Deobfuscator class exists in this DEX):
     use the legacy one (DO). decode() tries the current one first and
     falls back to the legacy one, mirroring ConfigFileParser
     (parseConfig, then DO).
+  * Per-field encryption (CORRECTION 2026-11-25): the outer envelope is
+    NOT the whole story. Every server/network field value that carries
+    data (ServerIPHost, OVPNUser, OVPNPass, UDP_obfs, UDP_user,
+    CustomCertificate, SlowDNSHost, SlowDNSKey, V2rayUUID, H2pass,
+    Payload, SNI, V2rayConfig, V2rayAddress, V2rayHost, V2raySNI,
+    BugDNS) is itself an envelope in the SAME layout, encrypted with
+    the LEGACY password (DO), including empty strings (a 44-byte blob
+    decrypts to ""). Evidence, from THIS APK:
+      - libgojni.so: AndroidLibXrayLite.decrypt (0x1013cc0, current
+        password, 19 B) and .DO (0x1014610, legacy password, 17 B)
+        implement the identical envelope (min. blob 28 B, Argon2id
+        t=3/m=8192/p=1/keyLen=32, AES-256-GCM, AAD=salt); DO builds its
+        password from the "P@AssWod" immediate plus the "FatTUNNEL"
+        prefix in .rodata.
+      - DEX (classes3.dex): Hometab$Companion.a is a thin wrapper
+        around Libv2ray.do_; it is the per-field decrypt helper, called
+        from ConfigUtil.getPayload/getProxy/getSSHHost/getSni and from
+        HomeFragment.E0 (17 sites), .Y (8), .W (4), .H (3), .C0, .m0,
+        .t0, ServerStatusAdapter, ServerStatusVIew and ConfigFileParser.
+        The catalog path itself (Hometab$configUpdate$1 -> Libv2ray.cu
+        -> CU -> decrypt) only opens the outer envelope; the fields are
+        opened with do_ when the app consumes the config.
+      - Cryptographic proof: all 702 Base64 field values of the live
+        catalog v2.881 verify under the legacy password (GCM tag); none
+        needs the current one. decode() therefore opens every field
+        after the outer envelope (legacy first, then current as a
+        fallback); a value whose tag does not verify is left untouched,
+        so plaintext that merely looks like Base64 is never corrupted.
+  * Cost: a full catalog needs one outer Argon2id plus one per field
+    (~703 derivations). With argon2-cffi installed this takes ~15-25 s
+    in total; with the pure-Python fallback below it would take hours,
+    so the script uses argon2-cffi whenever it is importable and only
+    falls back to the (verified, RFC 9106) pure implementation when it
+    is not. The SP-DECODE runtime should therefore have argon2-cffi.
   * The server (Cloudflare) requires the User-Agent: without it the
     endpoint answers 404; with it, 200 and the full body in a single GET.
     It ignores Range (answers 200 with the full body), so this script
@@ -50,8 +84,10 @@ no LSParanoid/Deobfuscator class exists in this DEX):
     in the standard library only (hashlib.blake2b + the BlaMka round);
     they were verified against argon2-cffi / cryptography, the RFC 9106
     Argon2id test vector, a NIST AES-GCM vector, the bundled asset and a
-    live download. A decode takes ~15-20 s on this machine (Argon2id
-    dominates); that is the cost of the format, not of the network.
+    live download. One Argon2id derivation takes ~15-20 s in pure
+    Python on this machine; the script therefore uses argon2-cffi
+    whenever it is importable (see _argon2id_fast) and a full catalog
+    decode (outer envelope + ~700 fields) takes ~15-25 s that way.
 
 Live test 2026-11-13 (this script, --url, single GET with the exact
 User-Agent): HTTP 200, remote Version 2.881, 16 servers, 217 payloads
@@ -332,6 +368,29 @@ def _argon2id(password, salt, time_cost, memory_kib, parallelism, tag_len,
     return _blake2b_long(tag_len, struct.pack("<128Q", *final))
 
 
+def _argon2id_fast(password, salt, time_cost=3, memory_kib=8192,
+                   parallelism=1, tag_len=32):
+    """Argon2id via argon2-cffi when it is importable, else the pure
+    implementation above. Same parameters, same output (RFC 9106); the
+    fast path is what makes ~700 field derivations feasible."""
+    global _ARGON2_FAST
+    if _ARGON2_FAST is None:
+        try:
+            from argon2.low_level import hash_secret_raw, Type
+            _ARGON2_FAST = (hash_secret_raw, Type)
+        except Exception:
+            _ARGON2_FAST = False
+    if _ARGON2_FAST:
+        hash_secret_raw, Type = _ARGON2_FAST
+        return hash_secret_raw(password, salt, time_cost=time_cost,
+                               memory_cost=memory_kib, parallelism=parallelism,
+                               hash_len=tag_len, type=Type.ID, version=0x13)
+    return _argon2id(password, salt, time_cost, memory_kib, parallelism, tag_len)
+
+
+_ARGON2_FAST = None
+
+
 # ------------------------------------------------------------- AES-256-GCM
 def _make_sbox():
     sbox = []
@@ -489,8 +548,8 @@ def _aes_gcm_encrypt(key, nonce, plaintext, aad=b""):
 
 def _encrypt_blob(plaintext: bytes, password: bytes, salt: bytes, nonce: bytes) -> str:
     """Inverse of decrypt_catalog_bytes (mirrors AndroidLibXrayLite.Encrypt)."""
-    key = _argon2id(password, salt, time_cost=3, memory_kib=8192,
-                    parallelism=1, tag_len=32)
+    key = _argon2id_fast(password, salt, time_cost=3, memory_kib=8192,
+                         parallelism=1, tag_len=32)
     ciphertext, tag = _aes_gcm_encrypt(key, nonce, plaintext, aad=salt)
     return base64.b64encode(salt + nonce + ciphertext + tag).decode("ascii")
 
@@ -505,12 +564,78 @@ def decrypt_catalog_bytes(data: bytes | str, *, password: bytes | None = None) -
         raise DecodeError("TRUNCATED", "El catálogo es demasiado corto para el formato.")
     salt, nonce, rest = blob[:16], blob[16:28], blob[28:]
     ciphertext, tag = rest[:-16], rest[-16:]
-    key = _argon2id(password, salt, time_cost=3, memory_kib=8192,
-                    parallelism=1, tag_len=32)
+    key = _argon2id_fast(password, salt, time_cost=3, memory_kib=8192,
+                         parallelism=1, tag_len=32)
     try:
         return _aes_gcm_decrypt(key, nonce, ciphertext, tag, aad=salt)
     except ValueError as exc:
         raise DecodeError("DECRYPT_FAILED", "La autenticación GCM falló.") from exc
+
+
+# Field values: same envelope as the catalog (salt || nonce || ct || tag),
+# encrypted with the legacy (DO) password first; see module docstring.
+FIELD_PASSWORDS = (BUNDLED_PASSWORD, CATALOG_PASSWORD)
+MIN_FIELD_BLOB = 44  # salt 16 + nonce 12 + tag 16, empty plaintext
+_FIELD_B64_RE = re.compile(r"^[A-Za-z0-9+/]+={0,2}$")
+
+
+def _try_decrypt_field(value):
+    """One field value. Returns (status, value) with status one of:
+    'decrypted' (envelope verified, value is the plaintext string),
+    'plain' (not an envelope, value unchanged) or 'unverified' (looks
+    like an envelope but no password verifies it, value unchanged).
+    The GCM tag is the oracle: plaintext that merely looks like Base64
+    never verifies, so it is never corrupted."""
+    if not isinstance(value, str):
+        return "plain", value
+    compact = re.sub(r"[ \t\r\n]", "", value)
+    if len(compact) < 60 or not _FIELD_B64_RE.fullmatch(compact) or len(compact) % 4 == 1:
+        return "plain", value
+    try:
+        blob = base64.b64decode(compact + "=" * (-len(compact) % 4), validate=True)
+    except (ValueError, binascii.Error):
+        return "plain", value
+    if len(blob) < MIN_FIELD_BLOB:
+        return "plain", value
+    salt, nonce, rest = blob[:16], blob[16:28], blob[28:]
+    ciphertext, tag = rest[:-16], rest[-16:]
+    for password in FIELD_PASSWORDS:
+        key = _argon2id_fast(password, salt, time_cost=3, memory_kib=8192,
+                             parallelism=1, tag_len=32)
+        try:
+            plain = _aes_gcm_decrypt(key, nonce, ciphertext, tag, aad=salt)
+        except ValueError:
+            continue
+        try:
+            return "decrypted", plain.decode("utf-8")
+        except UnicodeError as exc:
+            raise DecodeError("FIELD_NOT_UTF8", "Un campo descifrado no es texto UTF-8.") from exc
+    return "unverified", value
+
+
+def _decrypt_fields(doc):
+    """Decrypt every field value in the document in place (Servers,
+    Networks and any other string). Returns (decrypted, unverified):
+    envelope values opened, and envelope-looking values no password
+    could open (0 in a correct catalog)."""
+    decrypted, unverified = 0, 0
+    pending = [doc]
+    while pending:
+        node = pending.pop()
+        if isinstance(node, dict):
+            for key, val in node.items():
+                if isinstance(val, str):
+                    status, new = _try_decrypt_field(val)
+                    if status == "decrypted":
+                        node[key] = new
+                        decrypted += 1
+                    elif status == "unverified":
+                        unverified += 1
+                elif isinstance(val, (dict, list)):
+                    pending.append(val)
+        elif isinstance(node, list):
+            pending.extend(node)
+    return decrypted, unverified
 
 
 def _catalog_json(data) -> dict:
@@ -524,11 +649,14 @@ def _catalog_json(data) -> dict:
 
 
 def decode(data: bytes | str, *, passwords=(CATALOG_PASSWORD, BUNDLED_PASSWORD)) -> dict:
-    """Offline API: decrypt the complete catalog (passwords in order)."""
+    """Offline API: decrypt the complete catalog (passwords in order),
+    outer envelope first and then every field value (see _decrypt_fields)."""
     last = None
     for password in passwords:
         try:
-            return _catalog_json(decrypt_catalog_bytes(data, password=password))
+            doc = _catalog_json(decrypt_catalog_bytes(data, password=password))
+            _decrypt_fields(doc)
+            return doc
         except DecodeError as exc:
             if exc.code != "DECRYPT_FAILED":
                 raise
@@ -690,11 +818,16 @@ def _write_output(path: Path, rendered: str) -> None:
 def _self_test() -> int:
     """Synthetic round-trip self-test; uses no real files or network.
 
-    Takes ~60-90 s (several pure-Python Argon2id runs). Cases:
+    Takes ~60-90 s without argon2-cffi (several pure-Python Argon2id
+    runs), seconds with it. Cases:
     1. RFC 9106 Argon2id test vector. 2. NIST AES-256-GCM vector.
     3. Round-trip catalog with the current password.
     4. Round-trip catalog with the legacy password.
     5. Tampered GCM tag is rejected (DECRYPT_FAILED).
+    6. Per-field decryption: fields encrypted with the legacy password
+       (one with a value, one empty) open; a plaintext Base64 lookalike
+       is left untouched; a field encrypted with the current password
+       also opens via the fallback.
     """
     cases = []
 
@@ -734,6 +867,32 @@ def _self_test() -> int:
         check("tampered GCM tag rejected", False)
     except DecodeError as exc:
         check("tampered GCM tag rejected", exc.code == "DECRYPT_FAILED")
+    # 6. Per-field decryption (legacy password, as the app does with do_).
+    lookalike = base64.b64encode(bytes(range(44, 88))).decode("ascii")
+    field_doc = {"Version": "9.99",
+                 "Servers": [{"Name": "Test",
+                              "ServerIPHost": _encrypt_blob(b"203.0.113.7", BUNDLED_PASSWORD, salt, nonce),
+                              "OVPNUser": _encrypt_blob(b"", BUNDLED_PASSWORD, salt, nonce),
+                              "V2rayUUID": _encrypt_blob(b"ba0e3984-ccc9-48a3-8074-b2f507f41ce8", CATALOG_PASSWORD, salt, nonce),
+                              "ServerInfo": lookalike}],
+                 "Networks": [{"Name": "Test", "TunnelType": "V2Ray",
+                               "Payload": _encrypt_blob(b"CONNECT example.test:443 HTTP/1.1", BUNDLED_PASSWORD, salt, nonce),
+                               "SNI": "plain.example.test"}]}
+    try:
+        got = decode(_encrypt_blob(json.dumps(field_doc, ensure_ascii=False).encode("utf-8"),
+                                   CATALOG_PASSWORD, salt, nonce))
+        srv, net = got["Servers"][0], got["Networks"][0]
+        check("field decrypt (legacy, value)", srv["ServerIPHost"] == "203.0.113.7")
+        check("field decrypt (legacy, empty)", srv["OVPNUser"] == "")
+        check("field decrypt (current fallback)", srv["V2rayUUID"] == "ba0e3984-ccc9-48a3-8074-b2f507f41ce8")
+        check("field decrypt (network payload)", net["Payload"] == "CONNECT example.test:443 HTTP/1.1")
+        check("plaintext lookalike untouched", srv["ServerInfo"] == lookalike
+              and net["SNI"] == "plain.example.test")
+    except DecodeError:
+        for name in ("field decrypt (legacy, value)", "field decrypt (legacy, empty)",
+                     "field decrypt (current fallback)", "field decrypt (network payload)",
+                     "plaintext lookalike untouched"):
+            check(name, False)
     passed = sum(cases)
     print(json.dumps({"self_test": "pass" if passed == len(cases) else "fail",
                       "passed": passed, "total": len(cases)}, ensure_ascii=False))

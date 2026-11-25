@@ -120,6 +120,27 @@ def decrypt_catalog_bytes(data: bytes | str, *, key: bytes | None = None) -> byt
         raise DecodeError("DECRYPT_FAILED", "La longitud interna XXTEA no es válida para esta aplicación.")
     return struct.pack("<" + "I" * (count - 1), *values[:-1])[:length]
 
+def _decrypt_credential_fields(doc: dict) -> dict:
+    """Decrypt the top-level shared credentials, if present.
+
+    The catalog JSON carries "Username"/"Password" as Base64 XXTEA blobs
+    encrypted with the same key/delta as the catalog envelope itself
+    (APK AbstractC4624vm.c: Base64-decode, XXTEA-decrypt, UTF-8).
+    Each decrypts to a 32-char lowercase-hex shared credential
+    (verified by exact re-encryption round-trip against the live
+    catalog v26.12 and the bundled assets/gremlin.json v25.47).
+    A value that does not decrypt is left untouched, so a future
+    catalog shipping the credentials in clear still decodes.
+    """
+    for field in ("Username", "Password"):
+        value = doc.get(field)
+        if isinstance(value, str) and value:
+            try:
+                doc[field] = decrypt_catalog_bytes(value).decode("utf-8")
+            except (DecodeError, UnicodeError):
+                pass
+    return doc
+
 def _catalog_json(data) -> dict:
     doc = _json(data)
     if not any(field in doc for field in LIST_FIELDS):
@@ -127,7 +148,7 @@ def _catalog_json(data) -> dict:
     for field in LIST_FIELDS:
         if field in doc and (not isinstance(doc[field], list) or any(not isinstance(v, dict) for v in doc[field])):
             raise DecodeError("WRONG_DOCUMENT", "Las listas de catálogo deben contener objetos completos.")
-    return doc
+    return _decrypt_credential_fields(doc)
 
 
 MAX_INPUT = 8 * 1024 * 1024

@@ -44,7 +44,7 @@ confirmación de extremo a extremo con un archivo .vlx real exportado
 por la app en un teléfono; si un .vlx real no abre con este script, el
 bloqueador es que el archivo no usa este sobre o usa otra clave, y habría
 que contrastarlo con ese archivo concreto. Los archivos .sks están
-EXCLUIDOS por indicación de Pedro y no se implementan aquí (esta app
+EXCLUIDOS por indicación del usuario y no se implementan aquí (esta app
 tampoco los usa).
 """
 from __future__ import annotations

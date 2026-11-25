@@ -217,7 +217,7 @@ export async function fetchWorker(kind,payload,cfg,{fetchImpl=fetch}={}) {
       decoded.structuredJson.sources.some(x=>x?.status==="error") &&
       Array.isArray(decoded.warnings) && decoded.warnings.includes("PARTIAL_SOURCE_FAILURE");
     const partialHc=allowsHcPartial(kind,payload,decoded);
-    const partialDocnet=kind==="server-vpn"&&["docnet-vpn","mm-tunnel"].includes(payload?.providerId)&&
+    const partialDocnet=kind==="server-vpn"&&["docnet-vpn","mm-tunnel","katiba-vpn"].includes(payload?.providerId)&&
       decoded.providerId===payload.providerId&&decoded.kind==="vpn_catalog"&&decoded.isPartial===true&&
       (payload.providerId==="docnet-vpn"?Array.isArray(decoded.structuredJson?.configs):
         decoded.structuredJson?.decryptionStatus?.complete===false&&
@@ -324,7 +324,7 @@ export async function fetchWorker(kind,payload,cfg,{fetchImpl=fetch}={}) {
            Object.hasOwn(parsed,k) && (!Array.isArray(parsed[k]) || parsed[k].some(row=>!isRecord(row)))))
         throw Error("INVALID_WORKER_RESULT");
     }
-    if(kind==="server-vpn" && payload?.providerId==="alsaher-vip"){
+    if(kind==="server-vpn" && ["alsaher-vip","alsaherfree"].includes(payload?.providerId)){
       let parsed;
       try{parsed=JSON.parse(decoded.rawText);}catch{throw Error("INVALID_WORKER_RESULT");}
       if(decoded.kind!=="vpn_catalog" || decoded.providerId!==payload.providerId || !isRecord(parsed) ||
@@ -474,7 +474,7 @@ export async function fetchWorker(kind,payload,cfg,{fetchImpl=fetch}={}) {
          lists.some(k=>Object.hasOwn(parsed,k)&&(!Array.isArray(parsed[k])||parsed[k].some(x=>!isRecord(x)||typeof x.Name!=="string"))) ||
          JSON.stringify(parsed)!==JSON.stringify(decoded.structuredJson))throw Error("INVALID_WORKER_RESULT");
     }
-    if(kind==="server-vpn" && ["md-proxy-vpn","xxpicore-tunnel","ultra-tunnel","mm-tunnel","enaa-tunnel","7net-vpn","gcp-vpn","netflux-vpn","pm-tunnel-lite","xhypher-tunnel-pro","vip-snipher-pro","izph-vpn-pro","bshield-net","ways-tunnel"].includes(payload?.providerId)){
+    if(kind==="server-vpn" && ["md-proxy-vpn","xxpicore-tunnel","ultra-tunnel","mm-tunnel","enaa-tunnel","7net-vpn","gcp-vpn","netflux-vpn","pm-tunnel-lite","xhypher-tunnel-pro","vip-snipher-pro","izph-vpn-pro","bshield-net","ways-tunnel","pulse-tunnel","irfan-vpn","katiba-vpn"].includes(payload?.providerId)){
       let parsed;
       try{parsed=JSON.parse(decoded.rawText);}catch{throw Error("INVALID_WORKER_RESULT");}
       if(decoded.kind!=="vpn_catalog" || decoded.providerId!==payload.providerId ||

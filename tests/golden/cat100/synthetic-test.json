@@ -1,0 +1,31 @@
+{
+ "fmt": 2,
+ "app": "tourvpn",
+ "minAppVersion": 7,
+ "exportedAt": 1795618778930,
+ "protect": false,
+ "passworded": false,
+ "message": "",
+ "rules": {},
+ "expiry": 0,
+ "blockRoot": false,
+ "Networks": [
+  {
+   "Name": "Synthetic Test",
+   "Group": "",
+   "Info": "",
+   "TunnelType": 3,
+   "Protocol": 0,
+   "Priority": 0,
+   "ServerHostDNS": "cf",
+   "GenRow": 3,
+   "SNIHost": "www.example.com",
+   "Payload": "GET / HTTP/1.1[crlf]Host: [alinaj][crlf][crlf]",
+   "TlsVersion": "Default",
+   "ProxySettings": {
+    "Squid": "[Default]",
+    "Port": "80"
+   }
+  }
+ ]
+}

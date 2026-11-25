@@ -534,6 +534,12 @@
       "name": "Ways Tunnel",
       "suffix": "wyst",
       "kind": "text"
+    },
+    {
+      "prefix": "v2rayng://",
+      "name": "Tx Tunnel",
+      "suffix": "txtunnel",
+      "kind": "text"
     }
   ]
 }

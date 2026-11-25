@@ -48,7 +48,7 @@
     {
       "source": "decoders/Python/apps/HX_Tunnel_VPN/HX_Tunnel_VPN.py",
       "downloadSidecar": "hxt_catalog_codec.py",
-      "sha256": "0182b78bc2620594cfdc741b3b9ba84acfe36269ec397eda429c90f8e71b9695"
+      "sha256": "d721cb9506ad6b50cca8d8c8155b3b44fa41504ef00ff13d74985e5cdd33e728"
     }
   ],
   "dependencies": [

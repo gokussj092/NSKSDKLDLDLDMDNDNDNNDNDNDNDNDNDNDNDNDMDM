@@ -27,6 +27,15 @@ CREDENTIAL_FIELDS = {
     "ua": ["password"],
     "1ftnl": ["password"],
     "v2box": ["password"],
+    # PULSE .pulse files are password-locked in the TOURUX1P: variant.
+    "pulse": ["password"],
+    # XVEON / TOP-PLUG-SA files are password-locked too (the worker
+    # accepts a password for xveon/xvn/tpc); without these the regen
+    # would silently drop their credentialFields and the gateway would
+    # start rejecting passwords for .xveon/.xvn/.tpc files.
+    "xveon": ["password"],
+    "xvn": ["password"],
+    "tpc": ["password"],
     # HXS3 .hexcm files are password-locked; old Hex Tunnel files need none.
     "hexcm": ["password"],
     "sn": ["password", "hwid"],

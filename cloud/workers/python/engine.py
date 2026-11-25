@@ -171,6 +171,15 @@ _C8_FILE_ENGINES = {
     # load_runtime_file_engines(); the entry below keeps the C0/C8
     # inventory test (file-formats vs _C8_FILE_ENGINES) consistent.
     "tpc": ("decoders/Python/apps/TopPlugSA/topplugsa.py", "TOP-PLUG-SA VPN 0.29.26"),
+    # C8 (2026-11-25 integration): four new file suffixes of the 13-app
+    # batch — PULSE TUNNEL VPN 1.7, IRFAN VPN V3, Katiba VPN v1.11.06.1
+    # and Tx Tunnel v1.10.11.3. Mehaf VPN 1.0.9.20 (.mehaf) needs no
+    # _C8 entry: its supplied FILE_ROUTES override already renames the
+    # frozen C0 ultra.py route, like xveon/tpc above.
+    "pulse": ("decoders/Python/apps/PulseTunnel/file_decoder.py", "PULSE TUNNEL VPN 1.7"),
+    "irfan": ("decoders/Python/apps/IrfanVPN/file_decoder.py", "IRFAN VPN V3"),
+    "katiba": ("decoders/Python/apps/KatibaVPN/file_decoder.py", "Katiba VPN v1.11.06.1"),
+    "txtunnel": ("decoders/Python/apps/Tx_Tunnel/txtunnel_file_decoder.py", "Tx Tunnel v1.10.11.3"),
 }
 
 def load_runtime_file_engines() -> dict[str, dict[str, str]]:
@@ -561,7 +570,7 @@ def decode_file(suffix: str, contents: bytes, *, timeout: int = TIMEOUT_SECONDS,
     elif suffix == "eut" and not is_eut_new:
         engine = load_file_engines()["eut"]
     if credentials is not None:
-        allowed = {"password", "hwid"} if suffix in ("hc", "sn") else {"password", "publicKey", "recipientKey"} if suffix == "npvs" else {"password"} if suffix in ("tut", "ua", "1ftnl", "v2box", "xveon", "xvn", "tpc") or is_hex_custom else None
+        allowed = {"password", "hwid"} if suffix in ("hc", "sn") else {"password", "publicKey", "recipientKey"} if suffix == "npvs" else {"password"} if suffix in ("tut", "ua", "1ftnl", "v2box", "xveon", "xvn", "tpc", "pulse") or is_hex_custom else None
         if allowed is None or not isinstance(credentials, dict) or set(credentials) - allowed:
             raise DecodeFailure("CREDENTIALS_NOT_ALLOWED")
         for name, maximum in (("password", 4096), ("hwid", 128), ("publicKey", 128), ("recipientKey", 16384)):
@@ -581,6 +590,7 @@ def decode_file(suffix: str, contents: bytes, *, timeout: int = TIMEOUT_SECONDS,
     protected_onef = suffix == "1ftnl"
     protected_npvs = suffix == "npvs"
     protected_v2box = suffix == "v2box"
+    protected_pulse = suffix == "pulse"
     from cloud.workers.python.supplied_bridge import FILE_ROUTES
     supplied_file = suffix in FILE_ROUTES
     if suffix == "v2box":
@@ -597,7 +607,7 @@ def decode_file(suffix: str, contents: bytes, *, timeout: int = TIMEOUT_SECONDS,
         # New-format blobs go to the supplied EUT reader; everything else
         # stays on the frozen eut.py route selected above.
         supplied_file = is_eut_new
-    credential_input = supplied_file or protected_hc or protected_tut or protected_ua or protected_onef or protected_npvs or protected_v2box or is_hex_custom
+    credential_input = supplied_file or protected_hc or protected_tut or protected_ua or protected_onef or protected_npvs or protected_v2box or protected_pulse or is_hex_custom
     source = engine["source"]
     if suffix == "dark":
         source = str(Path(__file__).with_name("dark_bridge.py"))
@@ -705,7 +715,7 @@ def decode_file(suffix: str, contents: bytes, *, timeout: int = TIMEOUT_SECONDS,
 def decode_provider_catalog(provider_id: str, contents: bytes) -> dict:
     """One fixed provider codec, child-isolated; broker performs all network I/O."""
     from cloud.workers.python.supplied_bridge import BY_ID as supplied_providers
-    if provider_id not in ("thailand-vpn", "kham-vpn", "opentunnel-ssh", "md-proxy-vpn", "xxpicore-tunnel", "catnet-vpn", "litron-vpn", "litron-pro-vpn", "speigo-vpn-configs", "speigo-vpn-ssh", "genis-vpn", "speicers-turbo-vpn", "http-conexion", "namo-vpn", "fnf-tunnel-bd", "alsaher-vip", "halcon-r-net", "ha-tunnel-plus", "ultra-tunnel", "zig-tunnel", "enaa-tunnel", "alfaisal-tunnel-plus", "izph-vpn-pro", "vip-snipher-pro", "netcol-vpn", "wolf-custom-vpn", "jyfast-vpn-ultra", "tunneldoom-vpn", "mtm-tunnel-lite", "mnr-tunnel-plus", "bd-net-vpn", "aura-net-vpn", "apna-vpn", "any-vpn", "speicers-pro-vpn", "tx-tunnel", "mm-tunnel", "creeb-vpn", "abowaged-vpn", "7net-vpn", "xhypher-tunnel-pro", "ut-loop-pro-vpn", "turbomx-vpn", "superflash-vpn", "rmp-tunnel-pro", "rmp-tunnel-lite", "rjc-tunnel-pro", "proneet-vpn", "onspace-vpn", "mx-tunnel-pro", "megatunnel", "http-internet-infinito", "24clan-green", "hx-tunnel", "mkk-hyper", "my-tunnel-proxy", "robust-tunnel", "royal-tunnel", "trv-tunnel", "4u-tunnel-lite", "ac-tunnel-vpn", "austroplus-vpn", "http-fenixvpn", "http-jireh", "http-socketclay", "http-wakko", "v2ray-tunnel-plus", "eut-vpn", "focus-vpn-cloud", "freedom-vpn", "tunelguard-vpn", "tunneltweak", "ksh-vpn", "dtunnel-mod", "gcp-vpn", "netflux-vpn", "maya-tun-pro", "pm-tunnel-lite", "am-tunnel-lite", "winzap-vpn", "bshield-net", "ways-tunnel"):
+    if provider_id not in ("thailand-vpn", "kham-vpn", "opentunnel-ssh", "md-proxy-vpn", "xxpicore-tunnel", "catnet-vpn", "litron-vpn", "litron-pro-vpn", "speigo-vpn-configs", "speigo-vpn-ssh", "genis-vpn", "speicers-turbo-vpn", "http-conexion", "namo-vpn", "fnf-tunnel-bd", "alsaher-vip", "halcon-r-net", "ha-tunnel-plus", "ultra-tunnel", "zig-tunnel", "enaa-tunnel", "alfaisal-tunnel-plus", "izph-vpn-pro", "vip-snipher-pro", "netcol-vpn", "wolf-custom-vpn", "jyfast-vpn-ultra", "tunneldoom-vpn", "mtm-tunnel-lite", "mnr-tunnel-plus", "bd-net-vpn", "aura-net-vpn", "apna-vpn", "any-vpn", "speicers-pro-vpn", "tx-tunnel", "mm-tunnel", "creeb-vpn", "abowaged-vpn", "7net-vpn", "xhypher-tunnel-pro", "ut-loop-pro-vpn", "turbomx-vpn", "superflash-vpn", "rmp-tunnel-pro", "rmp-tunnel-lite", "rjc-tunnel-pro", "proneet-vpn", "onspace-vpn", "mx-tunnel-pro", "megatunnel", "http-internet-infinito", "24clan-green", "hx-tunnel", "mkk-hyper", "my-tunnel-proxy", "robust-tunnel", "royal-tunnel", "trv-tunnel", "4u-tunnel-lite", "ac-tunnel-vpn", "austroplus-vpn", "http-fenixvpn", "http-jireh", "http-socketclay", "http-wakko", "v2ray-tunnel-plus", "eut-vpn", "focus-vpn-cloud", "freedom-vpn", "tunelguard-vpn", "tunneltweak", "ksh-vpn", "dtunnel-mod", "gcp-vpn", "netflux-vpn", "maya-tun-pro", "pm-tunnel-lite", "am-tunnel-lite", "winzap-vpn", "bshield-net", "ways-tunnel", "msy-vpn", "alsaherfree", "pulse-tunnel", "irfan-vpn", "katiba-vpn", "dtunnel-vpn"):
         if provider_id not in supplied_providers:
             raise DecodeFailure("UNSUPPORTED_FORMAT")
     if not isinstance(contents, bytes) or not contents:
@@ -767,7 +777,7 @@ def decode_provider_catalog(provider_id: str, contents: bytes) -> dict:
                 raise ValueError("invalid")
         except (ValueError,UnicodeError) as error:
             raise DecodeFailure("OUTPUT_INVALID") from error
-        supplied_partial = provider_id == "docnet-vpn" or (provider_id == "mm-tunnel" and
+        supplied_partial = provider_id == "docnet-vpn" or (provider_id in ("mm-tunnel", "katiba-vpn") and
             isinstance(structured,dict) and structured.get("decryptionStatus",{}).get("complete") is False)
         return {
             "apiVersion":"v1","status":"success","kind":"vpn_catalog",

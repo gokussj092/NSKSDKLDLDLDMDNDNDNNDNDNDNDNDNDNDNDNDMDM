@@ -78,18 +78,15 @@ class TxTunnelTests(unittest.TestCase):
         r=subprocess.run([sys.executable,str(path),'-'],input=b'synthetic-private-corrupt',capture_output=True,timeout=20)
         self.assertNotEqual(r.returncode,0);self.assertEqual(r.stdout,b'');self.assertNotIn(b'synthetic-private-corrupt',r.stderr)
 
-    def test_fixed_get_uses_exact_apk_size_code_and_resource_agent(self):
-        class Response:
-            status=200;headers={}
-            def __enter__(self):return self
-            def __exit__(self,*args):pass
-            def read(self,n):return b'synthetic'
-        with patch.object(server_catalog_decoder,'build_opener') as b:
-            b.return_value.open.return_value=Response();self.assertEqual(server_catalog_decoder.download(),b'synthetic')
-            req=b.return_value.open.call_args.args[0]
-            self.assertEqual(req.full_url,'https://strongteam.co/api/txtunnel/v1/?appcode=27.0')
-            self.assertEqual(req.get_method(),'GET');self.assertIsNone(req.data);self.assertEqual(req.get_header('User-agent'),'Tx Tunnel')
-        self.assertEqual(str(float(f'{28308691/1048576:.2f}')),'27.0')
-        with self.assertRaises(ValueError):server_catalog_decoder._NoRedirect().redirect_request(None,None,302,'',{},'https://bad.invalid/')
+    def test_fixed_post_uses_exact_new_endpoint_and_no_worker_download(self):
+        # CAT 100: the download moved to the broker (server-vpn-provider.mjs
+        # PROVIDERS tx-tunnel, POST txtunnelnew/); the worker adapter is a
+        # pure decoder and never does network (offline bridge).
+        from decoders.Python.apps.Tx_Tunnel import txtunnel
+        self.assertEqual(txtunnel.LIVE_URL,'https://strongteam.co/api/txtunnelnew/')
+        self.assertEqual(txtunnel.LIVE_BODY,b'hash=xsandokUpdatex')
+        self.assertEqual(txtunnel.LIVE_HEADERS,{'Content-Type':'application/x-www-form-urlencoded','User-Agent':'Go-http-client/1.1'})
+        self.assertFalse(hasattr(server_catalog_decoder,'download'))
+        self.assertFalse(hasattr(server_catalog_decoder,'build_opener'))
 
 if __name__=='__main__':unittest.main()

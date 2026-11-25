@@ -157,6 +157,7 @@ class HXTunnelTests(unittest.TestCase):
         with patch.object(catalog, "build_opener") as build:
             response = build.return_value.open.return_value.__enter__.return_value
             response.status = 200
+            response.headers = {}
             response.read.return_value = FIXTURE["catalog"].encode()
             self.assertEqual(catalog.decode(catalog.fetch_catalog()), FIXTURE["expectedCatalog"])
             req = build.return_value.open.call_args.args[0]
@@ -191,6 +192,7 @@ class HXTunnelTests(unittest.TestCase):
         with patch.object(catalog, "MAX_BYTES", 8), patch.object(catalog, "build_opener") as build:
             response = build.return_value.open.return_value.__enter__.return_value
             response.status = 200
+            response.headers = {}
             response.read.return_value = b"x" * 9
             with self.assertRaises(catalog.DecodeError) as ctx:
                 catalog.fetch_catalog()

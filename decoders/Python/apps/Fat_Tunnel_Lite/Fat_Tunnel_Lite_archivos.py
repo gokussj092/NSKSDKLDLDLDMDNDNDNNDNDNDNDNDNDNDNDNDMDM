@@ -27,6 +27,14 @@ binary of github.com/2dust/AndroidLibXrayLite, disassembled with Capstone):
     SNI, V2rayConfig, ...). Policies are checked AFTER decryption by the
     app (they do not derive the key); this decoder returns every stored
     field without enforcing them.
+  * Per-field encryption (CORRECTION 2026-11-25, same as the catalog):
+    the profile's data fields (Payload, SNI, V2rayConfig, V2rayAddress,
+    V2rayHost, V2raySNI, BugDNS) are themselves envelopes in the same
+    layout, encrypted with the LEGACY password (DO) -- the app opens
+    them with Hometab$Companion.a -> Libv2ray.do_ (see Fat_Tunnel_Lite.py
+    for the APK evidence). decode() therefore opens every field after
+    the outer envelope; a value whose GCM tag does not verify is left
+    untouched. Empty fields decrypt to "" (44-byte blob).
   * Two format passwords (shared constants of the app, not account
     credentials): current files (export/parseConfig) use the current one;
     older files (DO) use the legacy one. decode() tries the current one
@@ -35,8 +43,10 @@ binary of github.com/2dust/AndroidLibXrayLite, disassembled with Capstone):
   * Pure-Python Argon2id (RFC 9106) and AES-256-GCM are implemented here
     in the standard library only; they were verified against argon2-cffi /
     cryptography, the RFC 9106 Argon2id test vector, a NIST AES-GCM
-    vector, the bundled catalog asset and a live catalog download. A
-    decode takes ~15-20 s on this machine (Argon2id dominates).
+    vector, the bundled catalog asset and a live catalog download. One
+    Argon2id derivation takes ~15-20 s in pure Python on this machine;
+    the script uses argon2-cffi whenever it is importable (see
+    _argon2id_fast).
 
 Verification (no real .fat export was available to test against -- none
 in the SP-DECODE repo branch feat/nuevas-integraciones, none in this
@@ -316,6 +326,28 @@ def _argon2id(password, salt, time_cost, memory_kib, parallelism, tag_len,
     return _blake2b_long(tag_len, struct.pack("<128Q", *final))
 
 
+def _argon2id_fast(password, salt, time_cost=3, memory_kib=8192,
+                   parallelism=1, tag_len=32):
+    """Argon2id via argon2-cffi when it is importable, else the pure
+    implementation above. Same parameters, same output (RFC 9106)."""
+    global _ARGON2_FAST
+    if _ARGON2_FAST is None:
+        try:
+            from argon2.low_level import hash_secret_raw, Type
+            _ARGON2_FAST = (hash_secret_raw, Type)
+        except Exception:
+            _ARGON2_FAST = False
+    if _ARGON2_FAST:
+        hash_secret_raw, Type = _ARGON2_FAST
+        return hash_secret_raw(password, salt, time_cost=time_cost,
+                               memory_cost=memory_kib, parallelism=parallelism,
+                               hash_len=tag_len, type=Type.ID, version=0x13)
+    return _argon2id(password, salt, time_cost, memory_kib, parallelism, tag_len)
+
+
+_ARGON2_FAST = None
+
+
 # ------------------------------------------------------------- AES-256-GCM
 def _make_sbox():
     sbox = []
@@ -473,8 +505,8 @@ def _aes_gcm_encrypt(key, nonce, plaintext, aad=b""):
 
 def _encrypt_blob(plaintext: bytes, password: bytes, salt: bytes, nonce: bytes) -> str:
     """Inverse of decrypt_file_bytes (mirrors AndroidLibXrayLite.Encrypt)."""
-    key = _argon2id(password, salt, time_cost=3, memory_kib=8192,
-                    parallelism=1, tag_len=32)
+    key = _argon2id_fast(password, salt, time_cost=3, memory_kib=8192,
+                         parallelism=1, tag_len=32)
     ciphertext, tag = _aes_gcm_encrypt(key, nonce, plaintext, aad=salt)
     return base64.b64encode(salt + nonce + ciphertext + tag).decode("ascii")
 
@@ -489,12 +521,78 @@ def decrypt_file_bytes(data: bytes | str, *, password: bytes | None = None) -> b
         raise DecodeError("TRUNCATED", "El archivo es demasiado corto para el formato.")
     salt, nonce, rest = blob[:16], blob[16:28], blob[28:]
     ciphertext, tag = rest[:-16], rest[-16:]
-    key = _argon2id(password, salt, time_cost=3, memory_kib=8192,
-                    parallelism=1, tag_len=32)
+    key = _argon2id_fast(password, salt, time_cost=3, memory_kib=8192,
+                         parallelism=1, tag_len=32)
     try:
         return _aes_gcm_decrypt(key, nonce, ciphertext, tag, aad=salt)
     except ValueError as exc:
         raise DecodeError("DECRYPT_FAILED", "La autenticación GCM falló.") from exc
+
+
+# Field values: same envelope as the file (salt || nonce || ct || tag),
+# encrypted with the legacy (DO) password first; see module docstring.
+FIELD_PASSWORDS = (BUNDLED_PASSWORD, CATALOG_PASSWORD)
+MIN_FIELD_BLOB = 44  # salt 16 + nonce 12 + tag 16, empty plaintext
+_FIELD_B64_RE = re.compile(r"^[A-Za-z0-9+/]+={0,2}$")
+
+
+def _try_decrypt_field(value):
+    """One field value. Returns (status, value) with status one of:
+    'decrypted' (envelope verified, value is the plaintext string),
+    'plain' (not an envelope, value unchanged) or 'unverified' (looks
+    like an envelope but no password verifies it, value unchanged).
+    The GCM tag is the oracle: plaintext that merely looks like Base64
+    never verifies, so it is never corrupted."""
+    if not isinstance(value, str):
+        return "plain", value
+    compact = re.sub(r"[ \t\r\n]", "", value)
+    if len(compact) < 60 or not _FIELD_B64_RE.fullmatch(compact) or len(compact) % 4 == 1:
+        return "plain", value
+    try:
+        blob = base64.b64decode(compact + "=" * (-len(compact) % 4), validate=True)
+    except (ValueError, binascii.Error):
+        return "plain", value
+    if len(blob) < MIN_FIELD_BLOB:
+        return "plain", value
+    salt, nonce, rest = blob[:16], blob[16:28], blob[28:]
+    ciphertext, tag = rest[:-16], rest[-16:]
+    for password in FIELD_PASSWORDS:
+        key = _argon2id_fast(password, salt, time_cost=3, memory_kib=8192,
+                             parallelism=1, tag_len=32)
+        try:
+            plain = _aes_gcm_decrypt(key, nonce, ciphertext, tag, aad=salt)
+        except ValueError:
+            continue
+        try:
+            return "decrypted", plain.decode("utf-8")
+        except UnicodeError as exc:
+            raise DecodeError("FIELD_NOT_UTF8", "Un campo descifrado no es texto UTF-8.") from exc
+    return "unverified", value
+
+
+def _decrypt_fields(doc):
+    """Decrypt every field value in the document in place. Returns
+    (decrypted, unverified): envelope values opened, and
+    envelope-looking values no password could open (0 in a correct
+    profile)."""
+    decrypted, unverified = 0, 0
+    pending = [doc]
+    while pending:
+        node = pending.pop()
+        if isinstance(node, dict):
+            for key, val in node.items():
+                if isinstance(val, str):
+                    status, new = _try_decrypt_field(val)
+                    if status == "decrypted":
+                        node[key] = new
+                        decrypted += 1
+                    elif status == "unverified":
+                        unverified += 1
+                elif isinstance(val, (dict, list)):
+                    pending.append(val)
+        elif isinstance(node, list):
+            pending.extend(node)
+    return decrypted, unverified
 
 
 def _profile_json(data) -> dict:
@@ -506,20 +604,27 @@ def _profile_json(data) -> dict:
 
 def decode(data: bytes | str) -> dict:
     """Offline API: decrypt one .fat profile (current password, then
-    legacy, then plain JSON as a convenience)."""
+    legacy, then plain JSON as a convenience), opening every field
+    value afterwards (see _decrypt_fields)."""
     if isinstance(data, bytes) and len(data) > MAX_FILE_BYTES:
         raise DecodeError("SIZE_LIMIT", "El archivo supera el límite de 2 MiB de la app.")
     try:
-        return _profile_json(decrypt_file_bytes(data))
+        doc = _profile_json(decrypt_file_bytes(data))
+        _decrypt_fields(doc)
+        return doc
     except DecodeError as exc:
         if exc.code not in ("DECRYPT_FAILED", "FORMAT_ERROR", "TRUNCATED"):
             raise
     try:
-        return _profile_json(decrypt_file_bytes(data, password=BUNDLED_PASSWORD))
+        doc = _profile_json(decrypt_file_bytes(data, password=BUNDLED_PASSWORD))
+        _decrypt_fields(doc)
+        return doc
     except DecodeError as exc:
         if exc.code not in ("DECRYPT_FAILED", "FORMAT_ERROR", "TRUNCATED"):
             raise
-    return _profile_json(_text(data))
+    doc = _profile_json(_text(data))
+    _decrypt_fields(doc)
+    return doc
 
 
 def run(file_bytes: bytes | str) -> str | None:
@@ -559,11 +664,14 @@ def _write_output(path: Path, rendered: str) -> None:
 def _self_test() -> int:
     """Synthetic round-trip self-test; uses no real files.
 
-    Takes ~60-90 s (several pure-Python Argon2id runs). Cases:
+    Takes ~60-90 s without argon2-cffi (several pure-Python Argon2id
+    runs), seconds with it. Cases:
     1. RFC 9106 Argon2id test vector. 2. NIST AES-256-GCM vector.
     3. Round-trip profile with the current password.
     4. Round-trip profile with the legacy password.
     5. Plain JSON passthrough.
+    6. Per-field decryption: fields encrypted with the legacy password
+       open; a plaintext Base64 lookalike is left untouched.
     """
     cases = []
 
@@ -598,6 +706,21 @@ def _self_test() -> int:
         check("plain JSON passthrough", decode(json.dumps(profile, ensure_ascii=False)) == profile)
     except DecodeError:
         check("plain JSON passthrough", False)
+    lookalike = base64.b64encode(bytes(range(44, 88))).decode("ascii")
+    field_profile = {"Name": "Test", "TunnelType": "V2Ray",
+                     "Payload": _encrypt_blob(b"CONNECT example.test:443 HTTP/1.1", BUNDLED_PASSWORD, salt, nonce),
+                     "SNI": _encrypt_blob(b"", BUNDLED_PASSWORD, salt, nonce),
+                     "V2rayAddress": lookalike, "ProxyPort": "443", "Insecure": False}
+    try:
+        got = decode(_encrypt_blob(json.dumps(field_profile, ensure_ascii=False).encode("utf-8"),
+                                   CATALOG_PASSWORD, salt, nonce))
+        check("field decrypt (profile payload)", got["Payload"] == "CONNECT example.test:443 HTTP/1.1")
+        check("field decrypt (profile empty SNI)", got["SNI"] == "")
+        check("field decrypt (lookalike untouched)", got["V2rayAddress"] == lookalike)
+    except DecodeError:
+        for name in ("field decrypt (profile payload)", "field decrypt (profile empty SNI)",
+                     "field decrypt (lookalike untouched)"):
+            check(name, False)
     passed = sum(cases)
     print(json.dumps({"self_test": "pass" if passed == len(cases) else "fail",
                       "passed": passed, "total": len(cases)}, ensure_ascii=False))

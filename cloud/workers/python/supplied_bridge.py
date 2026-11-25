@@ -12,6 +12,7 @@ import inspect
 import json
 import socket
 import sys
+import urllib.parse
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -245,6 +246,14 @@ def decode_one(item, raw):
                                           "unresolvedFields": len(failed),
                                           "locations": failed}
         return document(result)
+    if app == "AR_PRO_VPN":
+        # AR PRO VPN 2.0 (2026-11-25): arpro.py exposes decode_catalog()
+        # (returns (doc, stats)) instead of decode(); the v1 reader
+        # AR_PRO_VPN.py stays in the tree for the frozen C0 engine.
+        # stats["unresolved"] is a heuristic (it counts long plaintext
+        # too), so it is NOT attached as decryptionStatus.
+        doc, _stats = module.decode_catalog(raw)
+        return document(doc)
     if app == "Click_Tunnel":
         # decode() devuelve el documento CON DefUpdateURL/updater;
         # solo main() las quita. Sin esta rama el resultado llevaria
@@ -330,6 +339,37 @@ def catalog(provider, payload):
         return {"provider": provider, "complete": True,
                 "catalogs": {name: decode_one(item, data) for name, data in sources.items()}}
     return decode_one(item, payload)
+
+
+def _parse_v2ray_link(text):
+    """Parse a standard v2ray link (vless/vmess/trojan/ss/hy2) into a dict.
+
+    Same field shape as the v2rayNG parser in Tx_Tunnel/txtunnel.py
+    (uuid/user, address, port, params, name); kept local so MehafVPN
+    never imports another app's module.
+    """
+    try:
+        parsed = urllib.parse.urlparse(text)
+        scheme = parsed.scheme.lower()
+        if scheme == "vmess":
+            padded = parsed.netloc + "=" * (-len(parsed.netloc) % 4)
+            doc = json.loads(base64.urlsafe_b64decode(padded).decode("utf-8"))
+            if not isinstance(doc, dict):
+                raise ValueError("vmess payload is not an object")
+            return doc
+        if scheme not in ("vless", "trojan", "ss", "hy2"):
+            raise ValueError("unsupported v2ray scheme")
+        query = dict(urllib.parse.parse_qsl(parsed.query))
+        return {
+            "protocol": scheme + "://",
+            "uuid": urllib.parse.unquote(parsed.username or ""),
+            "address": parsed.hostname or "",
+            "port": parsed.port,
+            "params": query,
+            "name": urllib.parse.unquote(parsed.fragment or ""),
+        }
+    except (ValueError, TypeError, UnicodeError) as exc:
+        raise IntegrationError("DECODE_FAILED") from exc
 
 
 def file_decode(provider, raw, credentials=None):
@@ -447,6 +487,30 @@ def file_decode(provider, raw, credentials=None):
             return document(module.decrypt_catalog(
                 module.decode_file(raw.decode("utf-8-sig"))))
         except ValueError as exc:
+            raise IntegrationError("DECODE_FAILED") from exc
+    if app == "AR_PRO_VPN":
+        # .ar 2.0: Base64(IV + AES-256-CBC("AR PRO VPN"+JSON, key32)).
+        # decode_ar accepts str or bytes and raises DecodeError on v1
+        # files; the engine's _C8_GENERIC_FALLBACK then retries the
+        # frozen C0 AR_PRO_VPN_archivos.py engine for those.
+        return document(module.decode_ar(raw))
+    if app == "MehafVPN":
+        # .mehaf holds a standard v2ray config (a vless:// link or a
+        # plain JSON), NOT a proprietary-encrypted format. Parse the
+        # link or JSON; the bundled configfile.json blob is the last
+        # resort (decrypt_catalog + decrypt_full_catalog).
+        text = raw.decode("utf-8-sig").strip()
+        if text.startswith(("vless://", "vmess://", "trojan://", "ss://", "hy2://")):
+            return document(_parse_v2ray_link(text))
+        try:
+            doc = json.loads(text)
+        except ValueError:
+            doc = None
+        if isinstance(doc, dict):
+            return document(doc)
+        try:
+            return document(module.decrypt_full_catalog(module.decrypt_catalog(text)))
+        except Exception as exc:
             raise IntegrationError("DECODE_FAILED") from exc
     fn = module.decode
     allowed = inspect.signature(fn).parameters

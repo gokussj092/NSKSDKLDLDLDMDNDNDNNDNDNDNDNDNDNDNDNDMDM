@@ -157,6 +157,19 @@ def dispatch(text: str, *, password: str | None = None) -> str | None:
         # has been supplied yet.
         module = importlib.import_module("decoders.Python.apps.Ways_Tunnel.text_decoder")
         return module.decode_text(value, password=password)
+    if lowered.startswith("v2rayng://"):
+        # Tx Tunnel v1.10.11.3: explicit dispatch to the v2rayNG link
+        # parser (install-config / install-sub, plus the direct
+        # vmess/vless/trojan/ss/hy2 links it carries). The scheme is
+        # unambiguous: a None result is final, never a fallback to
+        # another format. VERIFIED_SYNTHETIC: no real v2rayng:// link
+        # has been supplied yet.
+        module = importlib.import_module("decoders.Python.apps.Tx_Tunnel.txtunnel")
+        try:
+            result = module.parse_v2rayng_link(value)
+        except ValueError:
+            return None
+        return json.dumps(result, ensure_ascii=False, indent=2)
     # C8 isolated original application codecs. These prefixes are unambiguous.
     c8_links = (
         ("bdnet://", "decoders.Python.apps.BD_NET_VPN.file_decoder"),

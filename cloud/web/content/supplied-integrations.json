@@ -55,18 +55,18 @@
       "appDir": "AR_PRO_VPN",
       "name": "AR PRO VPN",
       "package": "noob.arpro.vpn",
-      "versionCode": 1,
-      "versionName": "1.0",
-      "catalogModule": "AR_PRO_VPN.py",
+      "versionCode": 2,
+      "versionName": "2.0",
+      "catalogModule": "arpro.py",
       "extensions": [
         "ar"
       ],
       "textPrefixes": [],
-      "fileModule": "AR_PRO_VPN_archivos.py",
+      "fileModule": "arpro.py",
       "requests": [
         {
           "name": "servers",
-          "url": "https://jezvpn.xyz/api/app?json=0b791e09b974f136ed62",
+          "url": "https://jezvpn.xyz/api/app?json=20ec37d9ba9316e8a793",
           "agent": "Dalvik/2.1.0",
           "method": "GET",
           "headers": {}
@@ -397,8 +397,8 @@
       "appDir": "HX_Tunnel_VPN",
       "name": "HX Tunnel VPN",
       "package": "com.hxtunnel.vpn",
-      "versionCode": 14,
-      "versionName": "Hx-Build14",
+      "versionCode": 15,
+      "versionName": "Hx-Build15",
       "catalogModule": "HX_Tunnel_VPN.py",
       "extensions": [
         "hxt"
@@ -409,7 +409,7 @@
         {
           "name": "servers",
           "url": "https://ctxrelay.online/updater/e7aa9907021632c39b0e0573e11861",
-          "agent": "HX Tunnel VPN/Hx-Build14",
+          "agent": "HX Tunnel VPN/Hx-Build15",
           "method": "GET",
           "headers": {}
         }
@@ -2121,6 +2121,23 @@
       "requests": [],
       "sourceIcon": "topplugsa.png",
       "icon": "top-plug-sa.png",
+      "catalogState": "FILE_ONLY"
+    },
+    {
+      "id": "mehaf-vpn",
+      "appDir": "MehafVPN",
+      "name": "Mehaf VPN",
+      "package": "vpn.jx.udpstrong",
+      "versionCode": 15,
+      "versionName": "1.0.9.20",
+      "extensions": [
+        "mehaf"
+      ],
+      "textPrefixes": [],
+      "fileModule": "mehafvpn.py",
+      "requests": [],
+      "sourceIcon": "mehafvpn-icon-192.png",
+      "icon": "mehaf-vpn.png",
       "catalogState": "FILE_ONLY"
     }
   ]

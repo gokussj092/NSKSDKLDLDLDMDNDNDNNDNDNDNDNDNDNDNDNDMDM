@@ -1,43 +1,91 @@
 #!/usr/bin/env python3
-"""Tx build-70 catalog: offline reader and exact fixed public GET."""
+"""SP-DECODE server-side catalog decoder for Tx Tunnel v1.10.11.3.
+
+Bridge contract (see cloud/workers/python/catalog_vpn_bridge.py): the
+broker downloads the live catalog (POST
+https://strongteam.co/api/txtunnelnew/ with body
+hash=xsandokUpdatex) and passes the raw envelope text here; run()
+returns the decrypted catalog as one JSON string.
+
+Layers (see txtunnel.py): the body is one Argon2id + AES-256-GCM
+envelope (password P17, fallback P32); decrypt_catalog_fields then
+decrypts every individually-encrypted field generically; the result
+is audited field by field and the decode FAILS CLOSED if any
+envelope-shaped value remains (audit_decrypted_catalog: 0 remaining
+on the live catalog). The result JSON carries NO download API.
+
+VERIFIED_LIVE 2026-11-25: catalog v66.87, 30 servers, 651 networks,
+0 encrypted values remaining.
+"""
 from __future__ import annotations
-import argparse
-from pathlib import Path
-import sys
-from urllib.request import Request,HTTPRedirectHandler,build_opener
-ROOT=Path(__file__).resolve().parents[4]
-if str(ROOT) not in sys.path:sys.path.insert(0,str(ROOT))
-from decoders.Python.apps.Tx_Tunnel.codec import DecodeError,MAX_BYTES,decode_catalog,render
 
-# rk1.g formats base.apk's size in MiB to two decimals, then Java Double.toString.
-# 28,308,691 / 1,048,576 -> 27.00 -> 27.0; not an account/device credential.
-SOURCE='https://strongteam.co/api/txtunnel/v1/?appcode=27.0'
-USER_AGENT='Tx Tunnel'
+import json
 
-def run(data:bytes)->str:return render(decode_catalog(data))
+if __package__:
+    from .txtunnel import (
+        audit_decrypted_catalog,
+        decrypt_catalog_envelope,
+        decrypt_catalog_fields,
+    )
+else:
+    from txtunnel import (
+        audit_decrypted_catalog,
+        decrypt_catalog_envelope,
+        decrypt_catalog_fields,
+    )
 
-class _NoRedirect(HTTPRedirectHandler):
-    def redirect_request(self,*args,**kwargs):raise DecodeError('REMOTE_REDIRECT_REJECTED')
 
-def download():
-    req=Request(SOURCE,headers={'User-Agent':USER_AGENT,'Accept-Encoding':'identity'})
+class DecodeError(ValueError):
+    pass
+
+
+def decode_catalog(data: bytes) -> dict:
+    """Raw envelope text (bytes) -> fully-decrypted catalog dict.
+
+    The live body is one Argon2id + AES-256-GCM envelope; a plain JSON
+    catalog (the historical 'plain' mode, still accepted by the old
+    codec.open_document) is accepted as-is. The decoded document must
+    be a catalog (Version string, Servers/Networks lists of records):
+    a file wire (one network profile) is rejected, like the old codec.
+    """
+    if not isinstance(data, bytes) or not data:
+        raise DecodeError("Catálogo vacío.")
     try:
-        with build_opener(_NoRedirect()).open(req,timeout=25) as response:
-            if response.status!=200 or response.headers.get('Content-Encoding','identity')!='identity':
-                raise DecodeError('INVALID_REMOTE_RESPONSE')
-            data=response.read(MAX_BYTES+1)
-    except OSError as exc:raise DecodeError('REMOTE_UNAVAILABLE') from exc
-    if not data or len(data)>MAX_BYTES:raise DecodeError('INVALID_REMOTE_SIZE')
-    return data
+        text = data.decode("utf-8-sig").strip()
+    except UnicodeError:
+        raise DecodeError("Catálogo no UTF-8.") from None
+    if not text:
+        raise DecodeError("Catálogo vacío.")
+    if text.startswith("{"):
+        try:
+            catalog = json.loads(text)
+        except ValueError:
+            raise DecodeError("Catálogo inválido o incompatible con Tx Tunnel v1.10.") from None
+    else:
+        try:
+            plain, _which = decrypt_catalog_envelope(text)
+            catalog = json.loads(plain)
+        except (ValueError, TypeError):
+            raise DecodeError("Catálogo inválido o incompatible con Tx Tunnel v1.10.") from None
+    if (not isinstance(catalog, dict)
+            or not isinstance(catalog.get("Version"), str)
+            or not all(isinstance(catalog.get(key), list) for key in ("Servers", "Networks"))
+            or not all(isinstance(row, dict) for key in ("Servers", "Networks") for row in catalog[key])):
+        raise DecodeError("Catálogo inválido o incompatible con Tx Tunnel v1.10.")
+    catalog, _stats = decrypt_catalog_fields(catalog, workers=4)
+    # workers=4: el descifrado completo del vivo son ~3.280 derivaciones
+    # Argon2id (~49 ms c/u, ~166 s en secuencial), por encima del cap
+    # CATALOG_TIMEOUT_SECONDS=120 del worker (engine.py); con 4 procesos
+    # baja a ~45 s (precedente VLX, decode_fields workers=4). La salida
+    # es byte-identica a la secuencial.
+    audit = audit_decrypted_catalog(catalog)
+    if not audit.get("ok"):
+        raise DecodeError(
+            "Catálogo con valores sin descifrar: %s" % audit.get("remaining")
+        )
+    return catalog
 
-def main():
-    p=argparse.ArgumentParser(description=__doc__);p.add_argument('file',nargs='?',help='Catalog path, - for stdin; omitted: fixed GET');a=p.parse_args()
-    try:
-        if a.file=='-':data=sys.stdin.buffer.read(MAX_BYTES+1)
-        elif a.file:
-            with Path(a.file).open('rb') as f:data=f.read(MAX_BYTES+1)
-        else:data=download()
-        print(run(data));return 0
-    except (ValueError,OSError,RecursionError):
-        print('No se pudo leer el catálogo Tx Tunnel completo.',file=sys.stderr);return 1
-if __name__=='__main__':raise SystemExit(main())
+
+def run(data: bytes) -> str:
+    """Bridge entry point: bytes -> JSON string."""
+    return json.dumps(decode_catalog(data), ensure_ascii=False, indent=2) + "\n"

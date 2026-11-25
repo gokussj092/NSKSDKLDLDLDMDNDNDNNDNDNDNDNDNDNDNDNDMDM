@@ -21,6 +21,7 @@ test("Cloud catalog advertises bounded file, text and online reference formats",
  assert(formats.some(x=>x.prefix==="wyst://" && x.suffix==="wyst" && x.name==="Ways Tunnel" && x.kind==="text"));
  assert(formats.some(x=>x.prefix==="bshieldnet://" && x.suffix==="bshield" && x.kind==="text"));
  assert(formats.some(x=>x.prefix==="bshield://" && x.suffix==="bshield" && x.kind==="text"));
+ assert(formats.some(x=>x.prefix==="v2rayng://" && x.suffix==="txtunnel" && x.name==="Tx Tunnel" && x.kind==="text"));
  assert(formats.some(x=>x.prefix==="hccloud://" && x.suffix==="hc" && x.kind==="cloud"));
  for(const prefix of ["xhypher://","xhyphertunnelpro://"])
    assert(formats.some(x=>x.prefix===prefix && x.suffix==="xhypher" && x.kind==="text"));
@@ -30,7 +31,7 @@ test("Cloud catalog advertises bounded file, text and online reference formats",
      x.name==="Dark Tunnel" && x.kind==="text"));
  assert(formats.every(x=>!("url" in x)&&!("route" in x)&&!("key" in x)));
  assert.equal(new Set(formats.map(x=>x.prefix.toLowerCase())).size,formats.length);
- assert.equal(published.formats.length,283);
+ assert.equal(published.formats.length,287);
 });
 
 test("Untrusted catalog cannot select worker modules, URLs, scripts or duplicate prefixes",()=>{

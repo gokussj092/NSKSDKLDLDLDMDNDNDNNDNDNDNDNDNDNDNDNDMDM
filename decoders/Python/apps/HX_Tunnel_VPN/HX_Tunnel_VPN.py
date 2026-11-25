@@ -1,8 +1,19 @@
 #!/usr/bin/env python3
-"""HX Tunnel VPN Hx-Build14: catalog decoder, local or explicit HTTPS.
+"""HX Tunnel VPN Hx-Build15: catalog decoder, local or explicit HTTPS.
+
+Build15 verified 2026-11-25: same endpoint, key (b"Princie!") and XXTEA
+variant (delta 0x9e5729b1) as Build14; live catalog Version 26.12
+(24 free servers, 714 payloads) downloaded and decoded in vivo.
+For .hxt files use hx_archivos.py.
+
+Audit 2026-11-25: the top-level "Username"/"Password" values in the
+decrypted catalog JSON are NOT plaintext — each is a Base64 XXTEA blob
+(same key/delta as the catalog envelope; APK AbstractC4624vm.c routine)
+that decrypts to a 32-char hex shared credential. decode() decrypts
+both fields; every other catalog value was verified plaintext.
 
 Standalone Python 3.10+, standard library only; no APK needed at runtime.
-For .hxt files or encrypted profile text use HX_Tunnel_VPN_archivos.py.
+For .hxt files or encrypted profile text use hx_archivos.py.
 """
 from __future__ import annotations
 
@@ -27,8 +38,10 @@ MASK = 0xffffffff
 DELTA = (-1638454863) & MASK  # APK XXTEA variant: 0x9e5729b1.
 # Shared format constant in AbstractC0282Km, not an account credential.
 CATALOG_KEY = b"Princie!"
-CATALOG_URL = "https://ctxrelay.online/updater/e7aa9907021632c39b0e0573e11861"
-USER_AGENT = "HX Tunnel VPN/Hx-Build14"
+CATALOG_URL = "https://hxrelay.us/updater/e7aa9907021632c39b0e0573e11861"
+# Build14 used https://ctxrelay.online/updater/<same path>; both hosts serve
+# the byte-identical catalog (verified 2026-11-25, SHA-256 20cda1eb...).
+USER_AGENT = "HX Tunnel VPN/Hx-Build15"
 LIST_FIELDS = ("Free_servers", "Premium_servers", "Vip_servers", "Private_servers", "Payloads")
 
 
@@ -139,6 +152,28 @@ def decrypt_catalog_bytes(data: bytes | str, *, key: bytes | None = None) -> byt
     return struct.pack("<" + "I" * (count - 1), *values[:-1])[:length]
 
 
+def _decrypt_credential_fields(doc: dict) -> dict:
+    """Decrypt the top-level shared credentials, if present.
+
+    The catalog JSON carries "Username"/"Password" as Base64 XXTEA blobs
+    encrypted with the same key/delta as the catalog envelope itself
+    (APK AbstractC4624vm.c: Base64-decode, XXTEA-decrypt, UTF-8).
+    Each decrypts to a 32-char lowercase-hex shared credential
+    (verified by exact re-encryption round-trip against the live
+    catalog v26.12 and the bundled assets/gremlin.json v25.47).
+    A value that does not decrypt is left untouched, so a future
+    catalog shipping the credentials in clear still decodes.
+    """
+    for field in ("Username", "Password"):
+        value = doc.get(field)
+        if isinstance(value, str) and value:
+            try:
+                doc[field] = decrypt_catalog_bytes(value).decode("utf-8")
+            except (DecodeError, UnicodeError):
+                pass
+    return doc
+
+
 def _catalog_json(data) -> dict:
     doc = _json(data)
     if not any(field in doc for field in LIST_FIELDS):
@@ -146,7 +181,7 @@ def _catalog_json(data) -> dict:
     for field in LIST_FIELDS:
         if field in doc and (not isinstance(doc[field], list) or any(not isinstance(v, dict) for v in doc[field])):
             raise DecodeError("WRONG_DOCUMENT", "Las listas de catálogo deben contener objetos completos.")
-    return doc
+    return _decrypt_credential_fields(doc)
 
 
 def decode(data: bytes | str) -> dict:
@@ -181,22 +216,34 @@ class _HTTPSRedirect(HTTPRedirectHandler):
         return super().redirect_request(req, fp, code, msg, headers, newurl)
 
 
-def fetch_catalog(url: str = CATALOG_URL) -> bytes:
-    try:
-        _https_url(url)
-        req = Request(url, headers={"User-Agent": USER_AGENT}, method="GET")
-        with build_opener(_HTTPSRedirect()).open(req, timeout=20) as response:
-            if response.status != 200:
-                raise OSError("unexpected HTTP status")
-            data = response.read(MAX_BYTES + 1)
-    except HTTPError as exc:
-        code = "ACCESS_DENIED" if exc.code in (401, 403) else "DOWNLOAD_FAILED"
-        raise DecodeError(code, "El endpoint no devolvió un catálogo accesible.") from exc
-    except (OSError, ValueError, URLError, HTTPException) as exc:
-        raise DecodeError("DOWNLOAD_FAILED", "No se pudo descargar el catálogo mediante HTTPS.") from exc
-    if len(data) > MAX_BYTES:
-        raise DecodeError("SIZE_LIMIT", "La respuesta supera el límite de tamaño.")
-    return data
+def fetch_catalog(url: str = CATALOG_URL, attempts: int = 5) -> bytes:
+    # The host truncates the body mid-transfer from some networks (the
+    # response always announces the full Content-Length, but the socket
+    # closes early at a 16 KiB boundary). Retry the whole GET until the
+    # announced length arrives; a truncated body cannot decrypt (XXTEA
+    # needs the complete block, length word included).
+    last_exc: Exception | None = None
+    for _ in range(max(1, attempts)):
+        try:
+            _https_url(url)
+            req = Request(url, headers={"User-Agent": USER_AGENT}, method="GET")
+            with build_opener(_HTTPSRedirect()).open(req, timeout=20) as response:
+                if response.status != 200:
+                    raise OSError("unexpected HTTP status")
+                data = response.read(MAX_BYTES + 1)
+                announced = response.headers.get("Content-Length")
+                if announced is not None and len(data) != int(announced):
+                    raise OSError("truncated body")
+        except HTTPError as exc:
+            code = "ACCESS_DENIED" if exc.code in (401, 403) else "DOWNLOAD_FAILED"
+            raise DecodeError(code, "El endpoint no devolvió un catálogo accesible.") from exc
+        except (OSError, ValueError, URLError, HTTPException) as exc:
+            last_exc = exc
+            continue
+        if len(data) > MAX_BYTES:
+            raise DecodeError("SIZE_LIMIT", "La respuesta supera el límite de tamaño.")
+        return data
+    raise DecodeError("DOWNLOAD_FAILED", "No se pudo descargar el catálogo mediante HTTPS.") from last_exc
 
 
 def _read(path: Path) -> bytes:
@@ -207,13 +254,79 @@ def _read(path: Path) -> bytes:
     return data
 
 
+def _xxtea_encrypt_block(plain: bytes) -> bytes:
+    """Encrypt helper used ONLY by --self-test (round-trip check)."""
+    import struct as _st
+    pad = (-len(plain)) % 4
+    data = plain + b"\0" * pad
+    values = list(_st.unpack("<" + "I" * (len(data) // 4), data))
+    values.append(len(plain))
+    count = len(values)
+    key = _st.unpack("<4I", CATALOG_KEY[:16].ljust(16, b"\0"))
+    total = 0
+    rounds = 6 + 52 // count
+    z = values[-1]
+    for _ in range(rounds):
+        total = (total + DELTA) & MASK
+        e = (total >> 2) & 3
+        for position in range(count):
+            y = values[(position + 1) % count]
+            values[position] = (values[position] + _mx(total, y, z, position, e, key)) & MASK
+            z = values[position]
+    return _st.pack("<" + "I" * count, *values)
+
+
+def self_test() -> int:
+    """No-network checks: XXTEA round-trip, base64 handling, error paths."""
+    import base64 as _b64
+    failures = []
+    doc = {"Version": "test", "Free_servers": [], "Premium_servers": [],
+           "Vip_servers": [], "Private_servers": [],
+           "Payloads": [{"friendly_name": "t", "payload": "GET / [crlf]"}]}
+    raw = json.dumps(doc, ensure_ascii=False).encode("utf-8")
+    try:
+        enc = _b64.b64encode(_xxtea_encrypt_block(raw)).decode()
+        assert decode(enc) == doc
+    except Exception as exc:  # noqa: BLE001 - self-test reports only
+        failures.append(f"round-trip: {exc!r}")
+    # Credential fields: Base64 XXTEA blobs decrypt to the hex plaintext.
+    # (Synthetic test vectors only — never real catalog credentials.)
+    try:
+        cred_doc = dict(doc)
+        cred_doc["Username"] = _b64.b64encode(_xxtea_encrypt_block(b"0123456789abcdef0123456789abcdef")).decode()
+        cred_doc["Password"] = _b64.b64encode(_xxtea_encrypt_block(b"fedcba9876543210fedcba9876543210")).decode()
+        enc = _b64.b64encode(_xxtea_encrypt_block(json.dumps(cred_doc, ensure_ascii=False).encode("utf-8"))).decode()
+        got = decode(enc)
+        assert got["Username"] == "0123456789abcdef0123456789abcdef", got["Username"]
+        assert got["Password"] == "fedcba9876543210fedcba9876543210", got["Password"]
+    except Exception as exc:  # noqa: BLE001 - self-test reports only
+        failures.append(f"credential round-trip: {exc!r}")
+    for bad, want in [("!!!", "FORMAT_ERROR"), ("AAAA", "TRUNCATED")]:
+        try:
+            decode(bad)
+            failures.append(f"bad input {bad!r} accepted")
+        except DecodeError as exc:
+            if exc.code != want:
+                failures.append(f"bad input {bad!r}: got {exc.code}, want {want}")
+    if failures:
+        print("SELF-TEST FAIL: " + "; ".join(failures), file=sys.stderr)
+        return 1
+    print("SELF-TEST OK: XXTEA round-trip + error paths (no network, no real catalog)")
+    return 0
+
+
 def main(argv=None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    source = parser.add_mutually_exclusive_group(required=True)
+    source = parser.add_mutually_exclusive_group(required=False)
     source.add_argument("file", nargs="?", type=Path, help="Respuesta del catálogo guardada localmente")
     source.add_argument("--url", nargs="?", const=CATALOG_URL, help="Descarga explícita; por defecto usa el endpoint original")
     parser.add_argument("-o", "--output", type=Path, help="Guardar JSON completo; por defecto stdout")
+    parser.add_argument("--self-test", action="store_true", help="Comprobaciones sin red y salir")
     args = parser.parse_args(argv)
+    if args.self_test:
+        return self_test()
+    if args.file is None and args.url is None:
+        parser.error("one of the arguments file --url is required")
     try:
         result = decode(fetch_catalog(args.url) if args.url is not None else _read(args.file))
         rendered = json.dumps(result, ensure_ascii=False, indent=2, allow_nan=False) + "\n"

@@ -7,7 +7,7 @@ import {providerEnabled} from "./server-vpn-provider.mjs";
 import {SUPPLIED_CATALOG_ITEMS,suppliedProviderConfigured} from "./supplied-integrations.mjs";
 import {catalogDefaultEnabled} from "./catalog-provider-policy.mjs";
 
-export const CATALOG_VERSION = 99; // B SHIELD NET + Ways Tunnel live catalogs, TOP-PLUG-SA .tpc files (2026-11-24). Removed the legacy am-tunnel-lite-vpn card (remote:null) 2026-11-22 by Pedro's decision; AM Tunnel Lite stays as am-tunnel-lite (Version 4.6 live).
+export const CATALOG_VERSION = 100; // MSY VPN Tunnel + AlsaherFree + PULSE TUNNEL VPN + IRFAN VPN V3 + Katiba VPN + DTunnel VPN live catalogs, Mehaf VPN .mehaf files, AR PRO VPN 2.0, HX Tunnel Hx-Build15, Fat/VLX corrected decoders, Tx Tunnel .txtunnel + v2rayng:// (2026-11-25).
 export const RECHECK_SECONDS = 15 * 60; // Version-only recovery; full download occurs on version change.
 
 /** Monotonic deployment version. Bump this override for ANY metadata, icon
@@ -88,6 +88,18 @@ const BASE_ITEMS = [
   {id:"ways-tunnel", name:"Ways Tunnel", icon:"ways-tunnel.png", remote:"ways-tunnel"},
   // Live catalog validated 2026-11-24 (Version 7.34, 90 servers, 792 networks).
   {id:"bshield-net", name:"B SHIELD NET", icon:"bshield-net.png", remote:"bshield-net"},
+  // Live catalog validated 2026-11-25 (catalog_version 64, 3 servers, 18 configs; plain HTTP, dedicated downloader).
+  {id:"msy-vpn", name:"MSY VPN Tunnel", icon:"msy-vpn.png", remote:"msy-vpn"},
+  // Live catalog validated 2026-11-25 (Version 9.9.72, 4 servers).
+  {id:"alsaherfree", name:"AlsaherFree", icon:"alsaherfree.png", remote:"alsaherfree"},
+  // Live catalog validated 2026-11-25 (Version 1.0.102, 9 servers all premium, 1077 networks, 201 payloads).
+  {id:"pulse-tunnel", name:"PULSE TUNNEL VPN", icon:"pulse-tunnel.png", remote:"pulse-tunnel"},
+  // Live catalog validated 2026-11-25 (Version 2.8, 3 servers, 63 networks).
+  {id:"irfan-vpn", name:"IRFAN VPN V3", icon:"irfan-vpn.png", remote:"irfan-vpn"},
+  // Live catalog validated 2026-11-25 (Version 1.12, 57 servers, 235 networks; 21 values stay encrypted).
+  {id:"katiba-vpn", name:"Katiba VPN", icon:"katiba-vpn.png", remote:"katiba-vpn"},
+  // Live catalog validated 2026-11-25 (Version 436, 16 profiles; gRPC + server secret).
+  {id:"dtunnel-vpn", name:"DTunnel VPN", icon:"dtunnel-vpn.png", remote:"dtunnel-vpn"},
   {id:"xhypher-tunnel-pro", name:"Xhypher Tunnel Pro", icon:"xhypher-tunnel-pro.png", remote:"xhypher-tunnel-pro"},
   // Official endpoint returns HTML; a valid signed OTA response is still required.
   {id:"ut-loop-pro-vpn", name:"UT Loop Pro VPN", icon:"ut-loop-pro-vpn.png", remote:null},
