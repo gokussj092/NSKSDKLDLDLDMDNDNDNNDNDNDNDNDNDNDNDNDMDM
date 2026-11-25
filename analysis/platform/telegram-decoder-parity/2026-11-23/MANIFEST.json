@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "package_name": "spdecode.telegram",
+  "app_name": "SP-DECODE Bot",
+  "version_name": null,
+  "version_code": null,
+  "observed_at": "2026-11-23",
+  "source_category": "repository",
+  "authorization_note": "Bot and shared decoder code in the project repository. Tests use existing sanitized or synthetic inputs.",
+  "status": "PARTIAL",
+  "base_commit": "fc63958b950a3cb0000eecdf2ae2f6bd1e5aa109",
+  "targets": [
+    {"kind": "file", "scope": "282 existing Cloud suffixes, including historical HTTP Custom"},
+    {"kind": "text", "scope": "76 local Cloud prefixes plus the existing Telegram handlers"}
+  ],
+  "code_paths": [
+    "spdecode/decoder_runtime.py",
+    "spdecode/handlers/decoder_credentials.py",
+    "spdecode/handlers/cloud_texts.py",
+    "spdecode/handlers/documents.py",
+    "cloud/workers/python/engine.py",
+    "cloud/workers/python/hc_bridge.py"
+  ],
+  "evidence_refs": [
+    "tests/test_telegram_cloud_decoders.py",
+    "tests/golden/hc_legacy57.json",
+    "tests/golden/hc_sip_new_variants.py",
+    "tests/golden/xveon_vectors.json",
+    "analysis/xyz.easypro.httpcustom/564/RESULTS.md",
+    "analysis/xyz.easypro.httpcustom/934/RESULTS.md"
+  ],
+  "dependencies": [
+    {"name": "Python", "version": "3.12.14", "origin": "runner", "lock": "dependencies.lock.txt"},
+    {"name": "pyTelegramBotAPI", "version": "4.28.0", "origin": "PyPI", "lock": "requirements.txt"},
+    {"name": "pytest", "version": "9.0.2", "origin": "PyPI", "lock": "dependencies.lock.txt"}
+  ],
+  "connection_authentication": {
+    "status": "UNCONFIRMED",
+    "scope": "VPN transport and connection authentication",
+    "limitation": "The review covers reuse of local decoders and bot messaging. It sends no VPN traffic."
+  },
+  "limitations": [
+    "Runtime verification used a fake Telegram transport.",
+    "Catalog download and Cloud reference import retain their existing entry points.",
+    "Protected formats continue to require user-owned credentials and retain engine rejection rules."
+  ]
+}

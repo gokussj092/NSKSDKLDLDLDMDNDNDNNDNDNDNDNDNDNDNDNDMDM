@@ -66,13 +66,11 @@ entorno `SPDECODE_HAPP_KEYS_JSON`, con claves `crypt`, `crypt2`,
 documentación o archivos descargables. Si no se configura, los enlaces HAPP
 no son descifrables. El motor tampoco descarga URLs devueltas por RSA.
 
-**V2Box protegido:** `decode_file(raw_bytes, password="...")` acepta la
-contraseña elegida por el usuario. El bot detecta estas exportaciones al
-recibir el documento y, **solo en chat privado**, ofrece una petición efímera
-de contraseña: responder al mensaje del bot, caducidad de 3 minutos, máximo
-3 intentos, sin persistencia. Jamás publicar contraseñas en grupos. Telegram
-Bot API no emplea cifrado de extremo a extremo; los usuarios deben tratar
-estas contraseñas como secretos transmitidos al bot.
+**V2Box protegido:** el bot solicita la contraseña con una respuesta al
+documento o enlace original, en el mismo chat y tema. Responde al aviso
+del bot. La solicitud caduca en 3 minutos, admite 3 intentos y queda
+vinculada a la persona que envió el original. Se conserva en memoria
+mientras está pendiente.
 
 **ITV:** la implementación extraída de `66.py` usa AES-GCM pero *no
 comprueba etiqueta de autenticación* (el diseño del original no define su

@@ -170,7 +170,8 @@ Online processing, administrative operations, offline processing and the Telegra
 
 ## Deployment and server management
 
-The Cloud installer and the standalone Telegram bot installer are different deployment paths. Do not run both management scripts under the same system-wide command name without isolating the installations.
+The Cloud service uses `spdecode`. The standalone VPS bot uses `spdecode-telegram`
+for its management command and systemd service.
 
 ### Cloud: first installation
 
@@ -263,29 +264,62 @@ Replace the placeholder with an eligible successful CI run ID. Publication is ga
 
 ### Telegram bot: Termux and Linux
 
-For the standalone bot, clone the repository and run the installer appropriate to the target:
+Run the installer from a checkout dedicated to the standalone bot:
 
 ```bash
 # Termux
 bash installers/install-termux.sh
 
-# Linux VPS — standalone bot only
+# Linux VPS
 bash installers/install-vps.sh
 ```
 
-Configure the bot token and access policy through the setup wizard. In the standalone bot environment, use:
+On the VPS, run the installer and bot updates from the account that owns the
+bot checkout. A root login shell, including one opened with `sudo -i`, can
+install and manage its own checkout in `/root/spdecode-telegram`.
+The installer prompts for the BotFather token on the terminal with echo
+disabled and reuses an existing bot configuration. The default
+administrator ID is `5325631223` when administrator configuration is omitted.
+Manage or update the installed VPS bot with:
 
 ```bash
-spdecode status
-spdecode start
-spdecode stop
-spdecode restart
-spdecode logs
-spdecode config
-spdecode validate
+spdecode-telegram status
+spdecode-telegram start
+spdecode-telegram stop
+spdecode-telegram restart
+spdecode-telegram logs
+spdecode-telegram config
+spdecode-telegram update
 ```
 
-These commands are for the bot's launcher, not the Cloud management CLI.
+The updater checks that systemd uses the same checkout as the command and
+fetches the configured upstream branch directly. It fast-forwards the bot's
+checkout, refreshes dependencies when their manifests change, and validates
+startup. It restarts the bot even when the checkout is current and prints the
+commit and upstream after confirming the systemd process stays active.
+The Termux launcher uses `spdecode` on the device.
+
+In Telegram, reply to the bot's credential prompt in the same chat and
+topic as the original file or link. The bot replies with a Markdown attachment
+that shows the application, sender, original message date and time in UTC,
+and the official channel, group, and developer links. The Telegram caption
+also shows the application, sender, and timestamp. For file uploads the bot
+replaces the original extension with `.md`. Text and link results prefix
+`spdecode-result.md` with the app name, as in `V2Box-spdecode-result.md`.
+Copy numbers after the input extension are supported. Both `profile.hc (1)`
+and `profile.hc(1)` use the HTTP Custom decoder and keep the copy number in
+the result filename. Each attachment contains one formatted JSON block labeled
+for syntax highlighting in compatible Markdown viewers. Plain-text decoder
+output is stored in the `text` field. Unsupported inputs, failed decodes, and
+incomplete SSC Custom and Dark Tunnel fragments are handled silently.
+Administrators can manage access without a restart.
+
+- `/allowgroup [GROUP_ID]` adds the current group or a specific group to the allowlist.
+- `/revokegroup [GROUP_ID]` removes a group from the allowlist.
+- `/restrictgroups` disables all-groups access and enforces the saved allowlist.
+- `/private` checks your private access. Administrators see the list and can
+  use `/private allow USER_ID` or `/private revoke USER_ID`.
+
 
 ---
 

@@ -5,25 +5,51 @@ of formats needing a correct source-based implementation. Existing SSC,
 TLS, RENZ, IZPH, XOR, HAPP and other shared file/text decoders are
 untouched and retain their own handlers.
 
-All outputs use the existing centralized authorization and safe HTML
-escaping. A V2Box password request is only ever accepted in private chat.
+Results use centralized authorization and Markdown attachments.
+V2Box credential requests stay in the chat that received the original.
 """
 from __future__ import annotations
 
+import json
 import logging
+import re
+from urllib.parse import parse_qs
 
 from decoders.Python import text_legacy_protocols, text_structured_protocols
 from spdecode.access import require_authorized
+from spdecode.format_names import public_format_name
+from spdecode.handlers.results import send_markdown_result
 from spdecode.runtime import bot
-from spdecode.utils import html_pre, split_message
 
 logger = logging.getLogger("sp-decode")
 MAX_TEXT_CHARS = 2 * 1024 * 1024
 
+
+def _ar_text(value: str) -> str | None:
+    result = text_legacy_protocols.decode_ar(value)
+    if not result or not re.match(r"^[A-Za-z_][\w.-]*=", result):
+        return result
+    try:
+        params = parse_qs(result, keep_blank_values=True, strict_parsing=True, errors="strict")
+    except ValueError:
+        return result
+
+    profiles = params.get("profile", [])
+    for index, profile in enumerate(profiles):
+        if profile.lstrip().startswith(("{", "[")):
+            try:
+                profiles[index] = json.loads(profile)
+            except (ValueError, RecursionError):
+                pass
+    return json.dumps({
+        key: values[0] if len(values) == 1 else values for key, values in params.items()
+    }, ensure_ascii=False)
+
+
 PROTOCOL_HANDLERS = {
     **{prefix: ("NetMod", text_legacy_protocols.decode_netmod)
        for prefix in text_legacy_protocols.NM_PREFIXES},
-    **{prefix: ("AR Tunnel", text_legacy_protocols.decode_ar)
+    **{prefix: ("AR Tunnel", _ar_text)
        for prefix in text_legacy_protocols.AR_PREFIXES},
     **{prefix: ("XrayPB", text_legacy_protocols.decode_pb)
        for prefix in text_legacy_protocols.PB_PREFIXES},
@@ -65,18 +91,8 @@ def _match(message) -> str | None:
     return "__creeb__" if text_structured_protocols.is_creeb(value) else None
 
 
-def _reply_result(message, title: str, text: str) -> None:
-    parts = split_message(text, max_length=3300)
-    for i, part in enumerate(parts, start=1):
-        suffix = f" — parte {i}/{len(parts)}" if len(parts) > 1 else ""
-        bot.reply_to(message,
-                     f"<b>{html_pre(title + suffix)}</b>\n"
-                     f"<pre>{html_pre(part)}</pre>",
-                     parse_mode="HTML")
-
-
 @bot.message_handler(func=lambda message: _match(message) is not None)
-@require_authorized("Los enlaces VPN por texto")
+@require_authorized
 def decode_extra_text(message):
     raw = (getattr(message, "text", "") or "").strip()
     prefix = _match(message)
@@ -92,11 +108,8 @@ def decode_extra_text(message):
         result = decoder(raw)
         if isinstance(result, dict) and result.get("__need_password__"):
             from spdecode.handlers.config_batch_texts import prompt_v2box_password
-            import json
-
             envelope = text_structured_protocols.normalize_v2box_envelope(raw)
             if envelope is None:
-                bot.reply_to(message, "La exportación V2Box está dañada.")
                 return
             # Reuse the same normalized fields for the password prompt;
             # the original file decoder expects RFC4648 Base64.
@@ -106,13 +119,6 @@ def decode_extra_text(message):
             prompt_v2box_password(message, normalized)
             return
         if isinstance(result, str) and result.strip():
-            _reply_result(message, label, result)
-        else:
-            bot.reply_to(
-                message,
-                "No se pudo decodificar este texto con el formato "
-                "y las claves compatibles que tiene SP-DECODE.",
-            )
+            send_markdown_result(message, public_format_name(label) or prefix, result)
     except Exception:
-        logger.exception("Fallo interno al decodificar texto de tipo %s", prefix)
-        bot.reply_to(message, "Ocurrió un error interno al procesar ese texto.")
+        logger.exception("Internal error decoding text format %s", prefix)

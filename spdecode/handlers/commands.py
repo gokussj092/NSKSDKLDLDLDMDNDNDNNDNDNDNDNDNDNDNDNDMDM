@@ -1,16 +1,28 @@
 from __future__ import annotations
 
 import logging
+import re
 
+from telebot.apihelper import ApiTelegramException
 from telebot.types import BotCommand, InlineKeyboardButton, InlineKeyboardMarkup
 
-from spdecode.access import is_admin
-from spdecode.registry import DECODER_REGISTRY
+from spdecode.access import can_use_private_chat, is_admin
+from spdecode.decoder_runtime import FILE_FORMATS
+from spdecode.handlers.format_pages import file_format_rows, text_format_rows
 from spdecode.runtime import bot, settings
 from spdecode.text_sessions import clear_session, get_session
-from spdecode.utils import html_pre, split_message
+from spdecode.utils import html_pre, split_message, thread_options
 
 logger = logging.getLogger("sp-decode")
+
+_APP_URL = "https://spdecode.xyz"
+_CHANNEL_URL = "https://t.me/GhostDeve"
+_DECRYPTION_GROUP_URL = "https://t.me/CodeBreakersHub"
+_COMMUNITY_URL = "https://t.me/+N4CnTYwQQ-w0MjNh"
+_DEVELOPER_URL = "https://t.me/Gh0stDeveloper"
+_MENU_CALLBACK = re.compile(r"menu:(home|files|texts|about):([0-9]{1,3})")
+_OLD_MENU_BUTTONS = {"show_files": "files", "show_texts": "texts"}
+_ROWS_PER_PAGE = 9
 
 
 def _message_command(message) -> str:
@@ -25,89 +37,125 @@ def _protocol_label(protocol: str) -> str:
 
 
 BOT_COMMANDS = [
-    BotCommand("start", "Abrir el menú principal"),
-    BotCommand("help", "Ver cómo utilizar el bot"),
-    BotCommand("formats", "Ver formatos de archivo soportados"),
-    BotCommand("texts", "Ver protocolos de texto soportados"),
-    BotCommand("session", "Ver el estado de una cadena dividida"),
-    BotCommand("ssc", "Ver la sesión SSC activa"),
-    BotCommand("dark", "Ver la sesión Dark Tunnel activa"),
-    BotCommand("cancel", "Cancelar la cadena pendiente"),
-    BotCommand("id", "Mostrar tu ID y el ID del chat"),
-    BotCommand("ping", "Comprobar si el bot está activo"),
-    BotCommand("status", "Estado interno para administradores"),
-    BotCommand("about", "Información de SP-DECODE"),
+    BotCommand("start", "Open the main menu"),
+    BotCommand("help", "Learn how to use the bot"),
+    BotCommand("formats", "Show supported file formats"),
+    BotCommand("texts", "Show supported text and links"),
+    BotCommand("session", "Show the current multipart session"),
+    BotCommand("ssc", "Show the active SSC session"),
+    BotCommand("dark", "Show the active Dark Tunnel session"),
+    BotCommand("cancel", "Cancel the pending session"),
+    BotCommand("id", "Show your user ID and chat ID"),
+    BotCommand("allowgroup", "Authorize a group (administrators)"),
+    BotCommand("revokegroup", "Remove a group from the allowlist (administrators)"),
+    BotCommand("restrictgroups", "Restrict access to allowed groups (administrators)"),
+    BotCommand("private", "Check or manage private chat access"),
+    BotCommand("ping", "Check whether the bot is online"),
+    BotCommand("status", "Show bot status (administrators)"),
+    BotCommand("about", "About SP-DECODE"),
 ]
 
 
-TEXT_PROTOCOLS = (
-    "<b>Protocolos de texto soportados</b>\n\n"
-    "<b>SSC Custom</b>\n"
-    "<code>ssc://...</code> — admite 1, 2, 3 o más mensajes, según sea necesario.\n\n"
-    "<b>TLS Tunnel</b>\n"
-    "<code>tls://...</code> — configuración completa en un solo mensaje.\n\n"
-    "<b>Dark Tunnel</b>\n"
-    "Enlaces con un esquema que identifique Dark Tunnel, por ejemplo "
-    "<code>dark://...</code> o <code>darktunnel://...</code>. "
-    "También admite una cantidad variable de fragmentos.\n\n"
-    "<b>NetMod</b>\n"
-    "<code>nm-vmess://</code>, <code>nm-vless://</code>, <code>nm-dns://</code>, "
-    "<code>nm-trojan://</code>, <code>nm-ssh://</code>, <code>nm-ssr://</code>, "
-    "<code>nm-xray-json://</code>\n\n"
-    "<b>ARMOD</b>\n"
-    "<code>ar-dns://</code>, <code>ar-vless://</code>, <code>ar-vmess://</code>, "
-    "<code>ar-trojan://</code>, <code>ar-ssr://</code>, <code>ar-trojan-go://</code>, "
-    "<code>ar-ssh://</code>\n\n"
-    "<b>Howdy</b>\n"
-    "<code>howdy://</code>, <code>N7pr://</code>\n\n"
-    "<b>XrayPB</b>\n"
-    "<code>pb-vmess://</code>, <code>pb-ss://</code>, <code>pb-socks://</code>, "
-    "<code>pb-vless://</code>, <code>pb-trojan://</code>, <code>pb-ssh://</code>\n\n"
-    "<b>Otros</b>\n"
-    "<code>vmess://</code>, <code>zivpn://</code>, <code>v2box://locked=...</code>"
-)
-
-
 def configure_bot_commands() -> None:
-    """Publica el menú de comandos de Telegram; un fallo aquí no detiene el bot."""
+    """Publish the Telegram command menu without interrupting startup on failure."""
     try:
         bot.set_my_commands(BOT_COMMANDS)
     except Exception:
-        logger.exception("No se pudo actualizar el menú de comandos de Telegram")
+        logger.exception("Could not update the Telegram command menu")
 
 
-def _main_keyboard() -> InlineKeyboardMarkup:
-    keyboard = InlineKeyboardMarkup(row_width=2)
-    keyboard.add(
-        InlineKeyboardButton("Formatos de archivo", callback_data="show_files"),
-        InlineKeyboardButton("Protocolos de texto", callback_data="show_texts"),
-        InlineKeyboardButton("Canal", url="https://t.me/GhostDeve"),
-        InlineKeyboardButton("Grupo", url="https://t.me/CodeBreakersHub"),
-        InlineKeyboardButton("Desarrollador", url="https://t.me/Gh0stDeveloper"),
-        InlineKeyboardButton("GitHub", url="https://github.com/Gh0stDeveloper"),
+def _menu_button(label: str, section: str, page: int = 0) -> InlineKeyboardButton:
+    return InlineKeyboardButton(label, callback_data=f"menu:{section}:{page}")
+
+
+def _welcome_view(user) -> tuple[str, InlineKeyboardMarkup]:
+    first_name = getattr(user, "first_name", None)
+    greeting = f"Welcome to SP-DECODE, {html_pre(first_name)}!" if first_name else "Welcome to SP-DECODE!"
+    text = (
+        f"<b>{greeting}</b>\n\n"
+        "Send a supported file, text, or link to receive the result as a Markdown file.\n\n"
+        "On Android, we recommend our SP-DECODE app."
     )
-    return keyboard
+    keyboard = InlineKeyboardMarkup()
+    keyboard.row(_menu_button("Files", "files"), _menu_button("Text & Links", "texts"))
+    keyboard.row(InlineKeyboardButton("Get the App", url=_APP_URL), _menu_button("About", "about"))
+    keyboard.row(
+        InlineKeyboardButton("Telegram Channel", url=_CHANNEL_URL),
+        InlineKeyboardButton("Decryption Group", url=_DECRYPTION_GROUP_URL),
+    )
+    return text, keyboard
 
 
-def _format_registry() -> str:
+def _about_view() -> tuple[str, InlineKeyboardMarkup]:
+    text = (
+        "<b>About SP-DECODE</b>\n\n"
+        "<b>Developer and owner</b> · Ghost Developer\n\n"
+        "<b>Project history</b>\n"
+        "• <b>2024</b> · The SP-DECODE project began.\n"
+        "• <b>October 4, 2026</b> · Development resumed after a pause.\n"
+        "• <b>October 8, 2026</b> · The project expanded to Android and reached its first working alpha."
+    )
+    keyboard = InlineKeyboardMarkup()
+    keyboard.row(
+        InlineKeyboardButton("Telegram Channel", url=_CHANNEL_URL),
+        InlineKeyboardButton("Decryption Group", url=_DECRYPTION_GROUP_URL),
+    )
+    keyboard.row(InlineKeyboardButton("SP-DECODE Community", url=_COMMUNITY_URL))
+    keyboard.row(
+        InlineKeyboardButton("Ghost Developer", url=_DEVELOPER_URL),
+        InlineKeyboardButton("Get the App", url=_APP_URL),
+    )
+    keyboard.row(_menu_button("Main Menu", "home"))
+    return text, keyboard
+
+
+def _catalogue_view(section: str, page: int) -> tuple[str, InlineKeyboardMarkup]:
+    if section == "files":
+        title, rows = "Supported files", file_format_rows()
+    else:
+        title, rows = "Supported text and links", text_format_rows()
+    total_pages = max(1, (len(rows) + _ROWS_PER_PAGE - 1) // _ROWS_PER_PAGE)
+    page = max(0, min(page, total_pages - 1))
+    start = page * _ROWS_PER_PAGE
     lines = [
-        "<b>Formatos de archivo soportados</b>",
-        f"Total: <b>{len(DECODER_REGISTRY)}</b>",
+        f"<b>{title}</b>",
+        f"Page {page + 1} of {total_pages}",
         "",
+        *rows[start:start + _ROWS_PER_PAGE],
     ]
-    for extension, spec in sorted(
-        DECODER_REGISTRY.items(),
-        key=lambda item: (item[1].name.casefold(), item[0].casefold()),
-    ):
-        lines.append(
-            f"<b>{html_pre(spec.name)}</b> — <code>.{html_pre(extension)}</code>"
-        )
-    return "\n".join(lines)
+    keyboard = InlineKeyboardMarkup()
+    navigation = []
+    if page > 0:
+        navigation.append(_menu_button("‹ Previous", section, page - 1))
+    if page + 1 < total_pages:
+        navigation.append(_menu_button("Next ›", section, page + 1))
+    if navigation:
+        keyboard.row(*navigation)
+    keyboard.row(_menu_button("Main Menu", "home"))
+    return "\n".join(lines), keyboard
 
 
-def _send_html_parts(chat_id: int, text: str, *, reply_to_message_id: int | None = None) -> None:
+def _menu_view(section: str, page: int, user) -> tuple[str, InlineKeyboardMarkup]:
+    if section == "home":
+        return _welcome_view(user)
+    if section == "about":
+        return _about_view()
+    return _catalogue_view(section, page)
+
+
+def _reply_with_menu(message, section: str) -> None:
+    text, keyboard = _menu_view(section, 0, getattr(message, "from_user", None))
+    bot.reply_to(message, text, parse_mode="HTML", reply_markup=keyboard, **thread_options(message))
+
+
+def _send_html_parts(
+    chat_id: int, text: str, *, reply_to_message_id: int | None = None,
+    message_thread_id: int | None = None,
+) -> None:
     for index, part in enumerate(split_message(text, max_length=3900), start=1):
         kwargs = {"chat_id": chat_id, "text": part, "parse_mode": "HTML"}
+        if message_thread_id is not None:
+            kwargs["message_thread_id"] = message_thread_id
         if index == 1 and reply_to_message_id is not None:
             kwargs["reply_to_message_id"] = reply_to_message_id
         bot.send_message(**kwargs)
@@ -115,53 +163,40 @@ def _send_html_parts(chat_id: int, text: str, *, reply_to_message_id: int | None
 
 @bot.message_handler(commands=["start"])
 def send_welcome(message):
-    text = (
-        "<b>SP-DECODE</b>\n"
-        "Decodificador de archivos y configuraciones de texto.\n\n"
-        "Puedes enviar directamente un archivo compatible o una cadena de texto soportada. "
-        "Para SSC Custom y Dark Tunnel, el bot puede reconstruir automáticamente una cadena "
-        "que llegue completa en un mensaje o dividida en cualquier cantidad de fragmentos.\n\n"
-        "Usa /help para ver el flujo de uso, /formats para los archivos soportados y "
-        "/texts para los protocolos de texto."
-    )
-    bot.reply_to(message, text, parse_mode="HTML", reply_markup=_main_keyboard())
-
+    _reply_with_menu(message, "home")
 
 @bot.message_handler(commands=["help", "ayuda"])
 def show_help(message):
     text = (
-        "<b>Cómo utilizar SP-DECODE</b>\n\n"
-        "<b>Archivos</b>\n"
-        "Envía un documento con una extensión soportada. El bot detectará el decodificador, "
-        "lo ejecutará y devolverá el resultado en el chat y como archivo de texto.\n\n"
-        "<b>SSC y Dark Tunnel por texto</b>\n"
-        "1. Envía la cadena completa o su primer fragmento con el prefijo correspondiente.\n"
-        "2. Si está incompleta, continúa enviando los fragmentos siguientes en orden.\n"
-        "3. No existe una cantidad fija: puede completarse con 1, 2, 3 o más mensajes.\n"
-        "4. El bot intenta descifrar después de cada fragmento y cierra la sesión cuando el resultado es válido.\n"
-        "5. Usa /session para consultar la cadena pendiente o /cancel para descartarla.\n\n"
-        "<b>Comandos útiles</b>\n"
-        "/formats — archivos soportados\n"
-        "/texts — textos soportados\n"
-        "/id — IDs de usuario y chat\n"
-        "/ping — comprobar el bot\n"
-        "/about — información del proyecto"
+        "<b>How to use SP-DECODE</b>\n\n"
+        "Send a supported file, text or link. The bot replies with a Markdown (.md) file. "
+        "For files, it keeps the original name and replaces the extension with .md. "
+        "If the bot asks for a credential, reply to the prompt in the same chat.\n\n"
+        "<b>SSC and Dark Tunnel text</b>\n"
+        "Send the full text or its first fragment with the appropriate prefix. "
+        "Send any remaining fragments in order. The bot tries to decode the text after each fragment "
+        "and closes the session when decoding succeeds. Use /session to check progress or /cancel to discard it.\n\n"
+        "<b>Commands</b>\n"
+        "/formats — supported file formats\n"
+        "/texts — supported text and links\n"
+        "/id — user and chat IDs\n"
+        "/allowgroup — authorize a group (administrators)\n"
+        "/revokegroup — remove a group from the allowlist (administrators)\n"
+        "/restrictgroups — allow only groups on the allowlist (administrators)\n"
+        "/private — check or manage private chat access\n"
+        "/ping — check whether the bot is online\n"
+        "/about — about SP-DECODE"
     )
     bot.reply_to(message, text, parse_mode="HTML")
 
 
 @bot.message_handler(commands=["formats", "archivos"])
 def show_formats(message):
-    _send_html_parts(
-        message.chat.id,
-        _format_registry(),
-        reply_to_message_id=message.message_id,
-    )
-
+    _reply_with_menu(message, "files")
 
 @bot.message_handler(commands=["texts", "textos"])
 def show_texts(message):
-    bot.reply_to(message, TEXT_PROTOCOLS, parse_mode="HTML")
+    _reply_with_menu(message, "texts")
 
 
 @bot.message_handler(commands=["session", "sesion", "ssc", "dark"])
@@ -172,7 +207,7 @@ def show_text_session(message):
     if session is None:
         bot.reply_to(
             message,
-            "<b>Sesiones de texto</b>\nNo tienes ninguna cadena multipart pendiente en este chat.",
+            "<b>Text sessions</b>\nYou have no pending multipart session in this chat.",
             parse_mode="HTML",
         )
         return
@@ -180,7 +215,7 @@ def show_text_session(message):
     if requested == "ssc" and session.protocol != "ssc":
         bot.reply_to(
             message,
-            "<b>SSC</b>\nNo hay una sesión SSC activa. La sesión pendiente corresponde a "
+            "<b>SSC</b>\nThere is no active SSC session. The pending session is for "
             f"<b>{html_pre(_protocol_label(session.protocol))}</b>.",
             parse_mode="HTML",
         )
@@ -189,7 +224,7 @@ def show_text_session(message):
     if requested == "dark" and session.protocol != "dark":
         bot.reply_to(
             message,
-            "<b>Dark Tunnel</b>\nNo hay una sesión Dark Tunnel activa. La sesión pendiente corresponde a "
+            "<b>Dark Tunnel</b>\nThere is no active Dark Tunnel session. The pending session is for "
             f"<b>{html_pre(_protocol_label(session.protocol))}</b>.",
             parse_mode="HTML",
         )
@@ -198,29 +233,33 @@ def show_text_session(message):
 
     bot.reply_to(
         message,
-        f"<b>Sesión {_protocol_label(session.protocol)} activa</b>\n"
-        f"Partes recibidas: <b>{session.parts}</b>\n"
-        f"Caracteres acumulados: <b>{session.char_count:,}</b>\n\n"
-        "El bot intentará descifrar nuevamente después de cada fragmento. "
-        "No hay una cantidad fija de partes. Usa /cancel para descartar la sesión.",
+        f"<b>Active {_protocol_label(session.protocol)} session</b>\n"
+        f"Fragments received: <b>{session.parts}</b>\n"
+        f"Characters received: <b>{session.char_count:,}</b>\n\n"
+        "The bot tries to decode the text after each fragment. Use /cancel to discard the session.",
         parse_mode="HTML",
     )
 
 
 @bot.message_handler(commands=["cancel", "cancelar"])
 def cancel_pending_session(message):
+    from spdecode.handlers.decoder_credentials import cancel_pending_credentials
+
+    credentials_canceled = cancel_pending_credentials(message)
     session = get_session(message, settings.text_session_timeout_seconds)
     if session is not None and clear_session(message):
         bot.reply_to(
             message,
-            f"<b>Sesión cancelada</b>\nLa cadena pendiente de "
-            f"<b>{html_pre(_protocol_label(session.protocol))}</b> fue eliminada.",
+            f"<b>Session canceled</b>\nThe pending "
+            f"<b>{html_pre(_protocol_label(session.protocol))}</b> text was discarded.",
             parse_mode="HTML",
         )
+    elif credentials_canceled:
+        bot.reply_to(message, "Credential request canceled.", **thread_options(message))
     else:
         bot.reply_to(
             message,
-            "<b>Sin cambios</b>\nNo había ninguna cadena multipart pendiente.",
+            "There was no pending session to cancel.",
             parse_mode="HTML",
         )
 
@@ -231,80 +270,212 @@ def show_ids(message):
     chat_id = getattr(getattr(message, "chat", None), "id", None)
     bot.reply_to(
         message,
-        "<b>Identificadores</b>\n"
-        f"Usuario: <code>{user_id}</code>\n"
+        "<b>Telegram IDs</b>\n"
+        f"User: <code>{user_id}</code>\n"
         f"Chat: <code>{chat_id}</code>",
         parse_mode="HTML",
     )
+
+
+def _telegram_id(value: str, *, group: bool) -> int | None:
+    if re.fullmatch(r"-?[1-9][0-9]{0,15}", value) is None:
+        return None
+    identifier = int(value)
+    if abs(identifier) < 2**52 and (identifier < 0) == group:
+        return identifier
+    return None
+
+
+def _permission_reply(message, text: str) -> None:
+    bot.reply_to(message, text, **thread_options(message))
+
+
+@bot.message_handler(commands=["allowgroup", "revokegroup", "permitirgrupo", "revocargrupo"])
+def manage_group_permission(message):
+    from spdecode.runtime import set_chat_permission, settings as current_settings
+
+    user_id = getattr(getattr(message, "from_user", None), "id", None)
+    if not is_admin(user_id, current_settings):
+        _permission_reply(message, "Only SP-DECODE administrators can change group permissions.")
+        return
+
+    allowed = _message_command(message) in {"allowgroup", "permitirgrupo"}
+    args = (message.text or "").split()[1:]
+    if len(args) == 1:
+        group_id = _telegram_id(args[0], group=True)
+    elif not args and message.chat.type in {"group", "supergroup"}:
+        group_id = _telegram_id(str(message.chat.id), group=True)
+    else:
+        group_id = None
+    if group_id is None:
+        command = "allowgroup" if allowed else "revokegroup"
+        _permission_reply(message, f"Use /{command} in the group or follow it with the group's negative ID.")
+        return
+    try:
+        changed = set_chat_permission(group_id, allowed)
+    except (OSError, ValueError):
+        _permission_reply(message, "Could not save the group permission.")
+        return
+
+    if allowed:
+        result = "Group added to the allowlist." if changed else "The group is already on the allowlist."
+    else:
+        result = "Group removed from the allowlist." if changed else "The group was not on the allowlist."
+    if current_settings.allow_all_groups:
+        result += " All-groups access is enabled. Use /restrictgroups to enforce the allowlist."
+    _permission_reply(message, result)
+
+
+@bot.message_handler(commands=["restrictgroups"])
+def restrict_group_access(message):
+    from spdecode.runtime import restrict_groups, settings as current_settings
+
+    user_id = getattr(getattr(message, "from_user", None), "id", None)
+    if not is_admin(user_id, current_settings):
+        _permission_reply(message, "Only SP-DECODE administrators can change group access.")
+        return
+
+    if len((message.text or "").split()) != 1:
+        _permission_reply(message, "Use /restrictgroups to restrict access to allowed groups.")
+        return
+
+    try:
+        changed = restrict_groups()
+    except (OSError, ValueError):
+        _permission_reply(message, "Could not save the group access mode.")
+        return
+
+    result = "Group access is now restricted to allowed groups." if changed else (
+        "Group access is already restricted to allowed groups."
+    )
+    _permission_reply(message, result)
+
+
+@bot.message_handler(commands=["private", "privados"])
+def manage_private_permissions(message):
+    from spdecode.runtime import set_chat_permission, settings as current_settings
+
+    user_id = getattr(getattr(message, "from_user", None), "id", None)
+    args = (message.text or "").split()[1:]
+    if not is_admin(user_id, current_settings):
+        if args:
+            _permission_reply(message, "Only SP-DECODE administrators can manage private chat permissions.")
+        else:
+            allowed = can_use_private_chat(user_id, current_settings)
+            _permission_reply(message, "Your account can use the bot in private chats." if allowed else
+                              "Your account needs permission to use the bot in private chats.")
+        return
+
+    if not args:
+        admins = ", ".join(map(str, sorted(current_settings.admins))) or "None"
+        users = ", ".join(map(str, sorted(current_settings.allowed_private_users - current_settings.admins))) or "None"
+        _send_html_parts(
+            message.chat.id,
+            f"<b>Private chat access</b>\nAdministrators: {admins}\nAllowed users: {users}\n\n"
+            "/private allow ID · /private revoke ID",
+            reply_to_message_id=message.message_id,
+            **thread_options(message),
+        )
+        return
+
+    target = _telegram_id(args[1], group=False) if len(args) == 2 else None
+    if target is None or args[0] not in {"allow", "revoke", "permitir", "revocar"}:
+        _permission_reply(message, "Use /private allow ID or /private revoke ID with a positive user ID.")
+        return
+    if is_admin(target, current_settings):
+        _permission_reply(message, "This user has access as an administrator.")
+        return
+    allowed = args[0] in {"allow", "permitir"}
+    try:
+        changed = set_chat_permission(target, allowed)
+    except (OSError, ValueError):
+        _permission_reply(message, "Could not save the private chat permission.")
+        return
+
+    if allowed:
+        result = "Private chat access granted." if changed else "The user already has private chat access."
+    else:
+        result = "Private chat access revoked." if changed else "The user did not have private chat access."
+    _permission_reply(message, result)
 
 
 @bot.message_handler(commands=["ping"])
 def ping(message):
     bot.reply_to(
         message,
-        "<b>SP-DECODE operativo</b>\nEl bot está recibiendo y procesando mensajes.",
+        "<b>SP-DECODE is online</b>\nThe bot is receiving and processing messages.",
         parse_mode="HTML",
     )
 
 
 @bot.message_handler(commands=["status"])
 def show_status(message):
+    from spdecode.runtime import settings
+
     user_id = getattr(getattr(message, "from_user", None), "id", None)
     if not is_admin(user_id, settings):
         bot.reply_to(
             message,
-            "<b>Acceso restringido</b>\nEste comando está disponible solo para administradores.",
+            "<b>Restricted access</b>\nThis command is available to administrators only.",
             parse_mode="HTML",
         )
         return
 
     session = get_session(message, settings.text_session_timeout_seconds)
-    session_status = _protocol_label(session.protocol) if session is not None else "ninguna"
+    session_status = _protocol_label(session.protocol) if session is not None else "none"
     group_access = (
-        "todos los grupos y supergrupos"
+        "all groups and supergroups"
         if settings.allow_all_groups
-        else f"{len(settings.allowed_groups)} grupo(s) seleccionado(s)"
+        else f"allowlist only ({len(settings.allowed_groups)} groups)"
     )
     bot.reply_to(
         message,
-        "<b>Estado de SP-DECODE</b>\n"
-        "Estado: <b>activo</b>\n"
-        f"Administradores: <b>{len(settings.admins)}</b>\n"
-        f"Acceso de grupos: <b>{html_pre(group_access)}</b>\n"
-        f"Decodificadores registrados: <b>{len(DECODER_REGISTRY)}</b>\n"
-        f"Sesión multipart para este usuario/chat: <b>{html_pre(session_status)}</b>\n"
-        f"Timeout de decodificadores: <b>{settings.decoder_timeout_seconds}s</b>",
+        "<b>SP-DECODE status</b>\n"
+        "Status: <b>online</b>\n"
+        f"Administrators: <b>{len(settings.admins)}</b>\n"
+        f"Group access: <b>{html_pre(group_access)}</b>\n"
+        f"Allowed private chat users: <b>{len(settings.allowed_private_users)}</b>\n"
+        f"Registered file formats: <b>{len(FILE_FORMATS)}</b>\n"
+        f"Multipart session for this chat and user: <b>{html_pre(session_status)}</b>\n"
+        f"Decoder timeout: <b>{settings.decoder_timeout_seconds}s</b>",
         parse_mode="HTML",
     )
 
 
 @bot.message_handler(commands=["about"])
 def about(message):
-    bot.reply_to(
-        message,
-        "<b>SP-DECODE</b>\n"
-        "Bot modular para procesar configuraciones mediante decodificadores Python, Node.js y PHP.\n\n"
-        "Desarrollador: @Gh0stDeveloper\n"
-        "Canal: @GhostDeve\n"
-        "Grupo: @CodeBreakersHub",
-        parse_mode="HTML",
-        reply_markup=_main_keyboard(),
-    )
+    _reply_with_menu(message, "about")
 
 
-@bot.callback_query_handler(func=lambda call: call.data == "show_files")
-def handle_supported_files(call):
+@bot.callback_query_handler(
+    func=lambda call: call.data in _OLD_MENU_BUTTONS or _MENU_CALLBACK.fullmatch(call.data or "") is not None,
+)
+def handle_menu_callback(call):
     try:
         bot.answer_callback_query(call.id)
-    except Exception:
-        pass
-    _send_html_parts(call.message.chat.id, _format_registry())
+    except ApiTelegramException:
+        logger.debug("Could not acknowledge the menu callback")
 
+    if call.message is None:
+        return
+    section = _OLD_MENU_BUTTONS.get(call.data)
+    page = 0
+    if section is None:
+        match = _MENU_CALLBACK.fullmatch(call.data or "")
+        if match is None:
+            return
+        section, page_number = match.groups()
+        page = int(page_number)
 
-@bot.callback_query_handler(func=lambda call: call.data == "show_texts")
-def handle_supported_texts(call):
+    text, keyboard = _menu_view(section, page, getattr(call, "from_user", None))
     try:
-        bot.answer_callback_query(call.id)
-    except Exception:
-        pass
-    bot.send_message(call.message.chat.id, TEXT_PROTOCOLS, parse_mode="HTML")
+        bot.edit_message_text(
+            text,
+            chat_id=call.message.chat.id,
+            message_id=call.message.message_id,
+            parse_mode="HTML",
+            reply_markup=keyboard,
+        )
+    except ApiTelegramException as error:
+        if "message is not modified" not in error.description.lower():
+            logger.warning("Could not edit the Telegram menu (%s)", error.error_code)

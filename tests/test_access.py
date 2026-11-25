@@ -62,7 +62,7 @@ class AccessPolicyTests(unittest.TestCase):
         self.assertFalse(is_authorized(private, settings))
 
     def test_authorization_decorator_is_marked_for_validation(self):
-        @require_authorized("Prueba")
+        @require_authorized
         def handler(message):
             return message
 
@@ -86,6 +86,25 @@ class AccessPolicyTests(unittest.TestCase):
                 loaded = load_config(path)
         self.assertEqual(loaded.token, "from-environment")
         self.assertTrue(loaded.allow_all_groups)
+
+    def test_default_administrator_can_use_private_chat(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "config.json"
+            for configured_access, expected in (
+                ({}, {5325631223}),
+                ({"access": {"admins": []}}, set()),
+                ({"admins": [101]}, {101}),
+                ({"chat_privado_especial_id": 101}, {101}),
+            ):
+                with self.subTest(configured_access=configured_access):
+                    path.write_text(json.dumps({"bot": {"token": "fixture-only"}, **configured_access}))
+                    loaded = load_config(path)
+                    self.assertEqual(loaded.admins, expected)
+                    message = SimpleNamespace(
+                        from_user=SimpleNamespace(id=5325631223),
+                        chat=SimpleNamespace(id=5325631223, type="private"),
+                    )
+                    self.assertEqual(is_authorized(message, loaded), 5325631223 in expected)
 
 
 if __name__ == "__main__":

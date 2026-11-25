@@ -8,6 +8,7 @@ import types
 import unittest
 from pathlib import Path
 from unittest.mock import patch
+from urllib.parse import urlencode
 
 from decoders.Python import text_legacy_protocols as legacy
 from decoders.Python import text_structured_protocols as structured
@@ -19,6 +20,7 @@ class FakeBot:
     def __init__(self):
         self.handlers=[]
         self.replies=[]
+        self.documents=[]
 
     def message_handler(self, func=None, **kwargs):
         def decorate(callback):
@@ -29,6 +31,8 @@ class FakeBot:
     def reply_to(self, message, text, **kwargs):
         self.replies.append((message,text,kwargs))
 
+    def send_document(self, document, **kwargs):
+        self.documents.append((document.name, document.read().decode("utf-8"), kwargs))
 
 def load_handler_with_fake_bot():
     bot=FakeBot()
@@ -83,34 +87,86 @@ class ExtraTextDispatcherTests(unittest.TestCase):
         )
         fake_settings=types.SimpleNamespace(
             admins=frozenset({999}), allowed_groups=frozenset(),
-            allow_all_groups=False,
+            allow_all_groups=False, allowed_private_users=frozenset(),
         )
         fake_runtime=types.SimpleNamespace(bot=bot,settings=fake_settings)
         with patch.dict(sys.modules,{"spdecode.runtime":fake_runtime}):
             handler.decode_extra_text(message)
-        self.assertEqual(len(bot.replies),1)
-        self.assertIn("Acceso no autorizado",bot.replies[0][1])
-        self.assertNotIn("example.net",bot.replies[0][1])
+        self.assertFalse(bot.replies)
+        self.assertFalse(bot.documents)
 
-    def test_authorized_handler_preserves_full_payload_and_escapes_html(self):
+    def test_authorized_handler_delivers_full_payload_in_markdown(self):
         handler,bot=load_handler_with_fake_bot()
         content=json.dumps({"name":"<server>","port":443,"password":"fixture-only"})
         message=types.SimpleNamespace(
             text="vmess://"+__import__("base64").b64encode(content.encode()).decode(),
             chat=types.SimpleNamespace(id=999,type="private"),
             from_user=types.SimpleNamespace(id=999),
+            message_id=1,
         )
         fake_settings=types.SimpleNamespace(
             admins=frozenset({999}), allowed_groups=frozenset(),
-            allow_all_groups=False,
+            allow_all_groups=False, allowed_private_users=frozenset(),
         )
         fake_runtime=types.SimpleNamespace(bot=bot,settings=fake_settings)
         with patch.dict(sys.modules,{"spdecode.runtime":fake_runtime}):
             handler.decode_extra_text(message)
-        self.assertEqual(len(bot.replies),1)
-        self.assertIn("&lt;server&gt;",bot.replies[0][1])
-        self.assertIn("fixture-only",bot.replies[0][1])
-        self.assertEqual(bot.replies[0][2].get("parse_mode"),"HTML")
+        self.assertFalse(bot.replies)
+        self.assertEqual(len(bot.documents), 1)
+        filename, report, _kwargs = bot.documents[0]
+        self.assertTrue(filename.endswith(".md"))
+        _, _, payload = report.partition("\n```json\n")
+        self.assertEqual(json.loads(payload.removesuffix("```\n")), json.loads(content))
+
+    def test_ar_tunnel_query_results_preserve_parameters_and_profiles(self):
+        profiles = [{"name": "First"}, {"name": "Second", "enabled": False}]
+        decoded = urlencode({
+            "payload": ["GET + /one\r\n", "GET /two"],
+            "profile": json.dumps(profiles),
+            "proxy": "",
+        }, doseq=True)
+        with patch.object(legacy, "decode_ar", return_value=decoded):
+            handler, bot = load_handler_with_fake_bot()
+            settings = types.SimpleNamespace(admins={999})
+            runtime = types.SimpleNamespace(bot=bot, settings=settings)
+            message = types.SimpleNamespace(
+                text=legacy.AR_PREFIXES[0] + "fixture", message_id=1,
+                chat=types.SimpleNamespace(id=999, type="private"),
+                from_user=types.SimpleNamespace(id=999),
+            )
+            with patch.dict(sys.modules, {"spdecode.runtime": runtime}):
+                handler.decode_extra_text(message)
+
+        self.assertEqual(len(bot.documents), 1)
+        _, _, payload = bot.documents[0][1].partition("\n```json\n")
+        self.assertEqual(json.loads(payload.removesuffix("```\n")), {
+            "payload": ["GET + /one\r\n", "GET /two"], "profile": profiles, "proxy": "",
+        })
+
+    def test_mnr_cloud_link_uses_markdown_reply_in_its_group_topic(self):
+        from decoders.Python.apps.MNR_TUNNEL_PLUS import codec
+
+        handler, bot = load_handler_with_fake_bot()
+        reference = "mnrtunneludp://fixture"
+        message = types.SimpleNamespace(
+            text=reference, message_id=12, message_thread_id=13,
+            chat=types.SimpleNamespace(id=-42, type="supergroup"),
+            from_user=types.SimpleNamespace(id=999, first_name="[Invitado]\n*prueba*"),
+        )
+        settings = types.SimpleNamespace(admins=set(), allowed_groups={-42}, allow_all_groups=False)
+        runtime = types.SimpleNamespace(bot=bot, settings=settings)
+        with patch.dict(sys.modules, {"spdecode.runtime": runtime}), \
+                patch.object(codec, "download_profile", return_value=b"fixture") as download, \
+                patch.object(codec, "decode_profile", return_value={"Link": "vless://fixture"}):
+            handler.decode_extra_text(message)
+        download.assert_called_once_with(reference)
+        self.assertFalse(bot.replies)
+        filename, report, sent = bot.documents[0]
+        self.assertEqual(filename, "MNR-TUNNEL-PLUS-spdecode-result.md")
+        self.assertIn(r"\[Invitado\] \*prueba\*", report)
+        _, _, payload = report.partition("\n```json\n")
+        self.assertEqual(json.loads(payload.removesuffix("```\n")), {"Link": "vless://fixture"})
+        self.assertEqual((sent["chat_id"], sent["message_thread_id"], sent["reply_to_message_id"]), (-42, 13, 12))
 
     def test_v2box_password_prompt_normalizes_base64url(self):
         import base64

@@ -79,7 +79,7 @@ eran parciales: la cifra no debe interpretarse como 38 métodos nuevos.
    actual soporta. Variantes protegidas por contraseña u otros formatos
    ajenos a ese motor no se declaran compatibles por el prefijo.
 6. **V2Box** protegido necesita una contraseña. La gestión ya existente
-   pregunta solo en chat privado, con vencimiento y límite de intentos.
+   pregunta en el chat y el tema del original, con vencimiento y límite de intentos.
    Nunca guardar contraseñas de usuarios en el repositorio ni enviarlas
    mediante mensajes de grupo.
 7. **Creeb, VMess y SlipNet simple** son representaciones

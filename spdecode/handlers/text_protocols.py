@@ -12,10 +12,13 @@ from urllib.parse import parse_qs, urlparse
 from Crypto.Cipher import AES
 from Crypto.Util.Padding import unpad
 
-from decoders.Python.DARKTUNNEL import run as decode_dark_payload
+from cloud.workers.python.engine import DecodeFailure
 from decoders.Python.SSCCUSTOM import run as decode_ssc_payload
 from decoders.Python.TLS import run as decode_tls_payload
 from spdecode.access import require_authorized
+from spdecode.decoder_runtime import decode
+from spdecode.format_names import family_text_application
+from spdecode.handlers.results import send_markdown_result
 from spdecode.runtime import bot, settings
 from spdecode.text_sessions import (
     append_to_session,
@@ -24,7 +27,6 @@ from spdecode.text_sessions import (
     get_session,
     start_session,
 )
-from spdecode.utils import html_pre, split_message
 
 logger = logging.getLogger("sp-decode")
 
@@ -52,7 +54,7 @@ def _is_tls_text_message(message) -> bool:
 
 
 @bot.message_handler(func=_is_tls_text_message)
-@require_authorized("Los textos TLS Tunnel")
+@require_authorized
 def decode_tls_text(message):
     """Descifra enlaces tls:// completos usando el mismo motor que los archivos .tls."""
     payload = _extract_tls_text(_message_text(message))
@@ -61,25 +63,12 @@ def decode_tls_text(message):
 
     try:
         result = decode_tls_payload(payload.encode("utf-8"))
-    except Exception as exc:
-        logger.exception("Error interno al decodificar TLS Tunnel de texto")
-        bot.reply_to(
-            message,
-            "<b>Error al procesar TLS Tunnel</b>\n"
-            f"El decodificador produjo un error interno: <code>{html_pre(str(exc))}</code>",
-            parse_mode="HTML",
-        )
+    except Exception:
+        logger.exception("Internal error decoding TLS Tunnel text")
         return
 
     if result:
-        _send_decoder_text_result(message, "TLS Tunnel", result)
-    else:
-        bot.reply_to(
-            message,
-            "<b>No se pudo descifrar TLS Tunnel</b>\n"
-            "La cadena no coincide con el formato de cifrado soportado actualmente.",
-            parse_mode="HTML",
-        )
+        send_markdown_result(message, "TLS Tunnel", result)
 
 
 # ---------------------------------------------------------------------------
@@ -174,37 +163,8 @@ def _is_ssc_text_message(message) -> bool:
     return _extract_ssc_continuation(text) is not None
 
 
-def _send_decoder_text_result(message, title: str, output: str) -> None:
-    # SSC/Dark ya devuelven su salida final formateada desde el propio decodificador.
-    parts = split_message(output, max_length=3300)
-    for index, part in enumerate(parts, start=1):
-        suffix = f" — parte {index}/{len(parts)}" if len(parts) > 1 else ""
-        bot.reply_to(
-            message,
-            f"<b>{html_pre(title)}{suffix}</b>\n<pre>{html_pre(part)}</pre>",
-            parse_mode="HTML",
-        )
-
-
-def _send_incomplete_session(message, session, title: str, continuation_hint: str) -> None:
-    timeout_minutes = max(1, settings.text_session_timeout_seconds // 60)
-    bot.reply_to(
-        message,
-        f"<b>{html_pre(title)} detectado</b>\n"
-        f"Partes recibidas: <b>{session.parts}</b>. "
-        f"Caracteres acumulados: <b>{session.char_count:,}</b>.\n\n"
-        "La cadena todavía está incompleta o aún no forma una configuración válida. "
-        "Se volverá a intentar automáticamente con cada fragmento nuevo, sin asumir "
-        "si el contenido total ocupa 1, 2, 3 o más mensajes.\n"
-        f"{continuation_hint}\n"
-        f"La sesión caduca tras {timeout_minutes} minuto(s) de inactividad. "
-        "Usa /cancel para descartarla.",
-        parse_mode="HTML",
-    )
-
-
 @bot.message_handler(func=_is_ssc_text_message)
-@require_authorized("Los textos SSC Custom")
+@require_authorized
 def decode_ssc_text(message):
     """Decodifica SSC con el mismo patrón multipart dinámico usado por Dark Tunnel."""
     text = _message_text(message)
@@ -226,50 +186,23 @@ def decode_ssc_text(message):
         )
 
     if session is None:
-        bot.reply_to(
-            message,
-            "No hay una sesión SSC activa. Envía primero un mensaje que contenga ssc://.",
-        )
         return
 
     if session.char_count > settings.text_session_max_chars:
         clear_session(message, _SSC_PROTOCOL)
-        bot.reply_to(
-            message,
-            "<b>Cadena SSC cancelada</b>\n"
-            f"El texto ensamblado superó el límite configurado de "
-            f"{settings.text_session_max_chars:,} caracteres.",
-            parse_mode="HTML",
-        )
         return
 
     try:
         # Mismo patrón de Dark Tunnel: el decodificador recibe directamente el
         # payload reconstruido completo después de cada parte recibida.
         result = decode_ssc_payload(session.payload.encode("utf-8"))
-    except Exception as exc:
-        logger.exception("Error interno al decodificar SSC de texto")
-        # Un error de decodificación durante multipart puede significar que aún
-        # falta contenido. Conservamos la sesión, igual que en el flujo Dark.
-        _send_incomplete_session(
-            message,
-            session,
-            "SSC Custom",
-            "Envía el siguiente fragmento hexadecimal. No es necesario repetir <code>ssc://</code>.",
-        )
+    except Exception:
+        logger.exception("Internal error decoding SSC text")
         return
 
     if result:
         clear_session(message, _SSC_PROTOCOL)
-        _send_decoder_text_result(message, "SSC Custom", result)
-        return
-
-    _send_incomplete_session(
-        message,
-        session,
-        "SSC Custom",
-        "Envía el siguiente fragmento hexadecimal. No es necesario repetir <code>ssc://</code>.",
-    )
+        send_markdown_result(message, "SSC Custom", result)
 
 
 # ---------------------------------------------------------------------------
@@ -313,7 +246,7 @@ def _is_dark_text_message(message) -> bool:
 
 
 @bot.message_handler(func=_is_dark_text_message)
-@require_authorized("Los textos Dark Tunnel")
+@require_authorized
 def decode_dark_text(message):
     """Decodifica enlaces Dark Tunnel aunque estén divididos en una cantidad variable de mensajes."""
     text = _message_text(message)
@@ -333,47 +266,24 @@ def decode_dark_text(message):
         )
 
     if session is None:
-        bot.reply_to(
-            message,
-            "No hay una sesión Dark Tunnel activa. Envía primero el enlace que contiene el prefijo Dark Tunnel.",
-        )
         return
 
     if session.char_count > settings.text_session_max_chars:
         clear_session(message, _DARK_PROTOCOL)
-        bot.reply_to(
-            message,
-            "<b>Cadena Dark Tunnel cancelada</b>\n"
-            f"El texto ensamblado superó el límite configurado de "
-            f"{settings.text_session_max_chars:,} caracteres.",
-            parse_mode="HTML",
-        )
         return
 
     try:
-        result = decode_dark_payload(session.payload.encode("utf-8"))
-    except Exception as exc:
-        logger.exception("Error interno al decodificar Dark Tunnel de texto")
-        clear_session(message, _DARK_PROTOCOL)
-        bot.reply_to(
-            message,
-            "<b>Error al procesar Dark Tunnel</b>\n"
-            f"El decodificador produjo un error interno: <code>{html_pre(str(exc))}</code>",
-            parse_mode="HTML",
-        )
+        # Cloud's Dark file reader handles both protected and open profiles.
+        token = session.payload.partition("://")[2]
+        result = decode(token.encode("utf-8"), suffix="dark", timeout_seconds=settings.decoder_timeout_seconds)
+    except DecodeFailure:
+        return
+    except Exception:
+        logger.exception("Internal error decoding Dark Tunnel text")
         return
 
-    if result:
-        clear_session(message, _DARK_PROTOCOL)
-        _send_decoder_text_result(message, "Dark Tunnel", result)
-        return
-
-    _send_incomplete_session(
-        message,
-        session,
-        "Dark Tunnel",
-        "Envía únicamente el siguiente fragmento de la cadena, sin repetir el prefijo <code>...://</code>.",
-    )
+    clear_session(message, _DARK_PROTOCOL)
+    send_markdown_result(message, "Dark Tunnel", result.text, partial=result.partial)
 
 
 def cbc_iv(data):
@@ -395,11 +305,9 @@ def encode_base64(data):
         raise ValueError(f"Error in encoding: {e}")
 
 @bot.message_handler(func=lambda message: 'howdy://' in _message_text(message) or 'N7pr://' in _message_text(message))
-@require_authorized("Las configuraciones Howdy")
+@require_authorized
 def handle_message(message):
-    chat_id = message.chat.id
     text = message.text
-    message_id = message.message_id
 
     try:
         decode = text.split('://')[1]
@@ -410,18 +318,7 @@ def handle_message(message):
         port = json_data['port']
         server = cbc_iv(json_data['server'])
         sni = cbc_iv(json_data['sni'])
-        type = json_data['type']        
-        processed_json = {
-            "username": username,
-            "password": password,
-            "server": server,
-            "port": port,
-            "sni": sni,
-            "type": type
-        }
-        
-        
-        # Formatear la respuesta
+        config_type = json_data['type']
         linkserver = (
             "{\n"
             f" \"Username\": \"{username}\",\n"
@@ -429,41 +326,16 @@ def handle_message(message):
             f" \"Server\": \"{server}\",\n"
             f" \"Sni\": \"{sni if sni else 'No SNI info'}\",\n"
             f" \"Port\": \"{port}\",\n"
-            f" \"Type\": \"{type}\"\n"
+            f" \"Type\": \"{config_type}\"\n"
             "}"
         )
         
         encoded_config = encode_base64(linkserver)
-        Anal = (
-            f"┌───────────────\n"
-            f"│𝗦𝗣 - 𝗗𝗘𝗖𝗢𝗗𝗘 (howdy://)\n"
-            f"│𝗗𝗘𝗩𝗘𝗟𝗢𝗣𝗘𝗥 : https://bit.ly/3TOrZEu\n"
-            f"├───────────────\n"
-            f"│[[۞]] Decode Config:\n```JSON\n{linkserver}```\n"
-            f"├───────────────\n"
-            f"│[[۞]] Encoded Config:\n"
-            f"```SP-DECODE\nvmess://{encoded_config}```\n"
-            f"├───────────────\n"
-            f"│[[۞]] 𝗚𝗥𝗢𝗨𝗣 : @CodeBreakersHub \n"
-            f"│[[۞]] 𝗖𝗛𝗔𝗡𝗡𝗘𝗟 : @GhostDeve\n"
-            f"└───────────────"
+        send_markdown_result(
+            message, "Howdy VPN", f"{linkserver}\n\nEncoded configuration:\nvmess://{encoded_config}",
         )
-        bot.send_message(
-            chat_id, 
-            f"[SP-DECODE](https://t.me/GhostDeve)\n{Anal}\n"
-            "🧿 **Thank you for using the best Bot** 🥳\n"
-            "🧑🏻‍💻 **Websites, Telegram bots, WhatsApp bots, Scripts with different types of functions and among other things are created. For more information contact  [SP-FUCKER](https://t.me/Gh0stDeveloper) now**",
-            parse_mode="Markdown",
-            reply_to_message_id=message_id
-        )
-    except Exception as e:
-        bot.send_message(
-            chat_id, 
-            "Sorry, if there was an error decoding, could I send it again?\n\n"
-            "Lo siento, hubo un error al decodificar, ¿podría enviarlo otra vez?",
-            reply_to_message_id=message_id
-        )
-        print(f"Error occurred: {str(e)}")
+    except Exception as error:
+        logger.debug("Could not decode the Howdy configuration (%s)", type(error).__name__)
 #######################################################
 def remove_random_characters(text):
     return re.sub(r'[^a-zA-Z0-9/\:._-]', '', text)
@@ -476,7 +348,7 @@ def obfuscate_text(text):
     return ''.join(chr(ord(c) + 1) for c in text)
 
 @bot.message_handler(func=lambda message: any(token in _message_text(message) for token in ['nm-vmess://', 'nm-dns://', 'nm-vless://', 'nm-trojan://', 'nm-ssr://', 'nm-ssh://', 'nm-xray-json://']))
-@require_authorized("Las configuraciones NetMod")
+@require_authorized
 def decrypted_config(message):
     encrypted_text_base64 = message.text.strip()
     cle = 'X25ldHN5bmFfbmV0bW9kXw==' 
@@ -498,51 +370,24 @@ def decrypted_config(message):
                 extracted_data = json.loads(decrypt_text)
                 json_output = json.dumps(extracted_data, ensure_ascii=False, indent=4)
                 encoded_config = base64.b64encode(decrypt_text.encode('utf-8')).decode('utf-8')
-                obfuscated_decrypted = obfuscate_text(decrypt_text)
-                obfuscated_encoded = obfuscate_text(encoded_config)
-                response_message = (
-                    f'┌───────────────\n│𝗦𝗣 - 𝗗𝗘𝗖𝗢𝗗𝗘 ({protocol})\n│𝗗𝗘𝗩𝗘𝗟𝗢𝗣𝗘𝗥 : https://bit.ly/3TOrZEu\n├───────────────\n'
-                    f'│[[۞]] Decoded Config:\n```JSON\n{json_output}```\n'
-                    f'│[[۞]] Encoded Config:\n```SP-DECODE\n{protocol}://{encoded_config}```\n'
-                    '├───────────────\n│[۞] 𝗚𝗥𝗢𝗨𝗣 : @CodeBreakersHub \n│[۞] 𝗖𝗛𝗔𝗡𝗡𝗘𝗟 : @GhostDeve\n└───────────────\n'
-                )
-                bot.reply_to(message, response_message, parse_mode= 'Markdown')
+                output = f"{json_output}\n\nEncoded configuration:\n{protocol}://{encoded_config}"
             except json.JSONDecodeError:
-                obfuscated_decrypted = obfuscate_text(decrypt_text)
-                bot.reply_to(message, f'┌┌───────────────\n│𝗦𝗣 - 𝗗𝗘𝗖𝗢𝗗𝗘 ({protocol})\n│𝗗𝗘𝗩𝗘𝗟𝗢𝗣𝗘𝗥 : https://bit.ly/3TOrZEu\n├───────────────\n```JSON\n{obfuscated_decrypted}```\n├───────────────\n│[۞] 𝗚𝗥𝗢𝗨𝗣 : @CodeBreakersHub \n│[۞] 𝗖𝗛𝗔𝗡𝗡𝗘𝗟 : @GhostDeve\n└───────────────\n', parse_mode= 'Markdown')
-        else:
-            bot.reply_to(message, "Please enter a valid format.")
-    except Exception as e:
-        error_message = f"An error occurred while dewinding the flangeر: {str(e)}. Please try to submit the data again."
-        bot.reply_to(message, error_message)
-        print(f"Error occurred: {str(e)}")
+                output = obfuscate_text(decrypt_text)
+            send_markdown_result(message, "NetMod Syna", output)
+    except Exception as error:
+        logger.debug("Could not decode the NetMod configuration (%s)", type(error).__name__)
 #######################################################
-def decodificar_base64(data):
-    try:
-        decoded_data = base64.b64decode(data)
-        return decoded_data.decode('utf-8')
-    except Exception as e:
-        return str(e)
-        
 @bot.message_handler(func=lambda message: "vmess://" in _message_text(message))
-@require_authorized("Las configuraciones VMess")
+@require_authorized
 def decodificar_vmess(message):
-    start_index = message.text.find("vmess://")
-    if start_index != -1:
-        encoded_data = message.text[start_index + len("vmess://"):]
-        decoded_data = decodificar_base64(encoded_data)
-        configdict = json.loads(decoded_data)
-        json_formatted = "│[[۞]] Config Decode:\n```JSON\n " + json.dumps(configdict, indent=4) + "```"
-        mensaje_final = ("┌───────────────\n"
-                         "│𝗦𝗣 - 𝗗𝗘𝗖𝗢𝗗𝗘 (vmess://)\n"
-                         "│𝗗𝗘𝗩𝗘𝗟𝗢𝗣𝗘𝗥 : https://bit.ly/3TOrZEu\n"
-                         "├───────────────\n"
-                         f"{json_formatted}\n"
-                         "├───────────────\n"
-                         "│[[۞]] 𝗚𝗥𝗢𝗨𝗣 : @CodeBreakersHub \n"
-                         "│[[۞]] 𝗖𝗛𝗔𝗡𝗡𝗘𝗟 : @GhostDeve\n"
-                         "└───────────────\n")
-        bot.reply_to(message, mensaje_final, parse_mode='Markdown')
+    _, prefix, encoded_data = message.text.partition("vmess://")
+    if not prefix:
+        return
+    try:
+        configdict = json.loads(base64.b64decode(encoded_data).decode("utf-8"))
+    except (ValueError, RecursionError):
+        return
+    send_markdown_result(message, "VMess", json.dumps(configdict, indent=4))
 
 ######################################    
 # Función para manejar mensajes con enlaces 'zivpn://'
@@ -578,7 +423,7 @@ class AESDecryptor:
         return unpadded_text.decode()
 
 @bot.message_handler(func=lambda message: 'zivpn://' in _message_text(message))
-@require_authorized("Las configuraciones ZIVPN")
+@require_authorized
 def handle_decryption(message):
     try:
         encoded_data = message.text.replace('zivpn://', '')
@@ -597,14 +442,10 @@ def handle_decryption(message):
                     key = key_value_pair[0]
                     GhostDeveloper += f"│[۞] {key}: ***\n"
 
-        final_message = (
-            '┌───────────────\n│𝗦𝗣 - 𝗗𝗘𝗖𝗢𝗗𝗘 (zivpn-??)\n│𝗗𝗘𝗩𝗘𝗟𝗢𝗣𝗘𝗥 : https://bit.ly/3TOrZEu\n├───────────────\n' +
-            GhostDeveloper +
-            '├───────────────\n│[۞] 𝗚𝗥𝗢𝗨𝗣 : @CodeBreakersHub \n│[۞] 𝗖𝗛𝗔𝗡𝗡𝗘𝗟 : @GhostDeve\n└───────────────\n'
-        )
-        bot.reply_to(message, final_message)
+        if GhostDeveloper:
+            send_markdown_result(message, "ZiVPN Tunnel", GhostDeveloper)
     except Exception as error:
-        bot.reply_to(message, f"‼️Oops! An error occurred:\n{error}‼️")
+        logger.debug("Could not decode the ZI VPN configuration (%s)", type(error).__name__)
     
 ######################################
 
@@ -626,7 +467,7 @@ def format_output(json_data):
     return f"│[۞] Decoded Config:\n{formatted}"
 
 @bot.message_handler(func=lambda message: any(proto in _message_text(message) for proto in ['pb-ssh://', 'pb-vless://', 'pb-vmess://', 'pb-trojan://', 'pb-socks://', 'pb-ss://']))
-@require_authorized("Las configuraciones XrayPB")
+@require_authorized
 def nmqwd_ksmns(message):
     protocols = ['pb-ssh://', 'pb-vless://', 'pb-vmess://', 'pb-trojan://', 'pb-socks://', 'pb-ss://']
     data = None
@@ -645,17 +486,9 @@ def nmqwd_ksmns(message):
         decrypted_data = zkjfh_wkef(decoded_data, key, iv)
         if es_json(decrypted_data):
             json_data = json.loads(decrypted_data)
-            response_message = f"┌───────────────\n│𝗦𝗣 - 𝗗𝗘𝗖𝗢𝗗𝗘\n│𝗗𝗘𝗩𝗘𝗟𝗢𝗣𝗘𝗥 : https://bit.ly/3TOrZEu\n├───────────────\n"
-            response_message += format_output(json_data)
-            response_message += "\n├───────────────\n│[۞] 𝗚𝗥𝗢𝗨𝗣 : @CodeBreakersHub\n│[۞] 𝗖𝗛𝗔𝗡𝗡𝗘𝗟 : @GhostDeve\n└───────────────"
-        else:
-            response_message = "Ocurrió un error: Los datos descifrados no son un JSON válido."
-
-        bot.reply_to(message, response_message)
-
-    except Exception as e:
-        error_message = f"Ocurrió un error: {str(e)}"
-        bot.reply_to(message, error_message)
+            send_markdown_result(message, "XrayPB", format_output(json_data))
+    except Exception as error:
+        logger.debug("Could not decode the XrayPB configuration (%s)", type(error).__name__)
 ########################################################        
 def dec_ssh(ld):
     try:
@@ -675,7 +508,7 @@ def dec_ssh(ld):
 
 
 @bot.message_handler(commands=['decssh'])
-@require_authorized("Las credenciales SSH")
+@require_authorized
 def dec_ssh_command(message):
     encoded_data = message.text.replace("/decssh", "").strip()
     if '@' in encoded_data and ':' in encoded_data.split('@')[1]:
@@ -687,19 +520,15 @@ def dec_ssh_command(message):
             password = dec_ssh(pass_encoded)
 
             if user is not None and password is not None:
-                bot.reply_to(message, f"┌───────────────\n│𝗦𝗣 - 𝗗𝗘𝗖𝗢𝗗𝗘 (Decode ssh)\n│𝗗𝗘𝗩𝗘𝗟𝗢𝗣𝗘𝗥 : https://bit.ly/3TOrZEu\n├───────────────\n"
-                                      f"│[[۞]] IP/Dominio: `{ip_or_domain}`\n"
-                                      f"│[[۞]] User: `{user}`\n"
-                                      f"│[[۞]] Password: `{password}`\n"
-                                      f"├───────────────\n"
-                                      f"│[[۞]] SSH: `{ip_or_domain}@{user}:{password}`\n"
-                                      f"├───────────────\n│[[۞]] 𝗚𝗥𝗢𝗨𝗣 : @CodeBreakersHub \n│[[۞]] 𝗖𝗛𝗔𝗡𝗡𝗘𝗟 : @GhostDeve\n└───────────────\n", parse_mode= "Markdown")
-            else:
-                bot.reply_to(message, "Error decoding user or password. Please check the input.")
-        except Exception as e:
-            bot.reply_to(message, f"An error occurred: {str(e)}")
-    else:
-        bot.reply_to(message, 'Data not detected in the command. Please provide valid data to decode.')
+                result = {
+                    "IP address or domain": ip_or_domain,
+                    "Username": user,
+                    "Password": password,
+                    "SSH": f"{ip_or_domain}@{user}:{password}",
+                }
+                send_markdown_result(message, "SSH", json.dumps(result, ensure_ascii=False))
+        except Exception as error:
+            logger.debug("Could not decode the SSH credentials (%s)", type(error).__name__)
 #######################################################
 # Función que maneja el protocolo ar-
 ####################################################### 
@@ -717,7 +546,7 @@ Ghost_keys = {
 }
 
 @bot.message_handler(func=lambda message: _message_text(message).startswith('ar-'))
-@require_authorized("Las configuraciones ARMOD")
+@require_authorized
 def handle_armod(message):
     encrypted_text_base64 = message.text.strip()
     cle = 'YXJ0dW5uZWw3ODc5Nzg5eA==' 
@@ -749,12 +578,7 @@ def handle_armod(message):
         no_wifi = parsed_data.get('nowifi', [''])[0]
         security = parsed_data.get('security', [''])[0]
         profile = format_profile(profile_raw)
-        result = f"""
-┌───────────────
-│𝗦𝗣 - 𝗗𝗘𝗖𝗢𝗗𝗘 (ar-??)
-│𝗗𝗘𝗩𝗘𝗟𝗢𝗣𝗘𝗥 : https://bit.ly/3TOrZEu
-├───────────────
-│[۞] Allow edit : {allow_edit}
+        result = f"""│[۞] Allow edit : {allow_edit}
 │[۞] Comp : {comp}
 │[۞] Index : {index}
 │[۞] No WiFi : {no_wifi}
@@ -763,14 +587,12 @@ def handle_armod(message):
 │[۞] Profile :\n{profile}
 │[۞] Security : {security}
 │[۞] SSH : {ssh_data if ssh_data else 'No SSH info'}
-└───────────────
 """
 
-        bot.reply_to(message, result)
+        send_markdown_result(message, "AR Tunnel", result)
 
-    except Exception as e:
-        logger.exception("Error al decodificar el formato ar-: %s", e)
-        bot.reply_to(message, f"Error al decodificar: {e}")
+    except Exception as error:
+        logger.debug("Could not decode the AR Tunnel configuration (%s)", type(error).__name__)
 
 def format_profile(profile_raw):
     try:
@@ -784,7 +606,7 @@ def format_profile(profile_raw):
         return profile_raw
 #######################################################
 @bot.message_handler(func=lambda message: _message_text(message).startswith("v2box://"))
-@require_authorized("Las configuraciones V2Box")
+@require_authorized
 def decode_v2box(message):
     try:
         encoded_part = message.text.split("locked=")[1]
@@ -794,17 +616,12 @@ def decode_v2box(message):
         parsed_url = urlparse(decoded_part)
         params = parse_qs(parsed_url.query)
 
-        Y = "┌───────────────\n│𝗦𝗣 - 𝗗𝗘𝗖𝗢𝗗𝗘 (v2box)\n│𝗗𝗘𝗩𝗘𝗟𝗢𝗣𝗘𝗥 : https://bit.ly/3TOrZEu\n├───────────────"
-        X = ""
-        for key, value in params.items():
-            X += f"│[۞] {key}: {', '.join(value)}\n"
-        Z = "├───────────────\n│[۞] 𝗚𝗥𝗢𝗨𝗣 : @CodeBreakersHub \n│[۞] 𝗖𝗛𝗔𝗡𝗡𝗘𝗟 : @GhostDeve\n└───────────────\n"
+        output = "\n".join(f"{key}: {', '.join(value)}" for key, value in params.items())
+        if output:
+            send_markdown_result(message, "V2Box", output)
 
-        response = f"{Y}\n{X}{Z}"
-        bot.reply_to(message, response)
-
-    except Exception as e:
-        bot.reply_to(message, f"Error al decodificar: {str(e)}")
+    except Exception as error:
+        logger.debug("Could not decode the V2Box configuration (%s)", type(error).__name__)
 
         
 #######################################################
@@ -830,19 +647,18 @@ def _is_renz_text_message(message) -> bool:
 
 
 @bot.message_handler(func=_is_renz_text_message)
-@require_authorized("Los textos RENZ / 7NET")
+@require_authorized
 def decode_renz_text(message):
     payload = _message_text(message).strip()
+    lower = payload.lower()
+    prefix = next((candidate for candidate in _RENZ_PREFIXES if lower.startswith(candidate)), None)
+    if prefix is None:
+        return
     try:
         result = decode_renz_payload(payload)
     except Exception:
-        logger.exception("Error interno al descifrar RENZ/7NET por texto")
-        bot.reply_to(message, "Error al procesar RENZ / 7NET.")
+        logger.exception("Internal error decoding RENZ/7NET text")
         return
     if result is not None:
-        _send_decoder_text_result(message, "RENZ / 7NET", result)
-    else:
-        bot.reply_to(
-            message,
-            "No se pudo descifrar RENZ / 7NET: protocolo o configuracion no compatible.",
-        )
+        application = family_text_application(prefix, RENZ_TEXT_PROTOCOLS[prefix])
+        send_markdown_result(message, application, result)
