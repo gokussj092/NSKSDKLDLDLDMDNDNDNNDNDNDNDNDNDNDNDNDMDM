@@ -1,8 +1,10 @@
 """Attach a thumbnail image to a file: the /fileicon flow.
 
 The user sends /fileicon, then the file, then the thumbnail image. The bot
-re-sends the same file (by file_id, keeping its original name) with the
-thumbnail and the SP-DECODE caption (Design 2).
+re-uploads the file bytes with the thumbnail and the SP-DECODE caption
+(Design 2). The bytes must be re-uploaded: Telegram ignores the thumbnail
+when a document is re-sent by file_id (the thumbnail is bound to the file's
+server-side record), so a file_id resend shows the generic document icon.
 """
 from __future__ import annotations
 
@@ -12,6 +14,7 @@ import logging
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from threading import Lock, Timer
+from zoneinfo import ZoneInfo
 
 from PIL import Image, ImageOps
 
@@ -25,10 +28,18 @@ _TTL_SECONDS = 180
 _MAX_PENDING = 16
 _THUMB_MAX_PX = 320
 _THUMB_MAX_BYTES = 200 * 1024
+# The Bot API only lets a bot download files up to 20 MB, so a bigger file
+# cannot be re-uploaded with a thumbnail.
+_BOT_DOWNLOAD_MAX_BYTES = 20 * 1024 * 1024
 _CAPTION_MAX = 1024
 _DIVIDER = "═" * 18
 _MONTHS = ("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
 _IMAGE_EXTENSIONS = {"jpg", "jpeg", "png", "webp", "gif", "bmp"}
+
+try:
+    _TIJUANA = ZoneInfo("America/Tijuana")
+except Exception:  # pragma: no cover - tzdata missing on the host
+    _TIJUANA = None
 
 
 def _human_size(size: int) -> str:
@@ -49,12 +60,16 @@ def _extension(filename: str) -> str:
 
 
 def _format_date(timestamp: int | None) -> str:
-    """Date of the Telegram message, in UTC like results.py (e.g. "25 Nov 2026")."""
-    moment = (
+    """Date of the Telegram message, in Tijuana time (e.g. "25 Nov 2026").
+
+    Falls back to UTC when the host has no tzdata for America/Tijuana.
+    """
+    moment_utc = (
         datetime.fromtimestamp(timestamp, timezone.utc)
         if timestamp is not None
         else datetime.now(timezone.utc)
     )
+    moment = moment_utc.astimezone(_TIJUANA) if _TIJUANA is not None else moment_utc
     return f"{moment.day} {_MONTHS[moment.month - 1]} {moment.year}"
 
 
@@ -266,22 +281,46 @@ def handle_fileicon_text(message) -> None:
         _reply(message, "Send the thumbnail image.")
 
 
+def _download(file_id: str) -> bytes | None:
+    """Download a Telegram file by file_id; None when it cannot be fetched."""
+    try:
+        file_info = bot.get_file(file_id)
+        return bot.download_file(file_info.file_path)
+    except Exception:
+        logger.warning("Could not download a Telegram file", exc_info=True)
+        return None
+
+
 def _deliver(message, pending: _Pending, image_file_id: str) -> None:
     actor = _actor(message)
-    try:
-        file_info = bot.get_file(image_file_id)
-        raw = bot.download_file(file_info.file_path)
-    except Exception:
-        logger.warning("Could not download the thumbnail image", exc_info=True)
+    raw = _download(image_file_id)
+    if raw is None:
         _reply(message, "Could not download that image. Send another thumbnail image.")
         return
     thumbnail_bytes = make_thumbnail(raw)
     if thumbnail_bytes is None:
         _reply(message, "That image could not be used as a thumbnail. Send another image.")
         return
+    if pending.file_size > _BOT_DOWNLOAD_MAX_BYTES:
+        if actor is not None:
+            _remove(actor, pending.marker)
+        _reply(
+            message,
+            "That file is too large to attach a thumbnail to: Telegram only lets "
+            "the bot download files up to 20 MB. Try /fileicon again with a smaller file.",
+        )
+        return
+    # Re-upload the file bytes: Telegram ignores the thumbnail when a document
+    # is re-sent by file_id, so the file would come back with the generic icon.
+    document_bytes = _download(pending.file_id) if pending.file_id else None
+    if document_bytes is None:
+        _reply(message, "Could not download that file to attach the thumbnail. Send it again.")
+        return
     caption = build_fileicon_caption(
         pending.file_name or "file", pending.file_size, pending.document_date
     )
+    document = io.BytesIO(document_bytes)
+    document.name = pending.file_name or "file"
     thumbnail = io.BytesIO(thumbnail_bytes)
     thumbnail.name = "thumbnail.jpg"
     if actor is not None:
@@ -289,7 +328,7 @@ def _deliver(message, pending: _Pending, image_file_id: str) -> None:
     try:
         bot.send_document(
             chat_id=message.chat.id,
-            document=pending.file_id,
+            document=document,
             thumbnail=thumbnail,
             caption=caption,
             parse_mode="HTML",

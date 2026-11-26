@@ -122,6 +122,18 @@ class FileiconCaptionTests(_RuntimePatchedCase):
             "✦ Decode by @GhostDeve"
         ))
 
+    def test_caption_date_uses_tijuana_time_not_utc(self):
+        # 2026-11-26 01:30 UTC is still 2026-11-25 17:30 in Tijuana.
+        timestamp = int(datetime(2026, 11, 26, 1, 30, tzinfo=timezone.utc).timestamp())
+        caption = self.fileicon.build_fileicon_caption("report.json", 583311, timestamp)
+        self.assertIn("✦ 25 Nov 2026\n", caption)
+
+    def test_caption_date_early_utc_is_the_previous_day_in_tijuana(self):
+        # 2026-11-25 02:00 UTC is 2026-11-24 18:00 in Tijuana.
+        timestamp = int(datetime(2026, 11, 25, 2, 0, tzinfo=timezone.utc).timestamp())
+        caption = self.fileicon.build_fileicon_caption("report.json", 583311, timestamp)
+        self.assertIn("✦ 24 Nov 2026\n", caption)
+
     def test_dividers_have_eighteen_chars(self):
         caption = self.fileicon.build_fileicon_caption("a.txt", 10, FILEICON_DATE)
         lines = caption.splitlines()
@@ -158,10 +170,11 @@ class FileiconCaptionTests(_RuntimePatchedCase):
         self.assertLessEqual(len(caption), 1024)
         self.assertIn("…</b>", caption)
 
-    def test_date_uses_utc_and_english_months(self):
+    def test_date_uses_tijuana_time_and_english_months(self):
+        # 2026-01-05 03:04 UTC is still 2026-01-04 19:04 in Tijuana.
         timestamp = int(datetime(2026, 1, 5, 3, 4, tzinfo=timezone.utc).timestamp())
         caption = self.fileicon.build_fileicon_caption("f.txt", 10, timestamp)
-        self.assertIn("✦ 5 Jan 2026", caption)
+        self.assertIn("✦ 4 Jan 2026", caption)
 
 
 class FileiconThumbnailTests(_RuntimePatchedCase):
@@ -208,8 +221,13 @@ class FileiconFlowTests(_RuntimePatchedCase):
         patcher.start()
         self.addCleanup(patcher.stop)
         self.addCleanup(lambda: self._clear_sessions(self.fileicon))
-        self.bot.get_file.return_value = SimpleNamespace(file_path="thumb.jpg")
-        self.bot.download_file.return_value = _png_bytes(1200, 800)
+        self.document_bytes = b'{"servers": []}'
+        self.bot.get_file.side_effect = lambda file_id: SimpleNamespace(
+            file_path="thumb.jpg" if file_id in {"thumb-small", "thumb-large", "img-1"} else "doc.json"
+        )
+        self.bot.download_file.side_effect = lambda file_path: (
+            _png_bytes(1200, 800) if file_path == "thumb.jpg" else self.document_bytes
+        )
         self.replies = []
         self.bot.reply_to.side_effect = lambda message, text, **kwargs: self.replies.append(text)
 
@@ -237,7 +255,7 @@ class FileiconFlowTests(_RuntimePatchedCase):
         self.fileicon.start_fileicon(self._message(text="/fileicon", **kwargs))
         self.assertIn("Send the file you want to attach a thumbnail to.", self.replies)
 
-    def test_full_flow_sends_same_document_with_thumbnail_and_caption(self):
+    def test_full_flow_reuploads_the_document_with_thumbnail_and_caption(self):
         self._start_flow()
         self.fileicon.handle_fileicon_document(
             self._message(document=self._document(), message_id=2)
@@ -246,7 +264,12 @@ class FileiconFlowTests(_RuntimePatchedCase):
         self.fileicon.handle_fileicon_photo(self._message(photo=self._photo(), message_id=3))
         self.assertEqual(self.bot.send_document.call_count, 1)
         sent = self.bot.send_document.call_args.kwargs
-        self.assertEqual(sent["document"], "file-123")
+        # The file bytes are re-uploaded (not re-sent by file_id): Telegram
+        # ignores the thumbnail on a file_id resend, so the file would come
+        # back with the generic document icon instead of the thumbnail.
+        document = sent["document"]
+        self.assertEqual(document.name, "report.json")
+        self.assertEqual(document.read(), self.document_bytes)
         self.assertEqual(sent["parse_mode"], "HTML")
         self.assertEqual(sent["caption"], (
             "══════════════════\n"
@@ -298,7 +321,7 @@ class FileiconFlowTests(_RuntimePatchedCase):
             )
         )
         self.assertEqual(self.bot.send_document.call_count, 1)
-        self.assertEqual(self.bot.send_document.call_args.kwargs["document"], "file-123")
+        self.assertEqual(self.bot.send_document.call_args.kwargs["document"].name, "report.json")
 
     def test_text_without_image_keeps_waiting(self):
         self._start_flow()
@@ -346,11 +369,25 @@ class FileiconFlowTests(_RuntimePatchedCase):
         self.fileicon.handle_fileicon_document(
             self._message(document=self._document(), message_id=2)
         )
-        self.bot.download_file.return_value = b"not an image"
+        self.bot.download_file.side_effect = lambda file_path: b"not an image"
         self.fileicon.handle_fileicon_photo(self._message(photo=self._photo(), message_id=3))
         self.assertIn("That image could not be used as a thumbnail. Send another image.", self.replies)
         self.assertEqual(self.bot.send_document.call_count, 0)
         self.assertEqual(len(self.fileicon._pending), 1)
+
+    def test_document_over_the_bot_download_limit_is_rejected(self):
+        # The Bot API only lets a bot download files up to 20 MB, so a bigger
+        # file cannot be re-uploaded with a thumbnail.
+        self.settings.max_file_size_bytes = 25 * 1024 * 1024
+        self._start_flow()
+        self.fileicon.handle_fileicon_document(
+            self._message(document=self._document(file_size=21 * 1024 * 1024), message_id=2)
+        )
+        self.assertIn("File received. Now send the thumbnail image.", self.replies)
+        self.fileicon.handle_fileicon_photo(self._message(photo=self._photo(), message_id=3))
+        self.assertIn("20 MB", self.replies[-1])
+        self.assertEqual(self.bot.send_document.call_count, 0)
+        self.assertEqual(len(self.fileicon._pending), 0)
 
     def test_cancel_discards_the_flow(self):
         self._start_flow()
