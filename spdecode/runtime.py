@@ -60,3 +60,32 @@ def restrict_groups() -> bool:
         save_chat_permissions(current)
         settings = current
         return True
+
+
+def allow_all_groups() -> bool:
+    """Disable the group allowlist and persist it before publishing the new policy."""
+    global settings
+    with _access_lock:
+        if settings.allow_all_groups:
+            return False
+        current = replace(settings, allow_all_groups=True)
+        save_chat_permissions(current)
+        settings = current
+        return True
+
+
+def record_known_group(chat_id: int, title: str | None) -> bool:
+    """Remember a group the bot is in; persist only when it is new or renamed."""
+    global settings
+    if type(chat_id) is not int or chat_id >= 0 or abs(chat_id) >= 2**52:
+        return False
+    clean_title = " ".join(str(title or "").split())
+    with _access_lock:
+        if settings.known_groups.get(chat_id) == clean_title:
+            return False
+        updated = dict(settings.known_groups)
+        updated[chat_id] = clean_title
+        current = replace(settings, known_groups=updated)
+        save_chat_permissions(current)
+        settings = current
+        return True

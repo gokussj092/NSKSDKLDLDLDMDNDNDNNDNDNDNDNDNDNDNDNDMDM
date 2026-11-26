@@ -78,6 +78,13 @@ def _find_reply(actor: _Actor, reply_id: int) -> tuple[_SessionKey, _Pending] | 
     )
 
 
+def _pending_for_actor(actor: _Actor) -> tuple[_SessionKey, _Pending] | None:
+    """Most recent pending request of an actor (the one the user just saw)."""
+    # Called under _lock.
+    found = [(key, pending) for key, pending in _pending.items() if key[0] == actor]
+    return found[-1] if found else None
+
+
 def cancel_pending_credentials(message) -> bool:
     actor = _actor(message)
     if actor is None:
@@ -168,17 +175,26 @@ def _is_credential_reply(message) -> bool:
     actor = _actor(message)
     reply = getattr(message, "reply_to_message", None)
     text = getattr(message, "text", None)
-    if actor is None or reply is None or not isinstance(text, str):
+    if actor is None or not isinstance(text, str):
         return False
     command = text.split(None, 1)[0].split("@", 1)[0].lower() if text.strip() else ""
     if command in {"/cancel", "/cancelar", "/restrictgroups"}:
         return False
+    if reply is not None:
+        with _lock:
+            if _find_reply(actor, reply.message_id) is not None:
+                return True
+        # Late or foreign replies to a bot prompt must bypass generic text handlers.
+        return ((getattr(reply, "text", "") or "").startswith((_PROMPT + "\n", "SP-DECODE · Credencial pendiente\n")) and
+                getattr(getattr(reply, "from_user", None), "is_bot", False))
+    # No reply: in groups users type the password as a plain message instead
+    # of replying to the prompt, and the old code dropped those messages
+    # silently. Accept a plain message only while this same chat/thread/user
+    # already has a credential request pending.
+    if not text.strip() or text.startswith("/"):
+        return False
     with _lock:
-        if _find_reply(actor, reply.message_id) is not None:
-            return True
-    # Late or foreign replies to a bot prompt must bypass generic text handlers.
-    return ((getattr(reply, "text", "") or "").startswith((_PROMPT + "\n", "SP-DECODE · Credencial pendiente\n")) and
-            getattr(getattr(reply, "from_user", None), "is_bot", False))
+        return _pending_for_actor(actor) is not None
 
 
 @bot.message_handler(func=_is_credential_reply)
@@ -186,8 +202,15 @@ def _is_credential_reply(message) -> bool:
 def handle_credential_reply(message) -> None:
     actor = _actor(message)
     value = getattr(message, "text", None) or ""
+    reply = getattr(message, "reply_to_message", None)
     with _lock:
-        target = _find_reply(actor, message.reply_to_message.message_id) if actor is not None else None
+        if actor is None:
+            target = None
+        elif reply is not None:
+            target = _find_reply(actor, reply.message_id)
+        else:
+            # Plain message in a group: the pending request of this actor.
+            target = _pending_for_actor(actor)
         if target is not None:
             key, pending = target
             if pending.busy:

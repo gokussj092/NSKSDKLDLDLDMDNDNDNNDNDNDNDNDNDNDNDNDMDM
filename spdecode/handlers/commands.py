@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import html
 import logging
 import re
 
@@ -41,6 +42,7 @@ BOT_COMMANDS = [
     BotCommand("help", "Learn how to use the bot"),
     BotCommand("formats", "Show supported file formats"),
     BotCommand("texts", "Show supported text and links"),
+    BotCommand("fileicon", "Attach a thumbnail to a file"),
     BotCommand("session", "Show the current multipart session"),
     BotCommand("ssc", "Show the active SSC session"),
     BotCommand("dark", "Show the active Dark Tunnel session"),
@@ -49,6 +51,8 @@ BOT_COMMANDS = [
     BotCommand("allowgroup", "Authorize a group (administrators)"),
     BotCommand("revokegroup", "Remove a group from the allowlist (administrators)"),
     BotCommand("restrictgroups", "Restrict access to allowed groups (administrators)"),
+    BotCommand("allowallgroups", "Allow all groups (administrators)"),
+    BotCommand("groups", "List the groups where the bot is (administrators)"),
     BotCommand("private", "Check or manage private chat access"),
     BotCommand("ping", "Check whether the bot is online"),
     BotCommand("status", "Show bot status (administrators)"),
@@ -179,10 +183,13 @@ def show_help(message):
         "<b>Commands</b>\n"
         "/formats — supported file formats\n"
         "/texts — supported text and links\n"
+        "/fileicon — attach a thumbnail image to a file\n"
         "/id — user and chat IDs\n"
         "/allowgroup — authorize a group (administrators)\n"
         "/revokegroup — remove a group from the allowlist (administrators)\n"
         "/restrictgroups — allow only groups on the allowlist (administrators)\n"
+        "/allowallgroups — allow all groups (administrators)\n"
+        "/groups — list the groups where the bot is (administrators)\n"
         "/private — check or manage private chat access\n"
         "/ping — check whether the bot is online\n"
         "/about — about SP-DECODE"
@@ -244,8 +251,10 @@ def show_text_session(message):
 @bot.message_handler(commands=["cancel", "cancelar"])
 def cancel_pending_session(message):
     from spdecode.handlers.decoder_credentials import cancel_pending_credentials
+    from spdecode.handlers.fileicon import cancel_pending_fileicon
 
     credentials_canceled = cancel_pending_credentials(message)
+    fileicon_canceled = cancel_pending_fileicon(message)
     session = get_session(message, settings.text_session_timeout_seconds)
     if session is not None and clear_session(message):
         bot.reply_to(
@@ -256,6 +265,8 @@ def cancel_pending_session(message):
         )
     elif credentials_canceled:
         bot.reply_to(message, "Credential request canceled.", **thread_options(message))
+    elif fileicon_canceled:
+        bot.reply_to(message, "File icon request canceled.", **thread_options(message))
     else:
         bot.reply_to(
             message,
@@ -349,6 +360,60 @@ def restrict_group_access(message):
         "Group access is already restricted to allowed groups."
     )
     _permission_reply(message, result)
+
+
+@bot.message_handler(commands=["allowallgroups"])
+def allow_all_group_access(message):
+    from spdecode.runtime import allow_all_groups, settings as current_settings
+
+    user_id = getattr(getattr(message, "from_user", None), "id", None)
+    if not is_admin(user_id, current_settings):
+        _permission_reply(message, "Only SP-DECODE administrators can change group access.")
+        return
+
+    if len((message.text or "").split()) != 1:
+        _permission_reply(message, "Use /allowallgroups to allow all groups.")
+        return
+
+    try:
+        changed = allow_all_groups()
+    except (OSError, ValueError):
+        _permission_reply(message, "Could not save the group access mode.")
+        return
+
+    result = "Group access is now open to all groups." if changed else (
+        "Group access is already open to all groups."
+    )
+    _permission_reply(message, result)
+
+
+@bot.message_handler(commands=["groups", "grupos"])
+def list_groups(message):
+    from spdecode.runtime import settings as current_settings
+
+    user_id = getattr(getattr(message, "from_user", None), "id", None)
+    if not is_admin(user_id, current_settings):
+        bot.reply_to(
+            message,
+            "<b>Restricted access</b>\nThis command is available to administrators only.",
+            parse_mode="HTML",
+            **thread_options(message),
+        )
+        return
+    groups = current_settings.known_groups
+    if not groups:
+        bot.reply_to(
+            message,
+            "<b>Groups</b>\nThe bot is not in any group yet.",
+            parse_mode="HTML",
+            **thread_options(message),
+        )
+        return
+    lines = ["<b>Groups</b>"]
+    for chat_id, title in sorted(groups.items(), key=lambda item: (item[1].lower(), item[0])):
+        label = html.escape(title) if title else "Untitled group"
+        lines.append(f"• {label} — <code>{chat_id}</code>")
+    bot.reply_to(message, "\n".join(lines), parse_mode="HTML", **thread_options(message))
 
 
 @bot.message_handler(commands=["private", "privados"])

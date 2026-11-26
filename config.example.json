@@ -10,7 +10,8 @@
         "allowed_private_users": [],
         "allowed_groups": [
             -1001234567890
-        ]
+        ],
+        "known_groups": {}
     },
     "runtime": {
         "downloads_dir": "Downloads",

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 import os
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from tempfile import NamedTemporaryFile
 from typing import Any
@@ -26,6 +26,8 @@ class AppConfig:
     text_session_timeout_seconds: int
     text_session_max_chars: int
     allowed_private_users: frozenset[int] = frozenset()
+    # Groups the bot is in (id -> title), remembered from received activity.
+    known_groups: dict[int, str] = field(default_factory=dict)
 
     @property
     def ssc_session_timeout_seconds(self) -> int:
@@ -67,6 +69,22 @@ def _normalize_bool(value: Any, field_name: str) -> bool:
     if value in (1, "1", "true", "True", "yes", "Yes"):
         return True
     raise ValueError(f"'{field_name}' must be true or false.")
+
+
+def _normalize_known_groups(value: Any) -> dict[int, str]:
+    """Normalize the remembered group list; malformed entries are dropped."""
+    if not isinstance(value, dict):
+        return {}
+    normalized: dict[int, str] = {}
+    for raw_id, raw_title in value.items():
+        try:
+            chat_id = int(raw_id)
+        except (TypeError, ValueError):
+            continue
+        if chat_id >= 0:
+            continue
+        normalized[chat_id] = " ".join(str(raw_title or "").split())
+    return normalized
 
 
 def _resolve_project_path(value: Any, default: str) -> Path:
@@ -120,6 +138,7 @@ def load_config(path: Path = CONFIG_PATH) -> AppConfig:
         access_config.get("allow_all_groups", False),
         "access.allow_all_groups",
     )
+    known_groups = _normalize_known_groups(access_config.get("known_groups", {}))
 
     if legacy_private_admin is not None and legacy_private_admin not in admins:
         admins.append(legacy_private_admin)
@@ -166,6 +185,7 @@ def load_config(path: Path = CONFIG_PATH) -> AppConfig:
         allowed_groups=frozenset(value for value in group_ids if value < 0),
         allowed_private_users=frozenset(value for value in private_ids if value > 0),
         allow_all_groups=allow_all_groups,
+        known_groups=known_groups,
         downloads_dir=_resolve_project_path(runtime_config.get("downloads_dir"), "Downloads"),
         results_dir=_resolve_project_path(runtime_config.get("results_dir"), "Results"),
         decoder_timeout_seconds=timeout,
@@ -187,6 +207,9 @@ def save_chat_permissions(config: AppConfig, path: Path = CONFIG_PATH) -> None:
     access["allow_all_groups"] = config.allow_all_groups
     access["allowed_groups"] = sorted(config.allowed_groups)
     access["allowed_private_users"] = sorted(config.allowed_private_users)
+    access["known_groups"] = {
+        str(chat_id): title for chat_id, title in sorted(config.known_groups.items())
+    }
     temporary: Path | None = None
     try:
         # NamedTemporaryFile creates a mode-0600 file containing existing secrets.

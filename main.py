@@ -5,12 +5,17 @@ import time
 from pathlib import Path
 
 # El orden de importación conserva la prioridad de los handlers específicos.
+# activity registra primero para ver cada mensaje de grupo sin consumirlo;
+# fileicon va antes de documents para interceptar sus documentos y antes de
+# fallback para que un texto fuera de lugar vuelva a pedir lo que falta.
+from spdecode.handlers import activity as _activity  # noqa: F401
 from spdecode.handlers import decoder_credentials as _decoder_credentials  # noqa: F401
 from spdecode.handlers import commands as _commands  # noqa: F401
 from spdecode.handlers import cloud_texts as _cloud_texts  # noqa: F401
 from spdecode.handlers import extra_text_protocols as _extra_text_protocols  # noqa: F401
 from spdecode.handlers import text_protocols as _text_protocols  # noqa: F401
 from spdecode.handlers import config_batch_texts as _config_batch_texts  # noqa: F401
+from spdecode.handlers import fileicon as _fileicon  # noqa: F401
 from spdecode.handlers import documents as _documents  # noqa: F401
 from spdecode.handlers import fallback as _fallback  # noqa: F401
 from spdecode.decoder_runtime import FILE_FORMATS
