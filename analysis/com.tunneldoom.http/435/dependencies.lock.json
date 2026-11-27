@@ -1,0 +1,1 @@
+{"dependencies":[{"name":"CPython","purpose":"Decoder runtime and tests","version":"3.12.3"},{"name":"PyCryptodome","purpose":"AES-256-CBC field decryption","version":"4.6.0"}],"generated_by":"stage author, 2026-11-27","note":"Analyst tool versions (androguard/jadx) UNKNOWN, not invented."}

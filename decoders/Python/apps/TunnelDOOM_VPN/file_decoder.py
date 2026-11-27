@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """TunnelDOOM's bundled legacy SKS parser; reuse the verified canonical codec.
 
-No independent export from build 424 was supplied or observed in its UI.
+No independent export from build 435 was supplied or observed in its UI.
+No ".sks" literal exists in the 4.3.5 DEX; same status as 4.3.2.
 """
 from pathlib import Path
 import sys

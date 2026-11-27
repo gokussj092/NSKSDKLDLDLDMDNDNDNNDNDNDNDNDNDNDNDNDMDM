@@ -1,5 +1,1 @@
-{
-  "production_requirements": "requirements.txt",
-  "node_lock": "cloud/web/package-lock.json",
-  "integration_report": "analysis/platform/supplied-integrations/2026-11-14/MANIFEST.json"
-}
+{"integration_report":"analysis/platform/supplied-integrations/2026-11-14/MANIFEST.json","node_lock":"cloud/web/package-lock.json","production_requirements":"requirements.txt","python":{"CPython":"3.12.3","note":"Re-verification 2026-11-27 is stdlib-only; analyst androguard/emulator versions UNKNOWN, not invented."}}

@@ -11,6 +11,7 @@ const KINDS=Object.freeze({
  "http-socketclay":{kind:"spdecode-socketclay-catalogs-v1",sources:["servers","users"]},
  "http-wakko":{kind:"spdecode-wakko-catalogs-v1",sources:["servers","users"]},
  "v2ray-tunnel-plus":{kind:"spdecode-v2ray-tunnel-plus-catalogs-v1",sources:["base64","raw"]},
+ "stlray-vpn":{kind:"spdecode-stlray-vpn-catalogs-v1",sources:["config","modes","policy"]},
 });
 export function packPairedVpnCatalogs(providerId,sources){
  if(!Object.hasOwn(KINDS,providerId))throw new VpnProviderError("UNSUPPORTED_FORMAT");

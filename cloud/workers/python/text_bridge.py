@@ -160,6 +160,16 @@ def dispatch(text: str, *, password: str | None = None) -> str | None:
         # (no real sample with a password has been supplied yet).
         module = importlib.import_module("decoders.Python.apps.NadiaVPN.file_decoder")
         return module.decode_text(value, password=password)
+    if lowered.startswith(("sray://", "tvc://", "uv://", "gv://", "gpx://",
+                            "insan://", "opq://", "test://", "hyb://")):
+        # STLRAY 1.1.36: explicit dispatch to the file decoder (TVC
+        # codec: per-scheme keys, hyb:// reuses the sray:// key; no
+        # password). The scheme is unambiguous: a None result is
+        # final, never a fallback to another format.
+        # VERIFIED_SYNTHETIC: no real STLRAY link has been supplied
+        # yet (round-trip over a real catalog profile only).
+        module = importlib.import_module("decoders.Python.apps.STLRAY.file_decoder")
+        return module.decode_text(value)
     if lowered.startswith("wyst://"):
         # Ways Tunnel 18.1: explicit dispatch to the text decoder
         # (AES-256-CBC / zero IV, key from tweakdam0n; same pattern as
@@ -179,6 +189,22 @@ def dispatch(text: str, *, password: str | None = None) -> str | None:
         module = importlib.import_module("decoders.Python.apps.Tx_Tunnel.txtunnel")
         try:
             result = module.parse_v2rayng_link(value)
+        except ValueError:
+            return None
+        return json.dumps(result, ensure_ascii=False, indent=2)
+    if lowered.startswith("xtravpn://"):
+        # XtraVPN 1.0.36: explicit dispatch to the catalog decoder.
+        # XtravpnMainActivity.x() strips the 10-char "xtravpn://" prefix
+        # and decrypts the blob with the single catalog key
+        # "Pitingo2089" (decode() returns the decoded catalog dict).
+        # No manifest deep link exists; the scheme is paste-only. The
+        # scheme is unambiguous: a None result is final, never a
+        # fallback to another format. VERIFIED_SYNTHETIC: no real
+        # xtravpn:// link has been supplied yet (--text verified
+        # against the asset blob only).
+        module = importlib.import_module("decoders.Python.apps.XtraVPN.XtraVPN")
+        try:
+            result = module.decode(value[len("xtravpn://"):])
         except ValueError:
             return None
         return json.dumps(result, ensure_ascii=False, indent=2)

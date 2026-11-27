@@ -1421,7 +1421,9 @@
       "versionName": "1.0.36",
       "catalogModule": "XtraVPN.py",
       "extensions": [],
-      "textPrefixes": [],
+      "textPrefixes": [
+        "xtravpn://"
+      ],
       "fileModule": null,
       "requests": [],
       "sourceIcon": "XtraVPN.png",

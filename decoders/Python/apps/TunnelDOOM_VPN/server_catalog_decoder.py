@@ -1,7 +1,11 @@
 #!/usr/bin/env python3
 """TunnelDOOM full offline catalog reader and fixed-source CLI downloader.
 
-Build 432 source validated with a complete real catalog and the isolated worker.
+Build 435 (4.3.5) source validated with a complete real catalog (Version 531,
+391 servers) on 2026-11-27. The only change vs build 432 is the fixed source
+host: https://free.tunneldoom.space/config.json — the 4.3.2 host
+https://web.tunneldoom.space/config.json no longer answers (connection closed).
+Crypto (StringCrypter envelope + NoobCrypt fields) is unchanged.
 """
 from __future__ import annotations
 import argparse
@@ -15,7 +19,7 @@ if __package__:
 else:
     from codec import DecodeError, MAX_BYTES, run
 
-SOURCE = "https://web.tunneldoom.space/config.json"
+SOURCE = "https://free.tunneldoom.space/config.json"
 
 
 class _NoRedirect(HTTPRedirectHandler):

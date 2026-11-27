@@ -56,6 +56,30 @@ def _nadia_text(value):
     return decode_text(value)
 
 
+def _stlray_text(value):
+    # STLRAY 1.1.36 (TVC codec): sray://, tvc://, uv://, gv://, gpx://,
+    # insan://, opq://, test:// — the scheme selects the key; hyb:// has
+    # no own key and falls back to the sray:// key (handled inside
+    # decode_link). Verified MATCH exacto on sray://, sray:// locked and
+    # tvc:// links in the batch report.
+    from decoders.Python.apps.STLRAY.file_decoder import decode_text
+    return decode_text(value)
+
+
+def _xtravpn_text(value):
+    # XtraVPN 1.0.36: xtravpn://<blob> — encrypted config blob, B0 key
+    # (XtravpnMainActivity.x() accepts text starting with xtravpn://).
+    # Landed module has run(data=blob) -> dict, no decode_text yet.
+    import json as _json
+
+    from decoders.Python.apps.XtraVPN.XtraVPN import run as _xtravpn_run
+    blob = value.strip()
+    if blob.lower().startswith("xtravpn://"):
+        blob = blob[len("xtravpn://"):]
+    blob = "".join(blob.split())
+    return _json.dumps(_xtravpn_run(data=blob), ensure_ascii=False)
+
+
 PROTOCOL_HANDLERS = {
     **{prefix: ("NetMod", text_legacy_protocols.decode_netmod)
        for prefix in text_legacy_protocols.NM_PREFIXES},
@@ -77,6 +101,16 @@ PROTOCOL_HANDLERS = {
     "nad://sec2:": ("NadiaVPN", _nadia_text),
     "nad://pw2:": ("NadiaVPN", _nadia_text),
     "nad://": ("NadiaVPN", _nadia_text),
+    "sray://": ("STLRAY", _stlray_text),
+    "tvc://": ("STLRAY", _stlray_text),
+    "uv://": ("STLRAY", _stlray_text),
+    "gv://": ("STLRAY", _stlray_text),
+    "gpx://": ("STLRAY", _stlray_text),
+    "insan://": ("STLRAY", _stlray_text),
+    "opq://": ("STLRAY", _stlray_text),
+    "test://": ("STLRAY", _stlray_text),
+    "hyb://": ("STLRAY", _stlray_text),
+    "xtravpn://": ("XtraVPN", _xtravpn_text),
 }
 _PREFIXES = tuple(sorted(PROTOCOL_HANDLERS, key=len, reverse=True))
 

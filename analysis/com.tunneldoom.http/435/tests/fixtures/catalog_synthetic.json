@@ -1,0 +1,1 @@
+{"ReleaseNotes":"TEST-ONLY synthetic catalog for the 4.3.5 dossier. No real servers, no real credentials.","Servers":[{"Name":"TEST-SERVER-1","Payload":"GET / HTTP/1.1","SNI":"test.example.com","ServerIP":"203.0.113.10","ServerPass":"test-pass","ServerUser":"test-user"}],"Version":"9.9"}

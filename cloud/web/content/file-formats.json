@@ -507,6 +507,14 @@
       "credentialFields": []
     },
     {
+      "suffix": "insan",
+      "name": "STLRAY 1.1.36",
+      "kind": "file",
+      "offlineSupported": false,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
       "suffix": "irfan",
       "name": "IRFAN VPN V3",
       "kind": "file",
@@ -578,6 +586,17 @@
       "cloudSupported": true,
       "credentialFields": [
         "password"
+      ]
+    },
+    {
+      "suffix": "reese",
+      "name": "REESE TUNNEL 3.23.28",
+      "kind": "file",
+      "offlineSupported": false,
+      "cloudSupported": true,
+      "credentialFields": [
+        "password",
+        "hwid"
       ]
     },
     {
@@ -893,6 +912,14 @@
       "credentialFields": []
     },
     {
+      "suffix": "sray",
+      "name": "STLRAY 1.1.36",
+      "kind": "file",
+      "offlineSupported": false,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
       "suffix": "tcv2",
       "name": "Generic AES-GCM / PBKDF2",
       "kind": "file",
@@ -905,6 +932,14 @@
       "name": "Generic AES-GCM / PBKDF2",
       "kind": "file",
       "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "test",
+      "name": "STLRAY 1.1.36",
+      "kind": "file",
+      "offlineSupported": false,
       "cloudSupported": true,
       "credentialFields": []
     },
@@ -1017,6 +1052,14 @@
       "name": "AustroPlus VPN 13.0.1",
       "kind": "file",
       "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "asl",
+      "name": "ASL TUNNEL 3.0",
+      "kind": "file",
+      "offlineSupported": false,
       "cloudSupported": true,
       "credentialFields": []
     },
@@ -1300,6 +1343,14 @@
     {
       "suffix": "gol",
       "name": "VPN PLUS PERÚ",
+      "kind": "file",
+      "offlineSupported": false,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "gpx",
+      "name": "STLRAY 1.1.36",
       "kind": "file",
       "offlineSupported": false,
       "cloudSupported": true,
@@ -1622,6 +1673,14 @@
       "name": "Generic DES-ECB (AES-GCM fallback)",
       "kind": "file",
       "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "opq",
+      "name": "STLRAY 1.1.36",
+      "kind": "file",
+      "offlineSupported": false,
       "cloudSupported": true,
       "credentialFields": []
     },
@@ -1958,6 +2017,14 @@
       ]
     },
     {
+      "suffix": "tvc",
+      "name": "STLRAY 1.1.36",
+      "kind": "file",
+      "offlineSupported": false,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
       "suffix": "tvt",
       "name": "TV Tunnel",
       "kind": "file",
@@ -2135,7 +2202,7 @@
     },
     {
       "suffix": "gv",
-      "name": "Generic AES-GCM / PBKDF2",
+      "name": "STLRAY 1.1.36 / Generic AES-GCM / PBKDF2",
       "kind": "file",
       "offlineSupported": true,
       "cloudSupported": true,
@@ -2270,12 +2337,23 @@
       "credentialFields": []
     },
     {
+      "suffix": "rj",
+      "name": "ExoticFast VIP Rk1",
+      "kind": "file",
+      "offlineSupported": false,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
       "suffix": "rt",
       "name": "REESE TUNNEL",
       "kind": "file",
       "offlineSupported": false,
       "cloudSupported": true,
-      "credentialFields": []
+      "credentialFields": [
+        "password",
+        "hwid"
+      ]
     },
     {
       "suffix": "ry",
@@ -2298,11 +2376,13 @@
     },
     {
       "suffix": "st",
-      "name": "Sentinel Tunnel",
+      "name": "Sentinel Tunnel 4.0.0",
       "kind": "file",
       "offlineSupported": true,
       "cloudSupported": true,
-      "credentialFields": []
+      "credentialFields": [
+        "password"
+      ]
     },
     {
       "suffix": "tx",
@@ -2327,6 +2407,14 @@
       "name": "ULTRA TUNNEL",
       "kind": "file",
       "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "uv",
+      "name": "STLRAY 1.1.36",
+      "kind": "file",
+      "offlineSupported": false,
       "cloudSupported": true,
       "credentialFields": []
     },

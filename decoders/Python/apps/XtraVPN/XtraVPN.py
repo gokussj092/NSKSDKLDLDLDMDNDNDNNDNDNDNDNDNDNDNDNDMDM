@@ -22,21 +22,42 @@ Catalog (outer layer, LC7 / uW):
        Android ID, data = Base64 -> if the result starts with "https://"
        that is the URL (the fixed fallback constant "23605c1568999d3a"
        is 12 bytes after Base64 and cannot decrypt, so it is dead).
-    -> Lv0.run(): plain GET via HttpURLConnection, no custom headers,
-       connect/read timeouts 5000 ms, non-200 -> "Error on getting data:
-       HTTP <code>".
+    -> Lv0.run() case 11 (Lyj): plain GET via HttpURLConnection, no
+       custom headers, connect/read timeouts 10 000 ms (const/16
+       10000 in Lv0.run), non-200 -> "Error on getting data: HTTP
+       <code>"; the body is handed to Ld2 case 11 on the main
+       thread. A second downloader (LAK, Lv0 case with LAK.r) uses
+       the same GET shape and the same Ld2 decrypt/version/save
+       flow.
     -> LAK callback: the downloaded string is decrypted with the
        MainActivity key B0 (the AdMob banner ID, see below) via LuW.i
        (XXTEA) and validated by comparing the "Version" field
        segment-by-segment against the current config; if newer it is
        saved (still encrypted) to filesDir/Config.json.
   The bundled asset assets/config/config.json is the same envelope
-  (Base64 -> XXTEA) with the ServersActivity key "Pitingo2089".
-  This script's --url therefore accepts the user-supplied custom-code
-  URL (or any URL serving the same envelope) and tries BOTH keys,
-  B0 first (the app's remote path) then "Pitingo2089", reporting
-  which one opened it. Without a custom-code URL there is nothing
-  live to fetch; the bundled asset is the verifiable catalog.
+  (Base64 -> XXTEA) with the key "Pitingo2089".
+  RE-VERIFIED 2026-11-27 against the batch-15 .apks (classes.dex
+  SHA-256 7ec8f8b4440d70dfd09e858d35106c4d3d099f2a97fc59febd2bc782ad238709,
+  byte-identical to the APKPure APK analysed 2026-11-13; asset
+  config.json SHA-256 identical; signing cert SHA-256 identical):
+  there is ONE catalog key, "Pitingo2089", used for the asset, for
+  the downloaded Config.json and for pasted xtravpn:// / raw blobs.
+  Proof in smali (this dex): XtravpnMainActivity.<clinit> sets
+  B0 = new Sk(17).toString() and Sk(17) emulates to "Pitingo2089";
+  ServersActivity.I = new hj(6).toString() = "Pitingo2089";
+  MainActivity.onCreate builds LC7 with B0 and ServersActivity
+  .onCreate builds LC7 with I; Ld2.run (the download callback)
+  decrypts the downloaded body with uW.i(body, B0) in both the
+  Lyj path (line ~523) and the LAK path (line ~731). The AdMob
+  banner ID "ca-app-pub-1778627428199734/4229593543" is A0
+  (= new hj(17).toString()), an ad unit ID, NOT a catalog key
+  (the 2026-11-13 README had the mapping backwards). This script
+  still tries the AdMob ID as a second key only as a legacy
+  fallback and reports which key opened the config.
+  This script's --url therefore accepts the custom-code URL (see
+  --custom-code) or any URL serving the same envelope. Without a
+  custom-code URL there is nothing live to fetch; the bundled
+  asset is the verifiable catalog.
 
   Outer envelope (both keys, uW.s / uW.h, delta 0xF5D09E4D):
     Base64 -> XXTEA decrypt, key = UTF-8 bytes of the key string
@@ -528,6 +549,28 @@ def vj0_decode(data: str, key: str):
         return None
 
 
+# Fallback key used by XtravpnMainActivity.p() when the Android ID
+# does not open the custom code. It is NOT a string literal in the
+# dex: p() builds it from 16 int-to-byte constants; emulated value:
+# b'23605c1568999d3a' (16 chars, used as-is as the AES key).
+FALLBACK_CODE_KEY = "23605c1568999d3a"
+
+
+def decrypt_custom_code(code: str, android_id: str):
+    """XtravpnMainActivity.p(code): decrypt the pasted "custom code"
+    (Base64) with Vj0.h. First try the device Android ID as the key,
+    then the fixed fallback key. Returns the catalog URL when the
+    result starts with "https://", else None (the app returns null
+    and the code is rejected with "Clave o lista no válida")."""
+    for key in (android_id, FALLBACK_CODE_KEY):
+        if not key:
+            continue
+        url = vj0_decode(code, key)
+        if url and url.startswith("https://"):
+            return url
+    return None
+
+
 def uw_decode(data: str, key: str):
     """uW.i(data, key): Base64 -> XXTEA (key = first 16 bytes).
     Returns None when the length word does not validate."""
@@ -596,11 +639,12 @@ def derive_ssh_password(username: str, cert_hex: str = CERT_SHA256_HEX,
 
 # ---------------------------------------------------------------- catalog
 
-def decode_config(text, keys=(KEY_MAIN, KEY_SERVERS)):
+def decode_config(text, keys=(KEY_SERVERS, KEY_MAIN)):
     """Outer envelope: Base64 -> XXTEA -> JSON. Tries each key in
-    order (B0 first: the app's remote path; then "Pitingo2089").
-    Returns (config dict, key used). Raises DecodeError if no key
-    opens it."""
+    order ("Pitingo2089" first: the app's only catalog key, B0, for
+    the asset, the remote download and pasted blobs; then the AdMob
+    ID as a legacy fallback). Returns (config dict, key used).
+    Raises DecodeError if no key opens it."""
     body = _text(text)
     raw = _base64(body)
     errors = []
@@ -810,6 +854,12 @@ def main(argv=None) -> int:
     parser = argparse.ArgumentParser(
         description="Decodificador del catálogo de XtraVPN 1.0.36 (com.xtravpn.dev).")
     parser.add_argument("--url", help="URL del config cifrado (la URL del custom code del dispositivo).")
+    parser.add_argument("--custom-code", metavar="CODIGO",
+                        help="Código personalizado pegado en la app (Base64): se descifra con --android-id (o la clave fija) para obtener la URL del catálogo en vivo y descargarlo.")
+    parser.add_argument("--android-id", metavar="ANDROID_ID",
+                        help="Android ID del teléfono (el 'token' que la app comparte desde Acerca de). Clave AES del --custom-code.")
+    parser.add_argument("--text", metavar="TEXTO",
+                        help="Texto pegado en la app: enlace xtravpn://<blob> o el blob cifrado tal cual (se descifra con B0, como hace x()).")
     parser.add_argument("--file", help="Archivo local con el config cifrado (o config.json del asset).")
     parser.add_argument("--asset", action="store_true",
                         help="Decodifica el config.json incluido junto al script.")
@@ -853,6 +903,30 @@ def main(argv=None) -> int:
                 print("--hour debe ser AAAAMMDDHH, p. ej. 2026111320")
                 return 2
         print(derive_ssh_password(args.ssh_pass, CERT_SHA256_HEX, sig, when))
+        return 0
+
+    if args.custom_code:
+        url = decrypt_custom_code(args.custom_code.strip(), (args.android_id or "").strip())
+        if not url:
+            print("custom-code: NO abre con el Android ID ni con la clave fija.")
+            print("Revisa que el código y el Android ID (token) sean los del mismo teléfono.")
+            return 1
+        print("custom-code: URL del catálogo en vivo -> %s" % url)
+        args.url = url
+
+    if args.text:
+        blob = args.text.strip()
+        if blob.startswith("xtravpn://"):
+            blob = blob[len("xtravpn://"):]
+        blob = re.sub(r"\s+", "", blob)
+        try:
+            result = run(data=blob, sig=sig)
+        except DecodeError as exc:
+            print("ERROR %s: %s" % (exc.code, exc))
+            return 1
+        print("XtraVPN 1.0.36 -- Version del catálogo: %s" % result["version"])
+        print("Clave que abrió el config: %s" % result["key_used"])
+        print("Servidores: %d" % result["server_count"])
         return 0
 
     if args.asset:

@@ -1,4 +1,12 @@
-"""TunnelDOOM 4.2.4 catalog: StringCrypter envelope and NoobCrypt fields.
+"""TunnelDOOM 4.3.5 catalog: StringCrypter envelope and NoobCrypt fields.
+
+Re-verified against build 435 (2026-11-27): the crypto is byte-identical to
+4.3.2 — same StringCrypter "test_key" XOR envelope, same NoobPass.star /
+NoobCrypt AES-256-CBC field key. What changed in 4.3.5 is ONLY the catalog
+source host: ConfigUpdateco.doInBackground now GETs
+https://free.tunneldoom.space/config.json (the 4.3.2 host
+web.tunneldoom.space no longer answers). Verified live: catalog Version 531,
+391 servers, all fields decrypt with the unchanged keys.
 
 Offline only. Fixed build parameters are not account/device credentials.
 """

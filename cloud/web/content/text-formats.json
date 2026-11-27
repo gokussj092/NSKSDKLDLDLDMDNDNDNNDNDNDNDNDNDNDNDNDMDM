@@ -518,6 +518,12 @@
       "kind": "text"
     },
     {
+      "prefix": "xtravpn://",
+      "name": "XtraVPN",
+      "suffix": "xtravpn",
+      "kind": "text"
+    },
+    {
       "prefix": "bshieldnet://",
       "name": "B SHIELD NET",
       "suffix": "bshield",
@@ -545,6 +551,60 @@
       "prefix": "nad://",
       "name": "NadiaVPN",
       "suffix": "nad",
+      "kind": "text"
+    },
+    {
+      "prefix": "sray://",
+      "name": "STLRAY 1.1.36",
+      "suffix": "sray",
+      "kind": "text"
+    },
+    {
+      "prefix": "tvc://",
+      "name": "STLRAY 1.1.36",
+      "suffix": "tvc",
+      "kind": "text"
+    },
+    {
+      "prefix": "uv://",
+      "name": "STLRAY 1.1.36",
+      "suffix": "uv",
+      "kind": "text"
+    },
+    {
+      "prefix": "gv://",
+      "name": "STLRAY 1.1.36",
+      "suffix": "gv",
+      "kind": "text"
+    },
+    {
+      "prefix": "gpx://",
+      "name": "STLRAY 1.1.36",
+      "suffix": "gpx",
+      "kind": "text"
+    },
+    {
+      "prefix": "insan://",
+      "name": "STLRAY 1.1.36",
+      "suffix": "insan",
+      "kind": "text"
+    },
+    {
+      "prefix": "opq://",
+      "name": "STLRAY 1.1.36",
+      "suffix": "opq",
+      "kind": "text"
+    },
+    {
+      "prefix": "test://",
+      "name": "STLRAY 1.1.36",
+      "suffix": "test",
+      "kind": "text"
+    },
+    {
+      "prefix": "hyb://",
+      "name": "STLRAY 1.1.36",
+      "suffix": "sray",
       "kind": "text"
     }
   ]

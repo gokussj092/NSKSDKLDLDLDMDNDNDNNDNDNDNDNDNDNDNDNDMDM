@@ -6,7 +6,7 @@ All aliases in a family point to the same Python script.
 from __future__ import annotations
 
 FILE_DECODER_FAMILIES: dict[str, tuple[str, str, tuple[str, ...]]] = {
-    "sentinel": ("Sentinel Tunnel", "decoders/Python/sentinel.py", (".st",)),
+    "sentinel": ("Sentinel Tunnel 4.0.0", "decoders/Python/apps/Sentinel_Tunnel/file_decoder.py", (".st",)),
     "itv": ("ITV Tunnel", "decoders/Python/itv.py", (".itv",)),
     "eut": ("EUT Tunnel", "decoders/Python/eut.py", (".eut",)),
     "v2box": ("V2Box Export", "decoders/Python/v2box_export.py", (".v2box",)),

@@ -1,17 +1,29 @@
 #!/usr/bin/env python3
-"""TunelGuard VPN 12.8: descarga fija y descifrado del catálogo completo."""
+"""TunelGuard VPN 17.7: descarga fija y descifrado del catálogo completo.
+
+Build 177 source validated live 2026-11-27 (Version 5.0, config_revision 50,
+90 servers, 1058 tweaks). Changes vs 12.8:
+
+- Catalog URL moved: https://raw.githubusercontent.com/guruzgh-ed/edd/refs/heads/main/tg.js
+  (was https://raw.githubusercontent.com/eddyme23/octo/refs/heads/main/xxTG.js).
+- Envelope is STGCM3 (v3 key) with TGCR1 per-field values; STGCM2 still opens.
+- Download matches the app (class iy0): plain GET, no custom headers, follow
+  redirects, 15 s connect / 20 s read, max 8 MB, CR/LF stripped from the body.
+  Conditional If-None-Match / If-Modified-Since only on repeat fetches.
+"""
 from __future__ import annotations
+
 import argparse
 from pathlib import Path
 import sys
-from urllib.request import HTTPRedirectHandler, Request, build_opener
+from urllib.request import Request, build_opener
 
 if __package__:
     from .codec import DecodeError, MAX_BYTES, decode_catalog, render
 else:
     from codec import DecodeError, MAX_BYTES, decode_catalog, render
 
-CATALOG_URL = "https://raw.githubusercontent.com/eddyme23/octo/refs/heads/main/xxTG.js"
+CATALOG_URL = "https://raw.githubusercontent.com/guruzgh-ed/edd/refs/heads/main/tg.js"
 
 
 def run(data: bytes) -> str:
@@ -19,18 +31,11 @@ def run(data: bytes) -> str:
     return render(decode_catalog(data))
 
 
-class _NoRedirect(HTTPRedirectHandler):
-    def redirect_request(self, req, fp, code, msg, headers, newurl):
-        raise DecodeError("El proveedor intentó redirigir la descarga.")
-
-
 def download() -> bytes:
-    request = Request(CATALOG_URL, headers={
-        "User-Agent": "Royal Tunnel VPN/7.0", "Accept-Encoding": "identity",
-    })
+    request = Request(CATALOG_URL, method="GET")
     try:
-        with build_opener(_NoRedirect()).open(request, timeout=25) as response:
-            if response.status != 200 or response.headers.get("Content-Encoding", "identity") != "identity":
+        with build_opener().open(request, timeout=20) as response:
+            if response.status != 200:
                 raise DecodeError("Respuesta remota inválida.")
             data = response.read(MAX_BYTES + 1)
     except OSError as exc:
@@ -39,7 +44,7 @@ def download() -> bytes:
         raise DecodeError("Catálogo vacío o superior a 8 MiB.")
     if data.lstrip().startswith(b"<"):
         raise DecodeError("El proveedor devolvió una página web en lugar del catálogo cifrado.")
-    return data
+    return data.replace(b"\r", b"").replace(b"\n", b"")
 
 
 def main() -> int:

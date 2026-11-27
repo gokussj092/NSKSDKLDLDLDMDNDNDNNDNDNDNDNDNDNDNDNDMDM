@@ -40,6 +40,13 @@ CREDENTIAL_FIELDS = {
     # nad://pw2:) and HWID-locked (NADIA_SEC_HWID: /
     # NADIA_SEC_HWID_PW:); the worker accepts both credentials.
     "nad": ["password", "hwid"],
+    # Sentinel Tunnel .st files are password-locked (the C8 decoder
+    # implements the engine exit-3 PASSWORD_REQUIRED contract).
+    "st": ["password"],
+    # REESE TUNNEL .rt / .reese files are password- and HWID-locked
+    # (RSE5 0xC6); the worker accepts both credentials.
+    "rt": ["password", "hwid"],
+    "reese": ["password", "hwid"],
     # HXS3 .hexcm files are password-locked; old Hex Tunnel files need none.
     "hexcm": ["password"],
     "sn": ["password", "hwid"],

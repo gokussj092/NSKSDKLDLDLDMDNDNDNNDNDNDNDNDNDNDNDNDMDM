@@ -1,0 +1,22 @@
+{
+  "Version": "0.0-test",
+  "Message": "synthetic fixture",
+  "Servers": [
+    {
+      "Name": "SYNTHETIC 01",
+      "ServerIP": "example.invalid",
+      "Username": "synthetic",
+      "Password": "synthetic",
+      "Protocal": "OpenVPN",
+      "Flag": "th"
+    }
+  ],
+  "Networks": [
+    {
+      "Name": "1.DIRECT",
+      "Sni": "example.invalid",
+      "Payload": "GET / HTTP/1.1"
+    }
+  ],
+  "setOpenVPN": "client\nremote example.invalid 1194\n"
+}

@@ -228,6 +228,90 @@ def load_decoder_registry(path: Path = DECODERS_PATH) -> dict[str, DecoderSpec]:
             script="decoders/Python/apps/Hex_Tunnel/file_decoder.py", runtime="python"
         )
 
+    # CAT 102 (2026-11-27): STLRAY 1.1.36 (7 blocks; NO "gv" block —
+    # generic_profiles.py already registers .gv -> generic_aes.py and a
+    # duplicate would raise at load; the live bot path goes through
+    # decoder_runtime -> engine, which dispatches .gv by content).
+    if path.resolve() == DECODERS_PATH.resolve():
+        if "sray" in registry:
+            raise ValueError("STLRAY decoder conflicts with an existing route")
+        registry["sray"] = DecoderSpec(
+            extension="sray", name="STLRAY 1.1.36",
+            script="decoders/Python/apps/STLRAY/file_decoder.py", runtime="python"
+        )
+
+    if path.resolve() == DECODERS_PATH.resolve():
+        if "tvc" in registry:
+            raise ValueError("STLRAY decoder conflicts with an existing route")
+        registry["tvc"] = DecoderSpec(
+            extension="tvc", name="STLRAY 1.1.36",
+            script="decoders/Python/apps/STLRAY/file_decoder.py", runtime="python"
+        )
+
+    if path.resolve() == DECODERS_PATH.resolve():
+        if "uv" in registry:
+            raise ValueError("STLRAY decoder conflicts with an existing route")
+        registry["uv"] = DecoderSpec(
+            extension="uv", name="STLRAY 1.1.36",
+            script="decoders/Python/apps/STLRAY/file_decoder.py", runtime="python"
+        )
+
+    if path.resolve() == DECODERS_PATH.resolve():
+        if "gpx" in registry:
+            raise ValueError("STLRAY decoder conflicts with an existing route")
+        registry["gpx"] = DecoderSpec(
+            extension="gpx", name="STLRAY 1.1.36",
+            script="decoders/Python/apps/STLRAY/file_decoder.py", runtime="python"
+        )
+
+    if path.resolve() == DECODERS_PATH.resolve():
+        if "test" in registry:
+            raise ValueError("STLRAY decoder conflicts with an existing route")
+        registry["test"] = DecoderSpec(
+            extension="test", name="STLRAY 1.1.36",
+            script="decoders/Python/apps/STLRAY/file_decoder.py", runtime="python"
+        )
+
+    if path.resolve() == DECODERS_PATH.resolve():
+        if "insan" in registry:
+            raise ValueError("STLRAY decoder conflicts with an existing route")
+        registry["insan"] = DecoderSpec(
+            extension="insan", name="STLRAY 1.1.36",
+            script="decoders/Python/apps/STLRAY/file_decoder.py", runtime="python"
+        )
+
+    if path.resolve() == DECODERS_PATH.resolve():
+        if "opq" in registry:
+            raise ValueError("STLRAY decoder conflicts with an existing route")
+        registry["opq"] = DecoderSpec(
+            extension="opq", name="STLRAY 1.1.36",
+            script="decoders/Python/apps/STLRAY/file_decoder.py", runtime="python"
+        )
+
+    if path.resolve() == DECODERS_PATH.resolve():
+        if "asl" in registry:
+            raise ValueError("ASL Tunnel decoder conflicts with an existing route")
+        registry["asl"] = DecoderSpec(
+            extension="asl", name="ASL TUNNEL 3.0",
+            script="decoders/Python/apps/ASL_Tunnel/file_decoder.py", runtime="python"
+        )
+
+    if path.resolve() == DECODERS_PATH.resolve():
+        if "rj" in registry:
+            raise ValueError("ExoticFast VIP decoder conflicts with an existing route")
+        registry["rj"] = DecoderSpec(
+            extension="rj", name="ExoticFast VIP",
+            script="decoders/Python/apps/ExoticFast_VIP/file_decoder.py", runtime="python"
+        )
+
+    if path.resolve() == DECODERS_PATH.resolve():
+        if "reese" in registry:
+            raise ValueError("REESE TUNNEL decoder conflicts with an existing route")
+        registry["reese"] = DecoderSpec(
+            extension="reese", name="REESE TUNNEL 3.23.28",
+            script="decoders/Python/apps/REESE_TUNNEL/reese_tunnel.py", runtime="python"
+        )
+
     return registry
 
 

@@ -61,7 +61,12 @@ const JYFAST_SOURCES=Object.freeze({
   free:"http://dev.jenrri.shop:85/ignix_update.php?cfg=free",
   premium:"http://dev.jenrri.shop:85/ignix_update.php?cfg=premium",
 });
-const PAIRED_SOURCES=Object.freeze({"speicers-turbo-vpn":SPEICERS_TURBO_SOURCES,"jyfast-vpn-ultra":JYFAST_SOURCES,"abowaged-vpn":ABOWAGED_SOURCES,"turbomx-vpn":TURBOMX_SOURCES,"superflash-vpn":SUPERFLASH_SOURCES,"onspace-vpn":ONSPACE_SOURCES,"http-socketclay":SOCKETCLAY_SOURCES,"http-wakko":WAKKO_SOURCES,"v2ray-tunnel-plus":V2PLUS_SOURCES});
+const STLRAY_SOURCES=Object.freeze({
+  config:"https://stallionray.my.id/sray_v2x6w9c4/config.json",
+  modes:"https://stallionray.my.id/sray_v2x6w9c4/modes.json",
+  policy:"https://stallionray.my.id/sray_v2x6w9c4/policy.json",
+});
+const PAIRED_SOURCES=Object.freeze({"speicers-turbo-vpn":SPEICERS_TURBO_SOURCES,"jyfast-vpn-ultra":JYFAST_SOURCES,"abowaged-vpn":ABOWAGED_SOURCES,"turbomx-vpn":TURBOMX_SOURCES,"superflash-vpn":SUPERFLASH_SOURCES,"onspace-vpn":ONSPACE_SOURCES,"http-socketclay":SOCKETCLAY_SOURCES,"http-wakko":WAKKO_SOURCES,"v2ray-tunnel-plus":V2PLUS_SOURCES,"stlray-vpn":STLRAY_SOURCES});
 const PROVIDERS = Object.freeze({
   "thailand-vpn": {agent:"okhttp/4.12.0"},
   "kham-vpn": {url:"https://pukangvpn.xyz/khamvpn/Config.json",agent:"okhttp/4.12.0"},
@@ -104,7 +109,7 @@ const PROVIDERS = Object.freeze({
     headers:{"Content-Type":"application/x-www-form-urlencoded"},
     method:"POST",body:Buffer.from("hash=xsandokUpdatex")},
   "jyfast-vpn-ultra": {url:JYFAST_SOURCES.free,agent:"JyFast VPN Ultra/9",headers:{"X-IGNIX-SIG":"10c7440b8feac5cee6a54959e7599ff26bd27153"}},
-  "tunneldoom-vpn": {url:"https://web.tunneldoom.space/config.json",agent:"Dalvik/2.1.0"},
+  "tunneldoom-vpn": {url:"https://free.tunneldoom.space/config.json",agent:"Dalvik/2.1.0"},
   "mtm-tunnel-lite": {url:"https://xtmtunnel.xyz/updater/527543543860c45bf4238f2a1b56c3",agent:"Dalvik/2.1.0"},
   "mnr-tunnel-plus": {url:"https://raw.githubusercontent.com/buttacuore2025/up/refs/heads/main/plusfast",agent:"MNR TUNNEL PLUS/3.1"},
   "bd-net-vpn": {url:"https://raw.githubusercontent.com/panigbatanc/BDNET2023/main/JSONDEC2025",agent:"BD NET VPN/PrinceBuild111"},
@@ -193,6 +198,26 @@ const PROVIDERS = Object.freeze({
   // (downloadDtunnelVpn) owns the transport; this entry only registers the
   // provider and its authority for providerIds()/providerEnabled().
   "dtunnel-vpn": {url:"https://grpc.dtunnel.com.br",agent:"DTunnel VPN/4.5.8"},
+  // Live catalog validated 2026-11-27 (config rev 150086 / 15.86,
+  // 76 servers, 38 payloads, 6 certs; ECDSA signatures valid).
+  // Plain GET, Dalvik UA — exactly like the app. Three paired
+  // sources (config/modes/policy); this url is the "servers" source.
+  "stlray-vpn": {url:STLRAY_SOURCES.config,agent:"Dalvik/2.1.0 (Linux; U; Android 14)"},
+  // Live catalog validated 2026-11-27 (Version 17.9, 1 server,
+  // 24 networks). Plain GET, no headers, no auth — exactly like
+  // the app (MainActivity.y()).
+  "thaivpn-connect": {url:"https://thaivapp.my.id/app/thvpn.json",agent:"Dalvik/2.1.0 (Linux; U; Android 14)"},
+  // Live catalog validated 2026-11-27 (Version 5.8, 6 servers all PREMIUM, 13 networks).
+  // Plain GET, no headers — exactly like the app.
+  "exoticfast-vpn": {url:"https://exoticfastvip.xyz/api/app?json=21dbd51eae6e8e810f71",agent:"SP-DECODE/1.0 (+https://spdecode.xyz)"},
+  // Live catalog validated 2026-11-27 (Version 20.10, 35 servers all free, 292 tweaks).
+  // Plain GET, no headers, no auth — exactly like the app.
+  "asl-tunnel": {url:"https://raw.githubusercontent.com/th3fre/Testing/refs/heads/main/Alt",agent:"SP-DECODE/1.0 (+https://spdecode.xyz)"},
+  // Live catalog validated 2026-11-27 (VPNGate public feed — the app's own
+  // free-server browser; 98 servers, 95 on same-day re-run). HTTPS only, exactly
+  // like the app (UA "SentinelTunnel/2.5"); the analyst script's plain-HTTP
+  // fallback is a VM-egress workaround and is NOT reproduced here.
+  "sentinel-tunnel": {url:"https://www.vpngate.net/api/iphone/",agent:"SentinelTunnel/2.5"},
   "xhypher-tunnel-pro": {url:"https://raw.githubusercontent.com/XyrussProject/infinite88/refs/heads/main/xhyphertunnelpro888.hs",agent:"Xhypher Tunnel Pro/43"},
   "turbomx-vpn": {url:TURBOMX_SOURCES.servers,agent:"TurboMX VPN/143.1.26"},
   "superflash-vpn": {url:SUPERFLASH_SOURCES.servers,agent:"SuperFlash VPN/184.0.1"},
@@ -936,7 +961,7 @@ export async function downloadVpnCatalog(id,source=id==="jyfast-vpn-ultra"?"free
         continue;
       }
       if(answer.redirect!==undefined){
-        if(["kham-vpn","opentunnel-ssh","md-proxy-vpn","xxpicore-tunnel","speigo-vpn-configs","speigo-vpn-ssh","litron-vpn","litron-pro-vpn","genis-vpn","http-conexion","namo-vpn","fnf-tunnel-bd","alsaher-vip","ha-tunnel-plus","ultra-tunnel","mm-tunnel","zig-tunnel","enaa-tunnel","izph-vpn-pro","vip-snipher-pro","netcol-vpn","wolf-custom-vpn","tunneldoom-vpn","mtm-tunnel-lite","mnr-tunnel-plus","bd-net-vpn","aura-net-vpn","apna-vpn","any-vpn","speicers-pro-vpn","7net-vpn","gcp-vpn","netflux-vpn","maya-tun-pro","pm-tunnel-lite","am-tunnel-lite","xhypher-tunnel-pro","focus-vpn-cloud","freedom-vpn","http-internet-infinito","megatunnel","mx-tunnel-pro","rjc-tunnel-pro","rmp-tunnel-pro","rmp-tunnel-lite","http-jireh","winzap-vpn","bshield-net","ways-tunnel","alsaherfree","pulse-tunnel","irfan-vpn","katiba-vpn"].includes(id)||Object.hasOwn(PAIRED_SOURCES,id))fail("REMOTE_NETWORK_DENIED");
+        if(["kham-vpn","opentunnel-ssh","md-proxy-vpn","xxpicore-tunnel","speigo-vpn-configs","speigo-vpn-ssh","litron-vpn","litron-pro-vpn","genis-vpn","http-conexion","namo-vpn","fnf-tunnel-bd","alsaher-vip","ha-tunnel-plus","ultra-tunnel","mm-tunnel","zig-tunnel","enaa-tunnel","izph-vpn-pro","vip-snipher-pro","netcol-vpn","wolf-custom-vpn","tunneldoom-vpn","mtm-tunnel-lite","mnr-tunnel-plus","bd-net-vpn","aura-net-vpn","apna-vpn","any-vpn","speicers-pro-vpn","7net-vpn","gcp-vpn","netflux-vpn","maya-tun-pro","pm-tunnel-lite","am-tunnel-lite","xhypher-tunnel-pro","focus-vpn-cloud","freedom-vpn","http-internet-infinito","megatunnel","mx-tunnel-pro","rjc-tunnel-pro","rmp-tunnel-pro","rmp-tunnel-lite","http-jireh","winzap-vpn","bshield-net","ways-tunnel","alsaherfree","pulse-tunnel","irfan-vpn","katiba-vpn","stlray-vpn","thaivpn-connect","exoticfast-vpn","asl-tunnel","sentinel-tunnel"].includes(id)||Object.hasOwn(PAIRED_SOURCES,id))fail("REMOTE_NETWORK_DENIED");
         const next=answer.redirect;
         if(typeof next!=="string"||next.length>2048)fail("REMOTE_NETWORK_DENIED");
         target=new URL(next,dest).href;

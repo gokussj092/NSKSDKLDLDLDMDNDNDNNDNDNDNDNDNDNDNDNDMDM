@@ -99,6 +99,11 @@ PROVIDERS = {
     "irfan-vpn": "decoders.Python.apps.IrfanVPN.server_catalog_decoder",
     "katiba-vpn": "decoders.Python.apps.KatibaVPN.server_catalog_decoder",
     "dtunnel-vpn": "decoders.Python.apps.DTunnel_VPN.server_catalog_decoder",
+    "stlray-vpn": "decoders.Python.apps.STLRAY.server_catalog_decoder",
+    "thaivpn-connect": "decoders.Python.apps.ThaiVPN_Connect.server_catalog_decoder",
+    "exoticfast-vpn": "decoders.Python.apps.ExoticFast_VIP.server_catalog_decoder",
+    "asl-tunnel": "decoders.Python.apps.ASL_Tunnel.server_catalog_decoder",
+    "sentinel-tunnel": "decoders.Python.apps.Sentinel_Tunnel.server_catalog_decoder",
 }
 
 def decode(provider_id: str, payload: bytes) -> str:

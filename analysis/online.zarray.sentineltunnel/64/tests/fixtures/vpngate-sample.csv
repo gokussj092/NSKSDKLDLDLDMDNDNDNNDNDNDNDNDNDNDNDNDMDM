@@ -1,0 +1,4 @@
+#HostName,IP,Score,Ping,Speed,CountryLong,CountryShort,NumVpnSessions,Uptime,TotalUsers,TotalTraffic,LogType,Operator,Message,OpenVPN_ConfigData_Base64
+public-vpn-001,203.0.113.10,2940710,19,248165358,Japan,JP,294,2985824325,36439105,2026066601236005,2weeks,Test Operator,,Y2xpZW50CmRldiB0dW4KcHJvdG8gdWRwCnJlbW90ZSAyMDMuMC4xMTMuMTAgMTE5NApyZXNvbHYtcmV0cnkgaW5maW5pdGUKbm9iaW5kCg==
+public-vpn-002,203.0.113.11,512983,-,68273969,Belarus,BY,1,85986777,164,17849498924,2weeks,Test Operator,,Y2xpZW50CmRldiB0dW4KcHJvdG8gdGNwCnJlbW90ZSAyMDMuMC4xMTMuMTEgNDQzCnJlc29sdi1yZXRyeSBpbmZpbml0ZQpub2JpbmQK
+public-vpn-003,203.0.113.12,100000,42,1000000,Korea,KR,5,1000000,100,1000000,2weeks,Test Operator,,Y2xpZW50CmRldiB0dW4KcHJvdG8gdWRwCnJlbW90ZSAyMDMuMC4xMTMuMTIgMTk0NApub2JpbmQK

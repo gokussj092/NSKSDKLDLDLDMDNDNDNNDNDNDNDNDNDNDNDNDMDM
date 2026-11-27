@@ -1,0 +1,8 @@
+{
+  "envelope": "STGCM3.TG.DA0ODxAREhMUFRYX._Qc47legfAsdbTnA7WQCwTk7wUgpvo7o0rkyBVpw02q6YtmfgES3qjOj6IcADWQ6fgOnJmf492S5wpNGisDBmkUhe-L0GurvszPiBCRVANJK6ENggRYNOGOwpkNUYOLEbctgVHGmekHDgrqDNnnj1swwetE2NVJ9bCi8cd4tMK2o4Xz7MOvsJlS-9s0eezogTUU5gxdGH6_9UhhMgxfVtP79SWRAuY8GqojmBQA_V1RJSg9fRlrRjghyRfJAlwwv--MwEydpZ3lTQyHoIMCr-FWcOXIMPcTV3owuROaFX4cVPOwQVEigLkSGdirosSF1nAsW2LejWGWQgNi27wz4gpuf0e9EEj25vLIj5zhR8VSQHgkHRRwOvK7I8pLEzTePBAH4Fnp7yvURhAN8trGjVSmAfsxWEYs54w",
+  "expected_version": "9.9",
+  "expected_secret": "TEST-ONLY-SECRET",
+  "expected_note": "hello-test",
+  "expected_servers": 1,
+  "expected_tweaks": 1
+}

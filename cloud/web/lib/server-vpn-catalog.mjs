@@ -7,7 +7,7 @@ import {providerEnabled} from "./server-vpn-provider.mjs";
 import {SUPPLIED_CATALOG_ITEMS,suppliedProviderConfigured} from "./supplied-integrations.mjs";
 import {catalogDefaultEnabled} from "./catalog-provider-policy.mjs";
 
-export const CATALOG_VERSION = 101; // HTTP Custom 8.1.5 (942) n19 files + texts (banner expanded), NadiaVPN 1.4.6 .nad files + nad:// texts (FILE_ONLY, no catalog) (2026-11-26).
+export const CATALOG_VERSION = 102; // CAT 102 (2026-11-27): STLRAY 1.1.36 + ThaiVPN Connect 2.4 (new catalogs), ExoticFast VIP + ASL TUNNEL 3.0 + Sentinel Tunnel 4.0.0 (new catalogs, VPNGate feed for Sentinel), TunnelDOOM 4.3.5 + TunelGuard 17.7 + XtraVPN 1.0.36 + REESE TUNNEL 3.23.28 (updates; XtraVPN/REESE files+texts only, no new cards).
 export const RECHECK_SECONDS = 15 * 60; // Version-only recovery; full download occurs on version change.
 
 /** Monotonic deployment version. Bump this override for ANY metadata, icon
@@ -100,6 +100,21 @@ const BASE_ITEMS = [
   {id:"katiba-vpn", name:"Katiba VPN", icon:"katiba-vpn.png", remote:"katiba-vpn"},
   // Live catalog validated 2026-11-25 (Version 436, 16 profiles; gRPC + server secret).
   {id:"dtunnel-vpn", name:"DTunnel VPN", icon:"dtunnel-vpn.png", remote:"dtunnel-vpn"},
+  // Live catalog validated 2026-11-27 (config rev 150086 / 15.86,
+  // 76 servers, 38 payloads; 3 paired sources config/modes/policy).
+  {id:"stlray-vpn", name:"STLRAY", icon:"stlray-vpn.png", remote:"stlray-vpn"},
+  // Live catalog validated 2026-11-27 (Version 17.9, 1 server,
+  // 24 networks).
+  {id:"thaivpn-connect", name:"ThaiVPN Connect", icon:"thaivpn-connect.png", remote:"thaivpn-connect"},
+  // Live catalog validated 2026-11-27 (Version 5.8, 6 servers all PREMIUM, 13 networks).
+  {id:"exoticfast-vpn", name:"ExoticFast VIP", icon:"exoticfast-vip.png", remote:"exoticfast-vpn"},
+  // Live catalog validated 2026-11-27 (Version 20.10, 35 servers all free, 292 tweaks).
+  {id:"asl-tunnel", name:"ASL TUNNEL", icon:"asl-tunnel.png", remote:"asl-tunnel"},
+  // Live catalog validated 2026-11-27 (VPNGate public feed — the app's own
+  // free-server browser; 98 servers, 95 on same-day re-run). The app's own
+  // VPS catalog is blocked (HTTP 401, Firebase App Check token required);
+  // this card serves the VPNGate feed only.
+  {id:"sentinel-tunnel", name:"Sentinel Tunnel", icon:"sentinel-tunnel.png", remote:"sentinel-tunnel"},
   {id:"xhypher-tunnel-pro", name:"Xhypher Tunnel Pro", icon:"xhypher-tunnel-pro.png", remote:"xhypher-tunnel-pro"},
   // Official endpoint returns HTML; a valid signed OTA response is still required.
   {id:"ut-loop-pro-vpn", name:"UT Loop Pro VPN", icon:"ut-loop-pro-vpn.png", remote:null},

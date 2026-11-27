@@ -51,7 +51,7 @@ def _synthetic_network(name):
 class Cat100Providers(unittest.TestCase):
     def test_registry_counts_and_names(self):
         extended = load_runtime_file_engines()
-        self.assertEqual(len(extended), 288)
+        self.assertEqual(len(extended), 298)
         for suffix in ("pulse", "irfan", "katiba", "txtunnel", "nad"):
             self.assertIn(suffix, extended)
             self.assertEqual(extended[suffix]["phase"], "C8")
