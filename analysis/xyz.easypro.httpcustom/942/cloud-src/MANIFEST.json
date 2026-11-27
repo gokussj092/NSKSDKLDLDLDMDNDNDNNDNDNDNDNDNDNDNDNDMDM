@@ -1,0 +1,64 @@
+{
+  "apk_bytes": 35243186,
+  "apk_sha256": "8d1c0af4b0b442b4d2d291f6a5d0da1d32f43407cded9e54700ef3062ea17ffa",
+  "date": "2026-11-23/24",
+  "files": {
+    "ANALYSIS.md": "700b407d9f91e1edc9d24963bc80ff95301bf68c35dba7d3ff0f1ed642b2ee4b",
+    "REPRODUCE.md": "6c139da6b5e9b14f7cedb68c656422ce35bb6cc1cd062d563c276616a86efe9c",
+    "RESULTS.md": "562de6803da4882fe7051b4ec6ea191670e6372849c903effa4a2a2fa91f476a",
+    "tools/coordinator-notes.md": "f0322c397f27405d3052ad5de4929a46c56beca39148c7752d85a24f1d59cdb6",
+    "tools/hc-inventory.json": "8bc920ec1f1e169e7be6257c4b5c8d3c2d2a545ec568b06b33e580c11536fb83",
+    "tools/hc-inventory.md": "06dc33b1cf95fdedbd37ffd86dc3eac96122fbd48794336dc87a5315e054c884",
+    "tools/java-diff.md": "0b1623d6b0c86f69ad96a1ea1c3c8509f9a359604b9c1e744bf2c74bfefeefd8",
+    "tools/native-diff.md": "71f3ac4aef4a4c4897c76cad2f20f3eab486372816ecd65e41a813fd9f7b8798",
+    "tools/probe_n19.py": "1b5e6e864f82a1e4a01a742594b45da33ac96690f6c187c27368659cb29dd040",
+    "tools/hc942_banner.py": "475be939d018e216b6419561b1758dd4ebc50184361b777103696e9f9538815e",
+    "tools/VERIFICATION_2026_11_26.md": "7b98b8748227ed32946b5fa42dd27e2d4eee3bbd4a76fe7720e8dd2637ca2a60",
+    "decoders/Python/apps/HTTP_Custom/codec.py": "079962bb3b9fccecb6d776b2a58866efaad5d2741acae78443e319a26bb8d114",
+    "decoders/Python/apps/HTTP_Custom/crypto.py": "9620979f30d50fcd9677f7d63e6bc585b959a1afc347406e36f771902a1e3fa9"
+  },
+  "files_open": "2/3",
+  "notes": "Fusión 2026-11-26 en staging (sin commit ni push): n19 integrado en decoders/Python/apps/HTTP_Custom/codec.py + crypto.py. 2/2 archivos h=0 abren (8.1.5, 2 perfiles c/u, banner expandido); el archivo con contraseña sigue pendiente de credencial (PASSWORD_REQUIRED; contraseña incorrecta -> AUTH_FAILED). Sin credenciales ni contenido descifrado en el dossier.",
+  "package": "xyz.easypro.httpcustom",
+  "schema": "b=14/n19",
+  "test_files": [
+    {
+      "bytes": 4981,
+      "name": "test_bloqueo_normal_con_contrase_a_0_m46a.hc",
+      "sha256": "bf837b783b014328c5c0626e1d555430bb7afa133d0dc8f9df51c4b89fd74432"
+    },
+    {
+      "bytes": 4935,
+      "name": "test_bloqueo_normal_1_aflj.hc",
+      "sha256": "8a69d0fb684b92121451d74ef1da39b4d4b5797f425a5fffdebb81ee7953d71f"
+    },
+    {
+      "bytes": 4529,
+      "name": "test_open_2_7xqg.hc",
+      "sha256": "c180dce9234f7885d52124dea01639da7549cf84e3ae2cc7663c04708371e44c"
+    }
+  ],
+  "verdict": "RESOLVED_INTEGRATED_STAGING",
+  "version_code": 942,
+  "version_name": "8.1.5",
+  "work_dir": "~/workspace/http-custom-update/hc815/work/",
+  "integration": {
+    "date": "2026-11-26",
+    "staging": "~/workspace/repo-integration/staging-hc942/",
+    "fusion_point": "decoders/Python/apps/HTTP_Custom/codec.py + crypto.py (motor moderno; HTTPCUSTOM.py y hc_bridge.py ya enrutan por él, sin cambios)",
+    "not_touched": [
+      "decoders/Python/_hc_hccfg.py",
+      "decoders/Python/HTTPCUSTOM.py",
+      "cloud/workers/python/hc_bridge.py",
+      "decoders.json",
+      "android/",
+      "switches.json",
+      "C0_FORMAT_MATRIX.csv"
+    ],
+    "not_imported": [
+      "_parse_auth_inputs",
+      "_extract_hwid_value",
+      "manejo de contraseña/HWID de run() del script nuevo (regla de Pedro 2026-11-26)"
+    ]
+  }
+}

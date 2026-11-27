@@ -1,0 +1,1764 @@
+{
+  "generated": "2026-11-23",
+  "scope": "HTTP Custom 8.1.5 (build 942) - structural inventory only, read-only, no repo changes",
+  "outer_method": "HCX4-v4 (codec.open_envelope): HKDF(native_fold(b\"hc-envelope-seal-v4 \" + PKG)), AAD HCX4|xyz.easypro.httpcustom|1. NOTE: hc884_decode.py outer method (HKDF-v1/V3) does NOT open 934 or 815 files, only build 884.",
+  "decoder_tested": "~/workspace/spdecode-patch/decoders/Python/HTTPCUSTOM.py (CLI, no password/HWID supplied; stdout discarded without reading decrypted content)",
+  "files": {
+    "test_bloqueo_normal_con_contrase_a_0_m46a.hc": {
+      "bytes": 4981,
+      "sha256": "bf837b783b014328c5c0626e1d555430bb7afa133d0dc8f9df51c4b89fd74432",
+      "outer_envelope": {
+        "authenticated": true,
+        "method": "HCX4-v4 (native_fold seal v4)"
+      },
+      "envelope": {
+        "magic": "HCCFG",
+        "schema_b": 14,
+        "cipher_c": "s1",
+        "kdf_d": "h1",
+        "schedule_e": "n19",
+        "features_f": [
+          "ssh",
+          "profiles"
+        ],
+        "seed_g": {
+          "hex_len": 64,
+          "bytes_len": 32,
+          "sha256_prefix16": "3f6f455f17131347"
+        },
+        "protected_h": 1,
+        "build_n": 942,
+        "pw_kdf_k": "a1",
+        "argon2_ops_l": 2,
+        "argon2_mem_m": 67108864,
+        "capsule_p_present": false,
+        "hwid_slots_o": null,
+        "top_keys": [
+          "a",
+          "b",
+          "c",
+          "d",
+          "e",
+          "f",
+          "g",
+          "h",
+          "i",
+          "j",
+          "k",
+          "l",
+          "m",
+          "n"
+        ],
+        "section_i": {
+          "label_len": {
+            "type": "str",
+            "len": 1
+          },
+          "nonce_hex_len": {
+            "type": "str",
+            "len": 48
+          },
+          "ct_hex_len": {
+            "type": "str",
+            "len": 872
+          },
+          "has_sidecar": false
+        },
+        "sections_j": {
+          "count": 2,
+          "sections": [
+            {
+              "label_len": {
+                "type": "str",
+                "len": 2
+              },
+              "nonce_hex_len": {
+                "type": "str",
+                "len": 48
+              },
+              "ct_hex_len": {
+                "type": "str",
+                "len": 1136
+              },
+              "sidecar": {
+                "nonce_hex_len": {
+                  "type": "str",
+                  "len": 48
+                },
+                "ct_hex_len": {
+                  "type": "str",
+                  "len": 48
+                }
+              }
+            },
+            {
+              "label_len": {
+                "type": "str",
+                "len": 2
+              },
+              "nonce_hex_len": {
+                "type": "str",
+                "len": 48
+              },
+              "ct_hex_len": {
+                "type": "str",
+                "len": 742
+              }
+            }
+          ]
+        }
+      },
+      "decoder_current": {
+        "status": "FAIL",
+        "exit_code": 1,
+        "stderr_exact": "Error al ejecutar el decodificador: HTTP Custom HCCFG: UNSUPPORTED_SCHEMA",
+        "note": "Schema check precedes password check; file is password-protected (h=1), so after any future n19 support its opening would be PENDING - password not provided, not attempted."
+      }
+    },
+    "test_bloqueo_normal_1_aflj.hc": {
+      "bytes": 4935,
+      "sha256": "8a69d0fb684b92121451d74ef1da39b4d4b5797f425a5fffdebb81ee7953d71f",
+      "outer_envelope": {
+        "authenticated": true,
+        "method": "HCX4-v4 (native_fold seal v4)"
+      },
+      "envelope": {
+        "magic": "HCCFG",
+        "schema_b": 14,
+        "cipher_c": "s1",
+        "kdf_d": "h1",
+        "schedule_e": "n19",
+        "features_f": [
+          "ssh",
+          "profiles"
+        ],
+        "seed_g": {
+          "hex_len": 64,
+          "bytes_len": 32,
+          "sha256_prefix16": "c2beebc16d747a6c"
+        },
+        "protected_h": 0,
+        "build_n": 942,
+        "pw_kdf_k": null,
+        "argon2_ops_l": null,
+        "argon2_mem_m": null,
+        "capsule_p_present": false,
+        "hwid_slots_o": null,
+        "top_keys": [
+          "a",
+          "b",
+          "c",
+          "d",
+          "e",
+          "f",
+          "g",
+          "h",
+          "i",
+          "j",
+          "n"
+        ],
+        "section_i": {
+          "label_len": {
+            "type": "str",
+            "len": 1
+          },
+          "nonce_hex_len": {
+            "type": "str",
+            "len": 48
+          },
+          "ct_hex_len": {
+            "type": "str",
+            "len": 872
+          },
+          "has_sidecar": false
+        },
+        "sections_j": {
+          "count": 2,
+          "sections": [
+            {
+              "label_len": {
+                "type": "str",
+                "len": 2
+              },
+              "nonce_hex_len": {
+                "type": "str",
+                "len": 48
+              },
+              "ct_hex_len": {
+                "type": "str",
+                "len": 1136
+              },
+              "sidecar": {
+                "nonce_hex_len": {
+                  "type": "str",
+                  "len": 48
+                },
+                "ct_hex_len": {
+                  "type": "str",
+                  "len": 48
+                }
+              }
+            },
+            {
+              "label_len": {
+                "type": "str",
+                "len": 2
+              },
+              "nonce_hex_len": {
+                "type": "str",
+                "len": 48
+              },
+              "ct_hex_len": {
+                "type": "str",
+                "len": 742
+              }
+            }
+          ]
+        }
+      },
+      "decoder_current": {
+        "status": "FAIL",
+        "exit_code": 1,
+        "stderr_exact": "Error al ejecutar el decodificador: HTTP Custom HCCFG: UNSUPPORTED_SCHEMA",
+        "note": "Name says bloqueo but envelope shows h=0, no password protection."
+      }
+    },
+    "test_open_2_7xqg.hc": {
+      "bytes": 4529,
+      "sha256": "c180dce9234f7885d52124dea01639da7549cf84e3ae2cc7663c04708371e44c",
+      "outer_envelope": {
+        "authenticated": true,
+        "method": "HCX4-v4 (native_fold seal v4)"
+      },
+      "envelope": {
+        "magic": "HCCFG",
+        "schema_b": 14,
+        "cipher_c": "s1",
+        "kdf_d": "h1",
+        "schedule_e": "n19",
+        "features_f": [
+          "ssh",
+          "profiles"
+        ],
+        "seed_g": {
+          "hex_len": 64,
+          "bytes_len": 32,
+          "sha256_prefix16": "0c01d2ea56751dcb"
+        },
+        "protected_h": 0,
+        "build_n": 942,
+        "pw_kdf_k": null,
+        "argon2_ops_l": null,
+        "argon2_mem_m": null,
+        "capsule_p_present": false,
+        "hwid_slots_o": null,
+        "top_keys": [
+          "a",
+          "b",
+          "c",
+          "d",
+          "e",
+          "f",
+          "g",
+          "h",
+          "i",
+          "j",
+          "n"
+        ],
+        "section_i": {
+          "label_len": {
+            "type": "str",
+            "len": 1
+          },
+          "nonce_hex_len": {
+            "type": "str",
+            "len": 48
+          },
+          "ct_hex_len": {
+            "type": "str",
+            "len": 864
+          },
+          "has_sidecar": false
+        },
+        "sections_j": {
+          "count": 2,
+          "sections": [
+            {
+              "label_len": {
+                "type": "str",
+                "len": 2
+              },
+              "nonce_hex_len": {
+                "type": "str",
+                "len": 48
+              },
+              "ct_hex_len": {
+                "type": "str",
+                "len": 1064
+              }
+            },
+            {
+              "label_len": {
+                "type": "str",
+                "len": 2
+              },
+              "nonce_hex_len": {
+                "type": "str",
+                "len": 48
+              },
+              "ct_hex_len": {
+                "type": "str",
+                "len": 654
+              }
+            }
+          ]
+        }
+      },
+      "decoder_current": {
+        "status": "FAIL",
+        "exit_code": 1,
+        "stderr_exact": "Error al ejecutar el decodificador: HTTP Custom HCCFG: UNSUPPORTED_SCHEMA",
+        "note": "Name (open) matches structure: h=0, no password, no HWID, no capsule."
+      }
+    }
+  },
+  "comparison_vs_934": {
+    "baseline": "drive/ 934 files: b=12/n15, b=12/n16, b=13/n17, b=13/n18, b=9 Access-ID wrapper; all n=934",
+    "differences": [
+      "New schema b=14 (all 3 files)",
+      "New schedule n19 (all 3 files)",
+      "New build n=942"
+    ],
+    "unchanged": [
+      "cipher c=s1",
+      "kdf d=h1",
+      "features f=[ssh, profiles]",
+      "seed g 32 bytes",
+      "HCX4-v4 outer envelope authenticates",
+      "shape i + 2 sections in j",
+      "password params k=a1, l=2, m=67108864 where protected"
+    ],
+    "absent_in_815_sample": [
+      "capsule p (present only in 934 b=13 n17/n18)",
+      "HWID slots o (present in 934 n16/n18)",
+      "Access-ID wrapper b=9"
+    ],
+    "drive_934_reference": {
+      "Test Oppen.hc": {
+        "bytes": 5942,
+        "sha256": "6202c06e2c5192f589a85c0363edea15b97d6a80896289c3cea4b6dade4160d6",
+        "outer_authenticated": true,
+        "envelope": {
+          "magic": "HCCFG",
+          "schema_b": 12,
+          "cipher_c": "s1",
+          "kdf_d": "h1",
+          "schedule_e": "n15",
+          "features_f": [
+            "ssh",
+            "profiles"
+          ],
+          "seed_g": {
+            "hex_len": 64,
+            "bytes_len": 32,
+            "sha256_prefix16": "5e1243ae70d13ab5"
+          },
+          "protected_h": 0,
+          "build_n": 934,
+          "pw_kdf_k": null,
+          "argon2_ops_l": null,
+          "argon2_mem_m": null,
+          "capsule_p_present": false,
+          "hwid_slots_o": null,
+          "top_keys": [
+            "a",
+            "b",
+            "c",
+            "d",
+            "e",
+            "f",
+            "g",
+            "h",
+            "i",
+            "j",
+            "n"
+          ],
+          "section_i": {
+            "label_len": {
+              "type": "str",
+              "len": 1
+            },
+            "nonce_hex_len": {
+              "type": "str",
+              "len": 48
+            },
+            "ct_hex_len": {
+              "type": "str",
+              "len": 898
+            },
+            "has_sidecar": false
+          },
+          "sections_j": {
+            "count": 2,
+            "sections": [
+              {
+                "label_len": {
+                  "type": "str",
+                  "len": 2
+                },
+                "nonce_hex_len": {
+                  "type": "str",
+                  "len": 48
+                },
+                "ct_hex_len": {
+                  "type": "str",
+                  "len": 964
+                }
+              },
+              {
+                "label_len": {
+                  "type": "str",
+                  "len": 2
+                },
+                "nonce_hex_len": {
+                  "type": "str",
+                  "len": 48
+                },
+                "ct_hex_len": {
+                  "type": "str",
+                  "len": 1668
+                }
+              }
+            ]
+          }
+        }
+      },
+      "Test bloquear usuário y contraseña.hc": {
+        "bytes": 6309,
+        "sha256": "8de37c01d4769fd159cccc8885b224b1297d1afe6d3abecb4210cd1a586a9003",
+        "outer_authenticated": true,
+        "envelope": {
+          "magic": "HCCFG",
+          "schema_b": 12,
+          "cipher_c": "s1",
+          "kdf_d": "h1",
+          "schedule_e": "n15",
+          "features_f": [
+            "ssh",
+            "profiles"
+          ],
+          "seed_g": {
+            "hex_len": 64,
+            "bytes_len": 32,
+            "sha256_prefix16": "b9efc0fe7f2d1494"
+          },
+          "protected_h": 0,
+          "build_n": 934,
+          "pw_kdf_k": null,
+          "argon2_ops_l": null,
+          "argon2_mem_m": null,
+          "capsule_p_present": false,
+          "hwid_slots_o": null,
+          "top_keys": [
+            "a",
+            "b",
+            "c",
+            "d",
+            "e",
+            "f",
+            "g",
+            "h",
+            "i",
+            "j",
+            "n"
+          ],
+          "section_i": {
+            "label_len": {
+              "type": "str",
+              "len": 1
+            },
+            "nonce_hex_len": {
+              "type": "str",
+              "len": 48
+            },
+            "ct_hex_len": {
+              "type": "str",
+              "len": 922
+            },
+            "has_sidecar": false
+          },
+          "sections_j": {
+            "count": 2,
+            "sections": [
+              {
+                "label_len": {
+                  "type": "str",
+                  "len": 2
+                },
+                "nonce_hex_len": {
+                  "type": "str",
+                  "len": 48
+                },
+                "ct_hex_len": {
+                  "type": "str",
+                  "len": 1036
+                }
+              },
+              {
+                "label_len": {
+                  "type": "str",
+                  "len": 2
+                },
+                "nonce_hex_len": {
+                  "type": "str",
+                  "len": 48
+                },
+                "ct_hex_len": {
+                  "type": "str",
+                  "len": 1728
+                },
+                "sidecar": {
+                  "nonce_hex_len": {
+                    "type": "str",
+                    "len": 48
+                  },
+                  "ct_hex_len": {
+                    "type": "str",
+                    "len": 40
+                  }
+                }
+              }
+            ]
+          }
+        }
+      },
+      "Test bloqueo ID de acceso.hc": {
+        "bytes": 16231,
+        "sha256": "8c9916bd53b2e38ac1f7b723054cd75ac3729697c0dd92763148f7f63fe44684",
+        "outer_authenticated": true,
+        "envelope": {
+          "magic": "HCCFG",
+          "schema_b": 9,
+          "cipher_c": "eyJoIjoiZXlKMklqbzVMQ0p1SWpvNU16UXNJbVlpT2lKek1HcEdjVFZTWW5NNE1qTmthMFZMUjNkd1JsWkpjRGgxTTNjeVpXUnZPRWg2V2xCRlRuWlFWVlJCSWl3aWNDSTZNQ3dpWlNJNmJuVnNiQ3dpY2lJNlczc2lZeUk2SW1WNVNqSkphbTk0VEVOS2NGcERTVFpKYTJoRVRXa3hNVTF1WTNsTmEwcFhZMnBhY1dSR1NrUlpiRnBaVGxWR2ExWldUa3RTTW13eldIcHNNMlJYWkc1ak1qbFRVMGh3U1ZSWFVteFhiV2hXU1dsM2FXTkRTVFpKYXpGS1UxVktTbUZyUms5UmJXUnlZMWRvY21GVll6Vmtla0pEVVZaR1JsSnJSa0pVTUU1Q1ZWUm9RbFJWYkVwUmEwNXVVekJPUWxWVlZrSk5NM0JQVGtack1GWkZUbEJOUkdSSlZFY3dNbUpHVmtkUFZXaHRVMWQwVldWRmJFMVhhMk41WTJ0NE5rNXVVbEZUTURBelpESmFZV1Z0Y3pOVmVYUnJaR3BHYW1KcldraFRhazVwVVd0b01tSnVVbGRXU0VKT1YycFdiMVZYVm1GbGFrcHdWVVpOTTFOVVFqQlRTRXBVWkZWR2RsWlVaelZTTVZwS1lWVndhVmx0U1hsYWJYaHRXak53Y2s5RVJsUlZSMnhTWVhwU1RtVkZTbE5UYm1SRVl6QmFjR0ZFVG05TlIyOTRZMGQwTmxFeVJYSmhTRlYzVVZWbmVVc3hUVFZPYmtadFZVWk9NVlpIZUd4aFNFSlJWa2Q0VTJKSGVFUmtla3A2VDBSWmVGZFdjREpsUms1elRWaG5kazFIYXpSaGJsVXdZakZHVEZOR2NESlVhMmhYV1RKMFZXTnVhR3hpTTFVMFUyeGFkbGRyU2s1VU1HaFBaVWhvUWxGWFdsZFBWekZhVm10MGNsSkhWbFppVmxFMVpGVndlRlF3ZUUxTlJWcFhZVVJSTWxOSFJrZFVWbkJ6WWtoQ2NsRldVa3BqUjNCc1RVYzVXRkpzYkd0U2FtUXhWVEJLYVdFd01ETmFSemxLWWxaQ1RHSjVjM2RpVmxWNlUwaHdVMUpGVmxkT1Z6aDVWMVpHTTFVd01WRmtiVTUxVjJ4Q1MwNVljSHBpVkd4clZFVndkbUo2VlRCVFEzUjNXVzVDZWxNd2NGSlZiV2hOV1dwbmNscEZkRmxWUmxseVZrVXhWVkV3VGpOVFZWSkNWVlZHUTBscGQybGhlVWsyU1cxT2QweFVTWGROYWxsM1QwUkpkMHhVUVhoSmFYZHBaRU5KTmsxVVl6Vk9SRkV3VGxSbmVrOURkMmxrVTBrMlRWZ3dMa1l0TTBoUVVrUTRaWE5PTmpoWmFrTnpla2hIVWpCYWRYUnFjMXBFTWswdFJHNUpjVTFQVFhOWlJXdFRaMHgxVW05aE9EVnZiR2gyVGxrd2VYRlhaREZhWVZWeE1VWnpURGw0VGxFNVFXdGFNV3RuYmtwWlozbFdjMVpxTVROVE9XOXJUa2RmTWpONGFFbzJTbTAzTFVKaFpTMUJOWGgwT1RsQk5YWkllRVYwTjJSWE9GcGFUa0Z3UmpKb2VuVktUalJsZUZKcFduTmlPVll3UldZd01WSXphMnhUY2s5MVZVUTVXSHB6UlZOMU5WbHdSRTlLTWxWUFgyUlJNbGwwZFdSNmVEa3RXblZ4YkhsUE1sOW5URnBIYW1OVmNXSlRTRWRDV1V0UFQwMXBPRmd6YWtObWQwVkhNek56ZFRCUVRqbFhUSE5wTjNWbWIxQXdWRXh1TjFkTk16Qm5jazF4UzNKVE9IRldkWEpEWjAxR1ZGSlNZbFEzUTBObE5WRkZjR1pEWVc1TmFXazFSRzB6YUdaWFFtUndURjh5TURaT2F6RlZVbWRLVG10QmFrVjVVRVJIVWpaM1duWnNNMHAzU0RkUVIyRldSbFJLY1hoalpWVk9SM0J5TTJSU1FVVmhPV0UzV2tGUGNqUktTR1pDV0dkRGJrcGxUbFp4YWt0NUxVWTBPRFV0YTJGMVExZFpXbXAzYTJsb1YxazNjREoxUW1SQk4wTlpXSE0xWlZORlVUVlFTa0UzZGpKQmJrazJjME5OYjJGNU4yaE9URTVwYW01dlVrMWtiREJYVjAxNlNHcFRVMUpSUW1oalVGVmxMVXRwTTJ0alIwSnNZVWxGYnpWRFlTMUtOa0ZZYzAxSlMyWndaMDFGWTFSNWJEZDNVV1ZFTFVnNVpuRkxJaXdpZHlJNklucFdSRTEzWTJSWWIyeDRlbGt3V1hreWRXWnVRVnBzVnpnM1gyWlNaWGxuYW5OUGIyNXhNbVJNU1ZSTGFrZ3pVM0Y1Y2tSd05VTXlNbUZ3TVZKWVNWbENlVkpzY2pOeFRUTTFabEZVUVRaS1VWVnlXbnBzVGxKdGVXaDNja3hHUjFOa2RqUjRXazlaZUdSd1J6Tk1kM0ZCTlhkc2JUWmhUekZoTUdKdVJrVkdRbFZLVFMxUlV6Tm9SR05xV1VWWlgxSnZkR1ZXUVZwMlJGQkdNMjFuVm1JeFRHOU1Ta2RpWTFCaGFtZE9iRnBwTnpNM1VrZDVXVTlVT0VaNWNtSnFOSGhoVFRGMU4yMXNNRXQ0WnpJNVpERkhZMEpOY0VkblJUSlVSVVJLTmpOdVF6UkdZbHBmU2w5cU9IaHRjelJHWkRKZlkxRkpVazFWTm1KSlRYQkZaRlU1U0VwS2NuRm9NeTFpZFdack5XMU5hVWhSTkZoUlRtWTVYMWxZVUdJMlowWmFPR3hDYmxkZlRISnJiek55V1ZCS1MyZ3hhVXhZVW5Sd1NqRXhPV0ZWVDJVeFNYQnpjSGQ0Tm5kaVdWRnNZblJEWnpCT1p5SjlYU3dpYnlJNkltVjVTakpKYW05NFRFTktjRnBEU1RaSmEyaEVUV2t4TVUxdVkzbE5hMHBYWTJwYWNXUkdTa1JaYkZwWlRsVkdhMVpXVGt0U01td3pXSHBzTTJSWFpHNWpNamxUVTBod1NWUlhVbXhYYldoV1NXbDNhV05EU1RaSmF6RktVMVZLU21GclJrOVJiV1J5WTFkb2NtRlZZelZrZWtKRFVWWkdSbEpyUmtKVU1FNUNWVlJvUWxSVmJFcFJhMDV1VXpCT1FsVlZWa0pOTTNCUFRrWnJNRlpGVGxCTlJHUkpWRWN3TW1KR1ZrZFBWV2h0VTFkMFZXVkZiRTFYYTJONVkydDROazV1VWxGVE1EQXpaREphWVdWdGN6TlZlWFJyWkdwR2FtSnJXa2hUYWs1cFVXdG9NbUp1VWxkV1NFSk9WMnBXYjFWWFZtRmxha3B3VlVaTk0xTlVRakJUU0VwVVpGVkdkbFpVWnpWU01WcEtZVlZ3YVZsdFNYbGFiWGh0V2pOd2NrOUVSbFJWUjJ4U1lYcFNUbVZGU2xOVGJtUkVZekJhY0dGRVRtOU5SMjk0WTBkME5sRXlSWEpoU0ZWM1VWVm5lVXN4VFRWT2JrWnRWVVpPTVZaSGVHeGhTRUpSVmtkNFUySkhlRVJrZWtwNlQwUlplRmRXY0RKbFJrNXpUVmhuZGsxSGF6UmhibFV3WWpGR1RGTkdjREpVYTJoWFdUSjBWV051YUd4aU0xVTBVMnhhZGxkclNrNVVNR2hQWlVob1FsRlhXbGRQVnpGYVZtdDBjbEpIVmxaaVZsRTFaRlZ3ZUZRd2VFMU5SVnBYWVVSUk1sTkhSa2RVVm5CellraENjbEZXVWtwalIzQnNUVWM1V0ZKc2JHdFNhbVF4VlRCS2FXRXdNRE5hUnpsS1lsWkNUR0o1YzNkaVZsVjZVMGh3VTFKRlZsZE9Wemg1VjFaR00xVXdNVkZrYlU1MVYyeENTMDVZY0hwaVZHeHJWRVZ3ZG1KNlZUQlRRM1IzV1c1Q2VsTXdjRkpWYldoTldXcG5jbHBGZEZsVlJsbHlWa1V4VlZFd1RqTlRWVkpDVlZWR1EwbHBkMmxoZVVrMlNXMU9kMHhVU1hkTmFsbDNUMFJKZDB4VVFYaEphWGRwWkVOSk5rMVVZelZPUkZFd1RsUm5lazlEZDJsa1UwazJUVmd3TGtZdE0waFFVa1E0WlhOT05qaFpha056ZWtoSFVqQmFkWFJxYzFwRU1rMHRSRzVKY1UxUFRYTlpSV3RUWjB4MVVtOWhPRFZ2YkdoMlRsa3dlWEZYWkRGYVlWVnhNVVp6VERsNFRsRTVRV3RhTVd0bmJrcFpaM2xXYzFacU1UTlRPVzlyVGtkZk1qTjRhRW8yU20wM0xVSmhaUzFCTlhoME9UbEJOWFpJZUVWME4yUlhPRnBhVGtGd1JqSm9lblZLVGpSbGVGSnBXbk5pT1ZZd1JXWXdNVkl6YTJ4VGNrOTFWVVE1V0hwelJWTjFOVmx3UkU5S01sVlBYMlJSTWxsMGRXUjZlRGt0V25WeGJIbFBNbDluVEZwSGFtTlZjV0pUU0VkQ1dVdFBUMDFwT0ZnemFrTm1kMFZITXpOemRUQlFUamxYVEhOcE4zVm1iMUF3VkV4dU4xZE5NekJuY2sxeFMzSlRPSEZXZFhKRFowMUdWRkpTWWxRM1EwTmxOVkZGY0daRFlXNU5hV2sxUkcwemFHWlhRbVJ3VEY4eU1EWk9hekZWVW1kS1RtdEJha1Y1VUVSSFVqWjNXblpzTTBwM1NEZFFSMkZXUmxSS2NYaGpaVlZPUjNCeU0yUlNRVVZoT1dFM1drRlBjalJLU0daQ1dHZERia3BsVGxaeGFrdDVMVVkwT0RVdGEyRjFRMWRaV21wM2EybG9WMWszY0RKMVFtUkJOME5aV0hNMVpWTkZVVFZRU2tFM2RqSkJia2syYzBOTmIyRjVOMmhPVEU1cGFtNXZVazFrYkRCWFYwMTZTR3BUVTFKUlFtaGpVRlZsTFV0cE0ydGpSMEpzWVVsRmJ6VkRZUzFLTmtGWWMwMUpTMlp3WjAxRlkxUjViRGQzVVdWRUxVZzVabkZMSW4wIiwiaSI6eyJhIjoibSIsImIiOiJiYTlmZWQ3YjQ5ODA5OTA5ZDQ4ZjEzZTcwMzMzZjZkNDg1M2JkYmRmZTExMmQxMzEiLCJjIjoiZThkOTljMmE2ODBmMjg0NmE5NmUzNDQyMjQ4ODcyMTIzZjQxZjJjNTExZGRjMjA5NDlkYmRjNDI2NTMyM2E4MmVlZWExOTM0MTAyMDk5MWNlZTY5MzYxMDgyNzM3OTM0ZDYzOGNkZDgzYzBiZmZjMzVkYWMzMDQxYTNiOGY4N2IwNWNkMjY3MjM1YzljZGRmMjU1MzQzOWYxZGM5MzEwOGZmNTljZDNmMmVjNTI1MWZhMjIzZmQ4MjFhMDc2YjgzYzNhYjUzOGFkYzUxN2IzZGZmMDYzMWY3YmRkOTQzOGMzMTNjYTBiMTBkMjgxMmFiM2M1NjcyOTIyYzk2YjRlOTU3ZWRkMTNhMTMxMWE1YTU1YmQ2ZTg4NzM2MDM3OTdlMTU3YjhjMmI2ZDQ4ZjRmZjdkYjcyOGRjYTM3YWRmZGMyYzg0YjgyOTgwMWEyOWE4NTVhOTQyMmNkNDBkNzA1NGQ3NDhlNTAxNTI5NzEwMDJmODhmY2Q3ZjdlNDNkMmIyNDBjYzdjMWIwMmI5N2VhOWQ2OGM2YTg3NTIyYzkyZGFiMDliOTEzMjU1YzE1ZWU1ZmI5ZjRlYmE1OGVkNTMyNDI0NjMzMzQxN2JlNjY2MDUwZjAzNjYyMzMwMTI1MzlmODBhYmUxMmY2ZmQyMDhmZjdjMWNhZGQ2MTlmNzlhMmEzMDlhOTE4MmRiOTU4MzdlYzJlY2M1ZTQwZTVhMjQxMTA2NjAxZjQzYjcwNjg2MzZkZTkzOWFjZDk4YTE1MjY1YjBmODBlYTk5MjdlMjNiYTJiNzAxNTAwODliOGVjNTE1NDQ2NzI1Y2FhZmUyOGZiMTZhMDRmYzNkOTdlYTcxNDU3M2EzMjQ3YzcyMTA4ZjYyNzUyYTZiZDNkMjAxZTIwMzM1ZTQ3NzdjOTU5Yjc3ZDc1YmVmOWViYjI2NGUyMGExZTUzZWQ5YzljYjUxNjMyNmI5OGRhZWJiMzUzMTQxODdkMGFmOTNlY2E4YTY1YmM3MGJlMzMwZjUwOWY4ODU3MGNkNDBkNmRjYmU0NTQwMTU2ODYzMmJmMmE1ODMzNGYzNGFiMjQyZDAyNjVlOTM2YTY3NDQwNjQxNmJjMGVlYmVhYWU0OTkxNWM4Yzk0NjFhY2U0YjVlNDE2ZmQ5NWRjMzk1NDYyMjhmNmQ3Y2RmN2VjZTUzMDA0MzVkNzc0YWEwNGU2MDQ3YiJ9LCJqIjpbeyJhIjoiczAiLCJiIjoiNjcyNmQ5MmZkMzIzYjg0MzA1YTg0ZDVjNzliNGNhNDE2NTYzMGNiYzBhOTY0ZDkyIiwiYyI6IjM3NDkyZTI2OTIzM2YyNTRlZmY0YmI1NGNhNWRhZmU5OWU1NDYwMWM1ZDkxZTMwMmZiN2Q5YTMzZThhYmM4N2QwMzA1MmYxMDljZmI5NTQzN2VmODRmNDVjYTQyYWI0OTM3MDk5NDcwM2EyNmI0Yjg2MTI4YmMyMzZlMGU2ZjYwODk1MmNmNDlmNDY3NzA2OTNkZTY4ZmI4NTNmZGQ3OGFjYjhlZjg0YjFkN2JlMDM0NmE4YWQwZWExM2E2OGM1Mzg1MmQyNzE5ZGZjYThjMDRhN2Y4YTBlYThmOTI4OGU4Mjg2NDU5YTcxY2Y5NDhjN2I2OWYzNDY0ZDcxYmNmY2ZiOTFkMmVkNjkwMzcxNWNiY2NkNWVmNzY1ZjhjNWM4ODc2ZTQ1ZmRhNjAwY2JhYmVlODI0Y2I4ZTc1Mjc2ZGMxZDA4MTdmZjQzZDYzNjhiNTM0NWY0YzkzN2Y1NzEwMmJkMThmMTM1NDI4M2Q0YjlkMGQ0MTRjODM4Nzg1MGUzMDA4NDdkMTZiMjVjZmRmYzJiMmUwZTQ2MjM5MzdkN2FiZWM5NGZlMDYxMzgzN2QyYTcxNjBhOTUwMTc1MDYxZmFmODZmMjFkYmNhNDI3M2M5OTgyMmM5MWNlM2Q0YzZkODQ0NTBlMmQ2OTMyZWQ5N2RmMzc0NDMyYjNjZGM0NGJhNWE2ODVmZGIxY2ZjODRiN2JhMDQ3MDE2NDlkN2RkZDVhMmEyYmQ5NTljMjljODg0MWE1MDI4ODFhNDg4NGNmNGJjZWJiMDJkODAwMTlmZTUxNjU0ZTgzZjE4MmUyODU0MGYwZGVjY2I4N2IxMmNiNWFmMjU3YmQ2NzhkN2E3NDExYzM5ZTJkYTY1ZDlkYzQwY2JkN2E1ZGRjMzg0ZjRlMTE5MmYxNWVkNmM2ZWZiYWQzNTRiNzExOTFkODc1ZGJiYzliNzUwOTAyNmM1MDQ4ZTgzZGM0OTc4OTgwMDE0MTdmMTg4MDNkZDYyYzdmOTU5MDI0OWI5YjA4Yzg3ZDZkYjRjMTg0MjYxOGNmZjE2Y2Q1YjgwZGMxNzAzN2EzZDRiY2FjNjY2YjI5OWU5MDJjMDZhMDczZDllNzEzZGQ0OWUwZTVjNGIyYjg5NGYwZWVmYjdmNjJjYjk5OGFhNjQwOTBhZTc1NjJiYjk4MjdmMTJiZTQzNTk4ZTg1ZmZiMGNjMDJlZmNkNzNkY2M5OThlMGRlODY4N2M4MWE3MDk1NzliN2E3NjJlMmNlNjQ2YzhmODY0ZTNiZGI0ZWFjM2M5ZmFmYTFiNzczYjQ4YjEwMDQzMDE5NGRjZTQ0YjVlNGYwODE0ZDZkYTI0OTU4ODdkYWU1MTdlYzIwYWY1ZjdiZGE1MzBlYmNiOGU3YjE3NGM4MmFmNjg3NTE1YjM4In0seyJhIjoiYzAiLCJiIjoiYTdlYThhMmI5NTFkMjkwZTVjNmM2N2VkYjdhOGU2NTkzNWYzYmNjYmU5ODIzOTJjIiwiYyI6IjQ2NzZhM2QxMWUwM2M2NWJiOTUxZjg5MjUwYmM4ZjcwZTk1ZjU5Y2NkZWRmOGQyNDRlZmI0M2FkNjA4NGE1OTVmMWM5ZjYyOTY3YmExMmFmNzViYjZhN2ZjMWJiYWIyZmZlOGY0ZWE1NzE2MTlhMGFiY2I4ZGM4MjRhYmMwZWEzNmY4OTNkYWNmMGIyMDBhMGM1MGY2ZjJmZDdiMzMyNWI0YTJkNTJkMTMyMzJkNDg5YmE5OWNmNjVkMTkyZGU3NjIyN2E4ODMxY2FiMmYxZjU3MGQzYTg3Y2ExNDAwYWI5YWJkNzY1OTc0ZGM1NzI5MjVlOGRkMzg1YzVlODZjMjM0ODRjMzYzNWYyMGQwMGE3YWUzMzAzYzgxNWM1MjUyMzJiMTA2M2I4Y2ViMDEzMWI1ZGVjMDE3MDYwNWU4MzAyMzY4OTE3NThkOTliZTkyNjdjMGNlNDU4YTlhOTczYzRkNGZkOGJjYWExNmNkODZkOTZlZjg1MDhlYjNiYjQ0OGNiOTk1NGI1MzBhOWEwODJiZjliMjE2YTliNDU2MDA5ZGJkMWI0MzVhMmIxMjA1ZmQzYjUzNmE1MTY2Y2RmZGI4YzNhODVmMjFhMTM5NWQ4ODlkZDIyYzlhNjM0ZTc3ZDI4NDliZjQ5NjFkNjk2YjM2OTc5Y2RjN2QwYWZiZTAwOThkOTdhYTNkOTc0N2FmZTFmZTFiZWJjZGE4NTg4YzFkOWQ1ZWE2NTg5OGNkODNmNzBjZjg3NDg3N2RlYWViN2I2YzA5NTA4YzU3Y2JjYTc2NWU4NzJmMWMxMTc2Y2M3ZjRhMzI4MDkwMWZiZTQyNTVjNWU3N2YwMDQ1OGZlODI2NjY4YTIzYzY5NTNmZjE1YzQ0NjgwOGZmZWQzMzk1MTQwYTQzY2RmNDRhN2NiNzAyOTE4MjgwMGRiNGUzNzJmODA3ZTk2OTc4YjQ2YzA4ZDI1NGZiNzU4MTMzOWMyOTMwNjFhNTQ3YzYzZjcxOGVmOWM1NjJkMzgwOWY3NWFmOTY3Y2M3ZGViZjc5MDY3YzdkNjE1OTM5OGMzZTIwOGU4OGI5MDMxM2YwMjA1NTY4YWQ3NGZlMjkzZWYyOWNlMDk2NGIwZjY3MTI5ZGE3Zjg3ZWYxOTk4NzQ0ODhiMGJjZWU5OGU0ZDA1ZmE1MGY1NDhlOTFjMzEzODdlNWYxOGMxNjk0Njk2ODcxMWEwNmI5OWVlMzFkYzU4YWUxYzA0ZjU3OWUxMTNjYTRmM2Q1NTg5Y2ZmMzkzNWJkYTkyM2Y2MWNiNmFmZjg4YzE4NWQ2YjZiYzdiMTc0MDc5MGQ4NDZmOGIxOWIyNGExM2E5NWFhZWIxYzdlODY4MmFmMTE3N2JhMTY5YWI3ZWRmYTA3OWU4YTFiMDdiNTA3MWQ0OGYxODZlZmQzYjJlMmJiMTdjOGFkMDc0ZWJiNjVjMjVjN2M2ZTc2NjA5YzFlODVjMTk4YzFhYWFmNmYxZjU1MTc1NTI2Y2QxODdkNWQ2YWQyNTA4YjMxYzU1ZDgzZmQzMGE0MDlmNDI3N2M2MWNhN2I0OTE3MWQ2MGIzNTFhOWY5OTFmNmUwMjcxZTg4YjBlNjAwNTk3ODczYmE1NzA2YzE4ZWE3MmEzYzJjYTZlNWJhZjg1OThlNTgxYWNmMmZhM2NhNGMyYmZkMDViMDQzZGUyZjkxMTYzMzEwYmUzZDc0ZmI0NmFjMzEwNDkwNjc1NDI3ZGYyNmY0OGUxZGQxZGE4ODBlN2M1ZjBlNmQ1NzQyMGQ1M2Q4NDZlOGNiMWQyYTBhNzY3ZjllZjVkYjgyMDM1ZjNhNTBhNGFiZGUzYzY0NTVlMTQyZGRiYWNmM2E0OTQyZWUyZjUxMzE5OTUzMjkxNGFkNTQ1YmQ1YmVkN2E5NTY1ZDk4ZDhkZGI2YjI4NjQ3NTljZDJmY2VjZmMyMGNkMTc1ZDYzYzNlZDJhY2IxYTg5NWJmZGEwYmVjYjJmOWFiMjViYmZiZTU0OTE4ZWRjMDc4ZjQ3OWJkZjc1NThhOWFjM2U3ZjJlMWRjNzYyODE4MWNlMzk1OGNkMzNkNTQ4MzZhODI2MmU2NmU0MGZhZDcxMjA3YzVmOGFjYzkwODI0NjJlODUxODkwYTExOWNhYzc2ZjNhNjdjNDljZTA4ZDk4YTZkMTAwYTk4MzEwN2MzNjczODhmZDBlM2Y1ZWFlYWYyZWQyN2Q0ZTUxMDEzZDEzNDQxZDlkNjYyMDQ1NGQyNzQ0MGM0ZGQ0NDRhNTE3OWFkYTIyMDVmYjc1Y2ZmMDQwOTkyZjQ2MzA4NmEzODlhYWExYWUxYmUwZjRlNjU3MzM1OTFiIiwiZCI6eyJhIjoiZTVlMWY5NjQ5NmIxMDQxYjZlMmM2MjFiOWUyMDYzOTJmNWVlNTZhZmU4ZDczMjc0IiwiYiI6IjMwMmU4MGYyOGU3MmQxNzUxMzgxMmMxOWEwOGZkNmI4NjJhOTViZmMifX1dfQ",
+          "kdf_d": null,
+          "schedule_e": null,
+          "features_f": null,
+          "seed_g": null,
+          "protected_h": null,
+          "build_n": 934,
+          "pw_kdf_k": null,
+          "argon2_ops_l": null,
+          "argon2_mem_m": null,
+          "capsule_p_present": false,
+          "hwid_slots_o": null,
+          "top_keys": [
+            "a",
+            "b",
+            "c",
+            "n",
+            "s"
+          ],
+          "section_i": {
+            "label_len": null,
+            "nonce_hex_len": null,
+            "ct_hex_len": null,
+            "has_sidecar": false
+          },
+          "sections_j": {
+            "count": null,
+            "sections": []
+          }
+        }
+      },
+      "Test bloqueo de operador.hc": {
+        "bytes": 6432,
+        "sha256": "0cbeb11e5fc6dce179bf796f1836f3bd5b427f9f719708258ccb5282d9c8f17d",
+        "outer_authenticated": true,
+        "envelope": {
+          "magic": "HCCFG",
+          "schema_b": 12,
+          "cipher_c": "s1",
+          "kdf_d": "h1",
+          "schedule_e": "n15",
+          "features_f": [
+            "ssh",
+            "profiles"
+          ],
+          "seed_g": {
+            "hex_len": 64,
+            "bytes_len": 32,
+            "sha256_prefix16": "8f4044aa0c284ad1"
+          },
+          "protected_h": 1,
+          "build_n": 934,
+          "pw_kdf_k": "a1",
+          "argon2_ops_l": 2,
+          "argon2_mem_m": 67108864,
+          "capsule_p_present": false,
+          "hwid_slots_o": null,
+          "top_keys": [
+            "a",
+            "b",
+            "c",
+            "d",
+            "e",
+            "f",
+            "g",
+            "h",
+            "i",
+            "j",
+            "k",
+            "l",
+            "m",
+            "n"
+          ],
+          "section_i": {
+            "label_len": {
+              "type": "str",
+              "len": 1
+            },
+            "nonce_hex_len": {
+              "type": "str",
+              "len": 48
+            },
+            "ct_hex_len": {
+              "type": "str",
+              "len": 920
+            },
+            "has_sidecar": false
+          },
+          "sections_j": {
+            "count": 2,
+            "sections": [
+              {
+                "label_len": {
+                  "type": "str",
+                  "len": 2
+                },
+                "nonce_hex_len": {
+                  "type": "str",
+                  "len": 48
+                },
+                "ct_hex_len": {
+                  "type": "str",
+                  "len": 1052
+                }
+              },
+              {
+                "label_len": {
+                  "type": "str",
+                  "len": 2
+                },
+                "nonce_hex_len": {
+                  "type": "str",
+                  "len": 48
+                },
+                "ct_hex_len": {
+                  "type": "str",
+                  "len": 1748
+                },
+                "sidecar": {
+                  "nonce_hex_len": {
+                    "type": "str",
+                    "len": 48
+                  },
+                  "ct_hex_len": {
+                    "type": "str",
+                    "len": 40
+                  }
+                }
+              }
+            ]
+          }
+        }
+      },
+      "Test bloqueo de root.hc": {
+        "bytes": 6365,
+        "sha256": "34b53d7698381e39cf9ea001e74fe53a8f5bd036cb54a08b7bcb1d10d1886ba3",
+        "outer_authenticated": true,
+        "envelope": {
+          "magic": "HCCFG",
+          "schema_b": 12,
+          "cipher_c": "s1",
+          "kdf_d": "h1",
+          "schedule_e": "n15",
+          "features_f": [
+            "ssh",
+            "profiles"
+          ],
+          "seed_g": {
+            "hex_len": 64,
+            "bytes_len": 32,
+            "sha256_prefix16": "faab5a43cbaaa114"
+          },
+          "protected_h": 1,
+          "build_n": 934,
+          "pw_kdf_k": "a1",
+          "argon2_ops_l": 2,
+          "argon2_mem_m": 67108864,
+          "capsule_p_present": false,
+          "hwid_slots_o": null,
+          "top_keys": [
+            "a",
+            "b",
+            "c",
+            "d",
+            "e",
+            "f",
+            "g",
+            "h",
+            "i",
+            "j",
+            "k",
+            "l",
+            "m",
+            "n"
+          ],
+          "section_i": {
+            "label_len": {
+              "type": "str",
+              "len": 1
+            },
+            "nonce_hex_len": {
+              "type": "str",
+              "len": 48
+            },
+            "ct_hex_len": {
+              "type": "str",
+              "len": 904
+            },
+            "has_sidecar": false
+          },
+          "sections_j": {
+            "count": 2,
+            "sections": [
+              {
+                "label_len": {
+                  "type": "str",
+                  "len": 2
+                },
+                "nonce_hex_len": {
+                  "type": "str",
+                  "len": 48
+                },
+                "ct_hex_len": {
+                  "type": "str",
+                  "len": 1052
+                }
+              },
+              {
+                "label_len": {
+                  "type": "str",
+                  "len": 2
+                },
+                "nonce_hex_len": {
+                  "type": "str",
+                  "len": 48
+                },
+                "ct_hex_len": {
+                  "type": "str",
+                  "len": 1748
+                },
+                "sidecar": {
+                  "nonce_hex_len": {
+                    "type": "str",
+                    "len": 48
+                  },
+                  "ct_hex_len": {
+                    "type": "str",
+                    "len": 40
+                  }
+                }
+              }
+            ]
+          }
+        }
+      },
+      "Test bloqueo de root2.hc": {
+        "bytes": 6385,
+        "sha256": "f1a50cf72b92fcdd389b7a6fd912153c67ee15270d859789b79543eadb5be195",
+        "outer_authenticated": true,
+        "envelope": {
+          "magic": "HCCFG",
+          "schema_b": 12,
+          "cipher_c": "s1",
+          "kdf_d": "h1",
+          "schedule_e": "n15",
+          "features_f": [
+            "ssh",
+            "profiles"
+          ],
+          "seed_g": {
+            "hex_len": 64,
+            "bytes_len": 32,
+            "sha256_prefix16": "93d35c07b4133844"
+          },
+          "protected_h": 0,
+          "build_n": 934,
+          "pw_kdf_k": null,
+          "argon2_ops_l": null,
+          "argon2_mem_m": null,
+          "capsule_p_present": false,
+          "hwid_slots_o": null,
+          "top_keys": [
+            "a",
+            "b",
+            "c",
+            "d",
+            "e",
+            "f",
+            "g",
+            "h",
+            "i",
+            "j",
+            "n"
+          ],
+          "section_i": {
+            "label_len": {
+              "type": "str",
+              "len": 1
+            },
+            "nonce_hex_len": {
+              "type": "str",
+              "len": 48
+            },
+            "ct_hex_len": {
+              "type": "str",
+              "len": 904
+            },
+            "has_sidecar": false
+          },
+          "sections_j": {
+            "count": 2,
+            "sections": [
+              {
+                "label_len": {
+                  "type": "str",
+                  "len": 2
+                },
+                "nonce_hex_len": {
+                  "type": "str",
+                  "len": 48
+                },
+                "ct_hex_len": {
+                  "type": "str",
+                  "len": 1052
+                }
+              },
+              {
+                "label_len": {
+                  "type": "str",
+                  "len": 2
+                },
+                "nonce_hex_len": {
+                  "type": "str",
+                  "len": 48
+                },
+                "ct_hex_len": {
+                  "type": "str",
+                  "len": 1748
+                },
+                "sidecar": {
+                  "nonce_hex_len": {
+                    "type": "str",
+                    "len": 48
+                  },
+                  "ct_hex_len": {
+                    "type": "str",
+                    "len": 40
+                  }
+                }
+              }
+            ]
+          }
+        }
+      },
+      "Test bloqueo inicio de sesión con hwid.hc": {
+        "bytes": 6353,
+        "sha256": "4d8aa08d8be5d86e96af3c81d3db5a4b64e31ed2b5d67778149b4301959972e5",
+        "outer_authenticated": true,
+        "envelope": {
+          "magic": "HCCFG",
+          "schema_b": 12,
+          "cipher_c": "s1",
+          "kdf_d": "h1",
+          "schedule_e": "n15",
+          "features_f": [
+            "ssh",
+            "profiles"
+          ],
+          "seed_g": {
+            "hex_len": 64,
+            "bytes_len": 32,
+            "sha256_prefix16": "8665441433e2d506"
+          },
+          "protected_h": 0,
+          "build_n": 934,
+          "pw_kdf_k": null,
+          "argon2_ops_l": null,
+          "argon2_mem_m": null,
+          "capsule_p_present": false,
+          "hwid_slots_o": null,
+          "top_keys": [
+            "a",
+            "b",
+            "c",
+            "d",
+            "e",
+            "f",
+            "g",
+            "h",
+            "i",
+            "j",
+            "n"
+          ],
+          "section_i": {
+            "label_len": {
+              "type": "str",
+              "len": 1
+            },
+            "nonce_hex_len": {
+              "type": "str",
+              "len": 48
+            },
+            "ct_hex_len": {
+              "type": "str",
+              "len": 932
+            },
+            "has_sidecar": false
+          },
+          "sections_j": {
+            "count": 2,
+            "sections": [
+              {
+                "label_len": {
+                  "type": "str",
+                  "len": 2
+                },
+                "nonce_hex_len": {
+                  "type": "str",
+                  "len": 48
+                },
+                "ct_hex_len": {
+                  "type": "str",
+                  "len": 1036
+                }
+              },
+              {
+                "label_len": {
+                  "type": "str",
+                  "len": 2
+                },
+                "nonce_hex_len": {
+                  "type": "str",
+                  "len": 48
+                },
+                "ct_hex_len": {
+                  "type": "str",
+                  "len": 1728
+                },
+                "sidecar": {
+                  "nonce_hex_len": {
+                    "type": "str",
+                    "len": 48
+                  },
+                  "ct_hex_len": {
+                    "type": "str",
+                    "len": 40
+                  }
+                }
+              }
+            ]
+          }
+        }
+      },
+      "Test bloqueo password y hwid.hc": {
+        "bytes": 6784,
+        "sha256": "5eb097e70c0d779742d226f19c2e6d9f0a24e443f76b59a15c439ec841eda849",
+        "outer_authenticated": true,
+        "envelope": {
+          "magic": "HCCFG",
+          "schema_b": 12,
+          "cipher_c": "s1",
+          "kdf_d": "h1",
+          "schedule_e": "n16",
+          "features_f": [
+            "ssh",
+            "profiles"
+          ],
+          "seed_g": {
+            "hex_len": 64,
+            "bytes_len": 32,
+            "sha256_prefix16": "f8f470693f7ad448"
+          },
+          "protected_h": 1,
+          "build_n": 934,
+          "pw_kdf_k": "a1",
+          "argon2_ops_l": 2,
+          "argon2_mem_m": 67108864,
+          "capsule_p_present": false,
+          "hwid_slots_o": {
+            "count": 1,
+            "slots": [
+              {
+                "a": {
+                  "type": "str",
+                  "len": 48
+                },
+                "b": {
+                  "type": "str",
+                  "len": 96
+                }
+              }
+            ]
+          },
+          "top_keys": [
+            "a",
+            "b",
+            "c",
+            "d",
+            "e",
+            "f",
+            "g",
+            "h",
+            "i",
+            "j",
+            "k",
+            "l",
+            "m",
+            "n",
+            "o"
+          ],
+          "section_i": {
+            "label_len": {
+              "type": "str",
+              "len": 1
+            },
+            "nonce_hex_len": {
+              "type": "str",
+              "len": 48
+            },
+            "ct_hex_len": {
+              "type": "str",
+              "len": 952
+            },
+            "has_sidecar": false
+          },
+          "sections_j": {
+            "count": 2,
+            "sections": [
+              {
+                "label_len": {
+                  "type": "str",
+                  "len": 2
+                },
+                "nonce_hex_len": {
+                  "type": "str",
+                  "len": 48
+                },
+                "ct_hex_len": {
+                  "type": "str",
+                  "len": 1052
+                }
+              },
+              {
+                "label_len": {
+                  "type": "str",
+                  "len": 2
+                },
+                "nonce_hex_len": {
+                  "type": "str",
+                  "len": 48
+                },
+                "ct_hex_len": {
+                  "type": "str",
+                  "len": 1748
+                },
+                "sidecar": {
+                  "nonce_hex_len": {
+                    "type": "str",
+                    "len": 48
+                  },
+                  "ct_hex_len": {
+                    "type": "str",
+                    "len": 40
+                  }
+                }
+              }
+            ]
+          }
+        }
+      },
+      "Test desbloqueo payload.hc": {
+        "bytes": 5263,
+        "sha256": "33cee484e9f2227e28fcf39a05091d20a4d1b160cd3a5945f3807aaccf10577e",
+        "outer_authenticated": true,
+        "envelope": {
+          "magic": "HCCFG",
+          "schema_b": 12,
+          "cipher_c": "s1",
+          "kdf_d": "h1",
+          "schedule_e": "n15",
+          "features_f": [
+            "ssh",
+            "profiles"
+          ],
+          "seed_g": {
+            "hex_len": 64,
+            "bytes_len": 32,
+            "sha256_prefix16": "e54084185bbaecca"
+          },
+          "protected_h": 0,
+          "build_n": 934,
+          "pw_kdf_k": null,
+          "argon2_ops_l": null,
+          "argon2_mem_m": null,
+          "capsule_p_present": false,
+          "hwid_slots_o": null,
+          "top_keys": [
+            "a",
+            "b",
+            "c",
+            "d",
+            "e",
+            "f",
+            "g",
+            "h",
+            "i",
+            "j",
+            "n"
+          ],
+          "section_i": {
+            "label_len": {
+              "type": "str",
+              "len": 1
+            },
+            "nonce_hex_len": {
+              "type": "str",
+              "len": 48
+            },
+            "ct_hex_len": {
+              "type": "str",
+              "len": 942
+            },
+            "has_sidecar": false
+          },
+          "sections_j": {
+            "count": 2,
+            "sections": [
+              {
+                "label_len": {
+                  "type": "str",
+                  "len": 2
+                },
+                "nonce_hex_len": {
+                  "type": "str",
+                  "len": 48
+                },
+                "ct_hex_len": {
+                  "type": "str",
+                  "len": 674
+                }
+              },
+              {
+                "label_len": {
+                  "type": "str",
+                  "len": 2
+                },
+                "nonce_hex_len": {
+                  "type": "str",
+                  "len": 48
+                },
+                "ct_hex_len": {
+                  "type": "str",
+                  "len": 1344
+                },
+                "sidecar": {
+                  "nonce_hex_len": {
+                    "type": "str",
+                    "len": 48
+                  },
+                  "ct_hex_len": {
+                    "type": "str",
+                    "len": 40
+                  }
+                }
+              }
+            ]
+          }
+        }
+      },
+      "Test hwid.hc": {
+        "bytes": 7576,
+        "sha256": "caf11ca2623cd6d41c2860b6742b7f86f7d6aa3437492df5f5e0cceff2075b87",
+        "outer_authenticated": true,
+        "envelope": {
+          "magic": "HCCFG",
+          "schema_b": 13,
+          "cipher_c": "s1",
+          "kdf_d": "h1",
+          "schedule_e": "n18",
+          "features_f": [
+            "ssh",
+            "profiles"
+          ],
+          "seed_g": {
+            "hex_len": 64,
+            "bytes_len": 32,
+            "sha256_prefix16": "242b2db21e300314"
+          },
+          "protected_h": 0,
+          "build_n": 934,
+          "pw_kdf_k": null,
+          "argon2_ops_l": null,
+          "argon2_mem_m": null,
+          "capsule_p_present": true,
+          "hwid_slots_o": {
+            "count": 1,
+            "slots": [
+              {
+                "a": {
+                  "type": "str",
+                  "len": 48
+                },
+                "b": {
+                  "type": "str",
+                  "len": 96
+                }
+              }
+            ]
+          },
+          "top_keys": [
+            "a",
+            "b",
+            "c",
+            "d",
+            "e",
+            "f",
+            "g",
+            "h",
+            "i",
+            "j",
+            "n",
+            "o",
+            "p"
+          ],
+          "section_i": {
+            "label_len": {
+              "type": "str",
+              "len": 1
+            },
+            "nonce_hex_len": {
+              "type": "str",
+              "len": 48
+            },
+            "ct_hex_len": {
+              "type": "str",
+              "len": 952
+            },
+            "has_sidecar": false
+          },
+          "sections_j": {
+            "count": 2,
+            "sections": [
+              {
+                "label_len": {
+                  "type": "str",
+                  "len": 2
+                },
+                "nonce_hex_len": {
+                  "type": "str",
+                  "len": 48
+                },
+                "ct_hex_len": {
+                  "type": "str",
+                  "len": 1052
+                }
+              },
+              {
+                "label_len": {
+                  "type": "str",
+                  "len": 2
+                },
+                "nonce_hex_len": {
+                  "type": "str",
+                  "len": 48
+                },
+                "ct_hex_len": {
+                  "type": "str",
+                  "len": 1748
+                },
+                "sidecar": {
+                  "nonce_hex_len": {
+                    "type": "str",
+                    "len": 48
+                  },
+                  "ct_hex_len": {
+                    "type": "str",
+                    "len": 40
+                  }
+                }
+              }
+            ]
+          }
+        }
+      },
+      "Test password.hc": {
+        "bytes": 7245,
+        "sha256": "b8bfa51f9496c76396226e71ce9250990d30642e1d695ba47ffa6396d35ca97f",
+        "outer_authenticated": true,
+        "envelope": {
+          "magic": "HCCFG",
+          "schema_b": 13,
+          "cipher_c": "s1",
+          "kdf_d": "h1",
+          "schedule_e": "n17",
+          "features_f": [
+            "ssh",
+            "profiles"
+          ],
+          "seed_g": {
+            "hex_len": 64,
+            "bytes_len": 32,
+            "sha256_prefix16": "deabc792cbbd88a0"
+          },
+          "protected_h": 1,
+          "build_n": 934,
+          "pw_kdf_k": "a1",
+          "argon2_ops_l": 2,
+          "argon2_mem_m": 67108864,
+          "capsule_p_present": true,
+          "hwid_slots_o": null,
+          "top_keys": [
+            "a",
+            "b",
+            "c",
+            "d",
+            "e",
+            "f",
+            "g",
+            "h",
+            "i",
+            "j",
+            "k",
+            "l",
+            "m",
+            "n",
+            "p"
+          ],
+          "section_i": {
+            "label_len": {
+              "type": "str",
+              "len": 1
+            },
+            "nonce_hex_len": {
+              "type": "str",
+              "len": 48
+            },
+            "ct_hex_len": {
+              "type": "str",
+              "len": 906
+            },
+            "has_sidecar": false
+          },
+          "sections_j": {
+            "count": 2,
+            "sections": [
+              {
+                "label_len": {
+                  "type": "str",
+                  "len": 2
+                },
+                "nonce_hex_len": {
+                  "type": "str",
+                  "len": 48
+                },
+                "ct_hex_len": {
+                  "type": "str",
+                  "len": 1052
+                }
+              },
+              {
+                "label_len": {
+                  "type": "str",
+                  "len": 2
+                },
+                "nonce_hex_len": {
+                  "type": "str",
+                  "len": 48
+                },
+                "ct_hex_len": {
+                  "type": "str",
+                  "len": 1748
+                },
+                "sidecar": {
+                  "nonce_hex_len": {
+                    "type": "str",
+                    "len": 48
+                  },
+                  "ct_hex_len": {
+                    "type": "str",
+                    "len": 40
+                  }
+                }
+              }
+            ]
+          }
+        }
+      },
+      "Test password2.hc": {
+        "bytes": 6396,
+        "sha256": "2c9371722a8623dc214faf95f060c95029abcde415f4d20031062f0f7dc6b944",
+        "outer_authenticated": true,
+        "envelope": {
+          "magic": "HCCFG",
+          "schema_b": 12,
+          "cipher_c": "s1",
+          "kdf_d": "h1",
+          "schedule_e": "n15",
+          "features_f": [
+            "ssh",
+            "profiles"
+          ],
+          "seed_g": {
+            "hex_len": 64,
+            "bytes_len": 32,
+            "sha256_prefix16": "e46695bcd034fc6b"
+          },
+          "protected_h": 1,
+          "build_n": 934,
+          "pw_kdf_k": "a1",
+          "argon2_ops_l": 2,
+          "argon2_mem_m": 67108864,
+          "capsule_p_present": false,
+          "hwid_slots_o": null,
+          "top_keys": [
+            "a",
+            "b",
+            "c",
+            "d",
+            "e",
+            "f",
+            "g",
+            "h",
+            "i",
+            "j",
+            "k",
+            "l",
+            "m",
+            "n"
+          ],
+          "section_i": {
+            "label_len": {
+              "type": "str",
+              "len": 1
+            },
+            "nonce_hex_len": {
+              "type": "str",
+              "len": 48
+            },
+            "ct_hex_len": {
+              "type": "str",
+              "len": 906
+            },
+            "has_sidecar": false
+          },
+          "sections_j": {
+            "count": 2,
+            "sections": [
+              {
+                "label_len": {
+                  "type": "str",
+                  "len": 2
+                },
+                "nonce_hex_len": {
+                  "type": "str",
+                  "len": 48
+                },
+                "ct_hex_len": {
+                  "type": "str",
+                  "len": 1052
+                }
+              },
+              {
+                "label_len": {
+                  "type": "str",
+                  "len": 2
+                },
+                "nonce_hex_len": {
+                  "type": "str",
+                  "len": 48
+                },
+                "ct_hex_len": {
+                  "type": "str",
+                  "len": 1748
+                },
+                "sidecar": {
+                  "nonce_hex_len": {
+                    "type": "str",
+                    "len": 48
+                  },
+                  "ct_hex_len": {
+                    "type": "str",
+                    "len": 40
+                  }
+                }
+              }
+            ]
+          }
+        }
+      },
+      "test_solo_whid_1_7zzx.hc": {
+        "bytes": 5330,
+        "sha256": "28a9ed55b3d064182f3bae72701891b26811fdd78ae5a1ee7f5a94c3d3de8f93",
+        "outer_authenticated": true,
+        "envelope": {
+          "magic": "HCCFG",
+          "schema_b": 12,
+          "cipher_c": "s1",
+          "kdf_d": "h1",
+          "schedule_e": "n16",
+          "features_f": [
+            "ssh",
+            "profiles"
+          ],
+          "seed_g": {
+            "hex_len": 64,
+            "bytes_len": 32,
+            "sha256_prefix16": "838b65d82b874397"
+          },
+          "protected_h": 0,
+          "build_n": 934,
+          "pw_kdf_k": null,
+          "argon2_ops_l": null,
+          "argon2_mem_m": null,
+          "capsule_p_present": false,
+          "hwid_slots_o": {
+            "count": 1,
+            "slots": [
+              {
+                "a": {
+                  "type": "str",
+                  "len": 48
+                },
+                "b": {
+                  "type": "str",
+                  "len": 96
+                }
+              }
+            ]
+          },
+          "top_keys": [
+            "a",
+            "b",
+            "c",
+            "d",
+            "e",
+            "f",
+            "g",
+            "h",
+            "i",
+            "j",
+            "n",
+            "o"
+          ],
+          "section_i": {
+            "label_len": {
+              "type": "str",
+              "len": 1
+            },
+            "nonce_hex_len": {
+              "type": "str",
+              "len": 48
+            },
+            "ct_hex_len": {
+              "type": "str",
+              "len": 918
+            },
+            "has_sidecar": false
+          },
+          "sections_j": {
+            "count": 2,
+            "sections": [
+              {
+                "label_len": {
+                  "type": "str",
+                  "len": 2
+                },
+                "nonce_hex_len": {
+                  "type": "str",
+                  "len": 48
+                },
+                "ct_hex_len": {
+                  "type": "str",
+                  "len": 1136
+                },
+                "sidecar": {
+                  "nonce_hex_len": {
+                    "type": "str",
+                    "len": 48
+                  },
+                  "ct_hex_len": {
+                    "type": "str",
+                    "len": 48
+                  }
+                }
+              },
+              {
+                "label_len": {
+                  "type": "str",
+                  "len": 2
+                },
+                "nonce_hex_len": {
+                  "type": "str",
+                  "len": 48
+                },
+                "ct_hex_len": {
+                  "type": "str",
+                  "len": 742
+                }
+              }
+            ]
+          }
+        }
+      },
+      "test_solo_whid_y_pass_0_k9v4.hc": {
+        "bytes": 5307,
+        "sha256": "890d68c5426f3bb40499a48949e2cc2dfb48b8defadf85121a17f60975c3454b",
+        "outer_authenticated": true,
+        "envelope": {
+          "magic": "HCCFG",
+          "schema_b": 12,
+          "cipher_c": "s1",
+          "kdf_d": "h1",
+          "schedule_e": "n16",
+          "features_f": [
+            "ssh",
+            "profiles"
+          ],
+          "seed_g": {
+            "hex_len": 64,
+            "bytes_len": 32,
+            "sha256_prefix16": "d6d72c3713932806"
+          },
+          "protected_h": 1,
+          "build_n": 934,
+          "pw_kdf_k": "a1",
+          "argon2_ops_l": 2,
+          "argon2_mem_m": 67108864,
+          "capsule_p_present": false,
+          "hwid_slots_o": {
+            "count": 1,
+            "slots": [
+              {
+                "a": {
+                  "type": "str",
+                  "len": 48
+                },
+                "b": {
+                  "type": "str",
+                  "len": 96
+                }
+              }
+            ]
+          },
+          "top_keys": [
+            "a",
+            "b",
+            "c",
+            "d",
+            "e",
+            "f",
+            "g",
+            "h",
+            "i",
+            "j",
+            "k",
+            "l",
+            "m",
+            "n",
+            "o"
+          ],
+          "section_i": {
+            "label_len": {
+              "type": "str",
+              "len": 1
+            },
+            "nonce_hex_len": {
+              "type": "str",
+              "len": 48
+            },
+            "ct_hex_len": {
+              "type": "str",
+              "len": 918
+            },
+            "has_sidecar": false
+          },
+          "sections_j": {
+            "count": 2,
+            "sections": [
+              {
+                "label_len": {
+                  "type": "str",
+                  "len": 2
+                },
+                "nonce_hex_len": {
+                  "type": "str",
+                  "len": 48
+                },
+                "ct_hex_len": {
+                  "type": "str",
+                  "len": 1136
+                },
+                "sidecar": {
+                  "nonce_hex_len": {
+                    "type": "str",
+                    "len": 48
+                  },
+                  "ct_hex_len": {
+                    "type": "str",
+                    "len": 48
+                  }
+                }
+              },
+              {
+                "label_len": {
+                  "type": "str",
+                  "len": 2
+                },
+                "nonce_hex_len": {
+                  "type": "str",
+                  "len": 48
+                },
+                "ct_hex_len": {
+                  "type": "str",
+                  "len": 742
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  },
+  "sanity_checks_decoder": [
+    {
+      "file": "drive/Test Oppen.hc",
+      "expected": "934 b=12/n15 h=0",
+      "exit_code": 0,
+      "result": "PASS"
+    },
+    {
+      "file": "drive/Test password2.hc",
+      "expected": "934 b=12/n15 h=1",
+      "exit_code": 1,
+      "stderr_exact": "Error al ejecutar el decodificador: HTTP Custom HCCFG: PASSWORD_REQUIRED"
+    },
+    {
+      "file": "drive/Test bloqueo password y hwid.hc",
+      "expected": "934 b=12/n16",
+      "exit_code": 1,
+      "stderr_exact": "Error al ejecutar el decodificador: HTTP Custom HCCFG: UNSUPPORTED_SCHEMA"
+    }
+  ]
+}

@@ -1,0 +1,162 @@
+{
+  "harness": "/tmp/hc-n15-harness-build/hc_harness",
+  "total": 21,
+  "match": 21,
+  "mismatch": [],
+  "rows": [
+    {
+      "file": "Test Oppen.hc",
+      "harness_rc": 0,
+      "profiles": 2,
+      "app_version": "8.0.22 Patch 2 (934)",
+      "other_sections": [],
+      "status": "MATCH"
+    },
+    {
+      "file": "Test bloquear usuário y contraseña.hc",
+      "harness_rc": 0,
+      "profiles": 2,
+      "app_version": "8.0.22 Patch 2 (934)",
+      "other_sections": [],
+      "status": "MATCH"
+    },
+    {
+      "file": "Test bloqueo de root2.hc",
+      "harness_rc": 0,
+      "profiles": 2,
+      "app_version": "8.0.22 Patch 2 (934)",
+      "other_sections": [],
+      "status": "MATCH"
+    },
+    {
+      "file": "Test bloqueo inicio de sesión con hwid.hc",
+      "harness_rc": 0,
+      "profiles": 2,
+      "app_version": "8.0.22 Patch 2 (934)",
+      "other_sections": [],
+      "status": "MATCH"
+    },
+    {
+      "file": "Test desbloqueo payload.hc",
+      "harness_rc": 0,
+      "profiles": 2,
+      "app_version": "8.0.22 Patch 2 (934)",
+      "other_sections": [],
+      "status": "MATCH"
+    },
+    {
+      "file": "Test bloqueo de operador.hc",
+      "harness_rc": 1,
+      "expected": "PASSWORD_REQUIRED",
+      "got": "PASSWORD_REQUIRED",
+      "status": "MATCH"
+    },
+    {
+      "file": "Test bloqueo de operador.hc",
+      "harness_rc": 1,
+      "expected": "AUTH_FAILED",
+      "got": "AUTH_FAILED",
+      "status": "MATCH"
+    },
+    {
+      "file": "Test bloqueo de root.hc",
+      "harness_rc": 1,
+      "expected": "PASSWORD_REQUIRED",
+      "got": "PASSWORD_REQUIRED",
+      "status": "MATCH"
+    },
+    {
+      "file": "Test bloqueo de root.hc",
+      "harness_rc": 1,
+      "expected": "AUTH_FAILED",
+      "got": "AUTH_FAILED",
+      "status": "MATCH"
+    },
+    {
+      "file": "Test password2.hc",
+      "harness_rc": 1,
+      "expected": "PASSWORD_REQUIRED",
+      "got": "PASSWORD_REQUIRED",
+      "status": "MATCH"
+    },
+    {
+      "file": "Test password2.hc",
+      "harness_rc": 1,
+      "expected": "AUTH_FAILED",
+      "got": "AUTH_FAILED",
+      "status": "MATCH"
+    },
+    {
+      "file": "Test bloqueo password y hwid.hc",
+      "harness_rc": 1,
+      "expected": "HC_UNSUPPORTED_SCHEMA",
+      "got": "HC_UNSUPPORTED_SCHEMA",
+      "status": "MATCH"
+    },
+    {
+      "file": "Test password.hc",
+      "harness_rc": 1,
+      "expected": "HC_UNSUPPORTED_SCHEMA",
+      "got": "HC_UNSUPPORTED_SCHEMA",
+      "status": "MATCH"
+    },
+    {
+      "file": "Test hwid.hc",
+      "harness_rc": 1,
+      "expected": "HC_UNSUPPORTED_SCHEMA",
+      "got": "HC_UNSUPPORTED_SCHEMA",
+      "status": "MATCH"
+    },
+    {
+      "file": "Test bloqueo ID de acceso.hc",
+      "harness_rc": 1,
+      "expected": "HC_UNSUPPORTED_SCHEMA",
+      "got": "HC_UNSUPPORTED_SCHEMA",
+      "status": "MATCH"
+    },
+    {
+      "file": "synthetic_n15_open.hc",
+      "harness_rc": 0,
+      "profiles": 1,
+      "app_version": "8.0.22 Patch 2 (934)",
+      "other_sections": [],
+      "status": "MATCH"
+    },
+    {
+      "file": "synthetic_n15_protected.hc",
+      "harness_rc": 0,
+      "profiles": 2,
+      "app_version": "8.0.22 Patch 2 (934)",
+      "other_sections": [],
+      "status": "OPEN"
+    },
+    {
+      "file": "synthetic_n15_protected.hc",
+      "harness_rc": 1,
+      "expected": "PASSWORD_REQUIRED",
+      "got": "PASSWORD_REQUIRED",
+      "status": "MATCH"
+    },
+    {
+      "file": "synthetic_n15_protected.hc",
+      "harness_rc": 1,
+      "expected": "AUTH_FAILED",
+      "got": "AUTH_FAILED",
+      "status": "MATCH"
+    },
+    {
+      "file": "synthetic_n15_tampered.hc",
+      "harness_rc": 1,
+      "expected": "AUTH_FAILED|HC_UNRECOGNIZED_FORMAT",
+      "got": "HC_UNRECOGNIZED_FORMAT",
+      "status": "MATCH_REJECTED"
+    },
+    {
+      "file": "synthetic_n15_truncated.hc",
+      "harness_rc": 1,
+      "expected": "HC_UNRECOGNIZED_FORMAT",
+      "got": "HC_UNRECOGNIZED_FORMAT",
+      "status": "MATCH"
+    }
+  ]
+}

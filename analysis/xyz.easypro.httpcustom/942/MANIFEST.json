@@ -1,0 +1,262 @@
+{
+  "app_name": "HTTP Custom",
+  "authorization_note": "Owner requested the HC 942 (n19) port into the offline app (branch feat/version-offline-apk). Original sample bytes and test credentials are excluded from Git. Only file names, sizes, SHA-256 hashes and sanitized profile fields are recorded. No real name appears in any file of this dossier.",
+  "code_paths": [
+    "android/app/src/main/cpp/spdecode_http_custom.cpp",
+    "android/app/src/main/cpp/spdecode_http_custom.h",
+    "android/app/src/main/cpp/spdecode_offline_native.cpp"
+  ],
+  "connection_authentication": {
+    "algorithm": null,
+    "material_provenance": "No service authentication secrets collected",
+    "scope": "File decryption only. No VPN connection was established, no transport MAC and no connection-authentication verifier were observed in this work.",
+    "status": "NOT_OBSERVED",
+    "verifier_observed": false
+  },
+  "dependencies": [
+    {
+      "id": "mbedtls",
+      "review": "PINNED_SAME_AS_APP",
+      "sha256": "a7e8bcbec0e6f761b4af24f25677626b35f762f68eef79c08677a363212d11f6",
+      "source": "https://github.com/Mbed-TLS/mbedtls/releases/download/mbedtls-3.6.7/mbedtls-3.6.7.tar.bz2",
+      "version": "3.6.7"
+    },
+    {
+      "id": "nlohmann-json",
+      "review": "PINNED_SAME_AS_APP",
+      "source": "https://github.com/nlohmann/json.git",
+      "version": "9cca280a4d0ccf0c08f47a99aa71d1b0e52f8d03"
+    },
+    {
+      "id": "argon2-reference",
+      "review": "PINNED_SAME_AS_APP",
+      "source": "https://github.com/P-H-C/phc-winner-argon2.git",
+      "version": "62358ba2123abd17fccf2a108a301d4b52c01a7c"
+    },
+    {
+      "id": "pycryptodome",
+      "review": "RESEARCH_ONLY",
+      "source": "https://pypi.org/project/pycryptodome/",
+      "version": "4.4.0"
+    },
+    {
+      "id": "argon2-cffi",
+      "review": "RESEARCH_ONLY",
+      "source": "https://pypi.org/project/argon2-cffi/25.1.0/",
+      "version": "25.1.0"
+    }
+  ],
+  "evidence_refs": [
+    "analysis/xyz.easypro.httpcustom/942/RESULTS.md",
+    "analysis/xyz.easypro.httpcustom/942/RESULTS_harness.json",
+    "analysis/xyz.easypro.httpcustom/942/tests/test_hc_n19.py",
+    "analysis/xyz.easypro.httpcustom/942/tests/fixtures/synthetic_n19_open.hc",
+    "analysis/xyz.easypro.httpcustom/942/tests/fixtures/synthetic_n19_protected.hc",
+    "analysis/xyz.easypro.httpcustom/942/tests/fixtures/synthetic_n15_open.hc",
+    "analysis/xyz.easypro.httpcustom/942/tools/make_synthetic_n19.py",
+    "analysis/xyz.easypro.httpcustom/942/tools/run_real_checks.py",
+    "analysis/xyz.easypro.httpcustom/942/tools/ref_oracle/codec.py",
+    "analysis/xyz.easypro.httpcustom/942/tools/ref_oracle/crypto.py"
+  ],
+  "files": {
+    "ANALYSIS.md": "adfcc36781afd70bf30b299acf440ca8c88124876ac085b7dec623d2a902525d",
+    "DEPENDENCIES.md": "3a3f9219d603600ca04a83a3074e49f3267d2178cae5b1a79e4d4c6d0e58210d",
+    "MANIFEST.json": "fb6b44c96e609fd3956416f350538b6234104f397c7a9e9c2a334e132fe92e4a",
+    "REPRODUCE.md": "825f66248bbd1d64a41b3f59fa7fe7fd1a329c606aaa2438e65bd45b87aa3d00",
+    "RESULTS.md": "c035e2eda77c0c5a3a8f10adf00d79ea571f46e47fcceb50075b5016ed65c651",
+    "RESULTS_harness.json": "6913ecd04ce30cc2b03f1f0efef3a5ae0152a744776aa847a3fd510c9f823dc7",
+    "spdecode_http_custom.cpp.new_sha256": "6b4e51c8eec020cf1183b3a17fa91f1be541e99569c1fb71de1dd21fa4435c63",
+    "tools/make_synthetic_n19.py": "630bf66ea87dd18d8f8058e67b4f84440156299dd6dc79ebd8620eec73bde176",
+    "tools/ref_oracle/_hc_hccfg.py": "576c00a852a2019c484ef0b2bd8ffbb857e59b5370559e9bd4a8571320bf2c75",
+    "tools/ref_oracle/codec.py": "079962bb3b9fccecb6d776b2a58866efaad5d2741acae78443e319a26bb8d114",
+    "tools/ref_oracle/crypto.py": "9620979f30d50fcd9677f7d63e6bc585b959a1afc347406e36f771902a1e3fa9",
+    "tools/run_real_checks.py": "4ac003c7504600129b915d75ae62bbf2c12727749e37ca9742ecef96bac8a65b",
+    "README.md": "202b678702d765d2cc6bd8bf698930729e89d0f86ab3a98301edcea03f377769",
+    "tests/test_hc_n19.py": "4b2e043cc174e6f74d549d26a12df0ad5ed7b78c0e5aba2ab3fbd99019e41f04",
+    "tests/fixtures/synthetic_n19_open.hc": "203ab2b780005935fd2f19857eba732f4484725803e75880ab6efeb5cbd2e4b8",
+    "tests/fixtures/synthetic_n19_protected.hc": "459a17c1df52696c1d15e2d215ee615907ad8abc28c218cc8416740d17b72990",
+    "tests/fixtures/synthetic_n15_open.hc": "0b1f902a7a2e6ca9e89b0fb9e005575b927930808f9ae56a592a14351cebf170"
+  },
+  "hmac_audit": {
+    "connection_authentication": "NOT_OBSERVED — no evidence that any HMAC authorizes a VPN connection; see connection_authentication above.",
+    "file_hmac": "Observed: XChaCha20-Poly1305 AEAD tags authenticate every section (outer HCX4 envelope, main section, profile sections, HPR1 inner layer, sidecars). The n19 content key folds the AAD through the n19 HMAC-prestate SHA-256 states (0xf1 prefix + certificate SHA-256). All tags verified by the harness against real samples.",
+    "transport_integrity": "NOT_OBSERVED — no VPN transport was exercised; this work decodes exported files only."
+  },
+  "inputs": [
+    {
+      "bytes": 4529,
+      "metadata": {
+        "a": "HCCFG",
+        "b": 14,
+        "c": "s1",
+        "d": "h1",
+        "e": "n19",
+        "h": 0,
+        "n": 942
+      },
+      "name": "test_open_2_7xqg.hc",
+      "section_count": 2,
+      "sha256": "c180dce9234f7885d52124dea01639da7549cf84e3ae2cc7663c04708371e44c"
+    },
+    {
+      "bytes": 4935,
+      "metadata": {
+        "a": "HCCFG",
+        "b": 14,
+        "c": "s1",
+        "d": "h1",
+        "e": "n19",
+        "h": 0,
+        "n": 942
+      },
+      "name": "test_bloqueo_normal_1_aflj.hc",
+      "section_count": 2,
+      "sha256": "8a69d0fb684b92121451d74ef1da39b4d4b5797f425a5fffdebb81ee7953d71f"
+    },
+    {
+      "bytes": 4981,
+      "metadata": {
+        "a": "HCCFG",
+        "b": 14,
+        "c": "s1",
+        "d": "h1",
+        "e": "n19",
+        "h": 1,
+        "k": "a1",
+        "l": 2,
+        "m": 67108864,
+        "n": 942
+      },
+      "name": "test_bloqueo_normal_con_contrase_a_0_m46a.hc",
+      "section_count": 2,
+      "sha256": "bf837b783b014328c5c0626e1d555430bb7afa133d0dc8f9df51c4b89fd74432"
+    },
+    {
+      "bytes": 5330,
+      "metadata": {
+        "a": "HCCFG",
+        "b": 14,
+        "e": "n16",
+        "n": 942
+      },
+      "name": "test_solo_whid_1_7zzx.hc",
+      "section_count": 0,
+      "sha256": "28a9ed55b3d064182f3bae72701891b26811fdd78ae5a1ee7f5a94c3d3de8f93",
+      "unsupported_reason": "n16 closed offline by proof"
+    },
+    {
+      "bytes": 5307,
+      "metadata": {
+        "a": "HCCFG",
+        "e": "n16"
+      },
+      "name": "test_solo_whid_y_pass_0_k9v4.hc",
+      "section_count": 0,
+      "sha256": "890d68c5426f3bb40499a48949e2cc2dfb48b8defadf85121a17f60975c3454b",
+      "unsupported_reason": "n16 closed offline by proof"
+    },
+    {
+      "bytes": 3439,
+      "metadata": {},
+      "name": "Gjost_0_d9lo.hc",
+      "section_count": 0,
+      "sha256": "171764ff356ab53fe41c32f42f9cd38dd820ab451e6257fee67e223bc3109ac8",
+      "unsupported_reason": null
+    },
+    {
+      "bytes": 4624,
+      "metadata": {
+        "b": 8
+      },
+      "name": "884_0_wvd2.hc",
+      "section_count": 0,
+      "sha256": "54153bb280150e9f7da210ef41aa4ac4d5674423a80bc171ef37058cc7d7f20a",
+      "unsupported_reason": "b=8 not a 942 schema"
+    }
+  ],
+  "limitations": [
+    "No Android Gradle/NDK build was possible in this VM (no Android SDK/NDK installed); verification is a host-side build of the exact production C++ sources. On-device behaviour is NOT verified.",
+    "The 1 real password-protected n19 sample was not positively opened in this session (correct password not provided); the protected branch is positively verified only on synthetic fixtures built with the reference codec (same Argon2id params as the real file: a1/l=2/m=67108864).",
+    "The approved reader script hc942_banner.py composes the protected n19 key DIFFERENTLY from the cloud codec (see ANALYSIS.md section 4): the port follows the cloud codec (fold-plus-password-before-content-HKDF-v14), as instructed. A real protected 942 open is the only arbiter between the two compositions.",
+    "The V4 protections map has 24 keys (a-x), not 25: the task brief said 25, but the Python V4_PROTECTION_KEY_MAP and the C++ array both count 24. An earlier draft of the C++ array declared size 25 with 24 initializers, leaving a null pair that segfaulted on unknown keys; fixed to 24 and covered by a synthetic unknown-key case.",
+    "n16/n17/n18/b=9 remain unsupported by design (closed offline by proof)."
+  ],
+  "manual_steps": [
+    "Supply the correct password for test_bloqueo_normal_con_contrase_a_0_m46a.hc at runtime to the harness to positively open the real protected sample; do not store the password in any file.",
+    "Run a Gradle build and an on-device import test once an Android SDK/NDK is available.",
+    "The verifier must confirm the adapted dossier and the .cpp.new against the remote head f75c675155cb0eee2867d7283a54f614c2af654b before any merge."
+  ],
+  "network_requirements": [
+    "None at runtime (offline decoder). Build-time FetchContent downloads of the pinned Mbed TLS / json / Argon2 sources from GitHub are required for the host harness only."
+  ],
+  "observed_at": "2026-11-27T04:00:00-08:00",
+  "package_name": "xyz.easypro.httpcustom",
+  "schema_version": 1,
+  "source_category": "owner_supplied_authorized_archive_and_samples",
+  "status": "PARTIAL",
+  "status_note": "Offline C++ n19 decoder implemented as spdecode_http_custom.cpp.new (base: remote head f75c675155cb0eee2867d7283a54f614c2af654b, sha 541f7ec4f7074f5af5c58b287785f22374cfb489). Host-harness verified against the Python reference for the 2 no-password real samples (full JSON match) and for synthetic protected fixtures (password branch, HPR1, sidecar, V4 map + banner). The real protected sample was NOT positively opened (correct password not provided); its negative behaviour (PASSWORD_REQUIRED without password, AUTH_FAILED with a wrong password) matches the Python reference. No Android Gradle build and no on-device test were possible in this VM (no Android SDK/NDK). The .cpp.new is NOT merged: it awaits the verifier.",
+  "targets": [
+    {
+      "extensions": [
+        ".hc"
+      ],
+      "formats": [
+        "HCX4/HCCFG 14/n19"
+      ],
+      "kind": "files",
+      "real_samples_open_no_password": 2,
+      "real_samples_password_pending_positive": 1,
+      "real_samples_unsupported_by_design": 2,
+      "status": "PARTIAL"
+    }
+  ],
+  "tooling": [
+    {
+      "name": "offline native decoder, n19 port (this work)",
+      "path": "android/app/src/main/cpp/spdecode_http_custom.cpp"
+    },
+    {
+      "name": "host harness (argv form)",
+      "path": "analysis/xyz.easypro.httpcustom/942/tools/host_harness_main.cpp"
+    },
+    {
+      "name": "comparison runner, real files",
+      "path": "analysis/xyz.easypro.httpcustom/942/tools/run_real_checks.py"
+    },
+    {
+      "name": "synthetic fixture builder + checks",
+      "path": "analysis/xyz.easypro.httpcustom/942/tools/make_synthetic_n19.py"
+    },
+    {
+      "name": "Python reference oracle",
+      "path": "analysis/xyz.easypro.httpcustom/942/tools/ref_oracle/codec.py"
+    },
+    {
+      "name": "Python reference crypto",
+      "path": "analysis/xyz.easypro.httpcustom/942/tools/ref_oracle/crypto.py"
+    },
+    {
+      "name": "cloud dossier 942 (source, read-only)",
+      "path": "analysis/xyz.easypro.httpcustom/942/cloud-src/"
+    },
+    {
+      "name": "server reference codec (cloud, commit 807c71d6)",
+      "path": "decoders/Python/apps/HTTP_Custom/codec.py"
+    },
+    {
+      "name": "server reference crypto (cloud, commit 807c71d6)",
+      "path": "decoders/Python/apps/HTTP_Custom/crypto.py"
+    },
+    {
+      "name": "approved 942 reader script (read-only reference)",
+      "path": "~/workspace/http-custom-update/hc942_banner.py"
+    }
+  ],
+  "unresolved_questions": [
+    "Positive open of the real password-protected n19 sample with the correct password (pending runtime input). This also arbitrates the protected-key composition: cloud codec (fold + password key BEFORE content HKDF v14) vs hc942_banner.py (content HKDF v14 first, then a second HKDF with app-config|n19 info). The port follows the cloud codec.",
+    "On-device import test after a Gradle build (pending SDK/NDK).",
+    "Whether the n15 (934) tunnelBanner should also be expanded with the V4 map (out of scope here by design: n15 kept byte-identical)."
+  ],
+  "version_code": 942,
+  "version_name": "8.1.5"
+}

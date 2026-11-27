@@ -52,6 +52,17 @@ const std::array<uint32_t,8> N15_INNER_STATE={
 const std::array<uint32_t,8> N15_OUTER_STATE={
     0x423fcb79,0xc4dd3dc8,0x57d814ac,0x1660ed59,0xdbb328b7,0xcc389261,0x06f1803e,0xe3130c6b
 };
+// n19 content-key prestates (build 942): same HMAC-prestate construction as
+// n15, but keyed by the n19 label, so the inner/outer states differ.
+// Recovered from the build-942 reader script (hc942_banner.py, approved
+// 2026-11-26); verified against real 942 exports (2/2 open, h=0). See
+// analysis/xyz.easypro.httpcustom/942/.
+const std::array<uint32_t,8> N19_INNER_STATE={
+    0xbe68d8a0,0x4972cc8b,0xfb623f3a,0x71b28162,0xfefae202,0xb892b6d7,0x61211cb5,0x47b148ae
+};
+const std::array<uint32_t,8> N19_OUTER_STATE={
+    0x29ec5b88,0xe7aacc30,0xe7f995a0,0xfe072dfb,0x1d8962b0,0x035437db,0xbba98361,0x4b991e23
+};
 struct HCError:std::runtime_error {using std::runtime_error::runtime_error;};
 void ensure(bool ok,const char* message){if(!ok)throw HCError(message);}
 Bytes asBytes(const std::string& value){return Bytes(value.begin(),value.end());}
@@ -104,6 +115,15 @@ Bytes nativeFold(const Bytes& input){
 Bytes nativeFoldN15(const Bytes& input){
     Bytes transcript={0xf1};add(transcript,fromHex(HEX_CERT));add(transcript,input);
     return fromState(N15_OUTER_STATE,fromState(N15_INNER_STATE,transcript));
+}
+// n19 content-key fold (build 942): same construction as nativeFoldN15,
+// with the n19 prestates and the 0xf1 prefix built by the native engine.
+// The 0xf1 prefix and the certificate digest are unchanged from n15;
+// only the prestates and the content HKDF label (hc-config-content-v14)
+// change.
+Bytes nativeFoldN19(const Bytes& input){
+    Bytes transcript={0xf1};add(transcript,fromHex(HEX_CERT));add(transcript,input);
+    return fromState(N19_OUTER_STATE,fromState(N19_INNER_STATE,transcript));
 }
 Bytes mac(const Bytes& key,const Bytes& value){
     auto* md=mbedtls_md_info_from_type(MBEDTLS_MD_SHA256);
@@ -275,7 +295,7 @@ bool boolFlag(const json& j){
     ensure(n==0||n==1,"HC_INVALID_PROTECTION_FLAG");
     return n==1;
 }
-struct Material {Bytes key;Bytes aad;bool n15=false;};
+struct Material {Bytes key;Bytes aad;bool n15=false;bool n19=false;};
 // HCCFG 12/n15 content key (build 934). Composition
 // `fold-plus-password-before-content-hkdf`: the n15 HMAC-prestate fold over
 // the AAD, then the Argon2id password key (when protected) concatenated
@@ -303,10 +323,42 @@ Material deriveN15(const json& envelope,const std::string& password){
     const Bytes key=hkdf(content,seed,asBytes("hc-config-content-v12"));
     return {key,aad,true};
 }
+// HCCFG 14/n19 content key (build 942). Composition
+// `fold-plus-password-before-content-hkdf`, same as deriveN15: the n19
+// HMAC-prestate fold over the AAD, then the Argon2id password key (when
+// protected) concatenated BEFORE the content HKDF, now with label
+// hc-config-content-v14. No HWID slot exists in n19.
+Material deriveN19(const json& envelope,const std::string& password){
+    const auto seed=fromHex(str(envelope,"g"));
+    ensure(seed.size()==32,"HC_INVALID_SEED");
+    const auto f=features(envelope);
+    ensure(envelope.contains("n")&&!envelope.at("n").is_null(),"HC_MISSING_BUILD");
+    ensure(envelope["n"].is_number_unsigned()||
+           (envelope["n"].is_number_integer()&&envelope["n"].get<int64_t>()>=0),
+           "HC_INVALID_BUILD");
+    const std::string build=std::to_string(envelope["n"].get<uint64_t>());
+    const bool protectedPw=boolFlag(envelope);
+    if(protectedPw&&password.empty())throw HCError("PASSWORD_REQUIRED");
+    ensure(password.size()<=4096,"HC_INVALID_PASSWORD");
+    Bytes protectionAAD=asBytes("|0");
+    Bytes passwordKey;
+    if(protectedPw)passwordKey=passKdf(envelope,password,seed,protectionAAD);
+    Bytes aad=asBytes(std::string("HCCFG|14|XCHACHA20P1305|NATIVE-HKDF-SHA256|n19|")+PKG+"|1|");
+    add(aad,f);add(aad,protectionAAD);add(aad,"|"+build);
+    Bytes content=nativeFoldN19(aad);
+    add(content,passwordKey);
+    const Bytes key=hkdf(content,seed,asBytes("hc-config-content-v14"));
+    return {key,aad,false,true};
+}
 Material derive(const json& envelope,const std::string& password,const std::string& hwid,
                 bool modern){
     ensure(str(envelope,"a")=="HCCFG","HC_INVALID_MAGIC");
     const auto schema=integer(envelope,"b");
+    if(modern&&schema==14){
+        ensure(envelope.contains("e")&&envelope.at("e").is_string()&&
+               envelope.at("e").get<std::string>()=="n19","HC_UNSUPPORTED_SCHEMA");
+        return deriveN19(envelope,password);
+    }
     if(modern&&schema==12){
         ensure(envelope.contains("e")&&envelope.at("e").is_string()&&
                envelope.at("e").get<std::string>()=="n15","HC_UNSUPPORTED_SCHEMA");
@@ -550,12 +602,51 @@ json protections(const json& root){
     }
     return out;
 }
+// n19-only protections map (build 942): the full V4 map (24 keys) as
+// recovered in the approved 942 reader script. n15 keeps the historical
+// 13-key map above exactly; n11/n12/934 are untouched. The tunnelBanner
+// ("x") carries its own nested JSON with single letters; expand it the
+// same way: v = version, s = style ("custom"), h = content.
+json protectionsV4(const json& root){
+    if(!root.is_object())return root;
+    static const std::array<std::pair<const char*,const char*>,24> names={{
+        {"a","accessMode"},{"b","remoteProxyUnlocked"},{"c","expiryEnabled"},
+        {"d","expiryTime"},{"e","expiryRequiresAutomaticTime"},
+        {"f","hwidLockEnabled"},{"g","hwids"},{"h","loginHwidEnabled"},
+        {"i","loginHwidScheme"},{"j","loginHwidAuthorizationRequired"},
+        {"k","legacyHwidEnabled"},{"l","mobileDataOnly"},{"m","blockRoot"},
+        {"n","legacyExtraProtectionEnabled"},{"o","providerLockEnabled"},
+        {"p","providerCodes"},{"q","providerMatchOperatorName"},
+        {"r","countryLockEnabled"},{"s","countryCodes"},
+        {"t","blockApplicationsEnabled"},{"u","blockedApplications"},
+        {"v","note"},{"w","sshBannerAsNote"},{"x","tunnelBanner"}
+    }};
+    static const std::array<std::pair<const char*,const char*>,3> bannerNames={{
+        {"v","version"},{"s","style"},{"h","content"}
+    }};
+    json out=json::object();
+    for(auto it=root.begin();it!=root.end();++it){
+        std::string name=it.key();
+        for(const auto& pair:names)if(name==pair.first){name=pair.second;break;}
+        out[name]=it.value();
+    }
+    if(out.contains("tunnelBanner")&&out["tunnelBanner"].is_object()){
+        json banner=json::object();
+        for(auto it=out["tunnelBanner"].begin();it!=out["tunnelBanner"].end();++it){
+            std::string name=it.key();
+            for(const auto& pair:bannerNames)if(name==pair.first){name=pair.second;break;}
+            banner[name]=it.value();
+        }
+        out["tunnelBanner"]=std::move(banner);
+    }
+    return out;
+}
 json decryptParsed(const json& envelope,const Material& material,bool modern){
     ensure(envelope.contains("i")&&envelope.at("i").is_object(),"HC_MISSING_MAIN");
-    // n15 derives every section key from the content key with the
+    // n15 and n19 derive every section key from the content key with the
     // hc-config-part-v12 label; older schedules use the content key directly.
     auto partKey=[&material](const std::string& label,const std::string& extra){
-        if(!material.n15)return material.key;
+        if(!material.n15&&!material.n19)return material.key;
         Bytes info=material.aad;addNull(info);add(info,label+extra);
         return hkdf(material.key,asBytes("hc-config-part-v12"),info);
     };
@@ -607,7 +698,8 @@ json decryptParsed(const json& envelope,const Material& material,bool modern){
     std::string version;
     const auto build=envelope.value("n",static_cast<uint64_t>(0));
     if(modern)version=build==899?"7.11.28 - Patch 1 (899)":
-        build==934?"8.0.22 Patch 2 (934)":"build-"+std::to_string(build);
+        build==934?"8.0.22 Patch 2 (934)":
+        build==942?"8.1.5 (942)":"build-"+std::to_string(build);
     else{
         switch(build){
             case 756:version="7.9.21 (756)";break;
@@ -623,7 +715,7 @@ json decryptParsed(const json& envelope,const Material& material,bool modern){
         }
     }
     json prot=json::object();
-    if(main.contains("g"))prot=protections(main["g"]);
+    if(main.contains("g"))prot=material.n19?protectionsV4(main["g"]):protections(main["g"]);
     json result={{"app_version",version},{"config",profiles},{"protections",prot}};
     if(modern){result["main"]=main;result["other_sections"]=other;}
     else if(!other.empty())result["other_sections"]=other;
