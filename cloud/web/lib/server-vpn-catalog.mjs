@@ -7,7 +7,7 @@ import {providerEnabled} from "./server-vpn-provider.mjs";
 import {SUPPLIED_CATALOG_ITEMS,suppliedProviderConfigured} from "./supplied-integrations.mjs";
 import {catalogDefaultEnabled} from "./catalog-provider-policy.mjs";
 
-export const CATALOG_VERSION = 100; // MSY VPN Tunnel + AlsaherFree + PULSE TUNNEL VPN + IRFAN VPN V3 + Katiba VPN + DTunnel VPN live catalogs, Mehaf VPN .mehaf files, AR PRO VPN 2.0, HX Tunnel Hx-Build15, Fat/VLX corrected decoders, Tx Tunnel .txtunnel + v2rayng:// (2026-11-25).
+export const CATALOG_VERSION = 101; // HTTP Custom 8.1.5 (942) n19 files + texts (banner expanded), NadiaVPN 1.4.6 .nad files + nad:// texts (FILE_ONLY, no catalog) (2026-11-26).
 export const RECHECK_SECONDS = 15 * 60; // Version-only recovery; full download occurs on version change.
 
 /** Monotonic deployment version. Bump this override for ANY metadata, icon

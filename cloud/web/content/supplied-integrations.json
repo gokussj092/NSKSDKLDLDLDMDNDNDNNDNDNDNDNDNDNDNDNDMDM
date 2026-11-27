@@ -2139,6 +2139,27 @@
       "sourceIcon": "mehafvpn-icon-192.png",
       "icon": "mehaf-vpn.png",
       "catalogState": "FILE_ONLY"
+    },
+    {
+      "id": "nadia-vpn",
+      "appDir": "NadiaVPN",
+      "name": "NadiaVPN",
+      "package": "com.danaelh4.nadvpn",
+      "versionCode": 45,
+      "versionName": "1.4.6",
+      "extensions": [
+        "nad"
+      ],
+      "textPrefixes": [
+        "nad://sec2:",
+        "nad://pw2:",
+        "nad://"
+      ],
+      "fileModule": "file_decoder.py",
+      "requests": [],
+      "sourceIcon": "NadiaVPN.png",
+      "icon": "nadiavpn.png",
+      "catalogState": "FILE_ONLY"
     }
   ]
 }

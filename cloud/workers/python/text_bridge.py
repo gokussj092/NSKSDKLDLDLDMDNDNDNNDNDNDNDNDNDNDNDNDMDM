@@ -148,6 +148,18 @@ def dispatch(text: str, *, password: str | None = None) -> str | None:
         # never a fallback to another format.
         module = importlib.import_module("decoders.Python.apps.XVEON_Tunnel_Pro.file_decoder")
         return module.decode_text(value, password=password)
+    if lowered.startswith(("nad://sec2:", "nad://pw2:", "nad://")):
+        # NadiaVPN 1.4.6: explicit dispatch to the file decoder
+        # (PBKDF2-HMAC-SHA256 + AES-256-CBC + HMAC-SHA256, no catalog,
+        # FILE_ONLY). The supplied TEXT_ROUTES serve these schemes
+        # first; this block is the explicit fallback, matching the
+        # netflux/maya/pmtunnel/rmplite/xveon pattern. The scheme is
+        # unambiguous: a None result is final, never a fallback to
+        # another format. VERIFIED_REAL for nad://sec2: (real sample
+        # opens, HMAC verifies); nad://pw2: is VERIFIED_SYNTHETIC
+        # (no real sample with a password has been supplied yet).
+        module = importlib.import_module("decoders.Python.apps.NadiaVPN.file_decoder")
+        return module.decode_text(value, password=password)
     if lowered.startswith("wyst://"):
         # Ways Tunnel 18.1: explicit dispatch to the text decoder
         # (AES-256-CBC / zero IV, key from tweakdam0n; same pattern as
@@ -227,7 +239,7 @@ def main() -> int:
         if password is not None and (not isinstance(password, str) or
                 not 0 < len(password.encode("utf-8")) <= 4096):
             return 2
-        if password is not None and not (text.strip().lower().startswith(("ua://", "v2box://", "xveontunnel://", "xveon://", "xvn://")) or
+        if password is not None and not (text.strip().lower().startswith(("ua://", "v2box://", "xveontunnel://", "xveon://", "xvn://", "nad://sec2:", "nad://pw2:", "nad://")) or
                 onef or npv):
             return 2
         output = dispatch(text, password=password)

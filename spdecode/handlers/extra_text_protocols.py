@@ -46,6 +46,16 @@ def _ar_text(value: str) -> str | None:
     }, ensure_ascii=False)
 
 
+def _nadia_text(value):
+    # NadiaVPN 1.4.6 (FILE_ONLY, no catalog): nad://sec2: opens
+    # directly; nad://pw2: without a password raises with code
+    # PASSWORD_REQUIRED and is answered below, because the bot has no
+    # password prompt for text links yet (only the V2Box one and the
+    # file credential flow exist). No new flow is invented here.
+    from decoders.Python.apps.NadiaVPN.file_decoder import decode_text
+    return decode_text(value)
+
+
 PROTOCOL_HANDLERS = {
     **{prefix: ("NetMod", text_legacy_protocols.decode_netmod)
        for prefix in text_legacy_protocols.NM_PREFIXES},
@@ -64,6 +74,9 @@ PROTOCOL_HANDLERS = {
     "kivuvpn://": ("Kivu VPN", text_structured_protocols.decode_kivu),
     "slipnet://": ("SlipNet Base64", text_structured_protocols.decode_slipnet_plain),
     "vmess://": ("VMess", text_structured_protocols.decode_vmess),
+    "nad://sec2:": ("NadiaVPN", _nadia_text),
+    "nad://pw2:": ("NadiaVPN", _nadia_text),
+    "nad://": ("NadiaVPN", _nadia_text),
 }
 _PREFIXES = tuple(sorted(PROTOCOL_HANDLERS, key=len, reverse=True))
 
@@ -120,5 +133,22 @@ def decode_extra_text(message):
             return
         if isinstance(result, str) and result.strip():
             send_markdown_result(message, public_format_name(label) or prefix, result)
-    except Exception:
+    except Exception as exc:
+        code = getattr(exc, "code", None)
+        if code == "PASSWORD_REQUIRED":
+            bot.reply_to(
+                message,
+                "Este enlace NadiaVPN tiene contraseña. El bot todavía "
+                "no puede pedir contraseñas para enlaces de texto; el "
+                "descifrado con contraseña por texto queda pendiente.",
+            )
+            return
+        if code in ("HWID_REQUIRED", "HWID_PASSWORD_REQUIRED"):
+            bot.reply_to(
+                message,
+                "Este perfil NadiaVPN está bloqueado a un HWID. El bot "
+                "todavía no puede descifrar perfiles con bloqueo HWID; "
+                "queda pendiente.",
+            )
+            return
         logger.exception("Internal error decoding text format %s", prefix)

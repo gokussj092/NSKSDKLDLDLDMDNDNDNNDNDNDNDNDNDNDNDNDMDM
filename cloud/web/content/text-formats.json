@@ -540,6 +540,12 @@
       "name": "Tx Tunnel",
       "suffix": "txtunnel",
       "kind": "text"
+    },
+    {
+      "prefix": "nad://",
+      "name": "NadiaVPN",
+      "suffix": "nad",
+      "kind": "text"
     }
   ]
 }

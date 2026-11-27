@@ -168,6 +168,14 @@ def load_decoder_registry(path: Path = DECODERS_PATH) -> dict[str, DecoderSpec]:
         )
 
     if path.resolve() == DECODERS_PATH.resolve():
+        if "nad" in registry:
+            raise ValueError("NadiaVPN decoder conflicts with an existing route")
+        registry["nad"] = DecoderSpec(
+            extension="nad", name="NadiaVPN 1.4.6",
+            script="decoders/Python/apps/NadiaVPN/file_decoder.py", runtime="python"
+        )
+
+    if path.resolve() == DECODERS_PATH.resolve():
         if "awg" in registry:
             raise ValueError("AboWaged .awg decoder conflicts with an existing route")
         registry["awg"] = DecoderSpec(

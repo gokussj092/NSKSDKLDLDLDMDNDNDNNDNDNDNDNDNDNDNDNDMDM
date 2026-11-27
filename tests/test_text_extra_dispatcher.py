@@ -50,7 +50,7 @@ def load_handler_with_fake_bot():
 class ExtraTextDispatcherTests(unittest.TestCase):
     def test_registry_has_every_source_additional_protocol(self):
         handler, bot=load_handler_with_fake_bot()
-        needed=set(legacy.ALL_PREFIXES)|set(structured.PREFIXES)
+        needed=set(legacy.ALL_PREFIXES)|set(structured.PREFIXES)|{"nad://sec2:","nad://pw2:","nad://"}
         self.assertTrue(needed.issubset(handler.PROTOCOL_HANDLERS))
         self.assertEqual(len(handler.PROTOCOL_HANDLERS),len(needed))
         self.assertEqual(len(bot.handlers),1)
@@ -63,6 +63,18 @@ class ExtraTextDispatcherTests(unittest.TestCase):
         self.assertEqual(
             handler._match(types.SimpleNamespace(text='{"type":"creeb_profile_bundle","profiles":[]}')),
             "__creeb__",
+        )
+        self.assertEqual(
+            handler._match(types.SimpleNamespace(text="nad://sec2:AAAA")),
+            "nad://sec2:",
+        )
+        self.assertEqual(
+            handler._match(types.SimpleNamespace(text="nad://pw2:AAAA")),
+            "nad://pw2:",
+        )
+        self.assertEqual(
+            handler._match(types.SimpleNamespace(text="nad://{}")),
+            "nad://",
         )
         self.assertIsNone(
             handler._match(types.SimpleNamespace(text="unrelated regular text")),

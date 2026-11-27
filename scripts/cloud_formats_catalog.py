@@ -36,6 +36,10 @@ CREDENTIAL_FIELDS = {
     "xveon": ["password"],
     "xvn": ["password"],
     "tpc": ["password"],
+    # NadiaVPN .nad files are password-locked (NADIA_SEC_PW2: /
+    # nad://pw2:) and HWID-locked (NADIA_SEC_HWID: /
+    # NADIA_SEC_HWID_PW:); the worker accepts both credentials.
+    "nad": ["password", "hwid"],
     # HXS3 .hexcm files are password-locked; old Hex Tunnel files need none.
     "hexcm": ["password"],
     "sn": ["password", "hwid"],

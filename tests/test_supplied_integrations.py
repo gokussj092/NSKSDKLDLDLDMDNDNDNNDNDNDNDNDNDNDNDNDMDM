@@ -18,7 +18,7 @@ from cloud.workers.python.supplied_bridge import BY_ID, ITEMS, FILE_ROUTES, load
 
 class SuppliedIntegrationTests(unittest.TestCase):
     def test_inventory_has_all_owner_batches_and_loadable_offline_codecs(self):
-        self.assertEqual(len(ITEMS), 57)
+        self.assertEqual(len(ITEMS), 87)
         for item in ITEMS:
             with self.subTest(provider=item["id"]):
                 module = load(item)

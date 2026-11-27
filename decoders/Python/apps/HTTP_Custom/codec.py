@@ -15,11 +15,11 @@ if __package__:
         # without the surrounding decoders.Python package.
         sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
         import _hc_hccfg as historical
-    from .crypto import native_fold, native_fold_n15
+    from .crypto import native_fold, native_fold_n15, native_fold_n19
 else:
     sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
     import _hc_hccfg as historical
-    from crypto import native_fold, native_fold_n15
+    from crypto import native_fold, native_fold_n15, native_fold_n19
 
 HCError = historical.HCError
 MAX_FILE_BYTES = 16 * 1024 * 1024
@@ -94,7 +94,47 @@ def _derive_n15(envelope: dict, password: str | None) -> tuple[bytes, bytes]:
     return key, aad
 
 
+def _derive_n19(envelope: dict, password: str | None) -> tuple[bytes, bytes]:
+    """HCCFG 14/n19 content key (build 942).
+
+    Same composition as _derive_n15 (`fold-plus-password-before-content-
+    hkdf`), verified against real 942 exports: the n19 HMAC-prestate fold
+    over the AAD, then the Argon2id password key (when protected)
+    concatenated BEFORE the content HKDF, now with label
+    hc-config-content-v14. No HWID slot exists in n19.
+    """
+    seed = historical._env_key(envelope)
+    features = historical._features(envelope)
+    build = historical._n_bytes(envelope)
+    if not build:
+        raise HCError("MISSING_BUILD")
+    protected = historical._h_flag(envelope)
+    if password is not None and (not isinstance(password, str) or not 0 < len(password) <= 4096):
+        raise HCError("INVALID_CREDENTIAL")
+    if protected and password is None:
+        raise HCError("PASSWORD_REQUIRED")
+    password_key = b""
+    protection_aad = b"|0"
+    if protected:
+        ops, memory = envelope.get("l"), envelope.get("m")
+        if (type(ops) is not int or not 1 <= ops <= 10 or type(memory) is not int
+                or not 8192 <= memory <= 256 * 1024 * 1024):
+            raise HCError("ARGON2_LIMIT")
+        password_key, protection_aad = historical._pw_kdf(envelope, password, seed)
+    aad = (b"HCCFG|14|XCHACHA20P1305|NATIVE-HKDF-SHA256|n19|" + PKG + b"|1|"
+           + features + protection_aad + b"|" + build)
+    content = native_fold_n19(aad)
+    key = historical._hkdf(content + password_key, seed, b"hc-config-content-v14")
+    return key, aad
+
+
 def derive(envelope: dict, password: str | None, hwid: str | None) -> tuple[bytes, bytes]:
+    # HCCFG 14/n19 (build 942) is enabled alongside HCCFG 12/n15 (build 934)
+    # and the build-899 formats. Every other schema/schedule keeps its
+    # previous error exactly.
+    # (n19 has no HWID slot, so hwid is not part of this derivation.)
+    if type(envelope.get("b")) is int and envelope["b"] == 14 and envelope.get("e") == "n19":
+        return _derive_n19(envelope, password)
     # HCCFG 12/n15 (build 934) is enabled alongside the build-899 formats.
     # Every other schema/schedule keeps its previous error exactly.
     # (n15 has no HWID slot, so hwid is not part of this derivation.)
@@ -196,11 +236,13 @@ def decrypt(data: bytes, password: str | None = None, hwid: str | None = None) -
     envelope = open_envelope(data)
     key, aad = derive(envelope, password, hwid)
     is_n15 = envelope.get("b") == 12 and envelope.get("e") == "n15"
+    is_n19 = envelope.get("b") == 14 and envelope.get("e") == "n19"
 
     def _skey(label: str | None, extra: bytes = b"") -> bytes:
-        # HCCFG 12/n15 derives every section key from the contact key with
-        # the hc-config-part-v12 label; older schedules use the key directly.
-        if not is_n15 or not isinstance(label, str) or not label:
+        # HCCFG 12/n15 and 14/n19 derive every section key from the contact
+        # key with the hc-config-part-v12 label; older schedules use the key
+        # directly.
+        if (not is_n15 and not is_n19) or not isinstance(label, str) or not label:
             return key
         return historical._hkdf(key, b"hc-config-part-v12", aad + b"\x00" + label.encode() + extra)
 
@@ -242,8 +284,60 @@ def decrypt(data: bytes, password: str | None = None, hwid: str | None = None) -
     return {
         "app_version": ("7.11.28 - Patch 1 (899)" if envelope.get("n") == 899
                         else "8.0.22 Patch 2 (934)" if envelope.get("n") == 934
+                        else "8.1.5 (942)" if envelope.get("n") == 942
                         else f"build-{envelope.get('n')}"),
         "config": profiles, "main": main,
-        "protections": historical._norm_prot(main.get("g", {})) if isinstance(main, dict) else {},
+        "protections": (_norm_prot_v4(main.get("g", {})) if is_n19
+                        else historical._norm_prot(main.get("g", {}))) if isinstance(main, dict) else {},
         "other_sections": others,
     }
+
+
+# HCCFG 12/n15 (build 934) and 14/n19 (build 942) main-section ("g") key map,
+# as recovered in the approved 942 reader script. Applied only to n19
+# envelopes: n15 keeps the historical mapping exactly as before.
+V4_PROTECTION_KEY_MAP = {
+    "a": "accessMode",
+    "b": "remoteProxyUnlocked",
+    "c": "expiryEnabled",
+    "d": "expiryTime",
+    "e": "expiryRequiresAutomaticTime",
+    "f": "hwidLockEnabled",
+    "g": "hwids",
+    "h": "loginHwidEnabled",
+    "i": "loginHwidScheme",
+    "j": "loginHwidAuthorizationRequired",
+    "k": "legacyHwidEnabled",
+    "l": "mobileDataOnly",
+    "m": "blockRoot",
+    "n": "legacyExtraProtectionEnabled",
+    "o": "providerLockEnabled",
+    "p": "providerCodes",
+    "q": "providerMatchOperatorName",
+    "r": "countryLockEnabled",
+    "s": "countryCodes",
+    "t": "blockApplicationsEnabled",
+    "u": "blockedApplications",
+    "v": "note",
+    "w": "sshBannerAsNote",
+    "x": "tunnelBanner",
+}
+# The tunnelBanner ("x") carries its own nested JSON with single letters;
+# expand it the same way: v = version, s = style ("custom"), h = content.
+BANNER_KEY_MAP = {
+    "v": "version",
+    "s": "style",
+    "h": "content",
+}
+
+
+def _norm_prot_v4(raw: Any) -> Any:
+    if not isinstance(raw, dict):
+        return raw
+    protections = {V4_PROTECTION_KEY_MAP.get(k, k): v for k, v in raw.items()}
+    banner = protections.get("tunnelBanner")
+    if isinstance(banner, dict):
+        protections["tunnelBanner"] = {
+            BANNER_KEY_MAP.get(k, k): v for k, v in banner.items()
+        }
+    return protections

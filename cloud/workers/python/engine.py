@@ -180,6 +180,12 @@ _C8_FILE_ENGINES = {
     "irfan": ("decoders/Python/apps/IrfanVPN/file_decoder.py", "IRFAN VPN V3"),
     "katiba": ("decoders/Python/apps/KatibaVPN/file_decoder.py", "Katiba VPN v1.11.06.1"),
     "txtunnel": ("decoders/Python/apps/Tx_Tunnel/txtunnel_file_decoder.py", "Tx Tunnel v1.10.11.3"),
+    # C8 (2026-11-26 integration): NadiaVPN 1.4.6, FILE_ONLY, no
+    # catalog (owner decision). The supplied FILE_ROUTES override this
+    # entry in load_runtime_file_engines(); the entry below keeps the
+    # C0/C8 inventory test (file-formats vs _C8_FILE_ENGINES)
+    # consistent.
+    "nad": ("decoders/Python/apps/NadiaVPN/file_decoder.py", "NadiaVPN 1.4.6"),
 }
 
 def load_runtime_file_engines() -> dict[str, dict[str, str]]:
@@ -570,7 +576,7 @@ def decode_file(suffix: str, contents: bytes, *, timeout: int = TIMEOUT_SECONDS,
     elif suffix == "eut" and not is_eut_new:
         engine = load_file_engines()["eut"]
     if credentials is not None:
-        allowed = {"password", "hwid"} if suffix in ("hc", "sn") else {"password", "publicKey", "recipientKey"} if suffix == "npvs" else {"password"} if suffix in ("tut", "ua", "1ftnl", "v2box", "xveon", "xvn", "tpc", "pulse") or is_hex_custom else None
+        allowed = {"password", "hwid"} if suffix in ("hc", "sn", "nad") else {"password", "publicKey", "recipientKey"} if suffix == "npvs" else {"password"} if suffix in ("tut", "ua", "1ftnl", "v2box", "xveon", "xvn", "tpc", "pulse") or is_hex_custom else None
         if allowed is None or not isinstance(credentials, dict) or set(credentials) - allowed:
             raise DecodeFailure("CREDENTIALS_NOT_ALLOWED")
         for name, maximum in (("password", 4096), ("hwid", 128), ("publicKey", 128), ("recipientKey", 16384)):
@@ -830,7 +836,7 @@ def decode_text(text: str, *, timeout: int = TIMEOUT_SECONDS, credentials: dict 
         raise DecodeFailure("INVALID_REQUEST")
     if credentials is not None:
         if (not isinstance(credentials, dict) or set(credentials) != {"password"} or
-                not (text.strip().lower().startswith(("ua://", "v2box://", "1ftunnel://", "xveontunnel://", "xveon://", "xvn://")) or text.strip().startswith(
+                not (text.strip().lower().startswith(("ua://", "v2box://", "1ftunnel://", "xveontunnel://", "xveon://", "xvn://", "nad://sec2:", "nad://pw2:", "nad://")) or text.strip().startswith(
                     ("1FTnl.", "1FT1.", "1FTlb.", "1ftunnel://1FTnl/", "1ftunnel://1FT1/")) or
                     any(text.strip().lower().startswith(prefix) and
                         len(text.strip()) > len(prefix) for prefix in

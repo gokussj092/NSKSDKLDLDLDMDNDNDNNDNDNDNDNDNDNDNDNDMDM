@@ -31,7 +31,8 @@ test("Cloud catalog advertises bounded file, text and online reference formats",
      x.name==="Dark Tunnel" && x.kind==="text"));
  assert(formats.every(x=>!("url" in x)&&!("route" in x)&&!("key" in x)));
  assert.equal(new Set(formats.map(x=>x.prefix.toLowerCase())).size,formats.length);
- assert.equal(published.formats.length,287);
+ assert(formats.some(x=>x.prefix==="nad://" && x.suffix==="nad" && x.name==="NadiaVPN" && x.kind==="text"));
+ assert.equal(published.formats.length,288);
 });
 
 test("Untrusted catalog cannot select worker modules, URLs, scripts or duplicate prefixes",()=>{

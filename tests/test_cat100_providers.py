@@ -51,12 +51,13 @@ def _synthetic_network(name):
 class Cat100Providers(unittest.TestCase):
     def test_registry_counts_and_names(self):
         extended = load_runtime_file_engines()
-        self.assertEqual(len(extended), 287)
-        for suffix in ("pulse", "irfan", "katiba", "txtunnel"):
+        self.assertEqual(len(extended), 288)
+        for suffix in ("pulse", "irfan", "katiba", "txtunnel", "nad"):
             self.assertIn(suffix, extended)
             self.assertEqual(extended[suffix]["phase"], "C8")
         self.assertEqual(extended["ar"]["name"], "AR PRO VPN 2.0")
         self.assertEqual(extended["mehaf"]["name"], "Mehaf VPN 1.0.9.20")
+        self.assertEqual(extended["nad"]["name"], "NadiaVPN 1.4.6")
 
     def test_msy_catalog_roundtrip(self):
         # Raw catalog shape: obfuscated keys (v_k7/s_nd/c_mx) and raw

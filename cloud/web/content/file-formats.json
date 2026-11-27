@@ -1567,6 +1567,17 @@
       "credentialFields": []
     },
     {
+      "suffix": "nad",
+      "name": "NadiaVPN 1.4.6",
+      "kind": "file",
+      "offlineSupported": false,
+      "cloudSupported": true,
+      "credentialFields": [
+        "password",
+        "hwid"
+      ]
+    },
+    {
       "suffix": "nd4",
       "name": "Generic AES-GCM / PBKDF2",
       "kind": "file",

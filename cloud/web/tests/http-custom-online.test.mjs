@@ -154,7 +154,7 @@ test('older Cloud APKs can paste hccloud:// in the existing text editor, no APK 
  }
  const c=catalog();
  assert(c.textFormats.some(x=>x.prefix==='hccloud://' && x.suffix==='hc' && x.kind==='cloud'));
- assert.equal(c.textCount,83); // 77 + 7net:// + 7netvpn:// + netfluxvpn:// + maya:// + pmtunnellite:// + rmplite:// (2026-11-22)
+ assert.equal(c.textCount,91); // 90 + nad:// (2026-11-26). One nad:// entry: the text-format validator rejects the nad://sec2: / nad://pw2: spellings (no ':' in the path), while startswith dispatch still tells the three sub-schemes apart.
 });
 
 test('legacy aliases reject foreign domains and cannot be used as an unrestricted proxy',()=>{
