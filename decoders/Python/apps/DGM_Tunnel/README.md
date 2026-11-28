@@ -9,14 +9,13 @@
   The app parses the first 500 profiles, filters, dedupes and takes
   the first 40.
 - **Rotating feed, no catalog version:** the feed changes daily, so
-  a later re-fetch returns a different 40. The snapshot is
-  identified by `fetched_at`, not by a version number. This is the
-  app's own behaviour. Precedent: Sentinel Tunnel (CAT 102) is also
-  a public rotating feed (VPNGate) served as a card.
+  a later re-fetch returns a different 40. The snapshot carries no
+  version number and no fetch timestamp. This is the app's own
+  behaviour. Precedent: Sentinel Tunnel (CAT 102) is also a public
+  rotating feed (VPNGate) served as a card.
 - **Live verification 2026-11-28:** feed 8,880 lines / 8,873 entries,
   500 parsed, 57 rejected, 40 profiles, all Shadowsocks (10:05 UTC);
-  re-run 11:12 UTC reproduced the identical 40 (only `fetched_at`
-  differs).
+  re-run 11:12 UTC reproduced the identical 40.
 - **Bridge:** `server_catalog_decoder.run(bytes)` decodes
   broker-downloaded feed bytes (no network in `run()`).
   `dgm_tunnel.py` also decodes links/files and sealed

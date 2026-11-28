@@ -69,8 +69,10 @@ aes-256-gcm x2, 2022-blake3-aes-128-gcm x1), ports 443 x23, 8388 x2 and
 assorted high ports. There are no payloads and no networks in this
 catalog: it is 40 server profiles, not a Servers/Networks catalog.
 The feed is a rolling third-party list, so the 40 change as its head
-moves; the JSON records fetched_at, feed_lines and the rejection counts
-for the snapshot. Rejected counts by reason for this snapshot: 26
+moves. The result JSON holds only the app identification and the 40
+profiles; the fetch diagnostics (source, fetched_at, feed lines/entries,
+parsed/rejected counts and rejection reasons) live in REPORTE.md, not in
+the result. Rejected counts by reason for this snapshot: 26
 unsupported scheme (hysteria2/hy2/ssr), 24 raw non-ASCII in the link
 (Java URI), 2 security=reality, 2 transport=xhttp, 2 bad Base64/UTF-8
 in ss://, 1 Shadowsocks method not supported.
@@ -132,7 +134,6 @@ MAX_DEPTH = 64
 MAX_NODES = 1_000_000
 
 FEED_URL = "https://raw.githubusercontent.com/barry-far/V2ray-config/main/All_Configs_Sub.txt"
-SOURCE_NAME = "barry-far / V2ray-Config (GitHub)"
 USER_AGENT = "DGMTunnel/1.5"
 APP_PACKAGE = "com.dgmtunnel.app"
 APP_VERSION_NAME = "15.11.2026"
@@ -803,29 +804,26 @@ def apply_free_server_catalog(profiles):
     return out
 
 
-def decode_feed_catalog(data: bytes, fetched_at: str | None = None) -> dict:
+def decode_feed_catalog(data: bytes) -> dict:
     """Feed bytes -> catalog dict, exactly as FreeServerCatalog does.
 
     Bridge entry point used by server_catalog_decoder.run(): the broker
     downloads the feed and hands the raw bytes here. Parses the first
     500 profiles, filters, dedupes and takes the first 40 (all fields
     in clear text; the feed is plain text, no encryption). The snapshot
-    has NO catalog version number: it is identified by fetched_at (UTC,
-    stamped here when not supplied). The feed is ROTATING: a later
-    re-fetch returns a different 40. Result has no download APIs, only
-    the decoded catalog data. Raises DecodeError on empty/oversize
-    input or undecodable text; an empty profile list is NOT an error
-    here (the adapter rejects it) - a feed with zero parseable lines
-    still returns its counts.
+    has NO catalog version number and no fetch timestamp: the feed is
+    ROTATING, so a later re-fetch returns a different 40. Result holds
+    only the app identification and the profiles, no download APIs,
+    no diagnostics. Raises DecodeError on empty/oversize input or
+    undecodable text; an empty profile list is NOT an error here
+    (the adapter rejects it) - a feed with zero parseable lines
+    still returns an empty profiles list.
     """
     if not isinstance(data, (bytes, bytearray)) or not data:
         raise DecodeError("EMPTY_FEED", "Feed vacío.")
     if len(data) > MAX_BYTES:
         raise DecodeError("SIZE_LIMIT", "La entrada supera el límite de tamaño.")
     text = data.decode("utf-8")
-    feed_lines = len(text.splitlines())
-    feed_entries = len([line for line in text.splitlines()
-                        if line.strip() and not line.strip().startswith("#")])
     profiles, errors = parse_text(text, limit=PARSE_LIMIT)
     for prof in profiles:
         if "source_uri" not in prof:
@@ -842,15 +840,8 @@ def decode_feed_catalog(data: bytes, fetched_at: str | None = None) -> dict:
         cfg = prof["config"]
         prof["source_uri"] = src_by_key.get(
             (cfg["protocol"], cfg["server"], cfg["port"], cfg["uuid"]), "")
-    if fetched_at is None:
-        fetched_at = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
     return {"app": "DGM Tunnel", "package": APP_PACKAGE,
             "versionName": APP_VERSION_NAME, "versionCode": APP_VERSION_CODE,
-            "source": SOURCE_NAME, "fetched_at": fetched_at,
-            "feed_lines": feed_lines, "feed_entries": feed_entries,
-            "parsed_profiles": len(profiles),
-            "rejected_entries": len(errors),
-            "rejected_reasons": _count_reasons(errors),
             "profiles": final_profiles}
 
 
@@ -1186,9 +1177,6 @@ def main(argv=None) -> int:
             raw = fetch_feed(args.url)
             fetched_at = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
             text = raw.decode("utf-8")
-            feed_lines = len(text.splitlines())
-            feed_entries = len([l for l in text.splitlines()
-                                if l.strip() and not l.strip().startswith("#")])
             profiles, errors = parse_text(text, limit=args.limit)
             catalog_mode = not args.all
         elif args.stdin:
@@ -1198,7 +1186,6 @@ def main(argv=None) -> int:
                 raise DecodeError("SIZE_LIMIT", "La entrada supera el límite de tamaño.")
             profiles, errors = _open_maybe_share(text, args)
             catalog_mode = args.catalog
-            feed_lines = feed_entries = None
         elif args.file is not None:
             data = args.file.read_bytes()
             if len(data) > MAX_BYTES:
@@ -1206,7 +1193,6 @@ def main(argv=None) -> int:
             text = data.decode("utf-8")
             profiles, errors = _open_maybe_share(text, args)
             catalog_mode = args.catalog
-            feed_lines = feed_entries = None
         else:
             parser.error("se requiere un archivo, --url o --stdin (o --self-test)")
         for p in profiles:
@@ -1227,11 +1213,6 @@ def main(argv=None) -> int:
                     (c["protocol"], c["server"], c["port"], c["uuid"]), "")
             doc = {"app": "DGM Tunnel", "package": APP_PACKAGE,
                    "versionName": APP_VERSION_NAME, "versionCode": APP_VERSION_CODE,
-                   "source": SOURCE_NAME, "fetched_at": fetched_at,
-                   "feed_lines": feed_lines, "feed_entries": feed_entries,
-                   "parsed_profiles": len(profiles),
-                   "rejected_entries": len(errors),
-                   "rejected_reasons": _count_reasons(errors),
                    "profiles": final_profiles}
         else:
             doc = {"app": "DGM Tunnel", "package": APP_PACKAGE,
@@ -1261,15 +1242,6 @@ def main(argv=None) -> int:
                           "message": "No se pudo leer o escribir el archivo."}),
               file=sys.stderr)
         return 2
-
-
-def _count_reasons(errors):
-    from collections import Counter
-    reasons = Counter()
-    for e in errors:
-        msg = e.split(" : ", 1)[1] if " : " in e else e
-        reasons[msg] += 1
-    return dict(reasons)
 
 
 def _share_envelope_text(text: str):

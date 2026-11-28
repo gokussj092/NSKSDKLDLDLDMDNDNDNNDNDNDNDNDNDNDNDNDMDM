@@ -7,9 +7,9 @@
     "liveProfiles": 40,
     "liveRejected": 57,
     "liveVerified": true,
-    "liveVersion": "none - rotating feed, snapshot identified by fetched_at",
+    "liveVersion": "none - rotating feed, no snapshot identifier",
     "method": "GET https://raw.githubusercontent.com/barry-far/V2ray-config/main/All_Configs_Sub.txt with User-Agent: DGMTunnel/1.5, 15 s timeouts, no redirects. Plain text, no encryption. App parses the first 500 profiles, filters (no SSH, no proxy), dedupes by protocol:server:port:uuid, takes the first 40. Result has no download APIs, only decoded data.",
-    "notes": "ROTATING feed: a later re-fetch returns a different 40 (the app's own behaviour, not an error). Live re-run 2026-11-28 11:12 UTC reproduced the 10:05 snapshot exactly (identical 40 profiles, same 8,880 lines / 500 parsed / 57 rejected; only fetched_at differs). No catalog version number by design. Precedent: Sentinel Tunnel (CAT 102) is also a public rotating feed served as a card. File/link decoding (darktunnel://, dgmtunnel://, vless/vmess/trojan/ss/ssh, DGMTUNNEL_SHARE v2) is delivered in dgm_tunnel.py but NOT wired in this catalog-only delivery (engine.py / text_bridge.py / registry untouched). File/text routes (dgmtunnel://, darktunnel://, .eyj/.dgm) are wired by CAT 103 as well.",
+    "notes": "ROTATING feed: a later re-fetch returns a different 40 (the app's own behaviour, not an error). Live re-run 2026-11-28 11:12 UTC reproduced the 10:05 snapshot exactly (identical 40 profiles, same 8,880 lines / 500 parsed / 57 rejected). No catalog version number by design. Precedent: Sentinel Tunnel (CAT 102) is also a public rotating feed served as a card. File/link decoding (darktunnel://, dgmtunnel://, vless/vmess/trojan/ss/ssh, DGMTUNNEL_SHARE v2) is delivered in dgm_tunnel.py but NOT wired in this catalog-only delivery (engine.py / text_bridge.py / registry untouched). File/text routes (dgmtunnel://, darktunnel://, .eyj/.dgm) are wired by CAT 103 as well.",
     "url": "https://raw.githubusercontent.com/barry-far/V2ray-config/main/All_Configs_Sub.txt",
     "validatedOn": "2026-11-28"
   },

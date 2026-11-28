@@ -225,7 +225,7 @@ const PROVIDERS = Object.freeze({
   // JyFast's X-IGNIX-SIG header).
   "v2ray-injector": {url:"https://xraytunnel-config.admin6795.workers.dev/api/config",agent:"XrayTunnel/1.0",headers:{"Accept":"application/json","X-API-KEY":"a112be46639d73d581813ecd2a382c6b"}},
   // Live snapshot validated 2026-11-28 (rotating public feed, no catalog
-  // version: snapshot identified by fetched_at; 40 profiles, all Shadowsocks,
+  // version, no snapshot timestamp; 40 profiles, all Shadowsocks,
   // parsed 500 / rejected 57; identical 40 on re-run 11:12). Plain GET, no
   // headers, no auth - exactly like the app (UA "DGMTunnel/1.5"); the app
   // never follows redirects, and this id is in the no-redirect list below.

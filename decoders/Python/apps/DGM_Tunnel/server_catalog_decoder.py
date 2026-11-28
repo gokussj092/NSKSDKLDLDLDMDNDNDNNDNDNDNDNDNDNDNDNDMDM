@@ -14,20 +14,19 @@ Feed (live, FreeServerCatalog.fetch):
 
 ROTATING FEED, NO CATALOG VERSION: the feed is a third-party list
 that changes daily, so a later re-fetch returns a different 40.
-The snapshot carries NO version number; it is identified by
-fetched_at (UTC, stamped at decode time). This is the app's own
-behaviour, not an error. Precedent: Sentinel Tunnel (CAT 102) is
-also a public rotating feed (VPNGate) served as a card.
+The snapshot carries NO version number and no fetch timestamp;
+the result holds only the app identification and the profiles.
+This is the app's own behaviour, not an error. Precedent:
+Sentinel Tunnel (CAT 102) is also a public rotating feed
+(VPNGate) served as a card.
 
 The result is the decoded catalog only (app, package, versionName,
-versionCode, source, fetched_at, feed_lines, feed_entries,
-parsed_profiles, rejected_entries, rejected_reasons, profiles) -
-no download APIs, no credentials, no keys.
+versionCode, profiles) - no download APIs, no credentials, no keys.
 
 VERIFIED_LIVE 2026-11-28: feed 8,880 lines / 8,873 entries,
 500 parsed, 57 rejected, 40 profiles, all Shadowsocks (10:05 UTC).
-Re-run 11:12 UTC: identical 40 profiles, same counts; only
-fetched_at differs (feed unchanged between the two runs).
+Re-run 11:12 UTC: identical 40 profiles (feed unchanged between
+the two runs).
 """
 from __future__ import annotations
 
