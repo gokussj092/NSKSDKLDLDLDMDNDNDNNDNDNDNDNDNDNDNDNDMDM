@@ -17,9 +17,9 @@ import sys
 from pathlib import Path
 
 if __package__:
-    from .sni_tunnel import SniError, b64std_decode, fmt_ts, open_v2rc, parse_link
+    from .sni_tunnel import SniError, b64std_decode, fmt_ts, open_v2rc, parse_link, parse_v2rc_envelope
 else:
-    from sni_tunnel import SniError, b64std_decode, fmt_ts, open_v2rc, parse_link
+    from sni_tunnel import SniError, b64std_decode, fmt_ts, open_v2rc, parse_link, parse_v2rc_envelope
 
 
 class _CredentialError(ValueError):
@@ -35,10 +35,20 @@ class _CredentialError(ValueError):
 
 
 def _read_password() -> str | None:
-    """One-shot stdin credentials ({} when the worker sent none)."""
+    """One-shot stdin credentials ({} when the worker sent none).
+
+    Non-blocking: never hang waiting for credentials that never arrive
+    (same class as the REESE engine-mode hang: a blocking stdin read on
+    an open pipe with no EOF). If nothing is ready to read, there are no
+    credentials.
+    """
     try:
+        import select
+        ready, _, _ = select.select([sys.stdin.buffer], [], [], 0)
+        if not ready:
+            return None
         raw = sys.stdin.buffer.read(8193)
-    except OSError:
+    except (OSError, ValueError):
         return None
     if not raw:
         return None
@@ -98,6 +108,17 @@ def decode_text(value: str, password: str | None = None) -> str | None:
     """
     if not isinstance(value, str) or not value.strip():
         return None
+    # Expired links are dead: never ask for a password for one, and never
+    # open one even with the right password (the app refuses expired
+    # links). Fail generically (None -> DECODE_FAILED), no "expired"
+    # signal: the owner declined surfacing an expiry message.
+    # Check the OUTER expiry before any password attempt, so a wrong
+    # password on an expired link also fails generically (not AUTH_FAILED).
+    try:
+        if parse_v2rc_envelope(value.strip()).get("expired"):
+            return None
+    except SniError:
+        pass  # let open_v2rc report the malformed envelope below
     try:
         result = open_v2rc(value.strip(), password=password)
     except SniError as error:
@@ -106,6 +127,9 @@ def decode_text(value: str, password: str | None = None) -> str | None:
             raise _CredentialError("AUTH_FAILED") from None
         if "requires a password" in message:
             raise _CredentialError("PASSWORD_REQUIRED") from None
+        return None
+    # Inner expiry is only known after the outer layer decrypts.
+    if result.get("inner_expired"):
         return None
     if result["config"] is None and result["password_envelope"] is not None:
         # Sealed behind the password layer; open_v2rc reports this as a
