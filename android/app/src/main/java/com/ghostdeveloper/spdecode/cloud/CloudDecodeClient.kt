@@ -434,12 +434,13 @@ internal class CloudDecodeClient(context: Context) {
     }
 
     suspend fun decodeText(text: String, password: ByteArray? = null,
-                           onPhase:suspend (TransferPhase)->Unit = {}): String {
+                           onPhase:suspend (TransferPhase)->Unit = {},
+                           routes:List<CloudTextRoute> = emptyList()): String {
         if(HttpCustomCloudReference.matches(text)) {
             if(password!=null)throw IOException("CLOUD_CREDENTIALS_NOT_ALLOWED")
             return decodeHttpCustomReference(text,onPhase)
         }
-        if(password != null && (!CloudCredentialPolicy.textAcceptsPassword(text) ||
+        if(password != null && (!CloudCredentialPolicy.textAcceptsPassword(text,routes) ||
                 password.isEmpty() || password.size > 4096))
             throw IOException("CLOUD_CREDENTIALS_NOT_ALLOWED")
         val body=JSONObject().put("text",text)

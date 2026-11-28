@@ -36,13 +36,26 @@ internal object CloudCredentialPolicy {
     fun fileAcceptsPassword(suffix:String):Boolean = suffix in filePasswords
     fun fileNeedsPasswordDialog(suffix:String):Boolean = suffix in simpleDialogs
 
-    fun textAcceptsPassword(text:String):Boolean {
+    /**
+     * Fixed list first (fallback when the catalog snapshot is missing or
+     * predates text metadata), then any prefix the server published in the
+     * catalog snapshot (textRoutes). Same match as CloudTextFormats.identify():
+     * case-insensitive prefix with at least one payload char. The hc online
+     * references (kind "cloud", suffix "hc") are not text decodes and never
+     * open this gate; HttpCustom references reject passwords separately.
+     */
+    fun textAcceptsPassword(text:String,routes:List<CloudTextRoute> = emptyList()):Boolean {
         val candidate=text.trim()
-        return (candidate.startsWith("ua://",ignoreCase=true) &&
+        if((candidate.startsWith("ua://",ignoreCase=true) &&
             candidate.length>"ua://".length) ||
             npvPrefixes.any { candidate.startsWith(it,ignoreCase=true) &&
                 candidate.length>it.length } ||
             onefPrefixes.any { candidate.startsWith(it) &&
-                candidate.length>it.length }
+                candidate.length>it.length }) return true
+        return routes.any { route ->
+            !(route.kind=="cloud" && route.suffix=="hc") &&
+                candidate.length>route.prefix.length &&
+                candidate.startsWith(route.prefix,ignoreCase=true)
+        }
     }
 }

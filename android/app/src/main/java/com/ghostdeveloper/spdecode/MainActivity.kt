@@ -1408,7 +1408,8 @@ class MainActivity : ComponentActivity() {
                 historyLoad?.await()
                 val decoded=if(BuildConfig.SPDECODE_CLOUD_ENABLED) {
                     cloudClient.decodeText(userText,password,
-                        onPhase={phase->markCloudProgress(generation,phase)})
+                        onPhase={phase->markCloudProgress(generation,phase)},
+                        routes=textRoutes)
                 } else withContext(Dispatchers.Default) {
                     TextProtocolDecoder.decode(this@MainActivity,candidate)
                 }
@@ -1445,7 +1446,7 @@ class MainActivity : ComponentActivity() {
             catch(error:Exception){if(generation==importGeneration) {
                 if(BuildConfig.SPDECODE_CLOUD_ENABLED && password==null &&
                     error is CloudDecodeClient.Failure && error.code=="PASSWORD_REQUIRED" &&
-                    CloudCredentialPolicy.textAcceptsPassword(userText)) {
+                    CloudCredentialPolicy.textAcceptsPassword(userText,textRoutes)) {
                     pendingCloudPasswordText=PendingCloudPasswordText(userText,candidate.app)
                     return@launch
                 }

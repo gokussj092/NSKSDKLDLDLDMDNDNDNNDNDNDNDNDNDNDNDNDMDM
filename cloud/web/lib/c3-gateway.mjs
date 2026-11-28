@@ -11,6 +11,7 @@ import {providerAllowed} from "./c12-provider-controls.mjs";
 import { maintenanceEnabled, serviceMaintenanceEnabled, recordWorkerResult } from "./c6-ops-store.mjs";
 import {admissionPolicy} from "./c11-play-admission.mjs";
 import {publicFormats} from "./file-format-catalog.mjs";
+import {publicTextFormats} from "./text-format-catalog.mjs";
 import {allowsHcPartial} from "./hc-partial-result.mjs";
 import {takeStreakAccountToken,withDecodeStreak} from "./commerce/decode-account-streak.mjs";
 import {takePlayTesterFields} from "./commerce/play-testers.mjs";
@@ -144,10 +145,18 @@ function validatePayload(kind,payload) {
           throw Object.assign(new Error("credentials"),{code:"INVALID_CREDENTIALS"});
         return;
       }
-      const passwordFormat=value.toLowerCase().startsWith("ua://") ||
-        ["1FTnl.","1FT1.","1ftunnel://1FTnl/","1ftunnel://1FT1/"].some(prefix=>value.startsWith(prefix)) ||
-        ["npvt://","npvt-ssh://","npvt-vless://","npvt-vmess://","npv://"].some(prefix=>
-          value.toLowerCase().startsWith(prefix) && value.length>prefix.length);
+      // Password retries are governed by the published text catalog, not by
+      // a second hardcoded list: any published text format may be retried
+      // with a password, and the worker stays the authority on whether one
+      // is actually required. Open standard proxy URIs (vmess/vless/trojan)
+      // are self-contained links that are never password-gated, so they stay
+      // rejected here even though the catalog lists them as text formats.
+      // Cloud references (kind "cloud") are not decodable text payloads and
+      // keep their own branches; only kind "text" entries match.
+      const lower=value.toLowerCase();
+      const passwordFormat=!["vmess://","vless://","trojan://"].some(prefix=>lower.startsWith(prefix)) &&
+        publicTextFormats().some(entry=>entry.kind==="text" &&
+          lower.startsWith(entry.prefix.toLowerCase()) && value.length>entry.prefix.length);
       if(!passwordFormat ||
          !isRecord(payload.credentials) || Object.keys(payload.credentials).length!==1 ||
          typeof pass!=="string" || !pass.length || Buffer.byteLength(pass,"utf8")>4096)
