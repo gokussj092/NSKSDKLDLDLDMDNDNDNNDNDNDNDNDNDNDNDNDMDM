@@ -841,8 +841,8 @@
       "appDir": "Peru_VPN",
       "name": "Peru VPN",
       "package": "com.peru.vpn",
-      "versionCode": 410,
-      "versionName": "4.1.0",
+      "versionCode": 412,
+      "versionName": "4.1.2",
       "catalogModule": "Peru_VPN.py",
       "extensions": [],
       "textPrefixes": [],
@@ -850,7 +850,7 @@
       "requests": [
         {
           "name": "servers",
-          "url": "https://web.tunneldoom.space/config.json",
+          "url": "https://free.tunneldoom.space/config.json",
           "agent": "Dalvik/2.1.0",
           "method": "GET",
           "headers": {}
@@ -1772,8 +1772,8 @@
       "appDir": "VLX_Tunnel_VPN",
       "name": "VLX Tunnel VPN",
       "package": "dev.jx.clickconnect",
-      "versionCode": 18,
-      "versionName": "VLX v14",
+      "versionCode": 19,
+      "versionName": "v1.11.24.2",
       "catalogModule": "VLX_Tunnel_VPN.py",
       "extensions": [],
       "textPrefixes": [],

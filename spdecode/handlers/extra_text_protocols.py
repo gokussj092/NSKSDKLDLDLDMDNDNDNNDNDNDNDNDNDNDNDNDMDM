@@ -66,6 +66,35 @@ def _stlray_text(value):
     return decode_text(value)
 
 
+def _sni_v2rc_text(value):
+    # SNI Tunnel 1.3.7: v2rc://<sealed> — sealed link, device record
+    # first, else the app-open record; password layer via PBKDF2 +
+    # ChaCha20-Poly1305. The adapter raises with code
+    # PASSWORD_REQUIRED when the config is sealed and no password was
+    # given; the bot has no password prompt for text links yet (same
+    # as NadiaVPN below), so that case is answered in decode_extra_text.
+    from decoders.Python.apps.SNI_Tunnel.file_decoder import decode_text
+    return decode_text(value)
+
+
+def _dgm_text(value):
+    # DGM Tunnel 15.11.2026: dgmtunnel://<base64url JSON> — TunnelConfig
+    # or DarkTunnel node form, or dgmtunnel://share/ sealed
+    # DGMTUNNEL_SHARE v2 envelope. darktunnel:// itself is NOT wired
+    # here: the Dark Tunnel handler already decodes the same node form.
+    from decoders.Python.apps.DGM_Tunnel.file_decoder import decode_text
+    return decode_text(value)
+
+
+def _surya_text(value):
+    # Surya Tunnel 1.6: SVPN1:/SVPN2:/SVPN3:/SVPN4: text shares.
+    # A protected SVPN3:/SVPN4: share without a password raises with
+    # code PASSWORD_REQUIRED; answered in decode_extra_text like the
+    # NadiaVPN case (no password prompt for text links yet).
+    from decoders.Python.apps.Surya_Tunnel.file_decoder import decode_text
+    return decode_text(value)
+
+
 def _xtravpn_text(value):
     # XtraVPN 1.0.36: xtravpn://<blob> — encrypted config blob, B0 key
     # (XtravpnMainActivity.x() accepts text starting with xtravpn://).
@@ -111,6 +140,12 @@ PROTOCOL_HANDLERS = {
     "test://": ("STLRAY", _stlray_text),
     "hyb://": ("STLRAY", _stlray_text),
     "xtravpn://": ("XtraVPN", _xtravpn_text),
+    "v2rc://": ("SNI Tunnel", _sni_v2rc_text),
+    "dgmtunnel://": ("DGM Tunnel", _dgm_text),
+    "svpn1:": ("Surya Tunnel", _surya_text),
+    "svpn2:": ("Surya Tunnel", _surya_text),
+    "svpn3:": ("Surya Tunnel", _surya_text),
+    "svpn4:": ("Surya Tunnel", _surya_text),
 }
 _PREFIXES = tuple(sorted(PROTOCOL_HANDLERS, key=len, reverse=True))
 
@@ -170,12 +205,20 @@ def decode_extra_text(message):
     except Exception as exc:
         code = getattr(exc, "code", None)
         if code == "PASSWORD_REQUIRED":
-            bot.reply_to(
-                message,
-                "Este enlace NadiaVPN tiene contraseña. El bot todavía "
-                "no puede pedir contraseñas para enlaces de texto; el "
-                "descifrado con contraseña por texto queda pendiente.",
-            )
+            if label == "NadiaVPN":
+                bot.reply_to(
+                    message,
+                    "Este enlace NadiaVPN tiene contraseña. El bot todavía "
+                    "no puede pedir contraseñas para enlaces de texto; el "
+                    "descifrado con contraseña por texto queda pendiente.",
+                )
+            else:
+                bot.reply_to(
+                    message,
+                    f"Este enlace {label} tiene contraseña. El bot todavía "
+                    "no puede pedir contraseñas para enlaces de texto; el "
+                    "descifrado con contraseña por texto queda pendiente.",
+                )
             return
         if code in ("HWID_REQUIRED", "HWID_PASSWORD_REQUIRED"):
             bot.reply_to(

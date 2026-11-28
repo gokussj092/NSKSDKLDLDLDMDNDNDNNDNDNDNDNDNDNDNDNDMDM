@@ -312,6 +312,52 @@ def load_decoder_registry(path: Path = DECODERS_PATH) -> dict[str, DecoderSpec]:
             script="decoders/Python/apps/REESE_TUNNEL/reese_tunnel.py", runtime="python"
         )
 
+    # CAT 103 (2026-11-28): SNI Tunnel 1.3.7 (.v2rc), Ultra Custom 15.7
+    # (.ucs), V2Ray Injector 1.4.2 (.v2k), DGM Tunnel 15.11.2026
+    # (.eyj / .dgm). NO "st" block: config_batch_registry already owns
+    # .st for Sentinel Tunnel 4.0.0 and a duplicate would raise at
+    # load; the live bot path goes through decoder_runtime -> engine,
+    # which dispatches .st by content (SPN1/SPW1 -> Surya).
+    if path.resolve() == DECODERS_PATH.resolve():
+        if "v2rc" in registry:
+            raise ValueError("SNI Tunnel decoder conflicts with an existing route")
+        registry["v2rc"] = DecoderSpec(
+            extension="v2rc", name="SNI Tunnel 1.3.7",
+            script="decoders/Python/apps/SNI_Tunnel/file_decoder.py", runtime="python"
+        )
+
+    if path.resolve() == DECODERS_PATH.resolve():
+        if "ucs" in registry:
+            raise ValueError("Ultra Custom decoder conflicts with an existing route")
+        registry["ucs"] = DecoderSpec(
+            extension="ucs", name="Ultra Custom 15.7",
+            script="decoders/Python/apps/Ultra_Custom/file_decoder.py", runtime="python"
+        )
+
+    if path.resolve() == DECODERS_PATH.resolve():
+        if "v2k" in registry:
+            raise ValueError("V2Ray Injector decoder conflicts with an existing route")
+        registry["v2k"] = DecoderSpec(
+            extension="v2k", name="V2Ray Injector 1.4.2",
+            script="decoders/Python/apps/V2Ray_Injector/file_decoder.py", runtime="python"
+        )
+
+    if path.resolve() == DECODERS_PATH.resolve():
+        if "eyj" in registry:
+            raise ValueError("DGM Tunnel decoder conflicts with an existing route")
+        registry["eyj"] = DecoderSpec(
+            extension="eyj", name="DGM Tunnel 15.11.2026",
+            script="decoders/Python/apps/DGM_Tunnel/file_decoder.py", runtime="python"
+        )
+
+    if path.resolve() == DECODERS_PATH.resolve():
+        if "dgm" in registry:
+            raise ValueError("DGM Tunnel decoder conflicts with an existing route")
+        registry["dgm"] = DecoderSpec(
+            extension="dgm", name="DGM Tunnel 15.11.2026",
+            script="decoders/Python/apps/DGM_Tunnel/file_decoder.py", runtime="python"
+        )
+
     return registry
 
 

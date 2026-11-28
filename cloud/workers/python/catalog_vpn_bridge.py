@@ -104,6 +104,8 @@ PROVIDERS = {
     "exoticfast-vpn": "decoders.Python.apps.ExoticFast_VIP.server_catalog_decoder",
     "asl-tunnel": "decoders.Python.apps.ASL_Tunnel.server_catalog_decoder",
     "sentinel-tunnel": "decoders.Python.apps.Sentinel_Tunnel.server_catalog_decoder",
+    "v2ray-injector": "decoders.Python.apps.V2Ray_Injector.server_catalog_decoder",
+    "dgm-tunnel": "decoders.Python.apps.DGM_Tunnel.server_catalog_decoder",
 }
 
 def decode(provider_id: str, payload: bytes) -> str:

@@ -13,7 +13,7 @@ class CloudC8VpnRegistry(unittest.TestCase):
         self.assertEqual(len(canonical),240)
         self.assertEqual(canonical["hxt"]["source"],str((ROOT/"decoders/Python/xor_family.py").resolve()))
         extended=load_runtime_file_engines()
-        self.assertEqual(len(extended),298) # fifty-eight new suffixes; existing suffix overrides stay separate from C0.
+        self.assertEqual(len(extended),303) # sixty-three new suffixes; existing suffix overrides stay separate from C0.
         self.assertIn("/apps/HX_Tunnel_VPN/HX_Tunnel_VPN_archivos.py",extended["hxt"]["source"])
         self.assertNotEqual(canonical["hxt"]["source"],extended["hxt"]["source"])
         self.assertIn("/apps/Royal_Tunnel_VPN/file_decoder.py",extended["roy"]["source"])
@@ -34,6 +34,20 @@ class CloudC8VpnRegistry(unittest.TestCase):
         for suffix in ("hexcm","creeb","awg","1ftnl","tgv","rt","gol","ua","nvpnc","green"):
             self.assertEqual(extended[suffix]["phase"],"C8")
             self.assertTrue(Path(extended[suffix]["source"]).is_file())
+        for suffix in ("v2rc","ucs","v2k","eyj","dgm"):
+            self.assertEqual(extended[suffix]["phase"],"C8")
+            self.assertTrue(Path(extended[suffix]["source"]).is_file())
+        self.assertIn("/apps/SNI_Tunnel/file_decoder.py",extended["v2rc"]["source"])
+        self.assertIn("/apps/Ultra_Custom/file_decoder.py",extended["ucs"]["source"])
+        self.assertIn("/apps/V2Ray_Injector/file_decoder.py",extended["v2k"]["source"])
+        self.assertIn("/apps/DGM_Tunnel/file_decoder.py",extended["eyj"]["source"])
+        self.assertIn("/apps/DGM_Tunnel/file_decoder.py",extended["dgm"]["source"])
+        self.assertIn("/apps/Ultra_Custom/ultra_custom.py",extended["ua"]["source"])
+        self.assertEqual(extended["ua"]["name"],"Ultra Custom 15.7")
+        # .st stays Sentinel-routed in the inventory; Surya is a
+        # content dispatch inside decode_file(), not a new suffix.
+        self.assertIn("/apps/Sentinel_Tunnel/file_decoder.py",extended["st"]["source"])
+        self.assertEqual(extended["st"]["phase"],"C8")
         self.assertIn("/apps/CREEB_VPN/file_decoder.py",extended["crev"]["source"])
         self.assertEqual(extended["cer"],canonical["cer"])
         self.assertEqual(extended["cerv"],canonical["cerv"])

@@ -99,7 +99,7 @@ _C8_FILE_ENGINES = {
     "tgv": ("decoders/Python/apps/TunelGuard_VPN/file_decoder.py", "TunelGuard VPN 12.8"),
     "rt": ("decoders/Python/apps/REESE_TUNNEL/reese_tunnel.py", "REESE TUNNEL"),
     "gol": ("decoders/Python/apps/VPN_PLUS_PERU/vpn_plus_peru.py", "VPN PLUS PERÚ"),
-    "ua": ("decoders/Python/apps/Ultra_Custom/ultra_custom_52.py", "Ultra Custom"),
+    "ua": ("decoders/Python/apps/Ultra_Custom/ultra_custom.py", "Ultra Custom 15.7"),
     "nvpnc": ("decoders/Python/apps/Neutro_VPN/neutro_vpn.py", "Neutro VPN"),
     "green": ("decoders/Python/apps/24clan_VPN_Green/24clan_VPN_Green_archivos.py", "24clan VPN Green"),
     "hxt": ("decoders/Python/apps/HX_Tunnel_VPN/HX_Tunnel_VPN_archivos.py", "HX Tunnel VPN"),
@@ -218,6 +218,26 @@ _C8_FILE_ENGINES = {
     # no-password files and the only correct one for protected files).
     "st": ("decoders/Python/apps/Sentinel_Tunnel/file_decoder.py", "Sentinel Tunnel 4.0.0"),
     "reese": ("decoders/Python/apps/REESE_TUNNEL/reese_tunnel.py", "REESE TUNNEL 3.23.28"),
+    # C8 (2026-11-28 integration): SNI Tunnel 1.3.7 (.v2rc sealed links)
+    # and V2Ray Injector 1.4.2 (.v2k / Xray JSON). Both engines are thin
+    # file_decoder.py adapters over the batch decoders (stdin password
+    # for v2rc, exit 3 PASSWORD_REQUIRED / AUTH_FAILED).
+    "v2rc": ("decoders/Python/apps/SNI_Tunnel/file_decoder.py", "SNI Tunnel 1.3.7"),
+    "v2k": ("decoders/Python/apps/V2Ray_Injector/file_decoder.py", "V2Ray Injector 1.4.2"),
+    # C8 (2026-11-28 integration): Ultra Custom 15.7 subscription files
+    # (.ucs, CSS1 signed documents). .ua files keep their bridge route
+    # (ultra_custom_bridge.py, now on the 15.7 codec); .ucs files run
+    # the app-dir adapter, which passes the password through to locked
+    # member profiles (per-member profile_error, never file-level
+    # PASSWORD_REQUIRED).
+    "ucs": ("decoders/Python/apps/Ultra_Custom/file_decoder.py", "Ultra Custom 15.7"),
+    # C8 (2026-11-28 integration): DGM Tunnel 15.11.2026 share files.
+    # .eyj / .dgm hold the raw DGMTUNNEL_SHARE v2 envelope JSON (same
+    # bytes, only the extension changes); .json / .txt are generic and
+    # are deliberately NOT registered. The adapter also parses plain
+    # links / JSON profiles / Base64 subscriptions in those files.
+    "eyj": ("decoders/Python/apps/DGM_Tunnel/file_decoder.py", "DGM Tunnel 15.11.2026"),
+    "dgm": ("decoders/Python/apps/DGM_Tunnel/file_decoder.py", "DGM Tunnel 15.11.2026"),
 }
 
 def load_runtime_file_engines() -> dict[str, dict[str, str]]:
@@ -380,6 +400,24 @@ def _is_generic_aes_gcm(contents: bytes) -> bool:
         return True
     except (binascii.Error, ValueError):
         return False
+
+
+def _is_surya_st(contents: bytes) -> bool:
+    """Surya Tunnel 1.6 .st files start with the literal SPN1 (v2/v3)
+    or SPW1 (password-protected) magic. A Sentinel Tunnel 4.0.0 .st
+    file can never start with those bytes: its first bytes are the
+    XOR-masked STCF header (ST_KEY + 32-byte block reversal), whose
+    unmasked payload is JSON text, so bytes 12-15 of the plaintext
+    (which select the raw first four bytes) can never be the control
+    bytes SPN1/SPW1 would require. Surya V1 legacy files carry no
+    magic and stay on the Sentinel route (known gap, no regression:
+    the current app writes V3 and the real sample is V3).
+    """
+    if len(contents) < 5:
+        return False
+    if contents[:4] == b"SPW1":
+        return len(contents) > 48
+    return contents[:4] == b"SPN1" and contents[4] in (2, 3)
 
 
 def _is_shield_ost(contents: bytes) -> bool:
@@ -604,6 +642,10 @@ def decode_file(suffix: str, contents: bytes, *, timeout: int = TIMEOUT_SECONDS,
     # - .gv with a generic 3-segment AES-GCM envelope keeps the frozen
     #   C0 Generic AES-GCM/PBKDF2 route; anything else is STLRAY 1.1.36
     #   (TVC codec: raw bytes or a single base64url token, no dots).
+    # - .st starting with SPN1 (v2/v3) or SPW1 is Surya Tunnel 1.6
+    #   (file_decoder.py adapter; stdin password, exit 3
+    #   PASSWORD_REQUIRED); anything else keeps the Sentinel Tunnel
+    #   4.0.0 route, including Surya V1 legacy files (no magic).
     is_hex_custom = suffix == "hexcm" and _is_hex_custom_v3(contents)
     is_vc_tgv = suffix == "tgv" and _is_vc_tgv(contents)
     is_beevpn_bee = suffix == "bee" and _is_beevpn_bee(contents)
@@ -630,8 +672,15 @@ def decode_file(suffix: str, contents: bytes, *, timeout: int = TIMEOUT_SECONDS,
         engine = load_file_engines()["eut"]
     elif suffix == "gv" and _is_generic_aes_gcm(contents):
         engine = load_file_engines()["gv"]
+    elif suffix == "st" and _is_surya_st(contents):
+        engine = {
+            "source": str(ROOT / "decoders/Python/apps/Surya_Tunnel/file_decoder.py"),
+            "runtime": "python",
+            "name": "Surya Tunnel 1.6",
+            "phase": "C8",
+        }
     if credentials is not None:
-        allowed = {"password", "hwid"} if suffix in ("hc", "sn", "nad", "rt", "reese") else {"password", "publicKey", "recipientKey"} if suffix == "npvs" else {"password"} if suffix in ("tut", "ua", "1ftnl", "v2box", "xveon", "xvn", "tpc", "pulse", "st") or is_hex_custom else None
+        allowed = {"password", "hwid"} if suffix in ("hc", "sn", "nad", "rt", "reese") else {"password", "publicKey", "recipientKey"} if suffix == "npvs" else {"password"} if suffix in ("tut", "ua", "ucs", "1ftnl", "v2box", "xveon", "xvn", "tpc", "pulse", "st", "v2rc", "eyj", "dgm") or is_hex_custom else None
         if allowed is None or not isinstance(credentials, dict) or set(credentials) - allowed:
             raise DecodeFailure("CREDENTIALS_NOT_ALLOWED")
         for name, maximum in (("password", 4096), ("hwid", 128), ("publicKey", 128), ("recipientKey", 16384)):
@@ -652,6 +701,9 @@ def decode_file(suffix: str, contents: bytes, *, timeout: int = TIMEOUT_SECONDS,
     protected_npvs = suffix == "npvs"
     protected_v2box = suffix == "v2box"
     protected_pulse = suffix == "pulse"
+    protected_v2rc = suffix == "v2rc"
+    protected_ucs = suffix == "ucs"
+    protected_dgm = suffix in ("eyj", "dgm")
     protected_st = suffix == "st"
     protected_rt = suffix in ("rt", "reese")
     from cloud.workers.python.supplied_bridge import FILE_ROUTES
@@ -670,7 +722,7 @@ def decode_file(suffix: str, contents: bytes, *, timeout: int = TIMEOUT_SECONDS,
         # New-format blobs go to the supplied EUT reader; everything else
         # stays on the frozen eut.py route selected above.
         supplied_file = is_eut_new
-    credential_input = supplied_file or protected_hc or protected_tut or protected_ua or protected_onef or protected_npvs or protected_v2box or protected_pulse or protected_st or protected_rt or is_hex_custom
+    credential_input = supplied_file or protected_hc or protected_tut or protected_ua or protected_ucs or protected_onef or protected_npvs or protected_v2box or protected_pulse or protected_st or protected_rt or protected_v2rc or protected_dgm or is_hex_custom
     source = engine["source"]
     if suffix == "dark":
         source = str(Path(__file__).with_name("dark_bridge.py"))
@@ -778,7 +830,7 @@ def decode_file(suffix: str, contents: bytes, *, timeout: int = TIMEOUT_SECONDS,
 def decode_provider_catalog(provider_id: str, contents: bytes) -> dict:
     """One fixed provider codec, child-isolated; broker performs all network I/O."""
     from cloud.workers.python.supplied_bridge import BY_ID as supplied_providers
-    if provider_id not in ("thailand-vpn", "kham-vpn", "opentunnel-ssh", "md-proxy-vpn", "xxpicore-tunnel", "catnet-vpn", "litron-vpn", "litron-pro-vpn", "speigo-vpn-configs", "speigo-vpn-ssh", "genis-vpn", "speicers-turbo-vpn", "http-conexion", "namo-vpn", "fnf-tunnel-bd", "alsaher-vip", "halcon-r-net", "ha-tunnel-plus", "ultra-tunnel", "zig-tunnel", "enaa-tunnel", "alfaisal-tunnel-plus", "izph-vpn-pro", "vip-snipher-pro", "netcol-vpn", "wolf-custom-vpn", "jyfast-vpn-ultra", "tunneldoom-vpn", "mtm-tunnel-lite", "mnr-tunnel-plus", "bd-net-vpn", "aura-net-vpn", "apna-vpn", "any-vpn", "speicers-pro-vpn", "tx-tunnel", "mm-tunnel", "creeb-vpn", "abowaged-vpn", "7net-vpn", "xhypher-tunnel-pro", "ut-loop-pro-vpn", "turbomx-vpn", "superflash-vpn", "rmp-tunnel-pro", "rmp-tunnel-lite", "rjc-tunnel-pro", "proneet-vpn", "onspace-vpn", "mx-tunnel-pro", "megatunnel", "http-internet-infinito", "24clan-green", "hx-tunnel", "mkk-hyper", "my-tunnel-proxy", "robust-tunnel", "royal-tunnel", "trv-tunnel", "4u-tunnel-lite", "ac-tunnel-vpn", "austroplus-vpn", "http-fenixvpn", "http-jireh", "http-socketclay", "http-wakko", "v2ray-tunnel-plus", "eut-vpn", "focus-vpn-cloud", "freedom-vpn", "tunelguard-vpn", "tunneltweak", "ksh-vpn", "dtunnel-mod", "gcp-vpn", "netflux-vpn", "maya-tun-pro", "pm-tunnel-lite", "am-tunnel-lite", "winzap-vpn", "bshield-net", "ways-tunnel", "msy-vpn", "alsaherfree", "pulse-tunnel", "irfan-vpn", "katiba-vpn", "dtunnel-vpn", "stlray-vpn", "thaivpn-connect", "exoticfast-vpn", "asl-tunnel", "sentinel-tunnel"):
+    if provider_id not in ("thailand-vpn", "kham-vpn", "opentunnel-ssh", "md-proxy-vpn", "xxpicore-tunnel", "catnet-vpn", "litron-vpn", "litron-pro-vpn", "speigo-vpn-configs", "speigo-vpn-ssh", "genis-vpn", "speicers-turbo-vpn", "http-conexion", "namo-vpn", "fnf-tunnel-bd", "alsaher-vip", "halcon-r-net", "ha-tunnel-plus", "ultra-tunnel", "zig-tunnel", "enaa-tunnel", "alfaisal-tunnel-plus", "izph-vpn-pro", "vip-snipher-pro", "netcol-vpn", "wolf-custom-vpn", "jyfast-vpn-ultra", "tunneldoom-vpn", "mtm-tunnel-lite", "mnr-tunnel-plus", "bd-net-vpn", "aura-net-vpn", "apna-vpn", "any-vpn", "speicers-pro-vpn", "tx-tunnel", "mm-tunnel", "creeb-vpn", "abowaged-vpn", "7net-vpn", "xhypher-tunnel-pro", "ut-loop-pro-vpn", "turbomx-vpn", "superflash-vpn", "rmp-tunnel-pro", "rmp-tunnel-lite", "rjc-tunnel-pro", "proneet-vpn", "onspace-vpn", "mx-tunnel-pro", "megatunnel", "http-internet-infinito", "24clan-green", "hx-tunnel", "mkk-hyper", "my-tunnel-proxy", "robust-tunnel", "royal-tunnel", "trv-tunnel", "4u-tunnel-lite", "ac-tunnel-vpn", "austroplus-vpn", "http-fenixvpn", "http-jireh", "http-socketclay", "http-wakko", "v2ray-tunnel-plus", "eut-vpn", "focus-vpn-cloud", "freedom-vpn", "tunelguard-vpn", "tunneltweak", "ksh-vpn", "dtunnel-mod", "gcp-vpn", "netflux-vpn", "maya-tun-pro", "pm-tunnel-lite", "am-tunnel-lite", "winzap-vpn", "bshield-net", "ways-tunnel", "msy-vpn", "alsaherfree", "pulse-tunnel", "irfan-vpn", "katiba-vpn", "dtunnel-vpn", "stlray-vpn", "thaivpn-connect", "exoticfast-vpn", "asl-tunnel", "sentinel-tunnel", "v2ray-injector", "dgm-tunnel"):
         if provider_id not in supplied_providers:
             raise DecodeFailure("UNSUPPORTED_FORMAT")
     if not isinstance(contents, bytes) or not contents:
@@ -893,7 +945,7 @@ def decode_text(text: str, *, timeout: int = TIMEOUT_SECONDS, credentials: dict 
         raise DecodeFailure("INVALID_REQUEST")
     if credentials is not None:
         if (not isinstance(credentials, dict) or set(credentials) != {"password"} or
-                not (text.strip().lower().startswith(("ua://", "v2box://", "1ftunnel://", "xveontunnel://", "xveon://", "xvn://", "nad://sec2:", "nad://pw2:", "nad://")) or text.strip().startswith(
+                not (text.strip().lower().startswith(("ua://", "v2box://", "1ftunnel://", "xveontunnel://", "xveon://", "xvn://", "nad://sec2:", "nad://pw2:", "nad://", "v2rc://", "svpn3:", "svpn4:", "dgmtunnel://share/")) or text.strip().startswith(
                     ("1FTnl.", "1FT1.", "1FTlb.", "1ftunnel://1FTnl/", "1ftunnel://1FT1/")) or
                     any(text.strip().lower().startswith(prefix) and
                         len(text.strip()) > len(prefix) for prefix in

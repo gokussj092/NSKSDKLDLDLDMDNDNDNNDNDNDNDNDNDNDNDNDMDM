@@ -218,6 +218,18 @@ const PROVIDERS = Object.freeze({
   // like the app (UA "SentinelTunnel/2.5"); the analyst script's plain-HTTP
   // fallback is a VM-egress workaround and is NOT reproduced here.
   "sentinel-tunnel": {url:"https://www.vpngate.net/api/iphone/",agent:"SentinelTunnel/2.5"},
+  // Live catalog validated 2026-11-28 (Version 1.0.0, 1,233 servers, 63 configs
+  // at 08:28; 1,216 servers on re-run at 11:10 - the live feed churns daily).
+  // Plain GET with the app's exact headers, including its fixed X-API-KEY
+  // (shipped in the public APK, not an account credential; same precedent as
+  // JyFast's X-IGNIX-SIG header).
+  "v2ray-injector": {url:"https://xraytunnel-config.admin6795.workers.dev/api/config",agent:"XrayTunnel/1.0",headers:{"Accept":"application/json","X-API-KEY":"a112be46639d73d581813ecd2a382c6b"}},
+  // Live snapshot validated 2026-11-28 (rotating public feed, no catalog
+  // version: snapshot identified by fetched_at; 40 profiles, all Shadowsocks,
+  // parsed 500 / rejected 57; identical 40 on re-run 11:12). Plain GET, no
+  // headers, no auth - exactly like the app (UA "DGMTunnel/1.5"); the app
+  // never follows redirects, and this id is in the no-redirect list below.
+  "dgm-tunnel": {url:"https://raw.githubusercontent.com/barry-far/V2ray-config/main/All_Configs_Sub.txt",agent:"DGMTunnel/1.5"},
   "xhypher-tunnel-pro": {url:"https://raw.githubusercontent.com/XyrussProject/infinite88/refs/heads/main/xhyphertunnelpro888.hs",agent:"Xhypher Tunnel Pro/43"},
   "turbomx-vpn": {url:TURBOMX_SOURCES.servers,agent:"TurboMX VPN/143.1.26"},
   "superflash-vpn": {url:SUPERFLASH_SOURCES.servers,agent:"SuperFlash VPN/184.0.1"},
@@ -961,7 +973,7 @@ export async function downloadVpnCatalog(id,source=id==="jyfast-vpn-ultra"?"free
         continue;
       }
       if(answer.redirect!==undefined){
-        if(["kham-vpn","opentunnel-ssh","md-proxy-vpn","xxpicore-tunnel","speigo-vpn-configs","speigo-vpn-ssh","litron-vpn","litron-pro-vpn","genis-vpn","http-conexion","namo-vpn","fnf-tunnel-bd","alsaher-vip","ha-tunnel-plus","ultra-tunnel","mm-tunnel","zig-tunnel","enaa-tunnel","izph-vpn-pro","vip-snipher-pro","netcol-vpn","wolf-custom-vpn","tunneldoom-vpn","mtm-tunnel-lite","mnr-tunnel-plus","bd-net-vpn","aura-net-vpn","apna-vpn","any-vpn","speicers-pro-vpn","7net-vpn","gcp-vpn","netflux-vpn","maya-tun-pro","pm-tunnel-lite","am-tunnel-lite","xhypher-tunnel-pro","focus-vpn-cloud","freedom-vpn","http-internet-infinito","megatunnel","mx-tunnel-pro","rjc-tunnel-pro","rmp-tunnel-pro","rmp-tunnel-lite","http-jireh","winzap-vpn","bshield-net","ways-tunnel","alsaherfree","pulse-tunnel","irfan-vpn","katiba-vpn","stlray-vpn","thaivpn-connect","exoticfast-vpn","asl-tunnel","sentinel-tunnel"].includes(id)||Object.hasOwn(PAIRED_SOURCES,id))fail("REMOTE_NETWORK_DENIED");
+        if(["kham-vpn","opentunnel-ssh","md-proxy-vpn","xxpicore-tunnel","speigo-vpn-configs","speigo-vpn-ssh","litron-vpn","litron-pro-vpn","genis-vpn","http-conexion","namo-vpn","fnf-tunnel-bd","alsaher-vip","ha-tunnel-plus","ultra-tunnel","mm-tunnel","zig-tunnel","enaa-tunnel","izph-vpn-pro","vip-snipher-pro","netcol-vpn","wolf-custom-vpn","tunneldoom-vpn","mtm-tunnel-lite","mnr-tunnel-plus","bd-net-vpn","aura-net-vpn","apna-vpn","any-vpn","speicers-pro-vpn","7net-vpn","gcp-vpn","netflux-vpn","maya-tun-pro","pm-tunnel-lite","am-tunnel-lite","xhypher-tunnel-pro","focus-vpn-cloud","freedom-vpn","http-internet-infinito","megatunnel","mx-tunnel-pro","rjc-tunnel-pro","rmp-tunnel-pro","rmp-tunnel-lite","http-jireh","winzap-vpn","bshield-net","ways-tunnel","alsaherfree","pulse-tunnel","irfan-vpn","katiba-vpn","stlray-vpn","thaivpn-connect","exoticfast-vpn","asl-tunnel","sentinel-tunnel","v2ray-injector","dgm-tunnel"].includes(id)||Object.hasOwn(PAIRED_SOURCES,id))fail("REMOTE_NETWORK_DENIED");
         const next=answer.redirect;
         if(typeof next!=="string"||next.length>2048)fail("REMOTE_NETWORK_DENIED");
         target=new URL(next,dest).href;

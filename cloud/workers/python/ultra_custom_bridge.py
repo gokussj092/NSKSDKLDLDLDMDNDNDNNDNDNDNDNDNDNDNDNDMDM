@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Private Ultra Custom 5.2 file bridge with one-shot stdin credentials.
+"""Private Ultra Custom 15.7 file bridge with one-shot stdin credentials.
 
 The canonical codec is unchanged. Never put passwords in argv, env, stdout
 errors, logs, or the decoded output. Called only by the authenticated worker.
@@ -10,7 +10,7 @@ import json
 import sys
 from pathlib import Path
 
-from decoders.Python.apps.Ultra_Custom import ultra_custom_52 as ultra
+from decoders.Python.apps.Ultra_Custom import ultra_custom as ultra
 
 
 def main() -> int:

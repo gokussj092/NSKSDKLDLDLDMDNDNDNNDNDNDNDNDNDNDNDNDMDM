@@ -47,6 +47,15 @@ CREDENTIAL_FIELDS = {
     # (RSE5 0xC6); the worker accepts both credentials.
     "rt": ["password", "hwid"],
     "reese": ["password", "hwid"],
+    # SNI Tunnel .v2rc links are password-locked (PBKDF2 + ChaCha20);
+    # DGM Tunnel .eyj / .dgm share envelopes are password-locked
+    # (DGMTUNNEL_SHARE v2, PBKDF2 600k + AES-256-GCM); Ultra Custom
+    # .ucs subscriptions carry UAP1-locked member profiles. The worker
+    # accepts a password for all four suffixes.
+    "v2rc": ["password"],
+    "ucs": ["password"],
+    "eyj": ["password"],
+    "dgm": ["password"],
     # HXS3 .hexcm files are password-locked; old Hex Tunnel files need none.
     "hexcm": ["password"],
     "sn": ["password", "hwid"],

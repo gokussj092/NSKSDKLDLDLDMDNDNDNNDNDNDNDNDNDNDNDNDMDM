@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<properties>
+<entry key="file.profileName">Test Profile</entry>
+<entry key="file.appVersionCode">157</entry>
+<entry key="sshServer">example.com</entry>
+<entry key="sshUser">testuser</entry>
+<entry key="sshPass">testpass</entry>
+<entry key="tunnelType">12</entry>
+</properties>

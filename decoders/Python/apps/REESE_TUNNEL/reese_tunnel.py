@@ -107,8 +107,12 @@ TRIM_BYTES = set(b"\x09\x0a\x0b\x0c\x0d\x20")
 PAD_MIN_TOTAL = 262144
 PAD_MAX_TOTAL = 327679
 # SHA-256 of the supplied APK's public signing certificate, not a private key.
-# Used only to open RSE5 C3/C4 exports bound to the exporting APK (3.23.12).
-APK_SIGNER_SHA256 = "D834BF8D60BFEA09A80A51CCD1A77DE3EF966E7833EBB2D0B8DC1F750E38BBA7"
+# Used only to open RSE5 C3/C4 exports bound to the exporting APK.
+# CAT 103 (2026-11-28): corrected to the real 3.23.28 certificate
+# (C7662695...; verified against meta.signer of real .RT exports and
+# keytool -printcert on REESE_TUNNEL_3.23.28_1_s3ua.apk). The old value
+# D834BF8D... did not match any 3.23.28 export. RSE5 0xC6 is unaffected.
+APK_SIGNER_SHA256 = "C76626950DCAFBE0DF30C8646D881FC6466DC0EA4E6316E1895AAF1CB9D2919D"
 MAX_JSON_BYTES = 32 * 1024 * 1024
 MAX_LEGACY_BODY = 2 * 1024 * 1024
 
@@ -389,6 +393,10 @@ def open_envelope(sealed, hwid="", password="", check_import=True):
         raise RSE5Error(ERR_BAD_FORMAT, "inner JSON unreadable: %s" % e)
     meta = env.get("meta") or {}
     config = env.get("config") or {}
+    # CAT 103 (2026-11-28): the banner is a Base64 JPEG (~29 KB) that is
+    # not needed for the config; it is always dropped from the output.
+    # bannerImageEnabled (boolean) is kept.
+    config.pop("bannerImage", None)
     if check_import:
         _check_import(meta, config, hwid)
     return meta, config
@@ -586,6 +594,9 @@ def _legacy_envelope(raw, hwid=""):
             or not isinstance(env.get("config"), dict):
         raise RSE5Error(ERR_BAD_FORMAT, "legacy: expected meta/config envelope")
     meta, config = env["meta"], env["config"]
+    # CAT 103 (2026-11-28): drop the Base64 banner image from the output
+    # (same rule as open_envelope()); bannerImageEnabled is kept.
+    config.pop("bannerImage", None)
     _check_import(meta, config, hwid)
     return meta, config
 
@@ -1088,15 +1099,25 @@ def _stdin_credentials():
     """{"hwid": ..., "password": ...} on stdin (cloud worker contract).
 
     Only when stdin is piped; an interactive terminal is never read.
+    CAT 103 (2026-11-28): NEVER block reading stdin. The old code did a
+    bare sys.stdin.buffer.read(8193): with stdin as an open pipe without
+    EOF (the usual case when a worker launches the decoder without
+    closing stdin) the process hung forever with no output. Now
+    select() with timeout 0 is used first: if no data is already
+    available, {} is returned immediately and nothing is read.
     """
     try:
         if sys.stdin.isatty():
             return {}
         import os
+        import select
         import stat as _stat
         mode = os.fstat(sys.stdin.fileno()).st_mode
         if _stat.S_ISCHR(mode):
             # /dev/null or a terminal: no credentials will ever arrive.
+            return {}
+        ready, _, _ = select.select([sys.stdin], [], [], 0)
+        if not ready:
             return {}
         raw = sys.stdin.buffer.read(8193)
     except (OSError, ValueError):
@@ -1110,6 +1131,25 @@ def _stdin_credentials():
     return creds if isinstance(creds, dict) else {}
 
 
+def _worker_error_name(error):
+    """Machine-readable worker error for a credential RSE5Error, or None.
+
+    CAT 103 (2026-11-28): the same mapping is used by EVERY CLI route
+    (engine form and file/text/seal/selftest subcommands), so the
+    server/app always gets {"workerError": "PASSWORD_REQUIRED"} with
+    exit 3 when an export password is missing, instead of a generic
+    text error with exit 1 on some routes. Native RSE5 codes:
+    2 password missing, 3 HWID missing, 4 auth failure,
+    6 wrong device (HWID-only file, wrong HWID).
+    """
+    return {
+        ERR_PASSWORD_MISSING: "PASSWORD_REQUIRED",
+        ERR_CREDENTIAL_MISSING: "HWID_REQUIRED",
+        ERR_AUTH: "AUTH_FAILED",
+        ERR_WRONG_DEVICE: "AUTH_FAILED",
+    }.get(error.code)
+
+
 def main(argv):
     if len(argv) < 2:
         return _usage()
@@ -1117,7 +1157,14 @@ def main(argv):
     if cmd in ("file", "text", "seal", "selftest"):
         try:
             return _main(argv)
-        except (RSE5Error, LinkError) as e:
+        except RSE5Error as e:
+            worker_error = _worker_error_name(e)
+            if worker_error is not None:
+                sys.stdout.write(json.dumps({"workerError": worker_error}))
+                return 3
+            print("error: %s" % e, file=sys.stderr)
+            return 1
+        except LinkError as e:
             print("error: %s" % e, file=sys.stderr)
             return 1
     # Engine form: reese_tunnel.py <file> [--hwid HWID]
@@ -1161,15 +1208,10 @@ def main(argv):
         # Engine credential contract (same as NadiaVPN / Sentinel): a
         # credential error is exit 3 with {"workerError": ...} on stdout,
         # so engine.decode_file() raises PASSWORD_REQUIRED /
-        # HWID_REQUIRED / AUTH_FAILED instead of DECODE_FAILED. Native
-        # RSE5 codes: 2 password missing, 3 HWID missing, 4 auth
-        # failure, 6 wrong device (HWID-only file, wrong HWID).
-        worker_error = {
-            ERR_PASSWORD_MISSING: "PASSWORD_REQUIRED",
-            ERR_CREDENTIAL_MISSING: "HWID_REQUIRED",
-            ERR_AUTH: "AUTH_FAILED",
-            ERR_WRONG_DEVICE: "AUTH_FAILED",
-        }.get(error.code)
+        # HWID_REQUIRED / AUTH_FAILED instead of DECODE_FAILED. The
+        # mapping lives in _worker_error_name() and is shared with the
+        # file/text/seal/selftest subcommand routes (CAT 103).
+        worker_error = _worker_error_name(error)
         if worker_error is not None:
             sys.stdout.write(json.dumps({"workerError": worker_error}))
             return 3

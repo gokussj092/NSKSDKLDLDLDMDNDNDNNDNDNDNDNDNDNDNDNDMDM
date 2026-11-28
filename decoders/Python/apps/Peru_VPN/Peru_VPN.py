@@ -1,17 +1,17 @@
 #!/usr/bin/env python3
-"""Peru VPN 4.1.0 (com.peru.vpn): catalog decoder, local or explicit HTTPS.
+"""Peru VPN 4.1.2 (com.peru.vpn): catalog decoder, local or explicit HTTPS.
 
 Standalone Python 3.10+, standard library only; no APK needed at runtime.
 For the app's own config files (Zs.png / noobdev body) use
 Peru_VPN_archivos.py. See README.md here.
 
-Method (verified against this APK, versionCode 410, versionName 4.1.0,
+Method (verified against this APK, versionCode 412, versionName 4.1.2,
 a TunnelDoom/SocketClay build):
-  GET https://web.tunneldoom.space/config.json   (plain GET, no auth;
+  GET https://free.tunneldoom.space/config.json   (plain GET, no auth;
   exactly what ConfigUpdateco does with HttpURLConnection; the
   endpoint answers HTTP 403 to a generic Python-urllib User-Agent, so
   the script sends the app's Dalvik User-Agent)
-  -> response body is one Base64 line (631,000 bytes on 2026-11-13)
+  -> response body is one Base64 line (641,872 bytes on 2026-11-28)
   -> Base64 decode -> XOR with SHA-256(b"test_key") cycled (the app's
      StringCrypter, key "test_key") -> drop the first 32 chars (the
      16-byte salt, hex) -> JSON with Version, ReleaseNotes, Servers[]
@@ -43,7 +43,7 @@ from urllib.request import HTTPRedirectHandler, Request, build_opener
 MAX_BYTES = 32 * 1024 * 1024
 MAX_DEPTH = 64
 MAX_NODES = 1_000_000
-CATALOG_URL = "https://web.tunneldoom.space/config.json"
+CATALOG_URL = "https://free.tunneldoom.space/config.json"
 
 # NoobPass.getKey() (com.tunneldoom.sshservice.util.crypt.NoobPass):
 # star() bytes, XORed with cycling "QXWR", then reversed. A format

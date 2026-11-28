@@ -1,0 +1,51 @@
+{
+  "catalog": {
+    "entrypoint": "server_catalog_decoder.py",
+    "liveFeedEntries": 8873,
+    "liveFeedLines": 8880,
+    "liveParsed": 500,
+    "liveProfiles": 40,
+    "liveRejected": 57,
+    "liveVerified": true,
+    "liveVersion": "none - rotating feed, snapshot identified by fetched_at",
+    "method": "GET https://raw.githubusercontent.com/barry-far/V2ray-config/main/All_Configs_Sub.txt with User-Agent: DGMTunnel/1.5, 15 s timeouts, no redirects. Plain text, no encryption. App parses the first 500 profiles, filters (no SSH, no proxy), dedupes by protocol:server:port:uuid, takes the first 40. Result has no download APIs, only decoded data.",
+    "notes": "ROTATING feed: a later re-fetch returns a different 40 (the app's own behaviour, not an error). Live re-run 2026-11-28 11:12 UTC reproduced the 10:05 snapshot exactly (identical 40 profiles, same 8,880 lines / 500 parsed / 57 rejected; only fetched_at differs). No catalog version number by design. Precedent: Sentinel Tunnel (CAT 102) is also a public rotating feed served as a card. File/link decoding (darktunnel://, dgmtunnel://, vless/vmess/trojan/ss/ssh, DGMTUNNEL_SHARE v2) is delivered in dgm_tunnel.py but NOT wired in this catalog-only delivery (engine.py / text_bridge.py / registry untouched). File/text routes (dgmtunnel://, darktunnel://, .eyj/.dgm) are wired by CAT 103 as well.",
+    "url": "https://raw.githubusercontent.com/barry-far/V2ray-config/main/All_Configs_Sub.txt",
+    "validatedOn": "2026-11-28"
+  },
+  "dependencies": [
+    "Python >=3.10; standard library only (PyCryptodome only for sealed DGMTUNNEL_SHARE v2 shares)"
+  ],
+  "deployment": "pending",
+  "engine": "python",
+  "entrypoint": "server_catalog_decoder.py",
+  "files": {
+    "entrypoint": "dgm_tunnel.py",
+    "extensions": [
+      ".eyj",
+      ".dgm"
+    ],
+    "fileDecoder": "file_decoder.py",
+    "method": "Same module decodes links/files (vless/vmess/trojan/ss/ssh, darktunnel://, dgmtunnel://, JSON profiles, DGMTUNNEL_SHARE v2 sealed shares with --share-password). .eyj/.dgm hold the raw DGMTUNNEL_SHARE v2 envelope JSON (same bytes, only the extension changes); .json/.txt are generic and deliberately NOT registered. No own file extension beyond .eyj/.dgm; the app does not use .sks.",
+    "realFileSampleVerified": false,
+    "supported": true
+  },
+  "icon": {
+    "file": "dgm-tunnel.png",
+    "sha256": "54aa072d35298bba6600e502453050d724c4bbbd8824da910e4f176f73213572",
+    "source": "batch19-work/dgm-tunnel/icon.png (512x512)"
+  },
+  "id": "dgm-tunnel",
+  "name": "DGM Tunnel",
+  "package": "com.dgmtunnel.app",
+  "realSampleVerified": true,
+  "texts": {
+    "note": "Own schemes darktunnel:// and dgmtunnel:// (plus standard vless/vmess/trojan/ss/ssh) wired via text_bridge.py and the C8 file_decoder adapter (DGMTUNNEL_SHARE v2, with and without password, via the existing password flow)."
+  },
+  "versionCode": 17,
+  "versionName": "15.11.2026",
+  "textPrefixes": [
+    "dgmtunnel://",
+    "darktunnel://"
+  ]
+}

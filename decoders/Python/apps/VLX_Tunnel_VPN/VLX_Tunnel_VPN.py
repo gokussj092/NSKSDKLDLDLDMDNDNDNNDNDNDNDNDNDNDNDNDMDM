@@ -1,16 +1,16 @@
 #!/usr/bin/env python3
-"""VLX Tunnel VPN (dev.jx.clickconnect) VLX v14: catalog decoder, local or explicit HTTPS.
+"""VLX Tunnel VPN (dev.jx.clickconnect) v1.11.24.2: catalog decoder, local or explicit HTTPS.
 
 Python 3.10+, standard library only: Argon2id (RFC 9106) and AES-256-GCM
 are implemented in pure Python in this file (verified against argon2-cffi
 and PyCryptodome). One envelope decryption takes ~15-20 s in pure stdlib;
-the 4,518 field envelopes need the fast path (argon2-cffi +
+the 4,549 field envelopes need the fast path (argon2-cffi +
 PyCryptodome). Regla SP-DECODE (2026-11-15): el JSON de resultado
 lleva solo los datos del catalogo, todo descifrado, asi que por
 defecto tambien se decodifican los sobres de campo cuando la via
 rapida esta disponible (--no-fields deja la salida con los campos
 cifrados).
-Package dev.jx.clickconnect, versionCode 18, versionName "VLX v14".
+Package dev.jx.clickconnect, versionCode 19, versionName "v1.11.24.2".
 On Google Play and APKPure it appears as "VLX Tunnel VPN" (developer
 sando--k, +500,000 downloads; updated 7 Nov 2026). Fork of v2rayNG
 (com.v2ray.ang) with Sandok/Ultra core (AndroidLibXrayLite, Go,
@@ -29,9 +29,8 @@ No auth, no cookies, no extra headers. The User-Agent is REQUIRED: the
 server answers HTTP 404 to Go-http-client/1.1 and to curl's default UA,
 and HTTP 200 only with "VLX Tunnel VPN" (verified 2026-11-15). The
 server answers HTTP 200, Content-Type text/html; charset=UTF-8. The body
-is a single line of Base64 (1,082,108 bytes on 2026-11-15; 1,092,124 bytes
-on 2026-11-25, SHA-256 d22ba961b6ada30999597c13a8c4d0b855a9806ead3b4a37b795df4da6507eef).
-It is one Argon2id + AES-256-GCM envelope (the same envelope the app's Encrypt()
+is a single line of Base64 (1,082,108 bytes on 2026-11-15). It is one
+Argon2id + AES-256-GCM envelope (the same envelope the app's Encrypt()
 produces), with NO marker letter (body length is 0 mod 4):
 
     Base64( salt[16] || nonce[12] || AES-256-GCM(key, nonce, AAD=salt) )
@@ -43,7 +42,7 @@ decrypt()/Encrypt()/EO()/DO() of this APK and verified by opening the
 real envelopes. Their literal values live ONLY in the KEY_* constants
 below, never in documentation: KEY_LIVE (22 B, "II") opens the live
 catalog; KEY_BUNDLED (20 B, "FIELD") opens the bundled asset
-assets/configfile.json and the 4,518 field envelopes. This decoder tries
+assets/configfile.json and the 4,549 field envelopes. This decoder tries
 II first, then FIELD, and reports which key opened the envelope. The
 decrypted JSON is the Sandok/Ultra-family schema: Version (str),
 ReleaseNotes, Telegram, WhatsApp, Facebook, DefOVPNUser, DefOVPNPass,
@@ -54,13 +53,29 @@ schema of the other providers).
 Bundled asset assets/configfile.json opens with FIELD (verified: GCM tag
 authenticates, JSON parses, Version "1.01", 1 Server, 1 Network).
 
-LIVE STATUS (2026-11-25, re-verified with this script, --url): the
-endpoint above answers HTTP 200 and the live body OPENS with KEY_LIVE --
-Version "23.785", 17 Servers, 731 Networks. Field envelopes (--fields):
-4,560/4,560 open with FIELD, 0 failures. Previous live check 2026-11-15:
-Version "23.759", 19 Servers, 721 Networks, 4,518/4,518 fields. If the
-server rotates the live key, this script reports the live download
-honestly instead of pretending it opened.
+LIVE STATUS (2026-11-28, v1.11.24.2): the endpoint above answers HTTP
+200 and the live body OPENS with KEY_LIVE -- Version "23.794", 16 Servers,
+731 Networks (verified with this script, --url). Field envelopes
+(--fields): 4,549/4,549 open with FIELD, 0 failures. If the server
+rotates the live key, this script reports the live download honestly
+instead of pretending it opened.
+
+v1.11.24.2 NOTES (2026-11-28): the old endpoint above is STILL the live
+one and still opens with the same keys (II / FIELD) -- nothing changed
+in the working path. The new APK also ships a much larger bundled asset
+(assets/configfile.json, 680,700 B vs 5,788 B in v14) and the Go core
+references a new endpoint https://strongteam.co/api/vlxnew/ (a POST
+endpoint that answers {"success":false,"message":"Invalid hash"} without
+a valid hash, and a landing page on GET) plus GET
+https://strongteam.co/api/vlx/ (HTTP 200, Base64 blob). NEITHER the new
+asset NOR the /api/vlx/ blob opens with II or FIELD, and the new keys
+were NOT recovered: the literal key strings are gone from the new
+libgojni.so .rodata, 121 + 51x10 brute-force candidates failed, and the
+dynamic route (running the real Go decryptor under qemu-user) is blocked
+because the Go cgo runtime's inittls TLS scan faults under qemu-user
+(bionic vs glibc TLS layout for Go-created threads). Those two blobs
+are therefore reported as NOT decrypted, not invented. The bundled
+asset in v14 opened with FIELD; the v1.11.24.2 asset does not.
 
 Network Icon values (icon_wifi.png, ...) are local asset file names,
 not URLs; there is no download API anywhere in the catalog (root keys
@@ -101,16 +116,19 @@ ARGON_TIME = 3
 ARGON_MEMORY_KIB = 8192
 ARGON_THREADS = 1
 ARGON_KEY_LEN = 32
-# The two format passwords in libgojni.so .rodata, recovered by
-# disassembly of decrypt()/Encrypt()/EO()/DO() of THIS APK.
-# They are app format constants, not account credentials.
-KEY_LIVE = b"VLXTeamTunnelVPNP@SSII"  # 22 B: decrypt()/Encrypt(), .rodata 0x3a0e2d
-KEY_BUNDLED = b"VLXTeamTunnelVPNP@SS"  # 20 B: EO()/DO(), .rodata 0x39da53
+# The two format passwords, recovered from the v14 libgojni.so .rodata
+# by disassembly of decrypt()/Encrypt()/EO()/DO(). They are app format
+# constants, not account credentials. In v1.11.24.2 the literal strings
+# are NO LONGER in the new libgojni.so .rodata, but the keys are still
+# the live ones: verified 2026-11-28 opening the live catalog (II) and
+# all 4,549 field envelopes (FIELD) of v1.11.24.2.
+KEY_LIVE = b"VLXTeamTunnelVPNP@SSII"  # 22 B: decrypt()/Encrypt() (v14 .rodata 0x3a0e2d)
+KEY_BUNDLED = b"VLXTeamTunnelVPNP@SS"  # 20 B: EO()/DO() (v14 .rodata 0x39da53)
 LIST_FIELDS = ("Servers", "Networks")
 
 # Fast path for field decoding (argon2-cffi + PyCryptodome). The pure
 # stdlib Argon2id below needs ~15-20 s per envelope, so decoding the
-# 4,518 field envelopes is only feasible with the fast path.
+# 4,549 field envelopes is only feasible with the fast path.
 try:
     from argon2.low_level import Type as _Argon2Type, hash_secret_raw as _argon2_fast
     from Crypto.Cipher import AES as _AES_FAST
@@ -563,7 +581,7 @@ def _decode_one_field(value: str) -> tuple[bool, str | None]:
 
 def decode_fields(doc: dict, workers: int = 0, strict: bool = True) -> tuple[dict, dict]:
     """Decode every protected field envelope in a catalog document.
-    Requires argon2-cffi + PyCryptodome: 4,518 envelopes x ~15-20 s in
+    Requires argon2-cffi + PyCryptodome: 4,549 envelopes x ~15-20 s in
     pure stdlib is not viable. In strict mode (default, --fields) it
     fails closed: a single bad tag aborts the whole document instead of
     returning partial credentials. In lenient mode (--fields-partial)
@@ -858,15 +876,20 @@ def main(argv=None) -> int:
     try:
         if args.self_test:
             asset = Path(__file__).with_name("configfile.json")
+            doc = None
             if not asset.exists():
-                print(json.dumps({"error": "SELF_TEST_NO_ASSET",
-                                  "message": "configfile.json no está junto al script."},
+                # v1.11.24.2: the ZIP ships no configfile.json (the new
+                # asset does not open with these keys anyway). Warn and
+                # still run the synthetic round-trips, which verify the
+                # crypto without any fixture.
+                print(json.dumps({"warning": "SELF_TEST_NO_ASSET",
+                                  "message": "configfile.json no está junto al script; se omite la comprobación del asset."},
                                  ensure_ascii=False), file=sys.stderr)
-                return 2
-            doc, key = decode_with_key(_read(asset))
-            print(json.dumps({"self_test": "OK", "key": key, "version": doc.get("Version"),
-                              "servers": len(doc.get("Servers", [])),
-                              "networks": len(doc.get("Networks", []))}, ensure_ascii=False))
+            else:
+                doc, key = decode_with_key(_read(asset))
+                print(json.dumps({"self_test": "OK", "key": key, "version": doc.get("Version"),
+                                  "servers": len(doc.get("Servers", [])),
+                                  "networks": len(doc.get("Networks", []))}, ensure_ascii=False))
             # Round-trip: seal a small catalog JSON with the live key
             # exactly as Encrypt() does (plain Base64, no marker letter:
             # this app has no randomLetter) and open it again.
@@ -878,8 +901,13 @@ def main(argv=None) -> int:
             _doc, _k = decode_with_key(_blob)
             assert _k == "II" and _doc == _sample, "round-trip failed"
             print(json.dumps({"round_trip": "OK", "key": _k, "marker": False}, ensure_ascii=False))
-            # Field sample from the asset (fast path only).
-            if _FAST_CRYPTO:
+            # Field sample from the asset (fast path only; skipped when
+            # there is no asset next to the script).
+            if doc is None:
+                print(json.dumps({"field_sample": "SKIPPED",
+                                  "message": "sin configfile.json junto al script"},
+                                 ensure_ascii=False))
+            elif _FAST_CRYPTO:
                 _stats = decode_fields_sample(doc)
                 print(json.dumps({"field_sample": "OK", **_stats}, ensure_ascii=False))
             else:

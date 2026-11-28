@@ -35,6 +35,57 @@ parsing, `.reese` engine entry presence is checked in the fragment).
 - A profile with a device-local vault is refused (needs the original
   Android Keystore).
 
+## Update 2026-11-28 — lote 20: two real `.RT` files VERIFIED_REAL + decoder fix
+
+Two real `.RT` files exported by REESE TUNNEL 3.23.28 were verified
+in lote 20 (batch work dir `~/workspace/batch20-work/reese-rt/`):
+
+| File | Size | Result |
+| --- | --- | --- |
+| `Airtel_5_______0_rc5x.RT` | 313,456 B | Opens with the export password; complete profile (Airtel Kenya, SSH `indo.dewi-wulan.biz.id:80`, user `Popkid`, proxies `cdn-cf.zoom.us:80` and `listen.noice.id:80`) |
+| `100mbs_Airtel_4___1_fny4.RT` | 321,393 B | Opens with the export password; same profile shape |
+
+- **Format:** RSE5 0xC6, PBKDF2 600,000 iterations, AES-256-GCM,
+  AAD 34 B header. Both files are password-sealed (flags=2); without
+  a password the decoder correctly answers `PASSWORD_REQUIRED`.
+- **The export password is NOT recorded in this dossier** (per the
+  standing rule: passwords are never written into scripts or
+  dossiers; it was delivered to Pedro in chat only).
+- **Both files expire 2026-11-30 ~08:59 UTC** (the size ~313–321 KB
+  is random RSE5 padding + a JPEG banner).
+- **What was NOT verified is now verified:** the "no real `.RT`
+  file" gap from the previous section is closed for RSE5. Legacy
+  readers (RSE1–RSE4 / C3/C4) remain synthetic-verified only.
+
+### Decoder fix (lote 20, pending authorization)
+
+The repo decoder had two real bugs, fixed in the batch script
+`~/workspace/batch20-work/reese-rt/reese_rt_fixed.py` (the fix is
+NOT yet integrated into the repo — it is staged here as a note
+only):
+
+1. **Unified `PASSWORD_REQUIRED`:** all paths now return
+   `{"workerError": "PASSWORD_REQUIRED"}` with exit code 3 (before,
+   some paths returned a different error).
+2. **stdin hang fixed:** the "engine" form of the repo decoder
+   blocked forever reading stdin without EOF (hung >125 s). The
+   fixed script reads stdin only if data is available (select
+   timeout 0).
+3. **`config.bannerImage` ignored:** the banner is a base64 JPEG
+   (~29 KB), not needed; `bannerImageEnabled` is kept. The
+   `.descifrado.json` outputs were regenerated (56 fields, was 57).
+4. **`APK_SIGNER_SHA256` corrected:** the repo constant
+   (`D834BF8D…`) does not match the real APK signing certificate
+   (`C7662695…` = SHA-256 of the real certificate, recorded in
+   `meta.signer`). Only the legacy C3/C4 path is affected.
+
+Verification of the fixed script: `reese_rt_fixed.py selftest` OK;
+outputs identical to the repo decoder with the same password.
+
+No new dossier was created (this is not a new app version); only
+this RESULTS.md is updated. No tools are copied for REESE in this
+dossier (out of scope for the lote-20 fix note).
+
 ## What was NOT verified
 
 - No real `.RT` file exported by the app: the Envelope JSON shape is

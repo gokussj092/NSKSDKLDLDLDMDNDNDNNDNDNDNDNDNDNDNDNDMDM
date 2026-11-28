@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""VLX Tunnel VPN (dev.jx.clickconnect) VLX v14: decodificador de archivos de perfil .vlx.
+"""VLX Tunnel VPN (dev.jx.clickconnect) v1.11.24.2: decodificador de archivos de perfil .vlx.
 
 Python 3.10+, solo biblioteca estándar: Argon2id (RFC 9106) y AES-256-GCM
 están implementados en Python puro en este archivo (verificados contra
 argon2-cffi y PyCryptodome). Un descifrado tarda ~15-20 s.
-Package dev.jx.clickconnect, versionCode 18, versionName "VLX v14". En
+Package dev.jx.clickconnect, versionCode 19, versionName "v1.11.24.2". En
 Google Play y APKPure figura como "VLX Tunnel VPN" (desarrollador
 sando--k, +500,000 descargas; actualizada 7 nov 2026).
 
@@ -32,20 +32,24 @@ V2rayConfig, etc.). Las protecciones (contraseña, HWID, bloqueo de red)
 viven DENTRO del JSON descifrado y se verifican después del descifrado,
 no forman parte de la derivación de la clave.
 
-ESTADO DE VERIFICACIÓN: el sobre está VERIFICADO contra la propia
-librería de la app: el asset assets/configfile.json (el mismo sobre, con
-la clave de campos) abre (tag GCM auténtico, JSON válido, Version
-"1.01", 1 Server, 1 Network), el round-trip cifrar/descifrar es
-exacto con AMBAS claves, y la criptografía en Python puro reproduce byte
-a byte la de argon2-cffi / PyCryptodome. La muestra muestra.vlx
-(sellada aquí con el mismo método de exportación, clave en vivo, sin
-letra) abre y es idéntica al original. Lo que FALTA es la
-confirmación de extremo a extremo con un archivo .vlx real exportado
-por la app en un teléfono; si un .vlx real no abre con este script, el
-bloqueador es que el archivo no usa este sobre o usa otra clave, y habría
-que contrastarlo con ese archivo concreto. Los archivos .sks están
-EXCLUIDOS por indicación del usuario y no se implementan aquí (esta app
-tampoco los usa).
+ESTADO DE VERIFICACIÓN (v1.11.24.2, 2026-11-28): el sobre está
+VERIFICADO contra la propia librería de la app en v14 y re-verificado
+en v1.11.24.2: la muestra muestra.vlx (sellada con el método de
+exportación, clave en vivo, sin letra) abre con la clave en vivo y es
+idéntica al original (re-probada 2026-11-28 contra el decoder de
+v1.11.24.2). El round-trip cifrar/descifrar es exacto con AMBAS
+claves, y la criptografía en Python puro reproduce byte a byte la de
+argon2-cffi / PyCryptodome. NOTA v1.11.24.2: el asset
+assets/configfile.json nuevo (680,700 B) YA NO abre con la clave de
+campos (en v14 sí abría: Version "1.01", 1 Server, 1 Network); usa una
+clave nueva no recuperada. Eso afecta solo al asset empaquetado, no a
+los .vlx: los .vlx siguen usando las claves II/FIELD y la muestra
+abre. Lo que FALTA es la confirmación de extremo a extremo con un
+archivo .vlx real exportado por la app v1.11.24.2 en un teléfono; si
+un .vlx real no abre con este script, el bloqueador es que el archivo
+no usa este sobre o usa otra clave, y habría que contrastarlo con ese
+archivo concreto. Los archivos .sks están EXCLUIDOS por indicación del
+usuario y no se implementan aquí (esta app tampoco los usa).
 """
 from __future__ import annotations
 
@@ -639,14 +643,18 @@ def main(argv=None) -> int:
         if args.self_test:
             asset = Path(__file__).with_name("configfile.json")
             if not asset.exists():
-                print(json.dumps({"error": "SELF_TEST_NO_ASSET",
-                                  "message": "configfile.json no está junto al script."},
+                # v1.11.24.2: the ZIP ships no configfile.json (the new
+                # asset does not open with these keys anyway). Warn and
+                # still run the synthetic round-trips, which verify the
+                # crypto without any fixture.
+                print(json.dumps({"warning": "SELF_TEST_NO_ASSET",
+                                  "message": "configfile.json no está junto al script; se omite la comprobación del asset."},
                                  ensure_ascii=False), file=sys.stderr)
-                return 2
-            doc, key = decode_with_key(_read(asset))
-            print(json.dumps({"self_test": "OK", "key": key, "version": doc.get("Version"),
-                              "servers": len(doc.get("Servers", [])),
-                              "networks": len(doc.get("Networks", []))}, ensure_ascii=False))
+            else:
+                doc, key = decode_with_key(_read(asset))
+                print(json.dumps({"self_test": "OK", "key": key, "version": doc.get("Version"),
+                                  "servers": len(doc.get("Servers", [])),
+                                  "networks": len(doc.get("Networks", []))}, ensure_ascii=False))
             # Synthetic round-trip: a NetworkList profile JSON, encrypted
             # exactly as the app's export does (Encrypt/live key) and as the
             # import fallback does (DO/field key); decode() must open both.

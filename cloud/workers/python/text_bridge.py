@@ -65,12 +65,35 @@ def dispatch(text: str, *, password: str | None = None) -> str | None:
         if lowered.startswith(prefix):
             from_module = importlib.import_module(module_name)
             return from_module.run(value.encode("utf-8"))
+    if lowered.startswith("dgmtunnel://"):
+        # DGM Tunnel 15.11.2026: explicit dispatch to the file decoder
+        # (dgmtunnel:// Base64-JSON TunnelConfig / DarkTunnel node form,
+        # or dgmtunnel://share/ sealed DGMTUNNEL_SHARE v2 envelope).
+        # darktunnel:// is NOT wired here: the direct dict above already
+        # routes it to the Dark Tunnel handler, which decodes the same
+        # node form. The scheme is unambiguous: a None result is final,
+        # never a fallback to another format. A protected share without
+        # a password raises PASSWORD_REQUIRED (exit 3); a wrong password
+        # raises AUTH_FAILED.
+        module = importlib.import_module("decoders.Python.apps.DGM_Tunnel.file_decoder")
+        return module.decode_text(value, password=password)
     # The Ultra Custom scheme has an explicit codec, including UAP1 password
     # wrappers. Preserve the exact error instead of silently returning None.
     if lowered.startswith("ua://"):
-        from decoders.Python.apps.Ultra_Custom import ultra_custom_52 as ultra
+        from decoders.Python.apps.Ultra_Custom import ultra_custom as ultra
         normalized = "ua://" + value[5:]
         return json.dumps(ultra.decode(normalized, password=password), ensure_ascii=False, indent=2)
+    if lowered.startswith("v2rc://"):
+        # SNI Tunnel 1.3.7: explicit dispatch to the file decoder
+        # (v2rc:// sealed link; device record first, else the app-open
+        # record; password layer via PBKDF2 + ChaCha20-Poly1305). The
+        # scheme is unambiguous: a None result is final, never a
+        # fallback to another format. v2rcloud:// is NOT wired here:
+        # claiming a cloud link needs network. A sealed config without
+        # a password raises PASSWORD_REQUIRED (exit 3); a wrong password
+        # raises AUTH_FAILED.
+        module = importlib.import_module("decoders.Python.apps.SNI_Tunnel.file_decoder")
+        return module.decode_text(value, password=password)
     # AC's verified export has a Name field; older generic RENZ vectors retain
     # their original wrapper/engine. A corrupt modern profile never falls back.
     if lowered.startswith("actunnelvpn://"):
@@ -159,6 +182,19 @@ def dispatch(text: str, *, password: str | None = None) -> str | None:
         # opens, HMAC verifies); nad://pw2: is VERIFIED_SYNTHETIC
         # (no real sample with a password has been supplied yet).
         module = importlib.import_module("decoders.Python.apps.NadiaVPN.file_decoder")
+        return module.decode_text(value, password=password)
+    if lowered.startswith(("svpn1:", "svpn2:", "svpn3:", "svpn4:")):
+        # Surya Tunnel 1.6: explicit dispatch to the file decoder
+        # (SVPN1: profile JSON, SVPN2: SPN1 binary, SVPN3:/SVPN4:
+        # encrypted shares). The prefixes are unambiguous (no other
+        # format uses them) and the dispatch uses the original case:
+        # the Base64 payloads are case-sensitive. Bare Base64 / bare
+        # JSON is deliberately NOT wired: it would redirect texts of
+        # other methods. A protected SVPN3:/SVPN4: share without a
+        # password raises PASSWORD_REQUIRED (exit 3).
+        # VERIFIED_SYNTHETIC: no real SVPN text sample has been
+        # supplied yet (round-trips only, plus the real .st V3 file).
+        module = importlib.import_module("decoders.Python.apps.Surya_Tunnel.file_decoder")
         return module.decode_text(value, password=password)
     if lowered.startswith(("sray://", "tvc://", "uv://", "gv://", "gpx://",
                             "insan://", "opq://", "test://", "hyb://")):
@@ -265,7 +301,7 @@ def main() -> int:
         if password is not None and (not isinstance(password, str) or
                 not 0 < len(password.encode("utf-8")) <= 4096):
             return 2
-        if password is not None and not (text.strip().lower().startswith(("ua://", "v2box://", "xveontunnel://", "xveon://", "xvn://", "nad://sec2:", "nad://pw2:", "nad://")) or
+        if password is not None and not (text.strip().lower().startswith(("ua://", "v2box://", "xveontunnel://", "xveon://", "xvn://", "nad://sec2:", "nad://pw2:", "nad://", "v2rc://", "svpn3:", "svpn4:", "dgmtunnel://share/")) or
                 onef or npv):
             return 2
         output = dispatch(text, password=password)

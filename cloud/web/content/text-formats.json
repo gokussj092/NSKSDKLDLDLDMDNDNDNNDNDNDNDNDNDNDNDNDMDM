@@ -606,6 +606,42 @@
       "name": "STLRAY 1.1.36",
       "suffix": "sray",
       "kind": "text"
+    },
+    {
+      "prefix": "v2rc://",
+      "name": "SNI Tunnel 1.3.7",
+      "suffix": "v2rc",
+      "kind": "text"
+    },
+    {
+      "prefix": "dgmtunnel://",
+      "name": "DGM Tunnel 15.11.2026",
+      "suffix": "dgm",
+      "kind": "text"
+    },
+    {
+      "prefix": "SVPN1:",
+      "name": "Surya Tunnel 1.6",
+      "suffix": "st",
+      "kind": "text"
+    },
+    {
+      "prefix": "SVPN2:",
+      "name": "Surya Tunnel 1.6",
+      "suffix": "st",
+      "kind": "text"
+    },
+    {
+      "prefix": "SVPN3:",
+      "name": "Surya Tunnel 1.6",
+      "suffix": "st",
+      "kind": "text"
+    },
+    {
+      "prefix": "SVPN4:",
+      "name": "Surya Tunnel 1.6",
+      "suffix": "st",
+      "kind": "text"
     }
   ]
 }

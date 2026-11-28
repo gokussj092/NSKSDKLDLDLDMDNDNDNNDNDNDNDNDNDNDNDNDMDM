@@ -1,0 +1,46 @@
+{
+  "catalog": {
+    "entrypoint": "server_catalog_decoder.py",
+    "liveConfigs": 63,
+    "liveReleaseId": "rel_20260323181034_f5614e",
+    "liveServers": 1233,
+    "liveSnapshotId": "cat_b5ad4881aac0d744a6ace433",
+    "liveVerified": true,
+    "liveVersion": "1.0.0",
+    "method": "GET https://xraytunnel-config.admin6795.workers.dev/api/config with Accept: application/json, User-Agent: XrayTunnel/1.0, X-API-KEY (fixed app key shipped in the public APK). Each of servers/configs is an AES-256-GCM envelope base64(IV 12 B).base64(ciphertext + 16 B GCM tag) with the fixed 32-byte app key. Result has no download APIs, only decrypted data.",
+    "notes": "Live re-run 2026-11-28 11:10 UTC: 1,216 servers, 63 configs, same release/snapshot ids - the live feed churns (1,235 -> 1,233 -> 1,216 across the day); configs byte-identical. The /api/store endpoint on the same worker is only a community listing board, not a catalog. .v2k file decoding is verified by self round-trip only (no real exported .v2k sample yet); file/text routes are delivered in v2ray_injector.py but NOT wired in this catalog-only delivery (engine.py / text_bridge.py / registry untouched). .v2k file route is wired by CAT 103 as well.",
+    "url": "https://xraytunnel-config.admin6795.workers.dev/api/config",
+    "validatedOn": "2026-11-28"
+  },
+  "dependencies": [
+    "cryptography (AESGCM) or PyCryptodome"
+  ],
+  "deployment": "pending",
+  "engine": "python",
+  "entrypoint": "server_catalog_decoder.py",
+  "files": {
+    "entrypoint": "v2ray_injector.py",
+    "extensions": [
+      ".v2k"
+    ],
+    "fileDecoder": "file_decoder.py",
+    "method": ".v2k: V2K1|<flags hex>|<payload>, bit 0 = AES-256-GCM envelope (same key); Xray JSON import; vmess/vless/trojan/ss links. Verified by self round-trip (plain and encrypted, 2/2) and by link round-trips from real catalog servers (5/5). No real exported .v2k sample yet.",
+    "realFileSampleVerified": false,
+    "supported": true
+  },
+  "icon": {
+    "file": "v2ray-injector.png",
+    "sha256": "511ff6a0efa5f25cbdf9f1c1ccb81a798a457d459bd9d84e16d0b261927a86a3",
+    "source": "batch18-work/v2ray-injector/icon.png (432x432, foreground of the adaptive launcher icon; no 512x512 raster in the APK)"
+  },
+  "id": "v2ray-injector",
+  "name": "V2Ray Injector",
+  "package": "tech.docnet.xraytunnel",
+  "realSampleVerified": true,
+  "texts": {
+    "note": "No own scheme; standard vmess://, vless://, trojan://, ss:// links, already registered generically. .v2k file route wired via the C8 file_decoder adapter."
+  },
+  "versionCode": 16,
+  "versionName": "1.4.2",
+  "textPrefixes": []
+}

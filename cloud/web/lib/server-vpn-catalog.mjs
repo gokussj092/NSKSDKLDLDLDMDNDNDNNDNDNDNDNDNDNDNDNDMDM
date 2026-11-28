@@ -7,7 +7,7 @@ import {providerEnabled} from "./server-vpn-provider.mjs";
 import {SUPPLIED_CATALOG_ITEMS,suppliedProviderConfigured} from "./supplied-integrations.mjs";
 import {catalogDefaultEnabled} from "./catalog-provider-policy.mjs";
 
-export const CATALOG_VERSION = 102; // CAT 102 (2026-11-27): STLRAY 1.1.36 + ThaiVPN Connect 2.4 (new catalogs), ExoticFast VIP + ASL TUNNEL 3.0 + Sentinel Tunnel 4.0.0 (new catalogs, VPNGate feed for Sentinel), TunnelDOOM 4.3.5 + TunelGuard 17.7 + XtraVPN 1.0.36 + REESE TUNNEL 3.23.28 (updates; XtraVPN/REESE files+texts only, no new cards).
+export const CATALOG_VERSION = 103; // CAT 103 (2026-11-28): V2Ray Injector 1.4.2 + DGM Tunnel 15.11.2026 (new catalogs; DGM is a rotating public feed, snapshot by fetched_at, no catalog version), Peru VPN 4.1.2 (catalog host web.tunneldoom.space -> free.tunneldoom.space, Version 532, 390 servers) + VLX Tunnel VPN v1.11.24.2 (update from v14, Version 23.794, 16 servers, 731 networks, 4,549/4,549 fields; new configfile.json / api/vlx/ / api/vlxnew/ NOT decrypted).
 export const RECHECK_SECONDS = 15 * 60; // Version-only recovery; full download occurs on version change.
 
 /** Monotonic deployment version. Bump this override for ANY metadata, icon
@@ -115,6 +115,14 @@ const BASE_ITEMS = [
   // VPS catalog is blocked (HTTP 401, Firebase App Check token required);
   // this card serves the VPNGate feed only.
   {id:"sentinel-tunnel", name:"Sentinel Tunnel", icon:"sentinel-tunnel.png", remote:"sentinel-tunnel"},
+  // Live catalog validated 2026-11-28 (Version 1.0.0, 1,233 servers, 63 configs
+  // at 08:28; 1,216 servers on re-run at 11:10 - the live feed churns daily).
+  {id:"v2ray-injector", name:"V2Ray Injector", icon:"v2ray-injector.png", remote:"v2ray-injector"},
+  // Live snapshot validated 2026-11-28 (rotating public feed, no catalog
+  // version: snapshot identified by fetched_at; 40 profiles, all Shadowsocks,
+  // parsed 500 / rejected 57; identical 40 on re-run 11:12). A later re-fetch
+  // returns a different 40 - the app's own behaviour, not an error.
+  {id:"dgm-tunnel", name:"DGM Tunnel", icon:"dgm-tunnel.png", remote:"dgm-tunnel"},
   {id:"xhypher-tunnel-pro", name:"Xhypher Tunnel Pro", icon:"xhypher-tunnel-pro.png", remote:"xhypher-tunnel-pro"},
   // Official endpoint returns HTML; a valid signed OTA response is still required.
   {id:"ut-loop-pro-vpn", name:"UT Loop Pro VPN", icon:"ut-loop-pro-vpn.png", remote:null},

@@ -1,0 +1,14 @@
+{
+  "Version": "999",
+  "Servers": [
+    {
+      "Name": "Test Server",
+      "ServerIP": "90xmYds/VKHZw8fKKAumQg==",
+      "ServerUser": "tWllhQ/PRXuR9neSDApplQ==",
+      "ServerPass": "t8UofD12Sm/iGL+KVTG3vw==",
+      "Payload": "OunKXNh0lNKwwyB6liuaitek11yXVJMxREDki0g0J4BXMq4Zoy2SaR6PenFIT5p7",
+      "SNI": "r6cRVkf34AXBYbIwFAeKlA==",
+      "V2rayConfig": ""
+    }
+  ]
+}
